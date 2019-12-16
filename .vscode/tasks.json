@@ -11,7 +11,8 @@
         {
             "label": "test",
             "type": "shell",
-            "command": "docker-compose run autogoal make test"
+            "command": "docker-compose run autogoal make test",
+            "problemMatcher": []
         },
         {
             "label": "shell",
