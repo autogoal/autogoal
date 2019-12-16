@@ -10,7 +10,8 @@ clean:
 	git clean -fxd
 
 install:
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+	pip install --upgrade pip
+	pip install poetry
 	poetry install
 	poetry run pip install tensorflow==2
 

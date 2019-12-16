@@ -9,7 +9,7 @@ from pathlib import Path
 from ...utils import szip
 from sklearn.feature_extraction import DictVectorizer
 from typing import List
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 
 
 all_relations = "is-a same-as part-of property-of subject target subject/target none".split()
