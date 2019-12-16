@@ -10,14 +10,15 @@ clean:
 	git clean -fxd
 
 install:
-	pip install pipenv
-	pipenv sync --dev
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+	poetry install
+	poetry run pip install tensorflow==2
 
 test:
-	pipenv run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v
+	poetry run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v
 
 lint:
-	pipenv run pylint $(PROJECT)
+	poetry run pylint $(PROJECT)
 
 cov:
-	pipenv run codecov
+	poetry run codecov
