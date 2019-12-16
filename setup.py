@@ -34,10 +34,10 @@ def get_install_requirements():
 
 setup(
     # TODO: Change your library name and additional information down here
-    name='gpto',
-    packages=['gpto'],
-    url='https://github.com/sestevez/gpto',
-    download_url='https://github.com/sestevez/gpto/tarball/{}'.format(VERSION),
+    name='autogoal',
+    packages=['autogoal'],
+    url='https://github.com/sestevez/autogoal',
+    download_url='https://github.com/sestevez/autogoal/tarball/{}'.format(VERSION),
     license='MIT',
     author='Suilan Estevez-Velarde',
     author_email='suilanestevez@gmail.com',
@@ -53,7 +53,7 @@ setup(
 
     # TODO (Optional): Set your entry-points (CLI apps to register) here
     entry_points={
-        'console_scripts': ['gpto=gpto.__main__:main'],
+        'console_scripts': ['autogoal=autogoal.__main__:main'],
     },
 
     # TODO: Choose your classifiers carefully

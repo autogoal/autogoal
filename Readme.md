@@ -1,1 +1,1 @@
-# GPTO
+# AutoGOAL
