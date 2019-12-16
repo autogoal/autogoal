@@ -7,3 +7,9 @@ services:
         command: "pipenv run python"
         volumes:
             - "./:/autogoal"
+
+    test:
+        image: "sestevez/autogoal"
+        command: "make test"
+        volumes:
+            - "./:/autogoal"
