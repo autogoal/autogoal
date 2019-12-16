@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+    gpto:
+        image: "sestevez/gpto"
+        build: "."
+        command: "pipenv run python"
