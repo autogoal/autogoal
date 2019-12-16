@@ -11,7 +11,7 @@ clean:
 
 install:
 	pip install pipenv
-	pipenv install --dev --skip-lock
+	pipenv sync --dev
 
 test:
 	pipenv run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v

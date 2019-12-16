@@ -11,12 +11,17 @@
         {
             "label": "test",
             "type": "shell",
-            "command": "docker-compose run test"
+            "command": "docker-compose run autogoal make test"
         },
         {
             "label": "shell",
             "type": "shell",
             "command": "docker-compose run autogoal bash"
+        },
+        {
+            "label": "sync",
+            "type": "shell",
+            "command": "docker-compose run autogoal pipenv sync --dev"
         }
     ]
 }

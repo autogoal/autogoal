@@ -7,6 +7,7 @@ services:
         entrypoint: "pipenv run"
         volumes:
             - "./:/autogoal"
+            - "./.venv/:/autogoal/.venv"
         environment:
             PIPENV_VENV_IN_PROJECT: "1"
             XDG_CACHE_HOME: "/autogoal/.venv/.cache"
