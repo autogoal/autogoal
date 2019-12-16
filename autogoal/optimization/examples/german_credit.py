@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import random
-from hpopt.datasets.uci.german_credit import load_corpus
+from ..datasets.uci.german_credit import load_corpus
 from ..sklearn import SklearnClassifier
 from sklearn.model_selection import train_test_split
 

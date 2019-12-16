@@ -6,7 +6,8 @@ services:
         build: "."
         volumes:
             - "./:/autogoal"
-            - "./.venv/:/autogoal/.venv"
+            - "./.venv:/autogoal/.venv"
+            - "~/nltk_data:/autogoal/.venv/nltk_data"
         environment:
             PIPENV_VENV_IN_PROJECT: "1"
             XDG_CACHE_HOME: "/autogoal/.venv/.cache"

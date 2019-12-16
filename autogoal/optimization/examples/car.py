@@ -2,7 +2,7 @@
 
 import sys
 import random
-from hpopt.datasets.uci.car import load_corpus
+from ..datasets.uci.car import load_corpus
 from ..sklearn import SklearnClassifier, SklearnGrammar
 from sklearn.model_selection import train_test_split
 

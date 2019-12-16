@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import random
-from hpopt.datasets.uci.dexter import load_corpus
+from ..datasets.uci.dexter import load_corpus
 from ..sklearn import SklearnClassifier
 
 

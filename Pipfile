@@ -14,6 +14,7 @@ nltk = "*"
 spacy = "*"
 gensim = "*"
 keras = "*"
+# tensorflow = "*"
 
 [packages]
 toml = "*"

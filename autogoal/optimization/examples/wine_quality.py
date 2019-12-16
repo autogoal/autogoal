@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import random
-from hpopt.datasets.uci.wine_quality import load_corpus
+from ..datasets.uci.wine_quality import load_corpus
 from ..sklearn import SklearnClassifier
 from sklearn.model_selection import train_test_split
 

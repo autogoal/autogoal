@@ -8,7 +8,7 @@ from pprint import pprint
 from sklearn.model_selection import train_test_split as split
 from sklearn.metrics import accuracy_score
 
-from .hmlopt import Grammar, Individual, PGE
+from ..optimization import Grammar, Individual, PGE
 from .ontology import onto
 from .grammar import get_grammar
 from .data import solve_type

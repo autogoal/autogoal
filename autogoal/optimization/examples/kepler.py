@@ -1,6 +1,6 @@
 # coding: utf8
 
-from hpopt.ge import Grammar, PGE
+from ..ge import Grammar, PGE
 import numpy as np
 
 
@@ -59,4 +59,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

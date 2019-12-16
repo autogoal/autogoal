@@ -1,6 +1,6 @@
 # coding: utf8
 
-from ..hmlopt.examples.movie_reviews import load_corpus
+from ...optimization.examples.movie_reviews import load_corpus
 from ..automl import AutoML
 from ..ontology import onto
 

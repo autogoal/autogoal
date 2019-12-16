@@ -1,6 +1,6 @@
 # coding: utf8
 
-from ..hmlopt.datasets.uci.car import load_corpus
+from ...optimization.datasets.uci.car import load_corpus
 from ..automl import AutoML
 from ..ontology import onto
 
