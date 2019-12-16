@@ -1,7 +1,9 @@
 version: "3"
 
 services:
-    gpto:
-        image: "sestevez/gpto"
+    autogoal:
+        image: "sestevez/autogoal"
         build: "."
         command: "pipenv run python"
+        volumes:
+            - "./:/autogoal"
