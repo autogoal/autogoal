@@ -4,12 +4,10 @@ services:
     autogoal:
         image: "sestevez/autogoal"
         build: "."
-        command: "pipenv run python"
+        entrypoint: "pipenv run"
         volumes:
             - "./:/autogoal"
-
-    test:
-        image: "sestevez/autogoal"
-        command: "make test"
-        volumes:
-            - "./:/autogoal"
+        environment:
+            PIPENV_VENV_IN_PROJECT: "1"
+            XDG_CACHE_HOME: "/autogoal/.venv/.cache"
+        command: "bash"
