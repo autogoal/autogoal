@@ -10,14 +10,16 @@ clean:
 	git clean -fxd
 
 install:
-	pip install pipenv
-	pipenv sync --dev
+	pip install --upgrade pip
+	pip install poetry
+	poetry install
+	poetry run pip install tensorflow==1.14.0
 
 test:
-	pipenv run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v
+	poetry run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v
 
 lint:
-	pipenv run pylint $(PROJECT)
+	poetry run pylint $(PROJECT)
 
 cov:
-	pipenv run codecov
+	poetry run codecov

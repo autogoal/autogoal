@@ -22,7 +22,7 @@
         {
             "label": "sync",
             "type": "shell",
-            "command": "docker-compose run autogoal pipenv sync --dev"
+            "command": "docker-compose run autogoal poetry install"
         }
     ]
 }
