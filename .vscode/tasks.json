@@ -23,6 +23,16 @@
             "label": "sync",
             "type": "shell",
             "command": "docker-compose run autogoal poetry install"
+        },
+        {
+            "label": "docker: pull",
+            "type": "shell",
+            "command": "docker login  -u apiad -p 7ca83f5776254668902c15d0cf0ef4dd88755628 docker.pkg.github.com && docker-compose pull"
+        },
+        {
+            "label": "docker: push",
+            "type": "shell",
+            "command": "docker login  -u apiad -p 7ca83f5776254668902c15d0cf0ef4dd88755628 docker.pkg.github.com && docker-compose push"
         }
     ]
 }
