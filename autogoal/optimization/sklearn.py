@@ -484,7 +484,7 @@ class SklearnNLPGrammar(SklearnGrammar):
 
 
 class SklearnClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, incremental=False, popsize=100, select=0.2, learning=0.05, iters=100, fitness_evaluations=1, timeout=None, verbose=False, global_timeout=None):
+    def __init__(self, incremental=False, popsize=100, select=0.2, learning=0.05, iters=100, fitness_evaluations=1, timeout=None, verbose=False, global_timeout=None, errors='raise'):
         self.popsize = popsize
         self.select = select
         self.learning = learning
@@ -494,10 +494,11 @@ class SklearnClassifier(BaseEstimator, ClassifierMixin):
         self.fitness_evaluations = fitness_evaluations
         self.global_timeout = global_timeout
         self.incremental = incremental
+        self.errors = errors
 
     def fit(self, X, y):
         self.grammar_ = SklearnGrammar(X, y)
-        ge = PGE(self.grammar_, incremental=self.incremental, popsize=self.popsize, selected=self.select, learning=self.learning, timeout=self.timeout, verbose=self.verbose, fitness_evaluations=self.fitness_evaluations, global_timeout=self.global_timeout)
+        ge = PGE(self.grammar_, incremental=self.incremental, popsize=self.popsize, selected=self.select, learning=self.learning, timeout=self.timeout, verbose=self.verbose, fitness_evaluations=self.fitness_evaluations, global_timeout=self.global_timeout, errors=self.errors)
         self.pipeline_ = ge.run(self.iters)
         self.pipeline_.fit(X, y)
         self.best_score_ = ge.current_fn

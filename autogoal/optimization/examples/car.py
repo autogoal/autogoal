@@ -14,7 +14,7 @@ def main():
 
     for _ in range(20):
         Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.3)
-        classifier = SklearnClassifier(popsize=20, select=5, iters=100, timeout=300, global_timeout=3600, fitness_evaluations=5, verbose=True)
+        classifier = SklearnClassifier(errors='warn', popsize=20, select=5, iters=100, timeout=300, global_timeout=3600, fitness_evaluations=5, verbose=True)
         classifier.fit(Xtrain, ytrain)
 
         with open("cars.log", "a") as fp:
