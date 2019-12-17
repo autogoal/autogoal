@@ -17,7 +17,8 @@
         {
             "label": "shell",
             "type": "shell",
-            "command": "docker-compose run autogoal bash"
+            "command": "docker-compose run autogoal bash",
+            "problemMatcher": []
         },
         {
             "label": "sync",
