@@ -13,7 +13,7 @@ install:
 	pip install --upgrade pip
 	pip install poetry
 	poetry install
-	poetry run pip install tensorflow==2
+	poetry run pip install tensorflow==1.14.0
 
 test:
 	poetry run pytest --doctest-modules --cov=$(PROJECT) --cov-report=xml -v
