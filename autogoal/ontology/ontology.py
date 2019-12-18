@@ -1,9 +1,9 @@
 # coding: utf8
 
-from owlready2 import *
 from pathlib import Path
-import enlighten
 
+import enlighten
+from owlready2 import *
 
 ontology_path = Path(__file__).parent.parent / "docs" / "ontoml.owl"
 onto_path.append(str(ontology_path.parent))
@@ -18,10 +18,8 @@ SWRL_rules = [
     # Defining the input and output of a CompositePipeline
     "hasFirstStep(?P,?A) ^ hasInput(?A,?D) -> hasInput(?P,?D)",
     "hasNextStep(?P,?B) ^ hasOutput(?B,?D) -> hasOutput(?P,?D)",
-
     # Restricting the steps' input/output to match
     "hasFirstStep(?P,?A) ^ hasOutput(?A,?D) ^ hasNextStep(?P,?B) -> hasInput(?B,?D)",
-
     # Restricting which algorithms can be connected
     "hasOutput(?A, ?D1) ^ hasInput(?B, ?D2) ^ isCoercibleTo(?D1, ?D2) -> canConnect(?A, ?B)",
 ]
@@ -306,7 +304,7 @@ def solve_coercible():
 
             if _can_coerce(i_bases, j_bases):
                 i.isCoercibleTo.append(j)
-                print(i, '--> isCoercibleTo -->', j)
+                print(i, "--> isCoercibleTo -->", j)
 
 
 def _can_coerce(i_bases, j_bases):
@@ -328,7 +326,7 @@ def solve_can_connect():
     instances = list(Algorithm.instances())
 
     manager = enlighten.get_manager()
-    counter = manager.counter(total=len(instances) * len(instances), unit='pairs')
+    counter = manager.counter(total=len(instances) * len(instances), unit="pairs")
 
     for i in Algorithm.instances():
         if i.hasOutput is None:
@@ -343,7 +341,7 @@ def solve_can_connect():
 
             if j.hasInput in i.hasOutput.isCoercibleTo:
                 i.canConnect.append(j)
-                print(i, '--> canConnect -->', j)
+                print(i, "--> canConnect -->", j)
 
     counter.close()
     manager.stop()
@@ -360,14 +358,13 @@ if __name__ == "__main__":
         print("(!) Delete %s first..." % ontology_path)
         sys.exit(127)
 
-    if 'nltk' in sys.argv or 'full' in sys.argv:
+    if "nltk" in sys.argv or "full" in sys.argv:
         build_ontology_nltk(onto)
 
-    if 'sklearn' in sys.argv or 'full' in sys.argv:
+    if "sklearn" in sys.argv or "full" in sys.argv:
         build_ontology_sklearn(onto)
 
-    if 'ontoml' in sys.argv or 'full' in sys.argv:
+    if "ontoml" in sys.argv or "full" in sys.argv:
         build_ontology_adapters(onto)
 
     save_ontology()
-

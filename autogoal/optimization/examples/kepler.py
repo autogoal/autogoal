@@ -1,17 +1,17 @@
 # coding: utf8
 
-from ..ge import Grammar, PGE
 import numpy as np
 
+from ..ge import PGE, Grammar
 
-Mercury = [0.38710,    87.9693]
-Venus   = [0.72333,   224.7008]
-Earth   = [1.00000,   365.2564]
-Mars    = [1.52366,   686.9796]
-Saturn  = [9.53707, 10775.599]
-Uranus  = [19.1913, 30687.153]
+Mercury = [0.38710, 87.9693]
+Venus = [0.72333, 224.7008]
+Earth = [1.00000, 365.2564]
+Mars = [1.52366, 686.9796]
+Saturn = [9.53707, 10775.599]
+Uranus = [19.1913, 30687.153]
 Neptune = [30.0690, 60190.03]
-Jupiter = [5.20336,  4332.8201]
+Jupiter = [5.20336, 4332.8201]
 
 
 values = [Mercury, Venus, Earth, Mars, Saturn, Uranus, Neptune, Jupiter]
@@ -22,11 +22,11 @@ period = np.asarray([v[1] for v in values])
 class KeplerGrammar(Grammar):
     def grammar(self):
         return {
-            'Pipeline': 'Mult | Sum',
-            'Mult':     'ExpR ExpT',
-            'Sum':      'ExpR ExpT',
-            'ExpR':     'i(-5,5)',
-            'ExpT':     'i(-5,5)',
+            "Pipeline": "Mult | Sum",
+            "Mult": "ExpR ExpT",
+            "Sum": "ExpR ExpT",
+            "ExpR": "i(-5,5)",
+            "ExpT": "i(-5,5)",
         }
 
     def evaluate(self, ind):

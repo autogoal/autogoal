@@ -1,12 +1,24 @@
 # coding: utf8
 
 import warnings
+
 import numpy as np
 import scipy.sparse as sp
-
-from .ontology import onto
-from .ontology import Sequence, Text, Continuous, Discrete, Vector, Categorical, Matrix, Sparse, Dense, Semantic
 from owlready2 import Not
+
+from .ontology import (
+    Categorical,
+    Continuous,
+    Dense,
+    Discrete,
+    Matrix,
+    Semantic,
+    Sequence,
+    Sparse,
+    Text,
+    Vector,
+    onto,
+)
 
 
 class String(str):
@@ -37,7 +49,7 @@ def get_data_for(*classes, name=None):
 
 
 # Concrete data types
-StringList = get_data_for(Sequence, Text, Not(Semantic), name='StringList')
+StringList = get_data_for(Sequence, Text, Not(Semantic), name="StringList")
 ContinuousVector = get_data_for(Continuous, Vector)
 DiscreteVector = get_data_for(Discrete, Vector)
 CategoricalVector = get_data_for(Categorical, Vector)
@@ -124,7 +136,9 @@ def is_categorical(obj):
         original_length = len(obj)
         obj = set(obj)
 
-        return len(obj) < max(0.1 * original_length, 10) and all(isinstance(x, (str, int)) for x in obj)
+        return len(obj) < max(0.1 * original_length, 10) and all(
+            isinstance(x, (str, int)) for x in obj
+        )
     except:
         return False
 
@@ -204,21 +218,21 @@ DATA_RESOLVERS = {
 DATA_TYPE_EXAMPLES = {
     MatrixContinuousDense: np.random.rand(10, 10),
     MatrixContinuousSparse: sp.rand(10, 10),
-    CategoricalVector: np.asarray(['A'] * 5 + ['B'] * 5),
+    CategoricalVector: np.asarray(["A"] * 5 + ["B"] * 5),
     ContinuousVector: np.random.rand(10),
     DiscreteVector: np.random.randint(0, 10, (10,), dtype=int),
-    StringList: ['abc bcd def feg geh hij jkl lmn nop pqr'] * 10,
+    StringList: ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
 
 def is_algorithm(cls, verbose=False):
-    if hasattr(cls, 'fit'):
+    if hasattr(cls, "fit"):
         return True
     else:
         if verbose:
             warnings.warn("%r doesn't have `fit`" % cls)
 
-    if hasattr(cls, 'transform'):
+    if hasattr(cls, "transform"):
         return True
     else:
         if verbose:
@@ -408,4 +422,3 @@ def solve_type(obj):
             return type_
 
     raise ValueError("Unresolved type for %r" % obj)
-

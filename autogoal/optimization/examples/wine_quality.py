@@ -1,9 +1,11 @@
 # coding: utf-8
 
 import random
+
+from sklearn.model_selection import train_test_split
+
 from ..datasets.uci.wine_quality import load_corpus
 from ..sklearn import SklearnClassifier
-from sklearn.model_selection import train_test_split
 
 
 def main():
@@ -13,11 +15,23 @@ def main():
 
     for _ in range(20):
         Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.3)
-        classifier = SklearnClassifier(errors='warn', popsize=100, select=20, iters=100, timeout=300, global_timeout=3600, fitness_evaluations=5, verbose=True)
+        classifier = SklearnClassifier(
+            errors="warn",
+            popsize=100,
+            select=20,
+            iters=100,
+            timeout=300,
+            global_timeout=3600,
+            fitness_evaluations=5,
+            verbose=True,
+        )
         classifier.fit(Xtrain, ytrain)
 
         with open("wine-quality.log", "a") as fp:
-            fp.write("%.5f, %.5f\n" % (classifier.score(Xtest, ytest), classifier.best_score_))
+            fp.write(
+                "%.5f, %.5f\n"
+                % (classifier.score(Xtest, ytest), classifier.best_score_)
+            )
 
 
 if __name__ == "__main__":
