@@ -1,12 +1,27 @@
-FROM python:3.6
+# =====================
+# Generic build system
+# ---------------------
 
-ADD . /autogoal
+ARG PYTHON_VERSION
 
-ENV XDG_CACHE_HOME="/opt/venv/cache"
-ENV POETRY_VIRTUALENVS_PATH="/opt/venv"
+FROM python:${PYTHON_VERSION}
 
-WORKDIR /autogoal
+RUN echo Building image for Python:${PYTHON_VERSION}
 
-VOLUME [ "/opt/venv" ]
+# ==========================================
+# Project-specific installation instruction
+# ------------------------------------------
 
-RUN make install
+WORKDIR /code
+COPY pyproject.toml poetry.lock makefile /code/
+
+ENV BUILD_ENVIRONMENT="development"
+ENV XDG_CACHE_HOME="/opt/dev/cache"
+
+# Use system's Python for installing dev tools
+RUN make dev-install
+
+COPY . /code
+
+VOLUME [ "/opt/dev" ]
+CMD [ "bash" ]

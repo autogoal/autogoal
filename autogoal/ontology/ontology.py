@@ -5,13 +5,13 @@ from pathlib import Path
 import enlighten
 from owlready2 import *
 
-ontology_path = Path(__file__).parent.parent / "docs" / "ontoml.owl"
+ontology_path = Path(__file__).parent.parent / "autogoal.owl"
 onto_path.append(str(ontology_path.parent))
 
 try:
-    onto = get_ontology("https://knowledge-learning.github.io/ontoml/ontoml.owl").load()
+    onto = get_ontology("https://knowledge-learning.github.io/autogoal/autogoal.owl").load()
 except:
-    onto = get_ontology("https://knowledge-learning.github.io/ontoml/ontoml.owl")
+    onto = get_ontology("https://knowledge-learning.github.io/autogoal/autogoal.owl")
 
 
 SWRL_rules = [
@@ -287,9 +287,7 @@ with onto:
 def save_ontology():
     solve_coercible()
     solve_can_connect()
-
-    path = str(Path(__file__).parent.parent / "docs" / "ontoml.owl")
-    onto.save(file=path)
+    onto.save(file=ontology_path.open("wb"))
 
 
 def solve_coercible():
@@ -347,10 +345,11 @@ def solve_can_connect():
     manager.stop()
 
 
-if __name__ == "__main__":
+def main():
     from ._sklearn import build_ontology_sklearn
     from ._nltk import build_ontology_nltk
     from ._adapters import build_ontology_adapters
+    from ._keras import build_ontology_keras
 
     import sys
 
@@ -364,7 +363,10 @@ if __name__ == "__main__":
     if "sklearn" in sys.argv or "full" in sys.argv:
         build_ontology_sklearn(onto)
 
-    if "ontoml" in sys.argv or "full" in sys.argv:
+    if "keras" in sys.argv or "full" in sys.argv:
+        build_ontology_keras(onto)
+
+    if "extra" in sys.argv or "full" in sys.argv:
         build_ontology_adapters(onto)
 
     save_ontology()
