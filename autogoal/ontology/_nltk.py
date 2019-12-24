@@ -24,7 +24,6 @@ class _TokenizerBase:
         return result
 
 
-
 class NLTKPunktTokenizer(_TokenizerBase):
     def __init__(self):
         self.tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
@@ -58,10 +57,11 @@ class NLTKBigramCollocationFinder:
 
 class NLTKResolver:
     classes = {
-        cls.__name__: cls for cls in [
+        cls.__name__: cls
+        for cls in [
             NLTKPunktTokenizer,
             NLTKWordPunctTokenizer,
-            NLTKBigramCollocationFinder
+            NLTKBigramCollocationFinder,
         ]
     }
 
@@ -95,13 +95,17 @@ def build_ontology_nltk(onto):
 
     nltk_BigramCollocationFinder = CollocationsClass("NLTKBigramCollocationFinder")
     nltk_BigramCollocationFinder.implementedIn = NLTK
-    nltk_BigramCollocationFinder.importCode = "nltk.collocations.BigramCollocationFinder"
+    nltk_BigramCollocationFinder.importCode = (
+        "nltk.collocations.BigramCollocationFinder"
+    )
     nltk_BigramCollocationFinder.hasInput = get_data_for(onto.WordCorpus)
     nltk_BigramCollocationFinder.hasOutput = get_data_for(onto.Paired)
 
     nltk_TrigramCollocationFinder = CollocationsClass("NLTKTrigramCollocationFinder")
     # nltk_TrigramCollocationFinder.implementedIn = NLTK
-    nltk_TrigramCollocationFinder.importCode = "nltk.collocations.TrigramCollocationFinder"
+    nltk_TrigramCollocationFinder.importCode = (
+        "nltk.collocations.TrigramCollocationFinder"
+    )
     nltk_TrigramCollocationFinder.hasInput = get_data_for(onto.WordCorpus)
     nltk_TrigramCollocationFinder.hasOutput = get_data_for(onto.Paired)
 

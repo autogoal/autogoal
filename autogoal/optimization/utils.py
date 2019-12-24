@@ -11,6 +11,7 @@ def szip(*items):
 
     return zip(*items)
 
+
 def sdiv(a, b):
     try:
         return a / b

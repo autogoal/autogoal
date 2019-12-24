@@ -70,56 +70,53 @@ from sklearn.cluster import FeatureAgglomeration
 from sklearn.decomposition import KernelPCA
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.kernel_approximation import Nystroem
+
 # from sklearn.feature_selection import SelectPercentile
 
 grammar = {
-    'Pipeline'     : 'DataPrep FeatPrep Class',
-
-    'DataPrep'     : 'Encoding Rescaling Imputation Balancing',
-    'Encoding'     : 'none | onehot',
-    'Rescaling'    : 'none | minmax | standard | quantile',
-    'Imputation'   : 'none | mean | median | most_frequent',
-    'Balancing'    : 'none | weight',
-    'FeatPrep'     : 'none | Decomp | FeatSel',
-
-    'Decomp'       : 'FastICA | PCA | TruncSVD | KernelPCA',
-    'FastICA'      : 'f(0.01,0.5)',
-    'PCA'          : 'f(0.01,0.5)',
-    'TruncSVD'     : 'f(0.01,0.5)',
-    'KernelPCA'    : 'KPCAn KPCAk',
-    'KPCAn'        : 'f(0.01,0.5)',
-    'KPCAk'        : 'linear | poly | rbf | sigmoid | cosine',
-
-    'FeatSel'      : 'FeatAgg | Poly | Nystrom',
-    'FeatAgg'      : 'f(0.01,0.5)',
-    'Poly'         : 'i(2,3)',
-    'Nystrom'      : 'f(0.01,0.5)',
-
-    'Class'        : 'Bayes | Linear | SVC | Tree | KNN | Discriminant | MLP',
-    'Bayes'        : 'gaussNB | mNB | cNB | nNB',
-    'Linear'       : 'SGD | Ridge | PA | LR | Lasso | Perceptron',
-    'SGD'          : 'hinge | log | modified_huber | squared_hinge | perceptron',
-    'Ridge'        : 'f(0.01, 10)',
-    'PA'           : 'f(0.01, 10)',
-    'LR'           : 'LRloss LRreg',
-    'LRloss'       : 'l1 | l2',
-    'LRreg'        : 'f(0.01, 10)',
-    'Lasso'        : 'f(0.01, 10)',
-    'Perceptron'   : 'l1 | l2 | elasticnet',
-    'SVC'          : 'LinearSVC | KernelSVC',
-    'LinearSVC'    : 'LinearSVCp LinearSVCr',
-    'LinearSVCp'   : 'l1 | l2',
-    'LinearSVCr'   : 'f(0.01,10)',
-    'KernelSVC'    : 'KernelSVCk KernelSVCr',
-    'KernelSVCk'   : 'rbf | poly | sigmoid',
-    'KernelSVCr'   : 'f(0.01,10)',
-    'Tree'         : 'gini | entropy',
-    'KNN'          : 'i(1,10)',
-    'Discriminant' : 'qda | lda',
-    'MLP'          : 'MLPn MLPl MLPa',
-    'MLPn'         : 'i(10,100)',
-    'MLPl'         : 'i(1,5)',
-    'MLPa'         : 'identity | logistic | tanh | relu',
+    "Pipeline": "DataPrep FeatPrep Class",
+    "DataPrep": "Encoding Rescaling Imputation Balancing",
+    "Encoding": "none | onehot",
+    "Rescaling": "none | minmax | standard | quantile",
+    "Imputation": "none | mean | median | most_frequent",
+    "Balancing": "none | weight",
+    "FeatPrep": "none | Decomp | FeatSel",
+    "Decomp": "FastICA | PCA | TruncSVD | KernelPCA",
+    "FastICA": "f(0.01,0.5)",
+    "PCA": "f(0.01,0.5)",
+    "TruncSVD": "f(0.01,0.5)",
+    "KernelPCA": "KPCAn KPCAk",
+    "KPCAn": "f(0.01,0.5)",
+    "KPCAk": "linear | poly | rbf | sigmoid | cosine",
+    "FeatSel": "FeatAgg | Poly | Nystrom",
+    "FeatAgg": "f(0.01,0.5)",
+    "Poly": "i(2,3)",
+    "Nystrom": "f(0.01,0.5)",
+    "Class": "Bayes | Linear | SVC | Tree | KNN | Discriminant | MLP",
+    "Bayes": "gaussNB | mNB | cNB | nNB",
+    "Linear": "SGD | Ridge | PA | LR | Lasso | Perceptron",
+    "SGD": "hinge | log | modified_huber | squared_hinge | perceptron",
+    "Ridge": "f(0.01, 10)",
+    "PA": "f(0.01, 10)",
+    "LR": "LRloss LRreg",
+    "LRloss": "l1 | l2",
+    "LRreg": "f(0.01, 10)",
+    "Lasso": "f(0.01, 10)",
+    "Perceptron": "l1 | l2 | elasticnet",
+    "SVC": "LinearSVC | KernelSVC",
+    "LinearSVC": "LinearSVCp LinearSVCr",
+    "LinearSVCp": "l1 | l2",
+    "LinearSVCr": "f(0.01,10)",
+    "KernelSVC": "KernelSVCk KernelSVCr",
+    "KernelSVCk": "rbf | poly | sigmoid",
+    "KernelSVCr": "f(0.01,10)",
+    "Tree": "gini | entropy",
+    "KNN": "i(1,10)",
+    "Discriminant": "qda | lda",
+    "MLP": "MLPn MLPl MLPa",
+    "MLPn": "i(10,100)",
+    "MLPl": "i(1,5)",
+    "MLPa": "identity | logistic | tanh | relu",
 }
 
 
@@ -142,9 +139,11 @@ class SklearnGrammar(Grammar):
         pipeline = []
         balance = self._data_prep(ind, pipeline)
         self._feat_prep(ind, pipeline)
-        pipeline.append(('classifier', self._classifier(ind, balance)))
+        pipeline.append(("classifier", self._classifier(ind, balance)))
 
-        return Pipeline(steps=pipeline)#, memory="cached_memory_%i.dat" % int(time.time()))
+        return Pipeline(
+            steps=pipeline
+        )  # , memory="cached_memory_%i.dat" % int(time.time()))
 
     def evaluate(self, pipeline, cmplx=1.0):
         # 'Pipeline'     : 'DataPrep FeatPrep Class',
@@ -158,7 +157,7 @@ class SklearnGrammar(Grammar):
         try:
             pipeline.fit(Xtrain, ytrain)
         except TypeError as e:
-            if 'sparse' or 'must be non-negative' in str(e):
+            if "sparse" or "must be non-negative" in str(e):
                 raise InvalidPipeline()
             raise e
 
@@ -169,32 +168,34 @@ class SklearnGrammar(Grammar):
         self._encoding(ind, pipeline)
         self._rescaling(ind, pipeline)
         self._imputation(ind, pipeline)
-        balance = 'balanced' if ind.choose('none', 'weight') == 'weight' else None
+        balance = "balanced" if ind.choose("none", "weight") == "weight" else None
 
         return balance
 
     def _encoding(self, ind, pipeline):
         # 'Encoding'     : 'none | onehot',
-        if ind.choose('none', 'onehot') == 'onehot':
+        if ind.choose("none", "onehot") == "onehot":
 
             if not np.all(self.X.astype(int) == self.X):
-                raise InvalidPipeline('Integer values required for onehot')
+                raise InvalidPipeline("Integer values required for onehot")
 
-            pipeline.append(('encoding', OneHotEncoder(categories='auto')))
+            pipeline.append(("encoding", OneHotEncoder(categories="auto")))
 
     def _rescaling(self, ind, pipeline):
         # 'Rescaling'    : 'none | minmax | standard | quantile',
-        scaling = ind.choose(None, MinMaxScaler(), RobustScaler(), QuantileTransformer())
+        scaling = ind.choose(
+            None, MinMaxScaler(), RobustScaler(), QuantileTransformer()
+        )
 
         if scaling:
-            pipeline.append(('scaling', scaling))
+            pipeline.append(("scaling", scaling))
 
     def _imputation(self, ind, pipeline):
         # 'Imputation'   : 'none | mean | median | most_frequent',
-        method = ind.choose('none', 'mean', 'median', 'most_frequent')
+        method = ind.choose("none", "mean", "median", "most_frequent")
 
-        if method != 'none':
-            pipeline.append(('imputation', SimpleImputer(strategy=method)))
+        if method != "none":
+            pipeline.append(("imputation", SimpleImputer(strategy=method)))
 
         # return X
 
@@ -218,25 +219,32 @@ class SklearnGrammar(Grammar):
         if not isinstance(self.X, np.ndarray):
             raise InvalidPipeline("FastICA requires dense data.")
 
-        pipeline.append(('feature', FastICA(n_components=self._ncomp(ind))))
+        pipeline.append(("feature", FastICA(n_components=self._ncomp(ind))))
 
     def _pca(self, ind, pipeline):
         # 'PCA'          : 'i(2,100)',
         if not isinstance(self.X, np.ndarray):
             raise InvalidPipeline("PCA requires dense data.")
 
-        pipeline.append(('feature', PCA(n_components=self._ncomp(ind))))
+        pipeline.append(("feature", PCA(n_components=self._ncomp(ind))))
 
     def _truncsvd(self, ind, pipeline):
         # 'TruncSVD'     : 'i(2,100)',
-        pipeline.append(('feature', TruncatedSVD(n_components=self._ncomp(ind))))
+        pipeline.append(("feature", TruncatedSVD(n_components=self._ncomp(ind))))
 
     def _kpca(self, ind, pipeline):
         # 'KernelPCA'    : 'KPCAn | KPCAk',
         # 'KPCAn'        : 'f(0.01,0.5)' ,
         # 'KPCAk'        : 'linear | poly | rbf | sigmoid | cosine',
-        pipeline.append(('feature', KernelPCA(n_components=self._ncomp(ind),
-                         kernel=ind.choose('linear', 'poly', 'rbf', 'sigmoid', 'cosine'))))
+        pipeline.append(
+            (
+                "feature",
+                KernelPCA(
+                    n_components=self._ncomp(ind),
+                    kernel=ind.choose("linear", "poly", "rbf", "sigmoid", "cosine"),
+                ),
+            )
+        )
 
     def _feat_sel(self, ind, pipeline):
         # 'FeatSel'      : 'FeatAgg | Poly | Nystrom ',
@@ -248,25 +256,27 @@ class SklearnGrammar(Grammar):
         if not isinstance(self.X, np.ndarray):
             raise InvalidPipeline("FeatureAgglomeration requires dense data.")
 
-        pipeline.append(('feature', FeatureAgglomeration(n_clusters=self._ncomp(ind))))
+        pipeline.append(("feature", FeatureAgglomeration(n_clusters=self._ncomp(ind))))
 
     def _poly(self, ind, pipeline):
         # 'Poly'         : 'i(2,3)',
-        pipeline.append(('feature', PolynomialFeatures(degree=ind.nextint())))
+        pipeline.append(("feature", PolynomialFeatures(degree=ind.nextint())))
 
     def _nystrom(self, ind, pipeline):
         # 'Nystrom'      : 'f(0.01,0.5)',
-        pipeline.append(('feature', Nystroem(n_components=self._ncomp(ind))))
+        pipeline.append(("feature", Nystroem(n_components=self._ncomp(ind))))
 
     def _classifier(self, ind, balance):
         # 'Class'        : 'Bayes | Linear | SVC | Tree | KNN | Discriminat | MLP
-        return ind.choose(self._bayes,
-                          self._linear,
-                          self._svc,
-                          self._tree,
-                          self._knn,
-                          self._discr,
-                          self._mlp)(ind, balance)
+        return ind.choose(
+            self._bayes,
+            self._linear,
+            self._svc,
+            self._tree,
+            self._knn,
+            self._discr,
+            self._mlp,
+        )(ind, balance)
 
     def _bayes(self, ind, balance):
         # 'Bayes'        : 'gaussNB | mNB | cNB | nNB',
@@ -274,32 +284,35 @@ class SklearnGrammar(Grammar):
 
     def _linear(self, ind, balance):
         # 'Linear'       : 'SGD | Ridge | PA | LR | Lasso | Perceptron',
-        return ind.choose(self._sgd, self._ridge, self._pa, self._lr, self._lasso, self._perceptron)(ind, balance)
+        return ind.choose(
+            self._sgd, self._ridge, self._pa, self._lr, self._lasso, self._perceptron
+        )(ind, balance)
 
     def _sgd(self, ind, balance):
         # 'SGD'          : 'hinge | log | modified_huber | squared_hinge | perceptron',
-        loss = ind.choose('hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron')
-        return SGDClassifier(loss=loss,
-                             class_weight=balance)
+        loss = ind.choose(
+            "hinge", "log", "modified_huber", "squared_hinge", "perceptron"
+        )
+        return SGDClassifier(loss=loss, class_weight=balance)
 
     def _ridge(self, ind, balance):
         # 'Ridge'        : 'f(0.01, 10)',
-        return RidgeClassifier(alpha=ind.nextfloat(),
-                               class_weight=balance)
+        return RidgeClassifier(alpha=ind.nextfloat(), class_weight=balance)
 
     def _pa(self, ind, balance):
         # 'PA'           : 'f(0.01, 10)',
-        return PassiveAggressiveClassifier(C=ind.nextfloat(),
-                                           class_weight=balance)
+        return PassiveAggressiveClassifier(C=ind.nextfloat(), class_weight=balance)
 
     def _lr(self, ind, balance):
         # 'LR'           : 'LRloss LRreg',
         # 'LRloss'       : 'l1 | l2',
         # 'LRReg'        : 'f(0.01, 10)',
-        return LogisticRegression(penalty=ind.choose('l1', 'l2'),
-                                  C=ind.nextfloat(),
-                                  solver='saga',
-                                  class_weight=balance)
+        return LogisticRegression(
+            penalty=ind.choose("l1", "l2"),
+            C=ind.nextfloat(),
+            solver="saga",
+            class_weight=balance,
+        )
 
     def _lasso(self, ind, balance):
         # 'Lasso'        : 'f(0.01, 10)',
@@ -307,7 +320,7 @@ class SklearnGrammar(Grammar):
 
     def _perceptron(self, ind, balance):
         # 'Perceptron'   : 'l1 | l2 | elasticnet',
-        return Perceptron(penalty=ind.choose('l1', 'l2', 'elasticnet'), max_iter=1000)
+        return Perceptron(penalty=ind.choose("l1", "l2", "elasticnet"), max_iter=1000)
 
     def _svc(self, ind, balance):
         # 'SVC'          : 'LinearSVC | KernelSVC',
@@ -317,24 +330,29 @@ class SklearnGrammar(Grammar):
         # 'LinearSVC'    : 'LinearSVCp | LinearSVCl | LinearSVCr',
         # 'LinearSVCp'   : 'l1 | l2',
         # 'LinearSVCr'   : 'f(0.01,10)',
-        return LinearSVC(penalty=ind.choose('l1', 'l2'),
-                         C=ind.nextfloat(),
-                         dual=False,
-                         class_weight=balance)
+        return LinearSVC(
+            penalty=ind.choose("l1", "l2"),
+            C=ind.nextfloat(),
+            dual=False,
+            class_weight=balance,
+        )
 
     def _kernelsvc(self, ind, balance):
         # 'KernelSVC'    : 'KernelSVCk | KernelSVCr',
         # 'KernelSVCk'   : 'rbf | poly | sigmoid',
         # 'KernelSVCr'   : 'f(0.01,10)',
-        return SVC(kernel=ind.choose('rbf', 'poly', 'sigmoid'),
-                   C=ind.nextfloat(),
-                   class_weight=balance,
-                   gamma='auto')
+        return SVC(
+            kernel=ind.choose("rbf", "poly", "sigmoid"),
+            C=ind.nextfloat(),
+            class_weight=balance,
+            gamma="auto",
+        )
 
     def _tree(self, ind, balance):
         # 'Tree'         : 'gini | entropy',
-        return DecisionTreeClassifier(criterion=ind.choose('gini', 'entropy'),
-                                      class_weight=balance)
+        return DecisionTreeClassifier(
+            criterion=ind.choose("gini", "entropy"), class_weight=balance
+        )
 
     def _knn(self, ind, balance):
         # 'KNN'          : 'i(1,10)',
@@ -351,8 +369,10 @@ class SklearnGrammar(Grammar):
         # 'MPLa'         : 'identity | logistic | tanh | relu',
         neurons = ind.nextint()
         layers = ind.nextint()
-        activation = ind.choose('identity', 'logistic', 'tanh', 'relu')
-        return MLPClassifier(hidden_layer_sizes=[neurons] * layers, activation=activation)
+        activation = ind.choose("identity", "logistic", "tanh", "relu")
+        return MLPClassifier(
+            hidden_layer_sizes=[neurons] * layers, activation=activation
+        )
 
 
 class SklearnNLPGrammar(SklearnGrammar):
@@ -360,7 +380,7 @@ class SklearnNLPGrammar(SklearnGrammar):
         super().__init__(X=X, y=y, *args, **kwargs)
 
         print("Loading spacy...", end="", flush=True)
-        self.nlp = spacy.load('en')
+        self.nlp = spacy.load("en")
         print("done")
 
         print("Preprocessing sentences...", flush=True)
@@ -369,25 +389,23 @@ class SklearnNLPGrammar(SklearnGrammar):
     def grammar(self):
         g = {}
         g.update(grammar)
-        g.update({
-            'Pipeline'  : 'TextPrep DataPrep FeatPrep Class',
-            'TextPrep'  : 'Clean Semantic Vect',
-
-            'Encoding'  : 'none',
-
-            'Clean'     : 'Stopwords',
-            'Stopwords' :'yes | no',
-
-            'Semantic'  : 'Pos Tag Dep',
-            'Pos'       : 'yes | no',
-            'Tag'       : 'yes | no',
-            'Dep'       : 'yes | no',
-
-            'Vect'      : 'CV | TF | TFIDF',
-            'CV'        : 'i(1,3)',
-            'TF'        : 'i(1,3)',
-            'TFIDF'     : 'i(1,3)',
-        })
+        g.update(
+            {
+                "Pipeline": "TextPrep DataPrep FeatPrep Class",
+                "TextPrep": "Clean Semantic Vect",
+                "Encoding": "none",
+                "Clean": "Stopwords",
+                "Stopwords": "yes | no",
+                "Semantic": "Pos Tag Dep",
+                "Pos": "yes | no",
+                "Tag": "yes | no",
+                "Dep": "yes | no",
+                "Vect": "CV | TF | TFIDF",
+                "CV": "i(1,3)",
+                "TF": "i(1,3)",
+                "TFIDF": "i(1,3)",
+            }
+        )
 
         return g
 
@@ -405,14 +423,14 @@ class SklearnNLPGrammar(SklearnGrammar):
         try:
             classifier.fit(Xtrain, ytrain)
         except TypeError as e:
-            if 'sparse' in str(e) and hasattr(Xtrain, 'toarray'):
+            if "sparse" in str(e) and hasattr(Xtrain, "toarray"):
                 Xtrain = Xtrain.toarray()
                 Xtest = Xtest.toarray()
                 classifier.fit(Xtrain, ytrain)
             else:
                 raise e
         except ValueError as e:
-            if 'must be non-negative' in str(e):
+            if "must be non-negative" in str(e):
                 raise InvalidPipeline()
             raise e
 
@@ -438,7 +456,7 @@ class SklearnNLPGrammar(SklearnGrammar):
     def _clean(self, ind):
         # preprocesamiento
         if ind.nextbool():
-            return stopwords.words('english')
+            return stopwords.words("english")
 
         return set()
 
@@ -484,7 +502,19 @@ class SklearnNLPGrammar(SklearnGrammar):
 
 
 class SklearnClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, incremental=False, popsize=100, select=0.2, learning=0.05, iters=100, fitness_evaluations=1, timeout=None, verbose=False, global_timeout=None, errors='raise'):
+    def __init__(
+        self,
+        incremental=False,
+        popsize=100,
+        select=0.2,
+        learning=0.05,
+        iters=100,
+        fitness_evaluations=1,
+        timeout=None,
+        verbose=False,
+        global_timeout=None,
+        errors="raise",
+    ):
         self.popsize = popsize
         self.select = select
         self.learning = learning
@@ -498,7 +528,18 @@ class SklearnClassifier(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
         self.grammar_ = SklearnGrammar(X, y)
-        ge = PGE(self.grammar_, incremental=self.incremental, popsize=self.popsize, selected=self.select, learning=self.learning, timeout=self.timeout, verbose=self.verbose, fitness_evaluations=self.fitness_evaluations, global_timeout=self.global_timeout, errors=self.errors)
+        ge = PGE(
+            self.grammar_,
+            incremental=self.incremental,
+            popsize=self.popsize,
+            selected=self.select,
+            learning=self.learning,
+            timeout=self.timeout,
+            verbose=self.verbose,
+            fitness_evaluations=self.fitness_evaluations,
+            global_timeout=self.global_timeout,
+            errors=self.errors,
+        )
         self.pipeline_ = ge.run(self.iters)
         self.pipeline_.fit(X, y)
         self.best_score_ = ge.current_fn
@@ -511,7 +552,17 @@ class SklearnClassifier(BaseEstimator, ClassifierMixin):
 
 
 class SklearnNLPClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, incremental=False, popsize=100, select=0.2, learning=0.05, iters=100, timeout=None, fitness_evaluations=1, verbose=False):
+    def __init__(
+        self,
+        incremental=False,
+        popsize=100,
+        select=0.2,
+        learning=0.05,
+        iters=100,
+        timeout=None,
+        fitness_evaluations=1,
+        verbose=False,
+    ):
         self.popsize = popsize
         self.select = select
         self.learning = learning

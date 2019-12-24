@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Automatic General-purpose Optimization for Algorithm Learning"
 authors = ["Suilan Estevez-Velarde"]
 license = "MIT"
+readme = "Readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -26,6 +27,11 @@ gensim = "^3.8.1"
 seqlearn = "^0.2"
 cython = "^0.29.14"
 sklearn_crfsuite = "^0.3.6"
+streamlit = "^0.51.0"
+jupyter = "^1.0.0"
+jupyterlab = "^1.2.4"
+keras = "^2.3.1"
+mypy = "^0.761"
 
 [build-system]
 requires = ["poetry>=0.12"]

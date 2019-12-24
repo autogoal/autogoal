@@ -1,15 +1,14 @@
 version: "3"
 
 services:
-    autogoal:
-        image: "docker.pkg.github.com/sestevez/autogoal/autogoal:latest"
-        build: "."
+    autogoal-tester:
+        container_name: autogoal-tester-${PYTHON_VERSION}
+        image: docker.pkg.github.com/sestevez/autogoal/autogoal:${PYTHON_VERSION}
+        build:
+            context: "."
+            args:
+                PYTHON_VERSION: ${PYTHON_VERSION}
         volumes:
-            - "./:/autogoal"
-            # - "./.venv:/autogoal/.venv"
-            - "~/nltk_data:/root/nltk_data"
-        # environment:
-        #     POETRY_VIRTUALENVS_PATH: /autogoal/.venv
-        #     PIPENV_VENV_IN_PROJECT: "1"
-        #     XDG_CACHE_HOME: "/autogoal/.venv/.cache"
-        command: "poetry shell"
+            - "./:/code"
+        command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
+        network_mode: host
