@@ -61,6 +61,40 @@
   <rdfs:range rdf:resource="#Pipeline"/>
 </owl:ObjectProperty>
 
+<owl:ObjectProperty rdf:about="#hasSequenceComponent">
+  <rdfs:domain rdf:resource="#NeuralNetworkSequential"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasParallelComponent">
+  <rdfs:domain rdf:resource="#NeuralNetworkParallel"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasPreprocessingModule">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#NeuralNetwork"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasReductionModule">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#NeuralNetwork"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasFeatureModule">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#NeuralNetwork"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasClassificationModule">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#NeuralNetwork"/>
+  <rdfs:range rdf:resource="#NeuralNetworkModule"/>
+</owl:ObjectProperty>
+
 <owl:ObjectProperty rdf:about="#implementedIn">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
   <rdfs:domain rdf:resource="#Algorithm"/>
@@ -281,6 +315,26 @@
   <rdfs:subClassOf rdf:resource="#Unsupervised"/>
 </owl:Class>
 
+<owl:Class rdf:about="#NeuralNetwork">
+  <rdfs:subClassOf rdf:resource="#Algorithm"/>
+</owl:Class>
+
+<owl:Class rdf:about="#NeuralNetworkModule">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#NeuralNetworkLayer">
+  <rdfs:subClassOf rdf:resource="#NeuralNetworkModule"/>
+</owl:Class>
+
+<owl:Class rdf:about="#NeuralNetworkSequential">
+  <rdfs:subClassOf rdf:resource="#NeuralNetworkModule"/>
+</owl:Class>
+
+<owl:Class rdf:about="#NeuralNetworkParallel">
+  <rdfs:subClassOf rdf:resource="#NeuralNetworkModule"/>
+</owl:Class>
+
 <owl:Class rdf:about="#TextAlgorithm">
   <rdfs:subClassOf rdf:resource="#Algorithm"/>
 </owl:Class>
@@ -414,8 +468,8 @@
 
 <Matrix rdf:about="#ContinuousDenseMatrix">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <rdf:type rdf:resource="#Continuous"/>
   <rdf:type rdf:resource="#Dense"/>
+  <rdf:type rdf:resource="#Continuous"/>
   <isCoercibleTo rdf:resource="#ContinuousMatrix"/>
   <isCoercibleTo rdf:resource="#ContinuousDenseMatrix"/>
 </Matrix>
@@ -427,6 +481,250 @@
   <isCoercibleTo rdf:resource="#ContinuousMatrix"/>
   <isCoercibleTo rdf:resource="#ContinuousMatrixSparse"/>
 </Matrix>
+
+<NeuralNetworkLayer rdf:about="#ActivityRegularizationLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#AddLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#AlphaDropoutLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#AlphaDropout__rate"/>
+</NeuralNetworkLayer>
+
+<ContinuousHyperParameter rdf:about="#AlphaDropout__rate">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</hasMinFloatValue>
+  <hasMaxFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</hasMaxFloatValue>
+</ContinuousHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#AverageLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#AveragePooling1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#AveragePooling2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#AveragePooling3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#BatchNormalizationLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ConcatenateLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#Cropping1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#Cropping2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#Cropping3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#DenseLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#Dense__units"/>
+</NeuralNetworkLayer>
+
+<DiscreteHyperParameter rdf:about="#Dense__units">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</hasMinIntValue>
+  <hasMaxIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</hasMaxIntValue>
+</DiscreteHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#DropoutLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#Dropout__rate"/>
+</NeuralNetworkLayer>
+
+<ContinuousHyperParameter rdf:about="#Dropout__rate">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</hasMinFloatValue>
+  <hasMaxFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</hasMaxFloatValue>
+</ContinuousHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#ELULayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#EmbeddingLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#Embedding__input_dim"/>
+  <hasParameter rdf:resource="#Embedding__output_dim"/>
+</NeuralNetworkLayer>
+
+<DiscreteHyperParameter rdf:about="#Embedding__input_dim">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</hasMinIntValue>
+  <hasMaxIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</hasMaxIntValue>
+</DiscreteHyperParameter>
+
+<DiscreteHyperParameter rdf:about="#Embedding__output_dim">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</hasMinIntValue>
+  <hasMaxIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</hasMaxIntValue>
+</DiscreteHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#FlattenLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GaussianDropoutLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#GaussianDropout__rate"/>
+</NeuralNetworkLayer>
+
+<ContinuousHyperParameter rdf:about="#GaussianDropout__rate">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</hasMinFloatValue>
+  <hasMaxFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</hasMaxFloatValue>
+</ContinuousHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#GaussianNoiseLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#GaussianNoise__stddev"/>
+</NeuralNetworkLayer>
+
+<ContinuousHyperParameter rdf:about="#GaussianNoise__stddev">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</hasMinFloatValue>
+  <hasMaxFloatValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</hasMaxFloatValue>
+</ContinuousHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#GlobalAveragePooling1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GlobalAveragePooling2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GlobalAveragePooling3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GlobalMaxPooling1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GlobalMaxPooling2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#GlobalMaxPooling3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#InputLayerLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#LeakyReLULayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MaskingLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MaxPooling1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MaxPooling2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MaxPooling3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MaximumLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MinimumLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#MultiplyLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#PReLULayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ReLULayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#RecurrentLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#RepeatVectorLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasParameter rdf:resource="#RepeatVector__n"/>
+</NeuralNetworkLayer>
+
+<DiscreteHyperParameter rdf:about="#RepeatVector__n">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <hasMinIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</hasMinIntValue>
+  <hasMaxIntValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</hasMaxIntValue>
+</DiscreteHyperParameter>
+
+<NeuralNetworkLayer rdf:about="#SoftmaxLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#SubtractLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ThresholdedReLULayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#UpSampling1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#UpSampling2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#UpSampling3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ZeroPadding1DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ZeroPadding2DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
+
+<NeuralNetworkLayer rdf:about="#ZeroPadding3DLayer">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</NeuralNetworkLayer>
 
 
 </rdf:RDF>

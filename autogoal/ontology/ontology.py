@@ -169,6 +169,41 @@ with onto:
     class Clusterer(Unsupervised):
         pass
 
+    ## Neural Networks
+
+    class NeuralNetwork(Algorithm):
+        pass
+
+    class NeuralNetworkModule(Thing):
+        pass
+
+    class NeuralNetworkLayer(NeuralNetworkModule):
+        pass
+
+    class NeuralNetworkSequential(NeuralNetworkModule):
+        pass
+
+    class NeuralNetworkParallel(NeuralNetworkModule):
+        pass
+
+    class hasSequenceComponent(NeuralNetworkSequential >> NeuralNetworkModule):
+        pass
+
+    class hasParallelComponent(NeuralNetworkParallel >> NeuralNetworkModule):
+        pass
+
+    class hasPreprocessingModule(FunctionalProperty, NeuralNetwork >> NeuralNetworkModule):
+        pass
+
+    class hasReductionModule(FunctionalProperty, NeuralNetwork >> NeuralNetworkModule):
+        pass
+
+    class hasFeatureModule(FunctionalProperty, NeuralNetwork >> NeuralNetworkModule):
+        pass
+
+    class hasClassificationModule(FunctionalProperty, NeuralNetwork >> NeuralNetworkModule):
+        pass
+
     ### Text Processing Algorithms
 
     class TextAlgorithm(Algorithm):

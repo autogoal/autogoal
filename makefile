@@ -3,6 +3,9 @@
 BASE_VERSION := 3.6
 ALL_VERSIONS := 3.6
 
+notebook:
+	PYTHON_VERSION=${BASE_VERSION} docker-compose up
+
 test-fast:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester make dev-test-fast
 
@@ -22,7 +25,7 @@ lint:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester poetry run pylint autogoal
 
 test-full:
-	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose up;)
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run make dev-test-full;)
 
 docker-build:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose build;)
