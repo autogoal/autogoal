@@ -5,21 +5,7 @@
 
 from .base import register_abstract_class
 from .base import register_concrete_class
-from .base import Algorithm
-
-@register_concrete_class
-class NeuralNetwork(Algorithm):
-    """Representa a todas las posibles redes neuronales
-    """
-    def __init__(self, nn_preprocesor:NN_Preprocesor, nn_reduction:NN_Reduction, nn_abstract_features:NN_Abtract_Feautures, nn_clasifier:NN_Classifier):
-        """Instancia una red neuronal basada en 4 componentes fundamentales:
-        Preprocesamiento, Reductor de dimensiones, un componente para descubrir features de mas alto nivel(osea mas abstractos) y una componente
-        que sería un clasificador o regresor.
-        """
-        self.nn_preprocesor = nn_preprocesor
-        self.nn_reduction = nn_reduction
-        self.nn_abstract_features = nn_abstract_features
-        self.nn_clasifier = nn_clasifier
+from .base import Algorithm, BaseObject
 
 class Part_Of_NN:
     """ Esta clase representa lo que es común a un elemento de una red neuronal a nivel de código
@@ -56,6 +42,20 @@ class NN_Classifier(Part_Of_NN):
     pass
 
 @register_concrete_class
+class NeuralNetwork(BaseObject, Algorithm):
+    """Representa a todas las posibles redes neuronales
+    """
+    def __init__(self, nn_preprocesor:NN_Preprocesor, nn_reduction:NN_Reduction, nn_abstract_features:NN_Abtract_Feautures, nn_clasifier:NN_Classifier):
+        """Instancia una red neuronal basada en 4 componentes fundamentales:
+        Preprocesamiento, Reductor de dimensiones, un componente para descubrir features de mas alto nivel(osea mas abstractos) y una componente
+        que sería un clasificador o regresor.
+        """
+        self.nn_preprocesor = nn_preprocesor
+        self.nn_reduction = nn_reduction
+        self.nn_abstract_features = nn_abstract_features
+        self.nn_clasifier = nn_clasifier
+
+@register_concrete_class
 class Bert(NN_Preprocesor):
     """Representa un componente que utiliza Bert como embeding en la red neuronal
     """
@@ -76,3 +76,9 @@ class NN_None(NN_Preprocesor):
     """
 
     pass
+
+
+if __name__ == "__main__":
+    import pprint
+    grammar = NeuralNetwork.generate_grammar()
+    pprint.pprint(grammar)

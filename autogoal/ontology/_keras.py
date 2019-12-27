@@ -9,7 +9,7 @@ from pathlib import Path
 import keras.layers
 
 
-def _get_keras_layers(ignore=set(["Lambda", "Layer", "Highway", "MaxoutDense", "Input"])):
+def _get_keras_layers(ignore=set(["Lambda", "Layer", "Highway", "MaxoutDense", "Input", "InputLayer"])):
     """Load all `keras.layers` classes that inherit from `Layer`, except those in `ignore`."""
 
     for layer_name in dir(keras.layers):
@@ -46,7 +46,7 @@ def _get_keras_layer_args(layer):
 
     input_sample = keras.layers.Input(shape=(1,))
 
-    for p in itertools.combinations_with_replacement([1.33, 1], len(layers_args)):
+    for p in itertools.combinations_with_replacement([1.33, 32], len(layers_args)):
         for i, key in enumerate(layers_args):
             layers_args[key] = p[i]
 
@@ -56,6 +56,7 @@ def _get_keras_layer_args(layer):
         except:
             pass
 
+    print("Layer %s with args %r is None" % (layer.__name__, layers_args))
     return None
 
 
