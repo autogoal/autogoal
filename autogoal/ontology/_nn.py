@@ -56,6 +56,13 @@ class NeuralNetwork(BaseObject, Algorithm):
         self.nn_abstract_features = nn_abstract_features
         self.nn_clasifier = nn_clasifier
 
+@register_abstract_class
+class Compose_Clasifier(NN_Classifier):
+    """
+    Compone clases de capas densas y un sofmax o clasificador-regresor detras
+    """
+
+    pass
 
 @register_concrete_class
 class NN_None(BaseObject, NN_Preprocesor):
