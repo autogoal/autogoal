@@ -6,6 +6,7 @@ import pprint
 
 def register_abstract_class(cls):
     cls.__children__ = []
+    register_concrete_class(cls)
     return cls
 
 
@@ -59,10 +60,14 @@ class BaseObject(BaseAbstract):
             if param_name in ["self", "args", "kwargs"]:
                 continue
 
-            param_name = "<%s_%s>" % (cls.__name__, param_name)
+            param_symbol = "<%s_%s>" % (cls.__name__, param_name)
+            annotation_cls = param_obj.annotation
 
-            param_obj.annotation.generate_grammar(grammar, param_name)
-            parameters.append(param_name)
+            if annotation_cls == 'self':
+                annotation_cls = cls
+
+            annotation_cls.generate_grammar(grammar, param_symbol)
+            parameters.append("%s=%s" % (param_name, param_symbol))
 
         rhs = ["%s( %s )" % (cls.__name__, " ".join(parameters),)]
 

@@ -165,7 +165,8 @@ def build_module():
             parents = ['BaseObject', 'KerasWrapper']
 
             for expr, bases in PARENT_MAPPINGS.items():
-                if re.match(expr, layer.__name__)
+                if re.match(expr, layer.__name__):
+                    parents.extend(bases)
 
             fp.write(
                 "class {}Layer({}):\n".format(layer.__name__, ", ".join(parents))
