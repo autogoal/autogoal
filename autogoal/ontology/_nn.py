@@ -32,21 +32,21 @@ class NN_Preprocesor(Part_Of_NN):
     """ Representa los posibles elementos para preprocesar los datos en una red neuronal
     """
 
-    def __init__(self)
+    pass
 
 @register_abstract_class
 class NN_Reduction(Part_Of_NN):
     """ Representa los posibles elementos para reducir dimensiones en los datos ya preprocesados en una red neuronal
     """
 
-    def __init__(self)
+    pass
 
 @register_abstract_class
 class NN_Abtract_Feautures(Part_Of_NN):
     """ Representa los posibles elementos para descubrir features de mas alto nivel(osea mas abstractos) en una red neuronal
     """
 
-    def __init__(self)
+    pass
 
 @register_abstract_class
 class NN_Classifier(Part_Of_NN):
@@ -54,4 +54,4 @@ class NN_Classifier(Part_Of_NN):
     que se está buscando.
     """
 
-    def __init__(self)
+    pass
