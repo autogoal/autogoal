@@ -58,14 +58,22 @@ class NN_Classifier(Part_Of_NN):
 
 @register_concrete_class
 class Bert(NN_Preprocesor):
+    """Representa un componente que utiliza Bert como embeding en la red neuronal
+    """
 
     pass
 
 
 @register_concrete_class
 class Embeding(NN_Preprocesor):
+    """Representa un componente que utiliza un embeding layer de keras como embeding en la red neuronal
+    """
 
     pass
 
 @register_concrete_class
-class NN_None()
+class NN_None(NN_Preprocesor):
+    """Representa un componente que se comporta como una capa pero devuelve por la salida lo mismo que le entra por la entrada.
+    """
+
+    pass
