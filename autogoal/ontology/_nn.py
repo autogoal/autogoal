@@ -5,7 +5,7 @@
 
 from .base import register_abstract_class
 from .base import register_concrete_class
-from .base import Algorithm, BaseObject
+from .base import Algorithm, BaseObject, BaseAbstract
 
 class Part_Of_NN:
     """ Esta clase representa lo que es común a un elemento de una red neuronal a nivel de código
@@ -13,28 +13,28 @@ class Part_Of_NN:
     pass
 
 @register_abstract_class
-class NN_Preprocesor(Part_Of_NN):
+class NN_Preprocesor(BaseAbstract, Part_Of_NN):
     """ Representa los posibles elementos para preprocesar los datos en una red neuronal
     """
 
     pass
 
 @register_abstract_class
-class NN_Reduction(Part_Of_NN):
+class NN_Reduction(BaseAbstract, Part_Of_NN):
     """ Representa los posibles elementos para reducir dimensiones en los datos ya preprocesados en una red neuronal
     """
 
     pass
 
 @register_abstract_class
-class NN_Abtract_Feautures(Part_Of_NN):
+class NN_Abtract_Feautures(BaseAbstract, Part_Of_NN):
     """ Representa los posibles elementos para descubrir features de mas alto nivel(osea mas abstractos) en una red neuronal
     """
 
     pass
 
 @register_abstract_class
-class NN_Classifier(Part_Of_NN):
+class NN_Classifier(BaseAbstract, Part_Of_NN):
     """ Representa los posibles elementos para un clasificador o regresor en una red neuronal, esta tendría como salida el resultado
     que se está buscando.
     """
@@ -56,7 +56,7 @@ class NeuralNetwork(BaseObject, Algorithm):
         self.nn_clasifier = nn_clasifier
 
 @register_concrete_class
-class Bert(NN_Preprocesor):
+class Bert(BaseObject, NN_Preprocesor):
     """Representa un componente que utiliza Bert como embeding en la red neuronal
     """
 
@@ -64,14 +64,14 @@ class Bert(NN_Preprocesor):
 
 
 @register_concrete_class
-class Embeding(NN_Preprocesor):
+class Embeding(BaseObject, NN_Preprocesor):
     """Representa un componente que utiliza un embeding layer de keras como embeding en la red neuronal
     """
 
     pass
 
 @register_concrete_class
-class NN_None(NN_Preprocesor):
+class NN_None(BaseObject, NN_Preprocesor):
     """Representa un componente que se comporta como una capa pero devuelve por la salida lo mismo que le entra por la entrada.
     """
 
