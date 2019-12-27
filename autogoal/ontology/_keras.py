@@ -65,7 +65,8 @@ def build_module():
         fp.write("## DO NOT MODIFY THIS FILE MANUALLY\n\n\n")
         fp.write("from keras.layers import *\n")
         fp.write("from ..base import register_concrete_class\n")
-        fp.write("from ..base import Layer\n")
+        fp.write("from ..base import Discrete\n")
+        fp.write("from ..base import Continuous\n")
         fp.write("\n\n")
 
         for layer in _get_keras_layers():
