@@ -134,9 +134,11 @@ class KerasWrapper(Part_Of_NN):
         return self.keras_class(**self.kwargs)(model)
 
 
-PARENT_MAPPINGS = dict(
-    Bert=['NN_Preprocesor'],
-)
+PARENT_MAPPINGS = {
+    "Bert": ['NN_Preprocesor'],
+    "Dense": ['NN_Preprocesor','NN_Reduction', 'NN_Abtract_Feautures','Compose_Clasifier'],
+    "Sofmax": ['NN_Clasifier']
+}
 
 
 def build_module():
