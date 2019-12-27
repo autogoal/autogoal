@@ -136,7 +136,7 @@ class KerasWrapper(Part_Of_NN):
 PARENT_MAPPINGS = {
     "Bert": ['NN_Preprocesor'],
     "Dense": ['NN_Preprocesor','NN_Reduction', 'NN_Abtract_Feautures','Compose_Clasifier'],
-    
+    "Sofmax": ['NN_Clasifier']
 }
 
 

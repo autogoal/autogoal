@@ -41,6 +41,7 @@ class NN_Classifier(BaseAbstract, Part_Of_NN):
     que se está buscando.
     """
     pass
+        
 
 @register_concrete_class
 class NeuralNetwork(BaseObject, Algorithm):
@@ -57,12 +58,22 @@ class NeuralNetwork(BaseObject, Algorithm):
         self.nn_clasifier = nn_clasifier
 
 @register_abstract_class
-class Compose_Clasifier(NN_Classifier):
+class Basic_Clasifier(NN_Classifier):
     """
-    Compone clases de capas densas y un sofmax o clasificador-regresor detras
+    Un sofmax o clasificador-regresor simple
+    """
+    
+    pass
+
+@register_concrete_class
+class Compose_Clasifier(NN_Classifier):
+    """Compone clases de capas densas y un sofmax o clasificador-regresor detras
     """
 
-    pass
+    def __init__(self, clasifier: Compose_Clasifier, basic_clasifier: Basic_Clasifier):
+        self.clasifier = clasifier
+        self.basic_clasifier = basic_clasifier
+
 
 @register_concrete_class
 class NN_None(BaseObject, NN_Preprocesor):
