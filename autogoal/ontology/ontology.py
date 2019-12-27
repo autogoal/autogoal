@@ -385,23 +385,26 @@ def main():
     from ._nltk import build_ontology_nltk
     from ._adapters import build_ontology_adapters
     from ._keras import build_ontology_keras
+    from ._keras import build_module
 
     import sys
 
-    if ontology_path.exists():
-        print("(!) Delete %s first..." % ontology_path)
-        sys.exit(127)
+    build_module()
 
-    if "nltk" in sys.argv or "full" in sys.argv:
-        build_ontology_nltk(onto)
+    # if ontology_path.exists():
+    #     print("(!) Delete %s first..." % ontology_path)
+    #     sys.exit(127)
 
-    if "sklearn" in sys.argv or "full" in sys.argv:
-        build_ontology_sklearn(onto)
+    # if "nltk" in sys.argv or "full" in sys.argv:
+    #     build_ontology_nltk(onto)
 
-    if "keras" in sys.argv or "full" in sys.argv:
-        build_ontology_keras(onto)
+    # if "sklearn" in sys.argv or "full" in sys.argv:
+    #     build_ontology_sklearn(onto)
 
-    if "extra" in sys.argv or "full" in sys.argv:
-        build_ontology_adapters(onto)
+    # if "keras" in sys.argv or "full" in sys.argv:
+    #     build_ontology_keras(onto)
 
-    save_ontology()
+    # if "extra" in sys.argv or "full" in sys.argv:
+    #     build_ontology_adapters(onto)
+
+    # save_ontology()
