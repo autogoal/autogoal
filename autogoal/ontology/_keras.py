@@ -3,6 +3,7 @@
 import datetime
 import inspect
 import itertools
+import re
 from pathlib import Path
 
 import keras.layers
@@ -159,7 +160,11 @@ def build_module():
 
             print(layer.__name__)
             fp.write("@register_concrete_class\n")
-            parents = ['BaseObject', 'KerasWrapper'] + PARENT_MAPPINGS.get(layer.__name__, [])
+            parents = ['BaseObject', 'KerasWrapper']
+
+            for expr, bases in PARENT_MAPPINGS.items():
+                if re.match(expr, layer.__name__)
+
             fp.write(
                 "class {}Layer({}):\n".format(layer.__name__, ", ".join(parents))
             )
