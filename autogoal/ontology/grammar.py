@@ -230,26 +230,32 @@ def _build_paths(input_type, output_type, datatypes, algorithms, cache, depth):
 
 
 if __name__ == "__main__":
-    import sys
+    import autogoal.ontology._nn
+    import autogoal.ontology._generated._keras
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input")
-    parser.add_argument("output")
-    parser.add_argument("--include", nargs="+", default=[])
-    parser.add_argument("--exclude", nargs="+", default=[])
-    parser.add_argument("--depth", type=int, default=2)
+    grammar = autogoal.ontology._nn.NeuralNetwork.generate_grammar()
+    print(grammar)
 
-    args = parser.parse_args()
+    # import sys
 
-    input_type = onto[args.input]
-    output_type = onto[args.output]
-    depth = args.depth
-    include = [onto[i] for i in args.include]
-    exclude = [onto[i] for i in args.exclude]
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("input")
+    # parser.add_argument("output")
+    # parser.add_argument("--include", nargs="+", default=[])
+    # parser.add_argument("--exclude", nargs="+", default=[])
+    # parser.add_argument("--depth", type=int, default=2)
 
-    pprint(
-        get_grammar(
-            input_type, output_type, depth=depth, include=include, exclude=exclude
-        )
-    )
+    # args = parser.parse_args()
+
+    # input_type = onto[args.input]
+    # output_type = onto[args.output]
+    # depth = args.depth
+    # include = [onto[i] for i in args.include]
+    # exclude = [onto[i] for i in args.exclude]
+
+    # pprint(
+    #     get_grammar(
+    #         input_type, output_type, depth=depth, include=include, exclude=exclude
+    #     )
+    # )
 

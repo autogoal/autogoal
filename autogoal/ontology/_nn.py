@@ -63,11 +63,3 @@ class NN_None(BaseObject, NN_Preprocesor):
     """
     def _build_model(self, model):
         return model
-
-
-if __name__ == "__main__":
-    import pprint
-    import autogoal.ontology._generated._keras
-
-    grammar = NeuralNetwork.generate_grammar()
-    pprint.pprint(grammar)
