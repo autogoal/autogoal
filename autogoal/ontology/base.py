@@ -14,6 +14,9 @@ def register_concrete_class(cls):
         if base == BaseObject or base == BaseAbstract:
             continue
 
+        if not hasattr(base, '__children__'):
+            continue
+
         base.__children__.append(cls)
 
     return cls
@@ -90,42 +93,3 @@ class Continuous(Discrete):
 @register_abstract_class
 class Algorithm(BaseAbstract):
     pass
-
-
-@register_abstract_class
-class Layer(BaseAbstract):
-    pass
-
-
-@register_concrete_class
-class SequentialLayer(BaseObject, Layer):
-    def __init__(self, layer1: Layer, layer2: Layer):
-        pass
-
-
-@register_concrete_class
-class ParallelLayer(BaseObject, Layer):
-    def __init__(self, layer1: Layer, layer2: Layer):
-        pass
-
-
-@register_concrete_class
-class DenseLayer(BaseObject, Layer):
-    def __init__(self, units: Discrete(32, 2048)):
-        pass
-
-
-@register_concrete_class
-class NeuralNetwork(BaseObject, Algorithm):
-    def __init__(self, layer: Layer):
-        self.layer = layer
-
-
-def main():
-    grammar = Algorithm.generate_grammar()
-
-    pprint.pprint(grammar)
-
-
-if __name__ == "__main__":
-    main()
