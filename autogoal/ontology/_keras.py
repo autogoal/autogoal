@@ -29,7 +29,7 @@ class Bert(keras.layers.Layer):
         self.n_fine_tune_layers = n_fine_tune_layers
         self.trainable = True
         self.output_size = 768
-        super(BertLayer, self).__init__(**kwargs)
+        super(Bert, self).__init__(**kwargs)
 
     def build(self, input_shape):
         self.bert = hub.Module(
