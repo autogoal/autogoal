@@ -230,12 +230,19 @@ def _build_paths(input_type, output_type, datatypes, algorithms, cache, depth):
 
 
 if __name__ == "__main__":
-    import autogoal.ontology._nn
-    import autogoal.ontology._generated._keras
+    import autogoal.ontology._nn as nn
+    import autogoal.ontology._generated._keras as keras
     import pprint
 
-    grammar = autogoal.ontology._nn.NeuralNetwork.generate_grammar()
-    pprint.pprint(grammar)
+    namespace = dict(vars(nn))
+    namespace.update(vars(keras))
+
+    grammar = nn.NeuralNetwork.generate_grammar()
+    print(grammar)
+
+    pipeline = grammar.sample(**namespace)
+
+    print(pipeline)
 
     # import sys
 

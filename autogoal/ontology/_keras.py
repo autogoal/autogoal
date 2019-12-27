@@ -13,7 +13,7 @@ from ._nn import (
     Part_Of_NN,
     NN_Preprocesor,
     NN_Classifier,
-    NN_Abtract_Feautures,
+    NN_Abstract_Features,
     NN_Reduction,
 )
 from .base import BaseAbstract, BaseObject, register_concrete_class
@@ -122,10 +122,10 @@ def _get_keras_layer_args(layer):
         try:
             layer(**layers_args)(input_sample)
             return {k: v.__class__ for k, v in layers_args.items()}
-        except:
+        except Exception as e:
+            print("Layer %s with args %r errored with %s" % (layer.__name__, layers_args, e))
             pass
 
-    print("Layer %s with args %r is None" % (layer.__name__, layers_args))
     return None
 
 
@@ -136,8 +136,8 @@ class KerasWrapper(Part_Of_NN):
 
 PARENT_MAPPINGS = {
     "Bert": ['NN_Preprocesor'],
-    "Dense": ['NN_Preprocesor','NN_Reduction', 'NN_Abtract_Feautures','Compose_Clasifier'],
-    "Sofmax": ['NN_Clasifier'],
+    "Dense": ['NN_Preprocesor','NN_Reduction', 'NN_Abstract_Features','Basic_Clasifier'],
+    "Sofmax": ['NN_Classifier'],
     "Convolutional": ['NN_Reduction'],
 }
 
@@ -153,6 +153,11 @@ def build_module():
         fp.write("from ..base import Continuous\n")
         fp.write("from .._keras import KerasWrapper\n")
         fp.write("from .._nn import NN_Preprocesor\n")
+        fp.write("from .._nn import NN_Reduction\n")
+        fp.write("from .._nn import NN_Abstract_Features\n")
+        fp.write("from .._nn import NN_Classifier\n")
+        fp.write("from .._nn import Compose_Clasifier\n")
+        fp.write("from .._nn import Basic_Clasifier\n")
         fp.write("\n\n")
 
         for layer in _get_keras_layers():

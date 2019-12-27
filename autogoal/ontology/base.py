@@ -3,6 +3,9 @@
 import inspect
 import pprint
 
+from autogoal.grammar import Grammar, Callable, OneOf, Symbol, Empty, Distribution
+
+
 
 def register_abstract_class(cls):
     cls.__children__ = []
@@ -25,53 +28,54 @@ def register_concrete_class(cls):
 
 class BaseAbstract:
     @classmethod
-    def generate_grammar(cls, grammar={}, head=None):
-        lhs = head or "<%s>" % cls.__name__
+    def generate_grammar(cls, grammar=None, head=None):
+        symbol = head or Symbol(cls.__name__)
 
-        if lhs in grammar:
+        if grammar is None:
+            grammar = Grammar(start_symbol=symbol)
+        elif symbol in grammar:
             return grammar
 
-        grammar[lhs] = []
+        grammar.add(symbol, Empty())
         children = []
 
-        for inh in cls.__children__:
-            children.append("<%s>" % inh.__name__)
-            inh.generate_grammar(grammar)
+        for child in cls.__children__:
+            child_symbol = Symbol(child.__name__)
+            children.append(child_symbol)
+            child.generate_grammar(grammar, child_symbol)
 
-        rhs = children
-
-        grammar[lhs] = rhs
+        grammar.replace(symbol, OneOf(*children))
         return grammar
 
 
 class BaseObject(BaseAbstract):
     @classmethod
-    def generate_grammar(cls, grammar={}, head=None):
-        lhs = head or "<%s>" % cls.__name__
+    def generate_grammar(cls, grammar=None, head=None):
+        symbol = head or Symbol(cls.__name__)
 
-        if lhs in grammar:
+        if grammar is None:
+            grammar = Grammar(start_symbol=symbol)
+        elif symbol in grammar:
             return grammar
 
-        grammar[lhs] = []
-        parameters = []
+        grammar.add(symbol, Empty())
+        parameters = {}
         signature = inspect.signature(cls.__init__)
 
         for param_name, param_obj in signature.parameters.items():
             if param_name in ["self", "args", "kwargs"]:
                 continue
 
-            param_symbol = "<%s_%s>" % (cls.__name__, param_name)
+            param_symbol = Symbol("%s_%s" % (cls.__name__, param_name))
             annotation_cls = param_obj.annotation
 
             if annotation_cls == 'self':
                 annotation_cls = cls
 
             annotation_cls.generate_grammar(grammar, param_symbol)
-            parameters.append("%s=%s" % (param_name, param_symbol))
+            parameters[param_name] = param_symbol
 
-        rhs = ["%s( %s )" % (cls.__name__, " ".join(parameters),)]
-
-        grammar[lhs] = rhs
+        grammar.replace(symbol, Callable(cls.__name__, **parameters))
         return grammar
 
 
@@ -83,7 +87,7 @@ class Discrete:
         self.max = max
 
     def generate_grammar(self, grammar, head):
-        grammar[head] = "i(%i, %i)" % (self.min, self.max)
+        grammar.add(head, Distribution('integer', min=self.min, max=self.max))
         return grammar
 
 
@@ -91,7 +95,7 @@ class Continuous(Discrete):
     __name__ = "Continuous"
 
     def generate_grammar(self, grammar, head):
-        grammar[head] = "f(%f, %f)" % (self.min, self.max)
+        grammar.add(head, Distribution('float', min=self.min, max=self.max))
         return grammar
 
 
