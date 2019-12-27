@@ -89,6 +89,8 @@ def build_module():
 
             fp.write("\t):\n")
             fp.write("\t\tself.keras_class = {}\n".format(layer.__name__))
+            for arg, typ in args.items():
+                fp.write("\t\tself.{} = {}\n".format(arg, arg))
             fp.write("\n\n")
 
 
