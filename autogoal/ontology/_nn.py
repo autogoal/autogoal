@@ -55,3 +55,17 @@ class NN_Classifier(Part_Of_NN):
     """
 
     pass
+
+@register_concrete_class
+class Bert(NN_Preprocesor):
+
+    pass
+
+
+@register_concrete_class
+class Embeding(NN_Preprocesor):
+
+    pass
+
+@register_concrete_class
+class NN_None()
