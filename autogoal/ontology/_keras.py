@@ -124,7 +124,7 @@ def build_ontology_keras(onto):
 
 
 class BertLayer(tf.layers.Layer):
-    """ Permite utilizar Bert junto a queras y representa un embeding basado en Bert
+    """ Permite utilizar Bert junto a keras y representa un embeding basado en Bert
     """
 
     def __init__(self, n_fine_tune_layers=10, **kwargs):
