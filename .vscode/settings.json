@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/bin/python3",
+    "python.pythonPath": "/home/apiad/.anaconda3/bin/python",
     "files.exclude": {
         "notebooks/arxiv-papers-tex/**/*": true,
         "notebooks/arxiv-papers-tex/**/.gitignore": false,

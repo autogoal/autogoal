@@ -238,11 +238,12 @@ if __name__ == "__main__":
     namespace.update(vars(keras))
 
     grammar = nn.NeuralNetwork.generate_grammar()
-    print(grammar)
 
-    pipeline = grammar.sample(**namespace)
+    neural_network: nn.NeuralNetwork = grammar.sample(**namespace)
+    print(neural_network)
 
-    print(pipeline)
+    neural_network.compile((32,))
+    print(neural_network.model.summary())
 
     # import sys
 

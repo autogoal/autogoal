@@ -10,11 +10,11 @@ import keras.layers
 import tensorflow_hub as hub
 
 from ._nn import (
-    Part_Of_NN,
-    NN_Preprocesor,
-    NN_Classifier,
-    NN_Abstract_Features,
-    NN_Reduction,
+    NeuralNetworkModule,
+    PreprocessorModule,
+    ClassificationModule,
+    AbstractFeaturesModule,
+    ReductionModule,
 )
 from .base import BaseAbstract, BaseObject, register_concrete_class
 
@@ -129,16 +129,21 @@ def _get_keras_layer_args(layer):
     return None
 
 
-class KerasWrapper(Part_Of_NN):
-    def _build_model(self, model):
+class KerasWrapper(NeuralNetworkModule):
+    keras_class: keras.layers.Layer = None
+
+    def build(self, model):
         return self.keras_class(**self.kwargs)(model)
+
+    def __repr__(self):
+        return "%s()" % (self.__class__.__name__)
 
 
 PARENT_MAPPINGS = {
-    "Bert": ['NN_Preprocesor'],
-    "Dense": ['NN_Preprocesor','NN_Reduction', 'NN_Abstract_Features','Basic_Clasifier'],
-    "Sofmax": ['NN_Classifier'],
-    "Convolutional": ['NN_Reduction'],
+    "Bert": ['PreprocessorModule'],
+    "Dense": ['PreprocessorModule','ReductionModule', 'AbstractFeaturesModule','BasicClassificationModule'],
+    "Sofmax": ['ClassificationModule'],
+    "Convolutional": ['ReductionModule'],
 }
 
 
@@ -152,12 +157,12 @@ def build_module():
         fp.write("from ..base import Discrete\n")
         fp.write("from ..base import Continuous\n")
         fp.write("from .._keras import KerasWrapper\n")
-        fp.write("from .._nn import NN_Preprocesor\n")
-        fp.write("from .._nn import NN_Reduction\n")
-        fp.write("from .._nn import NN_Abstract_Features\n")
-        fp.write("from .._nn import NN_Classifier\n")
-        fp.write("from .._nn import Compose_Clasifier\n")
-        fp.write("from .._nn import Basic_Clasifier\n")
+        fp.write("from .._nn import PreprocessorModule\n")
+        fp.write("from .._nn import ReductionModule\n")
+        fp.write("from .._nn import AbstractFeaturesModule\n")
+        fp.write("from .._nn import ClassificationModule\n")
+        fp.write("from .._nn import CompositeClassificationModule\n")
+        fp.write("from .._nn import BasicClassificationModule\n")
         fp.write("\n\n")
 
         for layer in _get_keras_layers():

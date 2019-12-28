@@ -120,6 +120,8 @@ class Distribution(Callable):
 
 
 class Grammar:
+    namespace: Mapping = {}
+
     def __init__(self, start_symbol: Symbol):
         self._start_symbol: Symbol = start_symbol
         self._productions: Mapping[Symbol, Production] = {}
@@ -154,7 +156,10 @@ class Grammar:
         self[self._start_symbol].to_string(self._start_symbol, code, set())
         return "\n".join(code)
 
-    def sample(self, sampler=None, **namespace):
+    def sample(self, sampler=None, namespace=None):
+        if namespace is None:
+            namespace = self.namespace
+
         if sampler is None:
             sampler = UniformSampler()
 
@@ -170,9 +175,9 @@ class UniformSampler:
         return random.choice(production.options)
 
     def distribution(self, dist: Distribution, name: str, min, max):
-        if name == 'integer':
+        if name == "integer":
             return random.randint(min, max)
-        elif name == 'float':
+        elif name == "float":
             return random.uniform(min, max)
 
         raise ValueError("Unrecognized distribution name: %s" % name)

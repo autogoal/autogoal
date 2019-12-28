@@ -8,12 +8,12 @@ from ..base import register_concrete_class
 from ..base import Discrete
 from ..base import Continuous
 from .._keras import KerasWrapper, Bert
-from .._nn import NN_Preprocesor
-from .._nn import NN_Reduction
-from .._nn import NN_Abstract_Features
-from .._nn import NN_Classifier
-from .._nn import Compose_Clasifier
-from .._nn import Basic_Clasifier
+from .._nn import PreprocessorModule
+from .._nn import ReductionModule
+from .._nn import AbstractFeaturesModule
+from .._nn import ClassificationModule
+from .._nn import CompositeClassificationModule
+from .._nn import BasicClassificationModule
 
 
 @register_concrete_class
@@ -154,7 +154,7 @@ class Cropping3DLayer(BaseObject, KerasWrapper):
 
 
 @register_concrete_class
-class DenseLayer(BaseObject, KerasWrapper, NN_Preprocesor, NN_Reduction, NN_Abstract_Features, Basic_Clasifier):
+class DenseLayer(BaseObject, KerasWrapper, PreprocessorModule, ReductionModule, AbstractFeaturesModule, BasicClassificationModule):
 	def __init__(
 		self,
 		units: Discrete(0, 100),
@@ -555,7 +555,7 @@ class ZeroPadding3DLayer(BaseObject, KerasWrapper):
 
 
 @register_concrete_class
-class BertLayer(BaseObject, KerasWrapper, NN_Preprocesor):
+class BertLayer(BaseObject, KerasWrapper, PreprocessorModule):
 	def __init__(
 		self,
 	):
