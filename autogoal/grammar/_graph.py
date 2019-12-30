@@ -2,6 +2,7 @@
 
 import networkx as nx
 import random
+import types
 
 from typing import List
 
@@ -57,6 +58,19 @@ def first_selection(items):
 
 def default_initializer(cls):
     return cls()
+
+
+# Holds a string to class map for automatically generated classes
+_GENERATED_CLASSES = {}
+
+
+def _get_generated_class(name):
+    if name in _GENERATED_CLASSES:
+        return _GENERATED_CLASSES[name]
+
+    clss = types.new_class(name)
+    _GENERATED_CLASSES[name] = clss
+    return clss
 
 
 class Production:
@@ -139,7 +153,7 @@ class GraphPattern:
 
 class Node(GraphPattern):
     def __init__(self, cls):
-        self.cls = cls
+        self.cls = _get_generated_class(cls) if isinstance(cls, str) else cls
 
     def build(
         self,
@@ -157,7 +171,9 @@ class Node(GraphPattern):
 
 class Path(GraphPattern):
     def __init__(self, *items):
-        self.items = list(items)
+        self.items = [
+            (_get_generated_class(i) if isinstance(i, str) else i) for i in items
+        ]
 
     def build(
         self,
@@ -179,7 +195,9 @@ class Path(GraphPattern):
 
 class Block(GraphPattern):
     def __init__(self, *items):
-        self.items = list(items)
+        self.items = [
+            (_get_generated_class(i) if isinstance(i, str) else i) for i in items
+        ]
 
     def build(
         self,
@@ -198,13 +216,17 @@ class Block(GraphPattern):
 
 
 class GraphGrammar:
-    def __init__(self, *, non_terminals=[]):
+    def __init__(self, *, non_terminals=None):
         self._productions: List[Production] = []
-        self._non_terminals = non_terminals
+        self._non_terminals = set(non_terminals or [])
 
     def add(
         self, pattern, replacement: GraphPattern, *, initializer=default_initializer
     ):
+        if isinstance(pattern, str):
+            pattern = _get_generated_class(pattern)
+            self._non_terminals.add(pattern)
+
         self._productions.append(
             Production(pattern, replacement, initializer=initializer)
         )
@@ -234,7 +256,11 @@ class GraphGrammar:
         valid_productions = [p for p in self._productions if p.match(graph)]
 
         if self._non_terminals:
-            non_terminal_productions = [p for p in valid_productions if p.pattern.contains_any(*self._non_terminals)]
+            non_terminal_productions = [
+                p
+                for p in valid_productions
+                if p.pattern.contains_any(*self._non_terminals)
+            ]
 
             if non_terminal_productions:
                 valid_productions = non_terminal_productions

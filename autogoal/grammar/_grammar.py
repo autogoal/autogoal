@@ -1,7 +1,9 @@
 # coding: utf8
 
-from typing import Mapping, List, Set
+import inspect
 import random
+import warnings
+from typing import List, Mapping, Set
 
 
 class Symbol:
@@ -181,3 +183,84 @@ class UniformSampler:
             return random.uniform(min, max)
 
         raise ValueError("Unrecognized distribution name: %s" % name)
+
+
+def generate_grammar(cls, grammar=None, head=None):
+    symbol = head or Symbol(cls.__name__)
+
+    if grammar is None:
+        grammar = Grammar(start_symbol=symbol)
+    elif symbol in grammar:
+        return grammar
+
+    if hasattr(cls, 'generate_grammar'):
+        return cls.generate_grammar(grammar, symbol)
+
+    grammar.add(symbol, Empty())
+    parameters = {}
+    signature = inspect.signature(cls.__init__)
+
+    for param_name, param_obj in signature.parameters.items():
+        if param_name in ["self", "args", "kwargs"]:
+            continue
+
+        param_symbol = Symbol("%s_%s" % (cls.__name__, param_name))
+        annotation_cls = param_obj.annotation
+
+        if annotation_cls is None:
+            warnings.warn("In %r: Couldn't find annotation type for %r" % (cls, param_obj))
+            continue
+
+        if annotation_cls == "self":
+            annotation_cls = cls
+
+        generate_grammar(annotation_cls, grammar, param_symbol)
+        parameters[param_name] = param_symbol
+
+    grammar.replace(symbol, Callable(cls.__name__, **parameters))
+    return grammar
+
+
+class Discrete:
+    __name__ = "Discrete"
+
+    def __init__(self, min, max):
+        self.min = min
+        self.max = max
+
+    def generate_grammar(self, grammar, head):
+        grammar.add(head, Distribution("integer", min=self.min, max=self.max))
+        return grammar
+
+
+class Continuous(Discrete):
+    __name__ = "Continuous"
+
+    def generate_grammar(self, grammar, head):
+        grammar.add(head, Distribution("float", min=self.min, max=self.max))
+        return grammar
+
+
+class Union:
+    def __init__(self, name, *clss):
+        self.__name__ = name
+        self.clss = clss
+
+    def generate_grammar(self, grammar, head):
+        symbol = head or Symbol(self.__name__)
+
+        if grammar is None:
+            grammar = Grammar(start_symbol=symbol)
+        elif symbol in grammar:
+            return grammar
+
+        grammar.add(symbol, Empty())
+        children = []
+
+        for child in self.clss:
+            child_symbol = Symbol(child.__name__)
+            children.append(child_symbol)
+            generate_grammar(child, grammar, child_symbol)
+
+        grammar.replace(symbol, OneOf(*children))
+        return grammar
