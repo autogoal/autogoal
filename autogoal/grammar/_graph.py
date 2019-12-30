@@ -116,7 +116,7 @@ class GraphPattern:
         *,
         in_nodes=[],
         out_nodes=[],
-        initializer=default_initializer
+        initializer=default_initializer,
     ):
         raise NotImplementedError()
 
@@ -144,7 +144,7 @@ class Node(GraphPattern):
         *,
         in_nodes=[],
         out_nodes=[],
-        initializer=default_initializer
+        initializer=default_initializer,
     ):
         obj = initializer(self.cls)
         graph.add_node(obj)
@@ -162,7 +162,7 @@ class Path(GraphPattern):
         *,
         in_nodes=[],
         out_nodes=[],
-        initializer=default_initializer
+        initializer=default_initializer,
     ):
         items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
@@ -184,7 +184,7 @@ class Block(GraphPattern):
         *,
         in_nodes=[],
         out_nodes=[],
-        initializer=default_initializer
+        initializer=default_initializer,
     ):
         items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
@@ -206,10 +206,7 @@ class GraphGrammar:
         )
 
     def expand(
-        self,
-        graph: Graph,
-        max_iters=100,
-        production_selector=uniform_selection,
+        self, graph: Graph, *, max_iters=100, production_selector=uniform_selection,
     ) -> Graph:
         if graph is None:
             raise ValueError("`graph` cannot be `None`")
