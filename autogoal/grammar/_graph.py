@@ -43,6 +43,9 @@ class Graph(nx.DiGraph):
 
         return value
 
+    def contains_any(self, *items):
+        return any((node in items) for node in self)
+
 
 def uniform_selection(items):
     return random.choice(items)
@@ -195,13 +198,14 @@ class Block(GraphPattern):
 
 
 class GraphGrammar:
-    def __init__(self):
-        self.productions: List[Production] = []
+    def __init__(self, *, non_terminals=[]):
+        self._productions: List[Production] = []
+        self._non_terminals = non_terminals
 
     def add(
         self, pattern, replacement: GraphPattern, *, initializer=default_initializer
     ):
-        self.productions.append(
+        self._productions.append(
             Production(pattern, replacement, initializer=initializer)
         )
 
@@ -227,7 +231,13 @@ class GraphGrammar:
         if iters == 0:
             return graph
 
-        valid_productions = [p for p in self.productions if p.match(graph)]
+        valid_productions = [p for p in self._productions if p.match(graph)]
+
+        if self._non_terminals:
+            non_terminal_productions = [p for p in valid_productions if p.pattern.contains_any(*self._non_terminals)]
+
+            if non_terminal_productions:
+                valid_productions = non_terminal_productions
 
         if not valid_productions:
             return graph
