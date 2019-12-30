@@ -48,6 +48,10 @@ def uniform_pattern_selection(patterns):
     return random.choice(patterns)
 
 
+def first_pattern_selection(patterns):
+    return patterns[0]
+
+
 def default_initializer(cls):
     return cls()
 
@@ -107,6 +111,10 @@ class Production:
 
 def uniform_production_selector(productions: List[Production]) -> Production:
     return random.choice(productions)
+
+
+def first_production_selection(productions: List[Production]) -> Production:
+    return productions[0]
 
 
 class GraphPattern:
