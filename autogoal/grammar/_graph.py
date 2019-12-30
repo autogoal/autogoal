@@ -48,12 +48,12 @@ def uniform_pattern_selection(patterns):
     return random.choice(patterns)
 
 
-def default_init_factory(cls):
-    return dict()
+def default_initializer(cls):
+    return cls()
 
 
 class Production:
-    def __init__(self, pattern, replacement, *, init_factory=None):
+    def __init__(self, pattern, replacement, *, initializer=None):
         if not isinstance(pattern, Graph):
             obj = pattern
             pattern = Graph()
@@ -64,7 +64,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.init_factory = init_factory or default_init_factory
+        self.initializer = initializer or default_initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -101,7 +101,7 @@ class Production:
 
         graph.remove_node(node)
         self.replacement.build(
-            graph, in_nodes, out_nodes, init_factory=self.init_factory
+            graph, in_nodes, out_nodes, initializer=self.initializer
         )
 
         return graph
@@ -112,7 +112,7 @@ def uniform_production_selector(productions: List[Production]) -> Production:
 
 
 class GraphPattern:
-    def build(self, graph: Graph, in_nodes, out_nodes):
+    def build(self, graph: Graph, in_nodes, out_nodes, *, initializer=default_initializer):
         raise NotImplementedError()
 
     def _add_in_nodes(self, graph, in_nodes, node):
@@ -123,9 +123,9 @@ class GraphPattern:
         for out_node in out_nodes:
             graph.add_edge(node, out_node)
 
-    def make(self, *, init_factory=default_init_factory) -> Graph:
+    def make(self, *, initializer=default_initializer) -> Graph:
         graph = Graph()
-        self.build(graph, [], [], init_factory)
+        self.build(graph, [], [], initializer)
         return graph
 
 
@@ -133,8 +133,8 @@ class Node(GraphPattern):
     def __init__(self, cls):
         self.cls = cls
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        obj = self.cls(**init_factory(self.cls))
+    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+        obj = initializer(self.cls)
         graph.add_node(obj)
         self._add_in_nodes(graph, in_nodes, obj)
         self._add_out_nodes(graph, out_nodes, obj)
@@ -144,8 +144,8 @@ class Path(GraphPattern):
     def __init__(self, *items):
         self.items = list(items)
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        items = [cls(**init_factory(cls)) for cls in self.items]
+    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+        items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
         for i, j in zip(items, items[1:]):
@@ -159,8 +159,8 @@ class Block(GraphPattern):
     def __init__(self, *items):
         self.items = list(items)
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        items = [cls(**init_factory(cls)) for cls in self.items]
+    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+        items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
         for item in items:
@@ -172,9 +172,9 @@ class GraphGrammar:
     def __init__(self):
         self.productions: List[Production] = []
 
-    def add(self, pattern, replacement: GraphPattern, *, init_factory=None):
+    def add(self, pattern, replacement: GraphPattern, *, initializer=None):
         self.productions.append(
-            Production(pattern, replacement, init_factory=init_factory)
+            Production(pattern, replacement, initializer=initializer)
         )
 
     def expand(

@@ -1,28 +1,20 @@
 # coding: utf8
 
-import networkx as nx
 import random
 
-from keras.layers import Input, Dense, Embedding, Softmax, Concatenate
+from autogoal.grammar import Block, GraphGrammar, Path
+from keras.layers import Concatenate, Dense, Embedding, Input, Softmax
 from keras.models import Model
 
-from autogoal.grammar import GraphGrammar, Path, Block
-# from autogoal.ontology._generated._keras import (
-#     DenseLayer,
-#     ConcatenateLayer,
-#     SoftmaxLayer,
-#     EmbeddingLayer,
-# )
 
-
-def init_factory(cls):
+def initializer(cls):
     if cls == Embedding:
-        return dict(input_dim=1000, output_dim=100)
+        return Embedding(input_dim=1000, output_dim=100)
 
     if cls == Dense:
-        return dict(units=32)
+        return Dense(units=32)
 
-    return dict()
+    return cls()
 
 
 def main():
@@ -30,12 +22,12 @@ def main():
 
     grammar = GraphGrammar()
 
-    grammar.add(Dense, Path(Dense, Dense), init_factory=init_factory)
-    grammar.add(Dense, Block(Dense, Dense), init_factory=init_factory)
-    grammar.add(Softmax, Path(Dense, Softmax), init_factory=init_factory)
+    grammar.add(Dense, Path(Dense, Dense), initializer=initializer)
+    grammar.add(Dense, Block(Dense, Dense), initializer=initializer)
+    grammar.add(Softmax, Path(Dense, Softmax), initializer=initializer)
 
     initial_graph = Path(Embedding, Softmax).make(
-        init_factory=init_factory
+        initializer=initializer
     )
 
     graph = grammar.expand(initial_graph, max_iters=5)
