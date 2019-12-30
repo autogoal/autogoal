@@ -26,9 +26,7 @@ def main():
     grammar.add(Dense, Block(Dense, Dense), initializer=initializer)
     grammar.add(Softmax, Path(Dense, Softmax), initializer=initializer)
 
-    initial_graph = Path(Embedding, Softmax).make(
-        initializer=initializer
-    )
+    initial_graph = Path(Embedding, Softmax).make(initializer=initializer)
 
     graph = grammar.expand(initial_graph, max_iters=5)
 

@@ -19,7 +19,7 @@ class Graph(nx.DiGraph):
         previous nodes.
         """
         for node in nx.topological_sort(self):
-            in_nodes = [u for u,v in self.in_edges(node)]
+            in_nodes = [u for u, v in self.in_edges(node)]
             yield (node, in_nodes)
 
     def apply(self, function):
@@ -53,7 +53,7 @@ def default_initializer(cls):
 
 
 class Production:
-    def __init__(self, pattern, replacement, *, initializer=None):
+    def __init__(self, pattern, replacement, *, initializer=default_initializer):
         if not isinstance(pattern, Graph):
             obj = pattern
             pattern = Graph()
@@ -64,7 +64,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.initializer = initializer or default_initializer
+        self.initializer = initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -84,9 +84,7 @@ class Production:
 
         return False
 
-    def apply(
-        self, graph: Graph, pattern_selection=uniform_pattern_selection
-    ) -> Graph:
+    def apply(self, graph: Graph, pattern_selection=uniform_pattern_selection) -> Graph:
         """
         Applies a production in a graph and returns the modified graph.
         """
@@ -101,7 +99,7 @@ class Production:
 
         graph.remove_node(node)
         self.replacement.build(
-            graph, in_nodes, out_nodes, initializer=self.initializer
+            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self.initializer
         )
 
         return graph
@@ -112,7 +110,14 @@ def uniform_production_selector(productions: List[Production]) -> Production:
 
 
 class GraphPattern:
-    def build(self, graph: Graph, in_nodes, out_nodes, *, initializer=default_initializer):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer
+    ):
         raise NotImplementedError()
 
     def _add_in_nodes(self, graph, in_nodes, node):
@@ -125,7 +130,7 @@ class GraphPattern:
 
     def make(self, *, initializer=default_initializer) -> Graph:
         graph = Graph()
-        self.build(graph, [], [], initializer)
+        self.build(graph, in_nodes=[], out_nodes=[], initializer=initializer)
         return graph
 
 
@@ -133,7 +138,14 @@ class Node(GraphPattern):
     def __init__(self, cls):
         self.cls = cls
 
-    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer
+    ):
         obj = initializer(self.cls)
         graph.add_node(obj)
         self._add_in_nodes(graph, in_nodes, obj)
@@ -144,7 +156,14 @@ class Path(GraphPattern):
     def __init__(self, *items):
         self.items = list(items)
 
-    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer
+    ):
         items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
@@ -159,7 +178,14 @@ class Block(GraphPattern):
     def __init__(self, *items):
         self.items = list(items)
 
-    def build(self, graph: Graph, in_nodes, out_nodes, initializer):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer
+    ):
         items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
@@ -172,13 +198,18 @@ class GraphGrammar:
     def __init__(self):
         self.productions: List[Production] = []
 
-    def add(self, pattern, replacement: GraphPattern, *, initializer=None):
+    def add(
+        self, pattern, replacement: GraphPattern, *, initializer=default_initializer
+    ):
         self.productions.append(
             Production(pattern, replacement, initializer=initializer)
         )
 
     def expand(
-        self, graph: Graph, max_iters=100, production_selector=uniform_production_selector,
+        self,
+        graph: Graph,
+        max_iters=100,
+        production_selector=uniform_production_selector,
     ) -> Graph:
         if graph is None:
             raise ValueError("`graph` cannot be `None`")
