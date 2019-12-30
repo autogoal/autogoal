@@ -44,12 +44,12 @@ class Graph(nx.DiGraph):
         return value
 
 
-def uniform_pattern_selection(patterns):
-    return random.choice(patterns)
+def uniform_selection(items):
+    return random.choice(items)
 
 
-def first_pattern_selection(patterns):
-    return patterns[0]
+def first_selection(items):
+    return items[0]
 
 
 def default_initializer(cls):
@@ -88,7 +88,7 @@ class Production:
 
         return False
 
-    def apply(self, graph: Graph, pattern_selection=uniform_pattern_selection) -> Graph:
+    def apply(self, graph: Graph, pattern_selection=uniform_selection) -> Graph:
         """
         Applies a production in a graph and returns the modified graph.
         """
@@ -107,14 +107,6 @@ class Production:
         )
 
         return graph
-
-
-def uniform_production_selector(productions: List[Production]) -> Production:
-    return random.choice(productions)
-
-
-def first_production_selection(productions: List[Production]) -> Production:
-    return productions[0]
 
 
 class GraphPattern:
@@ -217,7 +209,7 @@ class GraphGrammar:
         self,
         graph: Graph,
         max_iters=100,
-        production_selector=uniform_production_selector,
+        production_selector=uniform_selection,
     ) -> Graph:
         if graph is None:
             raise ValueError("`graph` cannot be `None`")
