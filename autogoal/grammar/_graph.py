@@ -240,44 +240,31 @@ class GraphGrammar(Grammar):
             Production(pattern, replacement, initializer=initializer)
         )
 
-    # def expand(
-    #     self, graph: Graph, *, max_iters=100, production_selector=uniform_selection,
-    # ) -> Graph:
-    #     if graph is None:
-    #         raise ValueError("`graph` cannot be `None`")
-
-    #     if not isinstance(graph, Graph):
-    #         obj = graph
-    #         graph = Graph()
-    #         graph.add_node(obj)
-    #     else:
-    #         graph = graph.copy()
-
-    #     return self._expand(graph, max_iters, production_selector)
-
-    def _sample(self, symbol, max_iterations, sampler):
+    def _sample(self, symbol: Graph, max_iterations: int, sampler: Sampler):
         if symbol is None:
             raise ValueError("`symbol` cannot be `None`")
 
-        if max_iterations == 0:
-            return symbol
+        symbol = symbol.copy()
 
-        valid_productions = [p for p in self._productions if p.match(symbol)]
+        while max_iterations > 0:
+            valid_productions = [p for p in self._productions if p.match(symbol)]
 
-        if self._non_terminals:
-            non_terminal_productions = [
-                p
-                for p in valid_productions
-                if p.pattern.contains_any(*self._non_terminals)
-            ]
+            if self._non_terminals:
+                non_terminal_productions = [
+                    p
+                    for p in valid_productions
+                    if p.pattern.contains_any(*self._non_terminals)
+                ]
 
-            if non_terminal_productions:
-                valid_productions = non_terminal_productions
+                if non_terminal_productions:
+                    valid_productions = non_terminal_productions
 
-        if not valid_productions:
-            return symbol
+            if not valid_productions:
+                return symbol
 
-        production = sampler.choice(valid_productions)
-        symbol = production.apply(symbol)
+            production = sampler.choice(valid_productions)
+            symbol = production.apply(symbol)
 
-        return self._sample(symbol, max_iterations - 1, sampler)
+            max_iterations -= 1
+
+        return symbol
