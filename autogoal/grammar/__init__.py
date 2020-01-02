@@ -10,6 +10,8 @@ from ._grammar import (
     generate_grammar,
     Discrete,
     Continuous,
-    Union
+    Union,
+    Categorical,
+    Boolean
 )
 from ._graph import GraphGrammar, Path, Block, Graph
