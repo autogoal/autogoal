@@ -6,6 +6,8 @@ import warnings
 import sys
 from typing import List, Mapping, Set
 
+from ._base import Grammar, Sampler
+
 
 class Symbol:
     def __init__(self, name):
@@ -88,7 +90,7 @@ class OneOf(Production):
             self.grammar[symbol].to_string(symbol, code, visited, max_symbol_length)
 
     def sample(self, sampler, namespace):
-        option = sampler.sample(self)
+        option = sampler.choice(self.options)
         return self.grammar[option].sample(sampler, namespace)
 
 
@@ -151,11 +153,10 @@ class Distribution(Callable):
         return sampler.distribution(self._name, **self._parameters)
 
 
-class ContextFreeGrammar:
-    namespace: Mapping = {}
-
-    def __init__(self, start_symbol: Symbol):
-        self._start_symbol: Symbol = start_symbol
+class ContextFreeGrammar(Grammar):
+    def __init__(self, start: Symbol, namespace: Mapping):
+        super(ContextFreeGrammar, self).__init__(start)
+        self._namespace = namespace
         self._productions: Mapping[Symbol, Production] = {}
 
     def add(self, symbol: Symbol, production: Production) -> None:
@@ -178,48 +179,17 @@ class ContextFreeGrammar:
         return self._productions[symbol]
 
     def __repr__(self):
-        return "Grammar(start_symbol=%r, productions=%r)" % (
-            self._start_symbol,
-            self._productions,
-        )
+        return "Grammar(start=%r, productions=%r)" % (self._start, self._productions,)
 
     def __str__(self):
         code = []
         max_symbol_length = max(len(symbol.name) for symbol in self._productions) + 2
-        self[self._start_symbol].to_string(
-            self._start_symbol, code, set(), max_symbol_length
-        )
+        self[self._start].to_string(self._start, code, set(), max_symbol_length)
         return "\n".join(code)
 
-    def sample(self, sampler=None, namespace=None):
-        if namespace is None:
-            namespace = self.namespace
-
-        if sampler is None:
-            sampler = UniformSampler()
-
-        start_production = self[self._start_symbol]
-        return start_production.sample(sampler, namespace)
-
-
-class UniformSampler:
-    def sample(self, production: OneOf):
-        if not isinstance(production, OneOf):
-            return production
-
-        return random.choice(production.options)
-
-    def distribution(self, name: str, **kwargs):
-        if name == "discrete":
-            return random.randint(kwargs["min"], kwargs["max"])
-        elif name == "continuous":
-            return random.uniform(kwargs["min"], kwargs["max"])
-        elif name == "boolean":
-            return random.uniform(0, 1) < 0.5
-        elif name == "categorical":
-            return random.choice(kwargs["options"])
-
-        raise ValueError("Unrecognized distribution name: %s" % name)
+    def _sample(self, symbol, max_iterations, sampler):
+        production = self[symbol]
+        return production.sample(sampler, self._namespace)
 
 
 def generate_cfg(
@@ -228,8 +198,9 @@ def generate_cfg(
     symbol = head or Symbol(cls.__name__)
 
     if grammar is None:
-        grammar = ContextFreeGrammar(start_symbol=symbol)
-        grammar.namespace = vars(sys.modules[cls.__module__])
+        grammar = ContextFreeGrammar(
+            start=symbol, namespace=vars(sys.modules[cls.__module__])
+        )
     elif symbol in grammar:
         return grammar
 
