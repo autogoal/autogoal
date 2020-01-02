@@ -7,10 +7,10 @@ class Sampler:
     def __init__(self):
         self.rand = random.Random()
 
-    def choice(self, options):
+    def choice(self, options, handle=None):
         return self.rand.choice(options)
 
-    def distribution(self, name: str, **kwargs):
+    def distribution(self, name: str, handle=None, **kwargs):
         if name == "discrete":
             return self.rand.randint(kwargs["min"], kwargs["max"])
         elif name == "continuous":

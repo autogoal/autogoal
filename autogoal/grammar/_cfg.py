@@ -90,7 +90,7 @@ class OneOf(Production):
             self.grammar[symbol].to_string(symbol, code, visited, max_symbol_length)
 
     def sample(self, sampler, namespace):
-        option = sampler.choice(self.options)
+        option = sampler.choice(self.options, handle=self)
         return self.grammar[option].sample(sampler, namespace)
 
 
@@ -134,7 +134,6 @@ class Callable(Production):
         kwargs = {}
 
         for arg, symbol in self._parameters.items():
-
             if isinstance(symbol, Symbol):
                 arg_value = self.grammar[symbol].sample(sampler, namespace)
             else:
@@ -150,7 +149,7 @@ class Distribution(Callable):
         return "Distribution(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def sample(self, sampler, namespace):
-        return sampler.distribution(self._name, **self._parameters)
+        return sampler.distribution(self._name, handle=self, **self._parameters)
 
 
 class ContextFreeGrammar(Grammar):
