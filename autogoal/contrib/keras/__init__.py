@@ -12,6 +12,12 @@ class KerasNeuralNetwork:
         self._compile_kwargs = compile_kwargs
         self._model = None
 
+    def __repr__(self):
+        return (
+            "KerasNeuralNetwork(grammar=<...>, input_shape=%r, compile_kwargs=%r)"
+            % (self._input_shape, self._compile_kwargs)
+        )
+
     @property
     def model(self):
         if self._model is None:
@@ -56,3 +62,9 @@ class KerasNeuralNetwork:
 
     def _build_output(self, outputs):
         return outputs
+
+    def fit(self, X, y):
+        self.model.fit(x=X, y=y)
+
+    def predict(self, X):
+        return self.model.predict(X)

@@ -7,6 +7,8 @@ from keras.layers import Embedding as _Embedding
 from keras.layers import LSTM, Dropout, Flatten, Input, MaxPool1D, Reshape
 from keras.models import Model
 from keras.utils import plot_model
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.pipeline import Pipeline as _Pipeline
 
 from autogoal.contrib.keras import KerasNeuralNetwork
 from autogoal.grammar import (
@@ -94,16 +96,28 @@ class Classifier(KerasNeuralNetwork):
         )
 
 
-class Tokenizer:
-    def __init__(self, stopwords: Boolean(), stemming: Boolean()):
+class Preprocessor(CountVectorizer):
+    def __init__(
+        self, stopwords: Boolean(), ngrams: Discrete(1, 3), stemming: Boolean()
+    ):
         self.stopwords = stopwords
         self.stemming = stemming
 
+        super(Preprocessor, self).__init__(
+            ngram_range=(1, ngrams),
+            stop_words="english" if stopwords else None,
+            max_features=1000,
+        )
 
-class Pipeline:
-    def __init__(self, tokenizer: Tokenizer, classifier: Classifier):
-        self.tokenizer = tokenizer
+
+class Pipeline(_Pipeline):
+    def __init__(self, preprocessor: Preprocessor, classifier: Classifier):
+        self.preprocessor = preprocessor
         self.classifier = classifier
+
+        super(Pipeline, self).__init__(
+            steps=[("prep", self.preprocessor), ("class", self.classifier),]
+        )
 
 
 def main():
@@ -111,7 +125,8 @@ def main():
     print(grammar)
 
     pipeline: Pipeline = grammar.sample()
-    pipeline.classifier.model.summary()
+    print(pipeline)
+
 
 if __name__ == "__main__":
     main()
