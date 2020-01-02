@@ -2,6 +2,7 @@
 
 import random
 from nltk.corpus import movie_reviews
+from sklearn.model_selection import train_test_split
 
 
 def load(max_examples=None):
@@ -27,3 +28,19 @@ def load(max_examples=None):
     print("Sentences:", len(sentences))
 
     return sentences, classes
+
+
+def make_fn(test_size=0.25, max_examples=None):
+    X, y = load(max_examples)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+
+    def fitness_fn(pipeline):
+        print("-- Evaluating", pipeline, end="")
+
+        pipeline.fit(X_train, y_train)
+        score = pipeline.score(X_test, y_test)
+
+        print(" === ", score)
+        return score
+
+    return fitness_fn

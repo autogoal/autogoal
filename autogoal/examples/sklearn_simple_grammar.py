@@ -87,25 +87,11 @@ class Pipeline(SkPipeline):
         )
 
 
-def build_fitness_function():
-    X, y = movie_reviews.load(100)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
-
-    def fitness_fn(pipeline):
-        print("-- Evaluating", pipeline, end="")
-
-        pipeline.fit(X_train, y_train)
-        score = pipeline.score(X_test, y_test)
-
-        print(" === ", score)
-        return score
-
-    return fitness_fn
-
-
 def main():
     grammar = generate_cfg(Pipeline)
-    random_search = RandomSearch(grammar, build_fitness_function())
+    print(grammar)
+
+    random_search = RandomSearch(grammar, movie_reviews.make_fn(max_examples=100))
     best, fn = random_search.run(100)
 
     print(best, fn)
