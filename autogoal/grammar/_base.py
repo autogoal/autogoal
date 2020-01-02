@@ -4,8 +4,8 @@ import random
 
 
 class Sampler:
-    def __init__(self):
-        self.rand = random.Random()
+    def __init__(self, random_state: int = None):
+        self.rand = random.Random(random_state)
 
     def choice(self, options, handle=None):
         return self.rand.choice(options)

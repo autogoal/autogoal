@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import Pipeline as SkPipeline
+from sklearn.model_selection import train_test_split
 
 from autogoal.grammar import (
     Continuous,
@@ -15,6 +16,8 @@ from autogoal.grammar import (
     Boolean,
     generate_cfg,
 )
+from autogoal.search import RandomSearch
+from autogoal.datasets import movie_reviews
 
 
 class Count(CountVectorizer):
@@ -51,7 +54,7 @@ Decomposer = Union("Decomposer", NoDec, SVD)
 
 class LR(LogisticRegression):
     def __init__(self, penalty: Categorical("l1", "l2"), reg: Continuous(0, 10)):
-        super(LR, self).__init__(penalty=penalty, C=reg)
+        super(LR, self).__init__(penalty=penalty, C=reg, solver="liblinear")
 
 
 class SVM(SVC):
@@ -84,12 +87,28 @@ class Pipeline(SkPipeline):
         )
 
 
+def build_fitness_function():
+    X, y = movie_reviews.load(100)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+    def fitness_fn(pipeline):
+        print("-- Evaluating", pipeline, end="")
+
+        pipeline.fit(X_train, y_train)
+        score = pipeline.score(X_test, y_test)
+
+        print(" === ", score)
+        return score
+
+    return fitness_fn
+
+
 def main():
     grammar = generate_cfg(Pipeline)
-    print(grammar)
+    random_search = RandomSearch(grammar, build_fitness_function())
+    best, fn = random_search.run(100)
 
-    instance = grammar.sample()
-    print(instance)
+    print(best, fn)
 
 
 if __name__ == "__main__":
