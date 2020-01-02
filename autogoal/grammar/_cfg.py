@@ -199,7 +199,8 @@ def generate_cfg(
 
     if grammar is None:
         grammar = ContextFreeGrammar(
-            start=symbol, namespace=vars(sys.modules[cls.__module__])
+            start=symbol,
+            namespace=getattr(cls, "__namespace__", vars(sys.modules[cls.__module__])),
         )
     elif symbol in grammar:
         return grammar
@@ -291,3 +292,14 @@ class Union:
 
         grammar.replace(symbol, OneOf(*children))
         return grammar
+
+
+class CfgInitializer:
+    def __init__(self):
+        self._grammars = {}
+
+    def __call__(self, cls):
+        if cls not in self._grammars:
+            self._grammars[cls] = generate_cfg(cls)
+
+        return self._grammars[cls].sample()

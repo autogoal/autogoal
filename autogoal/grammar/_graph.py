@@ -72,6 +72,10 @@ def _get_generated_class(name):
 
     clss = types.new_class(name)
     _GENERATED_CLASSES[name] = clss
+
+    # Add a custom namespace for future resolution
+    clss.__namespace__ = {name: clss}
+
     return clss
 
 
@@ -218,7 +222,7 @@ class Block(GraphPattern):
 
 
 class GraphGrammar(Grammar):
-    def __init__(self, start, *, non_terminals=None):
+    def __init__(self, start, *, initializer=default_initializer, non_terminals=None):
         if isinstance(start, str):
             start = Node(start)
 
@@ -228,10 +232,12 @@ class GraphGrammar(Grammar):
         super(GraphGrammar, self).__init__(start)
         self._productions: List[Production] = []
         self._non_terminals = set(non_terminals or [])
+        self._initializer = initializer
 
-    def add(
-        self, pattern, replacement: GraphPattern, *, initializer=default_initializer
-    ):
+    def add(self, pattern, replacement: GraphPattern, *, initializer=None):
+        if initializer is None:
+            initializer = self._initializer
+
         if isinstance(pattern, str):
             pattern = _get_generated_class(pattern)
             self._non_terminals.add(pattern)

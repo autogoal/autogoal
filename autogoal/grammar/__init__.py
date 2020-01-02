@@ -1,6 +1,7 @@
 # coding: utf8
 
-from ._grammar import (
+from ._base import Grammar, Sampler
+from ._cfg import (
     ContextFreeGrammar,
     Symbol,
     OneOf,
@@ -12,6 +13,7 @@ from ._grammar import (
     Continuous,
     Union,
     Categorical,
-    Boolean
+    Boolean,
+    CfgInitializer
 )
 from ._graph import GraphGrammar, Path, Block, Graph
