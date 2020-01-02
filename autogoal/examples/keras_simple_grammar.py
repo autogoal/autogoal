@@ -26,6 +26,8 @@ from autogoal.grammar import (
     Categorical,
 )
 
+from autogoal.contrib.keras import KerasNeuralNetwork
+
 
 class Reshape2D(Reshape):
     def __init__(self):
@@ -85,43 +87,19 @@ def build_grammar():
     grammar.add("DenseModule", Block(Dense, "DenseModule"))
     grammar.add("DenseModule", Dense)
 
+    # classes = Dense(units=4, activation="softmax")(output_y)
+
     return grammar
-
-
-def build_graph(grammar: GraphGrammar):
-    # instantiate the initial graph with all abstract modules
-    return grammar.sample(max_iterations=100)
-
-
-def build_nn(graph: Graph):
-    input_x = Input((1000,))
-
-    def build_model(layer, _, previous_layers):
-        if not previous_layers:
-            return layer(input_x)
-
-        if len(previous_layers) > 1:
-            incoming = concatenate(previous_layers)
-        else:
-            incoming = previous_layers[0]
-
-        return layer(incoming)
-
-    output_y = graph.apply(build_model)
-    classes = Dense(units=4, activation="softmax")(output_y)
-
-    model = Model(inputs=input_x, outputs=classes)
-    model.compile("rmsprop", loss="categorical_crossentropy")
-
-    return model
 
 
 def main():
     grammar = build_grammar()
-    graph = build_graph(grammar)
-    model = build_nn(graph)
+    neural_network = KerasNeuralNetwork(grammar, input_shape=(1000,))
 
+    model = neural_network.sample()
     model.summary()
+
+    model.compile("rmsprop", loss="categorical_crossentropy")
 
 
 if __name__ == "__main__":
