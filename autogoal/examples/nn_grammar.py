@@ -4,14 +4,12 @@
 from keras.layers import (
     LSTM,
     Conv1D,
-    Conv2D,
     Dense,
     Dropout,
     Embedding,
     Flatten,
     Input,
     MaxPool1D,
-    MaxPool2D,
     Reshape,
     concatenate,
 )
@@ -33,7 +31,7 @@ def custom_init(cls):
     if cls == Dense:
         return cls(units=128)
 
-    if cls == Conv1D or cls == Conv2D:
+    if cls == Conv1D:
         return cls(filters=5, kernel_size=7, padding="causal")
 
     return cls()

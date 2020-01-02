@@ -1,13 +1,13 @@
 # coding: utf8
 
 from ._grammar import (
-    Grammar,
+    ContextFreeGrammar,
     Symbol,
     OneOf,
     Callable,
     Empty,
     Distribution,
-    generate_grammar,
+    generate_cfg,
     Discrete,
     Continuous,
     Union,

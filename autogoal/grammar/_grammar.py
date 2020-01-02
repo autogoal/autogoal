@@ -22,9 +22,15 @@ class Symbol:
 
 
 class Production:
-    grammar: "Grammar" = None
+    grammar: "ContextFreeGrammar" = None
 
-    def to_string(self, head: Symbol, code: List[str], visited: Set[Symbol], max_symbol_length: int):
+    def to_string(
+        self,
+        head: Symbol,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
+    ):
         raise NotImplementedError()
 
     def sample(self, sampler, namespace):
@@ -35,8 +41,16 @@ class Empty(Production):
     def __repr__(self):
         return "Empty()"
 
-    def to_string(self, head: Symbol, code: List[str], visited: Set[Symbol], max_symbol_length: int):
-        code.append("%s := %s" % (("<%s>" % head.name).ljust(max_symbol_length), "<empty>"))
+    def to_string(
+        self,
+        head: Symbol,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
+    ):
+        code.append(
+            "%s := %s" % (("<%s>" % head.name).ljust(max_symbol_length), "<empty>")
+        )
         visited.add(head)
 
     def sample(self, sampler, namespace):
@@ -54,7 +68,13 @@ class OneOf(Production):
     def __repr__(self):
         return "OneOf(options=%r)" % self._options
 
-    def to_string(self, head: Symbol, code: List[str], visited: Set[Symbol], max_symbol_length: int):
+    def to_string(
+        self,
+        head: Symbol,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
+    ):
         lhs = ("<%s>" % head.name).ljust(max_symbol_length)
         rhs = ["<%s>" % option.name for option in self._options]
 
@@ -80,7 +100,13 @@ class Callable(Production):
     def __repr__(self):
         return "Callable(name=%r, parameters=%r)" % (self._name, self._parameters)
 
-    def to_string(self, head: Symbol, code: List[str], visited: Set[Symbol], max_symbol_length: int):
+    def to_string(
+        self,
+        head: Symbol,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
+    ):
         lhs = ("<%s>" % head.name).ljust(max_symbol_length)
         rhs = [
             "%s=%s" % (key, ("<%s>" % value.name) if hasattr(value, "name") else value)
@@ -125,7 +151,7 @@ class Distribution(Callable):
         return sampler.distribution(self._name, **self._parameters)
 
 
-class Grammar:
+class ContextFreeGrammar:
     namespace: Mapping = {}
 
     def __init__(self, start_symbol: Symbol):
@@ -160,7 +186,9 @@ class Grammar:
     def __str__(self):
         code = []
         max_symbol_length = max(len(symbol.name) for symbol in self._productions) + 2
-        self[self._start_symbol].to_string(self._start_symbol, code, set(), max_symbol_length)
+        self[self._start_symbol].to_string(
+            self._start_symbol, code, set(), max_symbol_length
+        )
         return "\n".join(code)
 
     def sample(self, sampler=None, namespace=None):
@@ -187,24 +215,26 @@ class UniformSampler:
         elif name == "continuous":
             return random.uniform(kwargs["min"], kwargs["max"])
         elif name == "boolean":
-            return random.uniform(0,1) < 0.5
+            return random.uniform(0, 1) < 0.5
         elif name == "categorical":
             return random.choice(kwargs["options"])
 
         raise ValueError("Unrecognized distribution name: %s" % name)
 
 
-def generate_grammar(cls, grammar=None, head=None):
+def generate_cfg(
+    cls, grammar: ContextFreeGrammar = None, head: Symbol = None
+) -> ContextFreeGrammar:
     symbol = head or Symbol(cls.__name__)
 
     if grammar is None:
-        grammar = Grammar(start_symbol=symbol)
+        grammar = ContextFreeGrammar(start_symbol=symbol)
         grammar.namespace = vars(sys.modules[cls.__module__])
     elif symbol in grammar:
         return grammar
 
-    if hasattr(cls, 'generate_grammar'):
-        return cls.generate_grammar(grammar, symbol)
+    if hasattr(cls, "generate_cfg"):
+        return cls.generate_cfg(grammar, symbol)
 
     grammar.add(symbol, Empty())
     parameters = {}
@@ -217,18 +247,21 @@ def generate_grammar(cls, grammar=None, head=None):
         annotation_cls = param_obj.annotation
 
         if annotation_cls == inspect._empty:
-            warnings.warn("In <%s>: Couldn't find annotation type for %r" % (cls.__name__, param_obj))
+            warnings.warn(
+                "In <%s>: Couldn't find annotation type for %r"
+                % (cls.__name__, param_obj)
+            )
             continue
 
         if annotation_cls == "self":
             annotation_cls = cls
 
-        if hasattr(annotation_cls, '__name__'):
+        if hasattr(annotation_cls, "__name__"):
             param_symbol = Symbol(annotation_cls.__name__)
         else:
             param_symbol = Symbol("%s_%s" % (cls.__name__, param_name))
 
-        generate_grammar(annotation_cls, grammar, param_symbol)
+        generate_cfg(annotation_cls, grammar, param_symbol)
         parameters[param_name] = param_symbol
 
     grammar.replace(symbol, Callable(cls.__name__, **parameters))
@@ -240,13 +273,13 @@ class Discrete:
         self.min = min
         self.max = max
 
-    def generate_grammar(self, grammar, head):
+    def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution("discrete", min=self.min, max=self.max))
         return grammar
 
 
 class Continuous(Discrete):
-    def generate_grammar(self, grammar, head):
+    def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution("continuous", min=self.min, max=self.max))
         return grammar
 
@@ -255,13 +288,13 @@ class Categorical:
     def __init__(self, *options):
         self.options = list(options)
 
-    def generate_grammar(self, grammar, head):
+    def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution("categorical", options=self.options))
         return grammar
 
 
 class Boolean:
-    def generate_grammar(self, grammar, head):
+    def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution("boolean"))
         return grammar
 
@@ -271,7 +304,7 @@ class Union:
         self.__name__ = name
         self.clss = list(clss)
 
-    def generate_grammar(self, grammar, head):
+    def generate_cfg(self, grammar, head):
         symbol = head or Symbol(self.__name__)
 
         if symbol in grammar:
@@ -283,7 +316,7 @@ class Union:
         for child in self.clss:
             child_symbol = Symbol(child.__name__)
             children.append(child_symbol)
-            generate_grammar(child, grammar, child_symbol)
+            generate_cfg(child, grammar, child_symbol)
 
         grammar.replace(symbol, OneOf(*children))
         return grammar

@@ -13,7 +13,7 @@ from autogoal.grammar import (
     Categorical,
     Union,
     Boolean,
-    generate_grammar,
+    generate_cfg,
 )
 
 
@@ -85,7 +85,7 @@ class Pipeline(SkPipeline):
 
 
 def main():
-    grammar = generate_grammar(Pipeline)
+    grammar = generate_cfg(Pipeline)
     print(grammar)
 
     instance = grammar.sample()

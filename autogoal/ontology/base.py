@@ -3,7 +3,7 @@
 import inspect
 import pprint
 
-from autogoal.grammar import Grammar, Callable, OneOf, Symbol, Empty, Distribution
+from autogoal.grammar import ContextFreeGrammar, Callable, OneOf, Symbol, Empty, Distribution
 
 
 
@@ -32,7 +32,7 @@ class BaseAbstract:
         symbol = head or Symbol(cls.__name__)
 
         if grammar is None:
-            grammar = Grammar(start_symbol=symbol)
+            grammar = ContextFreeGrammar(start_symbol=symbol)
         elif symbol in grammar:
             return grammar
 
@@ -54,7 +54,7 @@ class BaseObject(BaseAbstract):
         symbol = head or Symbol(cls.__name__)
 
         if grammar is None:
-            grammar = Grammar(start_symbol=symbol)
+            grammar = ContextFreeGrammar(start_symbol=symbol)
         elif symbol in grammar:
             return grammar
 
