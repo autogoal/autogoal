@@ -153,9 +153,9 @@ class Distribution(Callable):
 
 
 class ContextFreeGrammar(Grammar):
-    def __init__(self, start: Symbol, namespace: Mapping):
+    def __init__(self, start: Symbol, namespace: Mapping=None):
         super(ContextFreeGrammar, self).__init__(start)
-        self._namespace = namespace
+        self._namespace = namespace or {}
         self._productions: Mapping[Symbol, Production] = {}
 
     def add(self, symbol: Symbol, production: Production) -> None:
@@ -197,12 +197,11 @@ def generate_cfg(
     symbol = head or Symbol(cls.__name__)
 
     if grammar is None:
-        grammar = ContextFreeGrammar(
-            start=symbol,
-            namespace=getattr(cls, "__namespace__", vars(sys.modules[cls.__module__])),
-        )
+        grammar = ContextFreeGrammar(start=symbol)
     elif symbol in grammar:
         return grammar
+
+    grammar._namespace[symbol.name] = cls
 
     if hasattr(cls, "generate_cfg"):
         return cls.generate_cfg(grammar, symbol)

@@ -73,9 +73,6 @@ def _get_generated_class(name):
     clss = types.new_class(name)
     _GENERATED_CLASSES[name] = clss
 
-    # Add a custom namespace for future resolution
-    clss.__namespace__ = {name: clss}
-
     return clss
 
 
