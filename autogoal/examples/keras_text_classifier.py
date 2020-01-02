@@ -1,32 +1,25 @@
 # coding: utf8
 
 
-from keras.layers import (
-    LSTM,
-    Conv1D as _Conv1D,
-    Dense as _Dense,
-    Dropout,
-    Embedding as _Embedding,
-    Flatten,
-    Input,
-    MaxPool1D,
-    Reshape,
-    concatenate,
-)
+from keras.layers import Conv1D as _Conv1D
+from keras.layers import Dense as _Dense
+from keras.layers import Embedding as _Embedding
+from keras.layers import LSTM, Dropout, Flatten, Input, MaxPool1D, Reshape
 from keras.models import Model
 from keras.utils import plot_model
 
+from autogoal.contrib.keras import KerasNeuralNetwork
 from autogoal.grammar import (
     Block,
+    Boolean,
+    Categorical,
+    CfgInitializer,
+    Discrete,
     Graph,
     GraphGrammar,
     Path,
-    CfgInitializer,
-    Discrete,
-    Categorical,
+    generate_cfg,
 )
-
-from autogoal.contrib.keras import KerasNeuralNetwork
 
 
 class Reshape2D(Reshape):
@@ -81,7 +74,7 @@ def build_grammar():
 
     # productions for Classification
     grammar.add("ClassificationModule", Path("DenseModule", "Final"))
-    grammar.add("Final", Dense, kwargs=dict(units=4, activation='softmax'))
+    grammar.add("Final", Dense, kwargs=dict(units=4, activation="softmax"))
 
     # productions to expand Dense layers
     grammar.add("DenseModule", Path(Dense, "DenseModule"))
@@ -91,18 +84,34 @@ def build_grammar():
     return grammar
 
 
+class Classifier(KerasNeuralNetwork):
+    def __init__(self):
+        super(Classifier, self).__init__(
+            grammar=build_grammar(),
+            input_shape=(1000,),
+            optimizer="rmsprop",
+            loss="categorical_crossentropy",
+        )
+
+
+class Tokenizer:
+    def __init__(self, stopwords: Boolean(), stemming: Boolean()):
+        self.stopwords = stopwords
+        self.stemming = stemming
+
+
+class Pipeline:
+    def __init__(self, tokenizer: Tokenizer, classifier: Classifier):
+        self.tokenizer = tokenizer
+        self.classifier = classifier
+
+
 def main():
-    grammar = build_grammar()
-    neural_network = KerasNeuralNetwork(
-        grammar,
-        input_shape=(1000,),
-        optimizer="rmsprop",
-        loss="categorical_crossentropy",
-    )
+    grammar = generate_cfg(Pipeline)
+    print(grammar)
 
-    neural_network.sample()
-    neural_network.model.summary()
-
+    pipeline: Pipeline = grammar.sample()
+    pipeline.classifier.model.summary()
 
 if __name__ == "__main__":
     main()

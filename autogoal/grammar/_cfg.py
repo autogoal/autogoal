@@ -141,7 +141,12 @@ class Callable(Production):
 
             kwargs[arg] = arg_value
 
-        return namespace[self._name](**kwargs)
+        obj = namespace[self._name](**kwargs)
+
+        if hasattr(obj, 'sample'):
+            obj.sample(sampler)
+
+        return obj
 
 
 class Distribution(Callable):

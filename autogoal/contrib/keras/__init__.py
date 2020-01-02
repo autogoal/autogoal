@@ -10,13 +10,21 @@ class KerasNeuralNetwork:
         self.grammar = grammar
         self._input_shape = input_shape
         self._compile_kwargs = compile_kwargs
+        self._model = None
+
+    @property
+    def model(self):
+        if self._model is None:
+            raise TypeError("You need to call `sample` first to generate the model.")
+
+        return self._model
 
     def sample(self, sampler: Sampler = None):
         if sampler is None:
             sampler = Sampler()
 
         graph = self.grammar.sample(sampler=sampler)
-        model = self._build_nn(graph)
+        self._build_nn(graph)
 
     def _build_nn(self, graph: Graph):
         input_x = self._build_input()
@@ -35,8 +43,8 @@ class KerasNeuralNetwork:
         output_y = graph.apply(build_model)
         final_ouput = self._build_output(output_y)
 
-        self.model = Model(inputs=input_x, outputs=final_ouput)
-        self.model.compile(**self._compile_kwargs)
+        self._model = Model(inputs=input_x, outputs=final_ouput)
+        self._model.compile(**self._compile_kwargs)
 
     def _build_input(self):
         if self._input_shape is None:
