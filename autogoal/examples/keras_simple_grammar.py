@@ -38,7 +38,12 @@ def custom_init(cls):
 
 
 def build_grammar():
-    grammar = GraphGrammar()
+    grammar = GraphGrammar(start = Path(
+        "PreprocessingModule",
+        "ReductionModule",
+        "FeaturesModule",
+        "ClassificationModule",
+    ))
 
     # productions for Preprocessing
     grammar.add("PreprocessingModule", Embedding, initializer=custom_init)
@@ -72,14 +77,7 @@ def build_grammar():
 
 def build_graph(grammar: GraphGrammar):
     # instantiate the initial graph with all abstract modules
-    initial_graph = Path(
-        "PreprocessingModule",
-        "ReductionModule",
-        "FeaturesModule",
-        "ClassificationModule",
-    ).make()
-
-    return grammar.expand(initial_graph, max_iters=100)
+    return grammar.sample(max_iterations=100)
 
 
 def build_nn(graph: Graph):

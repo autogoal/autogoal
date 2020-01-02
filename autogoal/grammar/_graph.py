@@ -6,6 +6,8 @@ import types
 
 from typing import List
 
+from ._base import Grammar, Sampler
+
 
 class Graph(nx.DiGraph):
     def __init__(self, **attrs):
@@ -215,8 +217,15 @@ class Block(GraphPattern):
             self._add_out_nodes(graph, out_nodes, item)
 
 
-class GraphGrammar:
-    def __init__(self, *, non_terminals=None):
+class GraphGrammar(Grammar):
+    def __init__(self, start, *, non_terminals=None):
+        if isinstance(start, str):
+            start = Node(start)
+
+        if isinstance(start, GraphPattern):
+            start = start.make()
+
+        super(GraphGrammar, self).__init__(start)
         self._productions: List[Production] = []
         self._non_terminals = set(non_terminals or [])
 
@@ -231,29 +240,29 @@ class GraphGrammar:
             Production(pattern, replacement, initializer=initializer)
         )
 
-    def expand(
-        self, graph: Graph, *, max_iters=100, production_selector=uniform_selection,
-    ) -> Graph:
-        if graph is None:
-            raise ValueError("`graph` cannot be `None`")
+    # def expand(
+    #     self, graph: Graph, *, max_iters=100, production_selector=uniform_selection,
+    # ) -> Graph:
+    #     if graph is None:
+    #         raise ValueError("`graph` cannot be `None`")
 
-        if not isinstance(graph, Graph):
-            obj = graph
-            graph = Graph()
-            graph.add_node(obj)
-        else:
-            graph = graph.copy()
+    #     if not isinstance(graph, Graph):
+    #         obj = graph
+    #         graph = Graph()
+    #         graph.add_node(obj)
+    #     else:
+    #         graph = graph.copy()
 
-        return self._expand(graph, max_iters, production_selector)
+    #     return self._expand(graph, max_iters, production_selector)
 
-    def _expand(self, graph, iters, production_selector):
-        if graph is None:
-            raise ValueError("`graph` cannot be `None`")
+    def _sample(self, symbol, max_iterations, sampler):
+        if symbol is None:
+            raise ValueError("`symbol` cannot be `None`")
 
-        if iters == 0:
-            return graph
+        if max_iterations == 0:
+            return symbol
 
-        valid_productions = [p for p in self._productions if p.match(graph)]
+        valid_productions = [p for p in self._productions if p.match(symbol)]
 
         if self._non_terminals:
             non_terminal_productions = [
@@ -266,9 +275,9 @@ class GraphGrammar:
                 valid_productions = non_terminal_productions
 
         if not valid_productions:
-            return graph
+            return symbol
 
-        production = production_selector(valid_productions)
-        graph = production.apply(graph)
+        production = sampler.choice(valid_productions)
+        symbol = production.apply(symbol)
 
-        return self._expand(graph, iters - 1, production_selector)
+        return self._sample(symbol, max_iterations - 1, sampler)
