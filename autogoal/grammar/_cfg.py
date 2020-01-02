@@ -1,5 +1,3 @@
-# coding: utf8
-
 import inspect
 import random
 import warnings

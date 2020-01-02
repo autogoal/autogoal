@@ -1,6 +1,3 @@
-# coding: utf8
-
-
 from keras.layers import Conv1D as _Conv1D
 from keras.layers import Dense as _Dense
 from keras.layers import Embedding as _Embedding

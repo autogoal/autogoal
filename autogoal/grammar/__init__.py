@@ -1,5 +1,3 @@
-# coding: utf8
-
 from ._base import Grammar, Sampler
 from ._cfg import (
     ContextFreeGrammar,

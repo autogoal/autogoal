@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 import datetime
 import inspect
@@ -37,7 +37,7 @@ class Bert(keras.layers.Layer):
         bert_path = "https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1"
         self.bert = hub.Module(
             bert_path, trainable=self.trainable, name="{}_module".format(self.name)
-        ) 
+        )
         trainable_vars = self.bert.variables
 
         # Remove unused layers

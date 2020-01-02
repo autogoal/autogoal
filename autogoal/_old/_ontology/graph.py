@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 from pathlib import Path
 from pprint import pprint as pp

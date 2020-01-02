@@ -1,5 +1,3 @@
-# coding: utf8
-
 from autogoal.grammar import Sampler, GraphGrammar, Graph
 from keras.layers import concatenate, Input
 from keras.models import Model

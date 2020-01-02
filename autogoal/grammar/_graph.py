@@ -1,5 +1,3 @@
-# coding: utf8
-
 import networkx as nx
 import random
 import types

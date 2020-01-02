@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 import importlib
 import random

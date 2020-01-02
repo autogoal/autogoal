@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 import nltk
 from nltk.collocations import BigramAssocMeasures, BigramCollocationFinder

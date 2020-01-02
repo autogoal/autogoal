@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 # Este .py contiene las clases que ayudan a construir de forma mas o menos semática redes neuronales
 #

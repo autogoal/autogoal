@@ -1,4 +1,4 @@
-# coding: utf8
+#
 
 import collections
 import importlib

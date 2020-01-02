@@ -1,5 +1,3 @@
-# coding: utf8
-
 import random
 
 from ._base import SearchAlgorithm

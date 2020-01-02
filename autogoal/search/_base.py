@@ -1,5 +1,3 @@
-# coding: utf8
-
 from autogoal.grammar import Grammar
 
 

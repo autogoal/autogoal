@@ -1,5 +1,3 @@
-# coding: utf8
-
 import random
 from nltk.corpus import movie_reviews
 from sklearn.model_selection import train_test_split
