@@ -80,14 +80,13 @@ def build_grammar():
     # TODO: Attention
 
     # productions for Classification
-    grammar.add("ClassificationModule", "DenseModule")
+    grammar.add("ClassificationModule", Path("DenseModule", "Final"))
+    grammar.add("Final", Dense, kwargs=dict(units=4, activation='softmax'))
 
     # productions to expand Dense layers
     grammar.add("DenseModule", Path(Dense, "DenseModule"))
     grammar.add("DenseModule", Block(Dense, "DenseModule"))
     grammar.add("DenseModule", Dense)
-
-    # classes = Dense(units=4, activation="softmax")(output_y)
 
     return grammar
 

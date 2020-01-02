@@ -231,9 +231,12 @@ class GraphGrammar(Grammar):
         self._non_terminals = set(non_terminals or [])
         self._initializer = initializer
 
-    def add(self, pattern, replacement: GraphPattern, *, initializer=None):
+    def add(self, pattern, replacement: GraphPattern, *, initializer=None, kwargs=None):
         if initializer is None:
             initializer = self._initializer
+
+        if kwargs is not None:
+            initializer = lambda cls: cls(**kwargs)
 
         if isinstance(pattern, str):
             pattern = _get_generated_class(pattern)
