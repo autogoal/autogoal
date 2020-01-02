@@ -94,12 +94,15 @@ def build_grammar():
 
 def main():
     grammar = build_grammar()
-    neural_network = KerasNeuralNetwork(grammar, input_shape=(1000,))
+    neural_network = KerasNeuralNetwork(
+        grammar,
+        input_shape=(1000,),
+        optimizer="rmsprop",
+        loss="categorical_crossentropy",
+    )
 
-    model = neural_network.sample()
-    model.summary()
-
-    model.compile("rmsprop", loss="categorical_crossentropy")
+    neural_network.sample()
+    neural_network.model.summary()
 
 
 if __name__ == "__main__":

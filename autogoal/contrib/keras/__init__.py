@@ -6,9 +6,10 @@ from keras.models import Model
 
 
 class KerasNeuralNetwork:
-    def __init__(self, grammar: GraphGrammar, input_shape=None):
+    def __init__(self, grammar: GraphGrammar, input_shape=None, **compile_kwargs):
         self.grammar = grammar
         self._input_shape = input_shape
+        self._compile_kwargs = compile_kwargs
 
     def sample(self, sampler: Sampler = None):
         if sampler is None:
@@ -16,7 +17,6 @@ class KerasNeuralNetwork:
 
         graph = self.grammar.sample(sampler=sampler)
         model = self._build_nn(graph)
-        return model
 
     def _build_nn(self, graph: Graph):
         input_x = self._build_input()
@@ -35,8 +35,8 @@ class KerasNeuralNetwork:
         output_y = graph.apply(build_model)
         final_ouput = self._build_output(output_y)
 
-        model = Model(inputs=input_x, outputs=final_ouput)
-        return model
+        self.model = Model(inputs=input_x, outputs=final_ouput)
+        self.model.compile(**self._compile_kwargs)
 
     def _build_input(self):
         if self._input_shape is None:
