@@ -12,6 +12,6 @@ from ._cfg import (
     Union,
     Categorical,
     Boolean,
-    CfgInitializer
+    CfgInitializer,
 )
 from ._graph import GraphGrammar, Path, Block, Graph

@@ -66,7 +66,6 @@ def build_grammar():
     grammar.add("ReductionModule", "DenseModule")
     grammar.add("ConvModule", Path(Conv1D, MaxPool1D, "ConvModule"))
     grammar.add("ConvModule", Path(Conv1D, MaxPool1D))
-    # grammar.add("ReductionModule", Path(Conv2D, MaxPool2D, "DenseModule"))
 
     # productions for Features
     grammar.add("FeaturesModule", Path(Flatten, "DenseModule"))

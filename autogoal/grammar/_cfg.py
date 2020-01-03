@@ -22,14 +22,12 @@ class Symbol:
 
 
 class Production:
-    grammar: "ContextFreeGrammar" = None
+    def __init__(self, head: Symbol, grammar: "ContextFreeGrammar"):
+        self.head = head
+        self.grammar = grammar
 
     def to_string(
-        self,
-        head: Symbol,
-        code: List[str],
-        visited: Set[Symbol],
-        max_symbol_length: int,
+        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
         raise NotImplementedError()
 
@@ -42,23 +40,20 @@ class Empty(Production):
         return "Empty()"
 
     def to_string(
-        self,
-        head: Symbol,
-        code: List[str],
-        visited: Set[Symbol],
-        max_symbol_length: int,
+        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
         code.append(
-            "%s := %s" % (("<%s>" % head.name).ljust(max_symbol_length), "<empty>")
+            "%s := %s" % (("<%s>" % self.head.name).ljust(max_symbol_length), "<empty>")
         )
-        visited.add(head)
+        visited.add(self.head)
 
     def sample(self, sampler, namespace):
         return None
 
 
 class OneOf(Production):
-    def __init__(self, *options):
+    def __init__(self, head, grammar, *options):
+        super().__init__(head, grammar)
         self._options: List[Symbol] = list(options)
 
     @property
@@ -69,31 +64,28 @@ class OneOf(Production):
         return "OneOf(options=%r)" % self._options
 
     def to_string(
-        self,
-        head: Symbol,
-        code: List[str],
-        visited: Set[Symbol],
-        max_symbol_length: int,
+        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
-        lhs = ("<%s>" % head.name).ljust(max_symbol_length)
+        lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
         rhs = ["<%s>" % option.name for option in self._options]
 
         code.append("%s := %s" % (lhs, " | ".join(rhs)))
-        visited.add(head)
+        visited.add(self.head)
 
         for symbol in self._options:
             if symbol in visited:
                 continue
 
-            self.grammar[symbol].to_string(symbol, code, visited, max_symbol_length)
+            self.grammar[symbol].to_string(code, visited, max_symbol_length)
 
     def sample(self, sampler, namespace):
-        option = sampler.choice(self.options, handle=self)
+        option = sampler.choice(self.options, handle=self.head)
         return self.grammar[option].sample(sampler, namespace)
 
 
 class Callable(Production):
-    def __init__(self, name, **parameters):
+    def __init__(self, head, grammar, name, **parameters):
+        super().__init__(head, grammar)
         self._name = name
         self._parameters = parameters
 
@@ -101,20 +93,16 @@ class Callable(Production):
         return "Callable(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def to_string(
-        self,
-        head: Symbol,
-        code: List[str],
-        visited: Set[Symbol],
-        max_symbol_length: int,
+        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
-        lhs = ("<%s>" % head.name).ljust(max_symbol_length)
+        lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
         rhs = [
             "%s=%s" % (key, ("<%s>" % value.name) if hasattr(value, "name") else value)
             for key, value in self._parameters.items()
         ]
 
         code.append("%s := %s (%s)" % (lhs, self._name, ", ".join(rhs)))
-        visited.add(head)
+        visited.add(self.head)
 
         for _, symbol in self._parameters.items():
             if not isinstance(symbol, Symbol):
@@ -126,7 +114,7 @@ class Callable(Production):
             if symbol not in self.grammar:
                 continue
 
-            self.grammar[symbol].to_string(symbol, code, visited, max_symbol_length)
+            self.grammar[symbol].to_string(code, visited, max_symbol_length)
 
     def sample(self, sampler, namespace):
         kwargs = {}
@@ -141,7 +129,7 @@ class Callable(Production):
 
         obj = namespace[self._name](**kwargs)
 
-        if hasattr(obj, 'sample'):
+        if hasattr(obj, "sample"):
             obj.sample(sampler)
 
         return obj
@@ -152,11 +140,11 @@ class Distribution(Callable):
         return "Distribution(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def sample(self, sampler, namespace):
-        return sampler.distribution(self._name, handle=self, **self._parameters)
+        return sampler.distribution(self._name, handle=self.head, **self._parameters)
 
 
 class ContextFreeGrammar(Grammar):
-    def __init__(self, start: Symbol, namespace: Mapping=None):
+    def __init__(self, start: Symbol, namespace: Mapping = None):
         super(ContextFreeGrammar, self).__init__(start)
         self._namespace = namespace or {}
         self._productions: Mapping[Symbol, Production] = {}
@@ -167,11 +155,12 @@ class ContextFreeGrammar(Grammar):
                 "Cannot add more than once, call Grammar.replace() instead."
             )
 
-        production.grammar = self
         self._productions[symbol] = production
 
     def replace(self, symbol: Symbol, production: Production) -> None:
-        production.grammar = self
+        if symbol not in self:
+            raise ValueError("Symbol is not defined, call Grammar.add() instead.")
+
         self._productions[symbol] = production
 
     def __contains__(self, symbol: Symbol):
@@ -186,7 +175,7 @@ class ContextFreeGrammar(Grammar):
     def __str__(self):
         code = []
         max_symbol_length = max(len(symbol.name) for symbol in self._productions) + 2
-        self[self._start].to_string(self._start, code, set(), max_symbol_length)
+        self[self._start].to_string(code, set(), max_symbol_length)
         return "\n".join(code)
 
     def _sample(self, symbol, max_iterations, sampler):
@@ -209,7 +198,7 @@ def generate_cfg(
     if hasattr(cls, "generate_cfg"):
         return cls.generate_cfg(grammar, symbol)
 
-    grammar.add(symbol, Empty())
+    grammar.add(symbol, Empty(symbol, grammar))
     parameters = {}
     signature = inspect.signature(cls.__init__)
 
@@ -237,7 +226,7 @@ def generate_cfg(
         generate_cfg(annotation_cls, grammar, param_symbol)
         parameters[param_name] = param_symbol
 
-    grammar.replace(symbol, Callable(cls.__name__, **parameters))
+    grammar.replace(symbol, Callable(symbol, grammar, cls.__name__, **parameters))
     return grammar
 
 
@@ -247,13 +236,17 @@ class Discrete:
         self.max = max
 
     def generate_cfg(self, grammar, head):
-        grammar.add(head, Distribution("discrete", min=self.min, max=self.max))
+        grammar.add(
+            head, Distribution(head, grammar, "discrete", min=self.min, max=self.max)
+        )
         return grammar
 
 
 class Continuous(Discrete):
     def generate_cfg(self, grammar, head):
-        grammar.add(head, Distribution("continuous", min=self.min, max=self.max))
+        grammar.add(
+            head, Distribution(head, grammar, "continuous", min=self.min, max=self.max)
+        )
         return grammar
 
 
@@ -262,13 +255,15 @@ class Categorical:
         self.options = list(options)
 
     def generate_cfg(self, grammar, head):
-        grammar.add(head, Distribution("categorical", options=self.options))
+        grammar.add(
+            head, Distribution(head, grammar, "categorical", options=self.options)
+        )
         return grammar
 
 
 class Boolean:
     def generate_cfg(self, grammar, head):
-        grammar.add(head, Distribution("boolean"))
+        grammar.add(head, Distribution(head, grammar, "boolean"))
         return grammar
 
 
@@ -283,7 +278,7 @@ class Union:
         if symbol in grammar:
             return grammar
 
-        grammar.add(symbol, Empty())
+        grammar.add(symbol, Empty(symbol, grammar))
         children = []
 
         for child in self.clss:
@@ -291,7 +286,7 @@ class Union:
             children.append(child_symbol)
             generate_cfg(child, grammar, child_symbol)
 
-        grammar.replace(symbol, OneOf(*children))
+        grammar.replace(symbol, OneOf(symbol, grammar, *children))
         return grammar
 
 

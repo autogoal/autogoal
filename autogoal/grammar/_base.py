@@ -2,23 +2,29 @@ import random
 
 
 class Sampler:
-    def __init__(self, random_state: int = None):
+    def __init__(self, *, random_state: int = None):
         self.rand = random.Random(random_state)
 
-    def choice(self, options, handle=None):
+    def choice(self, options):
         return self.rand.choice(options)
 
     def distribution(self, name: str, handle=None, **kwargs):
-        if name == "discrete":
-            return self.rand.randint(kwargs["min"], kwargs["max"])
-        elif name == "continuous":
-            return self.rand.uniform(kwargs["min"], kwargs["max"])
-        elif name == "boolean":
-            return self.rand.uniform(0, 1) < 0.5
-        elif name == "categorical":
-            return self.rand.choice(kwargs["options"])
+        try:
+            return getattr(self, "_sample_%s" % name)(handle, **kwargs)
+        except AttributeError:
+            raise ValueError("Unrecognized distribution name: %s" % name)
 
-        raise ValueError("Unrecognized distribution name: %s" % name)
+    def _sample_discrete(self, handle, min, max):
+        return self.rand.randint(min, max)
+
+    def _sample_continuous(self, handle, min, max):
+        return self.rand.uniform(min, max)
+
+    def _sample_boolean(self, handle):
+        return self.rand.uniform(0, 1) < 0.5
+
+    def _sample_categorical(self, handle, options):
+        return self.rand.choice(options)
 
 
 class Grammar:
