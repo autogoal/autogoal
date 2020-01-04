@@ -400,6 +400,17 @@ Finally let's see what came through:
 
 ```python
 
-print("PESearch     :", fn_rand, best_pge)
+print("PESearch     :", fn_pge, best_pge)
 print("RandomSearch :", fn_rand, best_rand)
+
 ```
+
+When both searches are over, you'll see something like:
+
+```bash
+PESearch     : 0.8 Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=62),
+         vectorizer=TfIdf(ngram=1, use_idf=True))
+RandomSearch : 0.8 Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=198),
+         vectorizer=Count(ngram=2))
+```
+
