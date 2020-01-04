@@ -144,6 +144,9 @@ class Distribution(Callable):
 
 
 class ContextFreeGrammar(Grammar):
+    """Represents a CFG grammar.
+    """
+
     def __init__(self, start: Symbol, namespace: Mapping = None):
         super(ContextFreeGrammar, self).__init__(start)
         self._namespace = namespace or {}

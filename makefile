@@ -6,6 +6,12 @@ ALL_VERSIONS := 3.6
 notebook:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose up
 
+docs-serve:
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && mkdocs serve
+
+docs-deploy:
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && cp docs/index.md Readme.md && mkdocs gh-deploy
+
 test-fast:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester make dev-test-fast
 

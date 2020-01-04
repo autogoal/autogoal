@@ -1,0 +1,28 @@
+site_name: Auditorium
+repo_name: 'apiad/auditorium'
+repo_url: 'https://github.com/apiad/auditorium'
+
+theme:
+    name: material
+    feature:
+        tabs: true
+
+markdown_extensions:
+    - codehilite
+    - toc:
+        permalink: true
+    - admonition
+    - mkautodoc
+
+nav:
+    - Home: index.md
+    - Dependencies: dependencies.md
+    - Contributing: contributing.md
+    - History: history.md
+
+    - API:
+        - Context Free Grammars: api/cfg.md
+
+    - Examples:
+        - Sklearn: examples/sklearn_simple_grammar.md
+        - Keras: examples/keras_text_classifier.md

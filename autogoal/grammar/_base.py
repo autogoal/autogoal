@@ -5,7 +5,7 @@ class Sampler:
     def __init__(self, *, random_state: int = None):
         self.rand = random.Random(random_state)
 
-    def choice(self, options):
+    def choice(self, options, handle=None):
         return self.rand.choice(options)
 
     def distribution(self, name: str, handle=None, **kwargs):

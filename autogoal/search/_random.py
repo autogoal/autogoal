@@ -9,5 +9,5 @@ class RandomSearch(SearchAlgorithm):
         super(RandomSearch, self).__init__(grammar, fitness_fn)
         self._sampler = Sampler(random_state=random_state)
 
-    def _run_one_generation(self, max_evaluations):
+    def _run_one_generation(self):
         yield self._grammar.sample(sampler=self._sampler)

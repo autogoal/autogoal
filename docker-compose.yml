@@ -10,5 +10,6 @@ services:
         PYTHON_VERSION: ${PYTHON_VERSION}
     volumes:
       - "./:/code"
+      - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
     command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
     network_mode: host
