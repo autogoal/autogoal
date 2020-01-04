@@ -23,22 +23,15 @@ def load(max_examples=None):
         if max_examples and len(classes) >= max_examples:
             break
 
-    print("Sentences:", len(sentences))
-
     return sentences, classes
 
 
-def make_fn(test_size=0.25, max_examples=None):
-    X, y = load(max_examples)
+def make_fn(test_size=0.25, examples=None):
+    X, y = load(examples)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
 
     def fitness_fn(pipeline):
-        print("-- Evaluating", pipeline, end="")
-
         pipeline.fit(X_train, y_train)
-        score = pipeline.score(X_test, y_test)
-
-        print(" === ", score)
-        return score
+        return pipeline.score(X_test, y_test)
 
     return fitness_fn
