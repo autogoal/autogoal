@@ -391,7 +391,7 @@ Here we set them to sensible values, but when in doubt, just use the defaults.
 
 ```python
 
-pge = PESearch(grammar, fitness_fn, pop_size=10, selection=0.5, learning_factor=0.25, random_state=0)
+pge = PESearch(grammar, fitness_fn, pop_size=10, selection=0.2, learning_factor=0.1, random_state=0)
 best_pge, fn_pge = pge.run(1000, logger=logger)
 
 ```
@@ -400,17 +400,19 @@ Finally let's see what came through:
 
 ```python
 
-print("PESearch     :", fn_pge, best_pge)
-print("RandomSearch :", fn_rand, best_rand)
+print("PESearch     :", fn_pge, "\n", best_pge)
+print("RandomSearch :", fn_rand, "\n", best_rand)
 
 ```
 
 When both searches are over, you'll see something like:
 
 ```bash
-PESearch     : 0.8 Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=62),
+PESearch     : 0.8
+Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=62),
          vectorizer=TfIdf(ngram=1, use_idf=True))
-RandomSearch : 0.8 Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=198),
+RandomSearch : 0.8
+Pipeline(classifier=DT(criterion='gini'), decomposer=SVD(n=198),
          vectorizer=Count(ngram=2))
 ```
 
