@@ -320,7 +320,7 @@ best_rand, fn_rand = random_search.run(1000, logger=logger)
 # which is a complicated topic, to say the least, in evolutionary optimization.
 # Here we set them to sensible values, but when in doubt, just use the defaults.
 
-pge = PESearch(grammar, fitness_fn, pop_size=10, selection=0.5, learning_factor=0.25, random_state=0)
+pge = PESearch(grammar, fitness_fn, pop_size=10, selection=0.2, learning_factor=0.1, random_state=0)
 best_pge, fn_pge = pge.run(1000, logger=logger)
 
 # Finally let's see what came through:
