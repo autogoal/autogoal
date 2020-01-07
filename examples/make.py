@@ -1,6 +1,11 @@
 # Convert examples in this folder to their corresponding .md files in docs/examples
 
+import re
 from pathlib import Path
+
+
+def hide(line):
+    return ":hide:" in line
 
 
 def main():
@@ -20,6 +25,12 @@ def main():
 
 class Markdown:
     def __init__(self, content):
+        while content:
+            if not content[0].strip():
+                content.pop(0)
+            else:
+                break
+
         self.content = content
 
     def print(self, fp):
@@ -35,6 +46,9 @@ class Markdown:
 
 class Python(Markdown):
     def print(self, fp):
+        if not self.content:
+            return
+
         fp.write("```python\n")
 
         for line in self.content:
@@ -51,6 +65,9 @@ def process(fname: Path):
         state = 'markdown'
 
         for line in fp:
+            if hide(line):
+                continue
+
             if line.startswith("#"):
                 if state == 'python':
                     if current:
@@ -64,7 +81,6 @@ def process(fname: Path):
                         content.append(Markdown(current))
                         current = []
                     state = 'python'
-                current.append(line)
 
         if current:
             if state == 'markdown':

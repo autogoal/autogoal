@@ -7,7 +7,9 @@
 #     This example requires `sklearn` and `nltk` installed, as well as the
 #     `"movie_reviews"` corpus from `nltk`. Refer to the documentation on
 #     [dependencies](/dependencies/) for further information.
-#
+
+import autogoal.contrib.sklearn # :hide:
+
 # ## Importing the necessary classes
 #
 # First let's import the relevant classes from `sklearn`.
