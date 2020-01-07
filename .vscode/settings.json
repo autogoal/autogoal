@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/home/apiad/.anaconda3/bin/python",
+    "python.pythonPath": "/usr/bin/python3",
     "files.exclude": {
         "notebooks/arxiv-papers-tex/**/*": true,
         "notebooks/arxiv-papers-tex/**/.gitignore": false,
@@ -135,5 +135,6 @@
         ".vscode/tasks.json": false,
         ".vscode/launch.json": false,
         ".vscode/extensions.json": false
-    }
+    },
+    "workbench.colorCustomizations": {}
 }
