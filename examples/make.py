@@ -31,11 +31,15 @@ class Markdown:
             else:
                 break
 
+        while content:
+            if not content[-1].strip():
+                content.pop()
+            else:
+                break
+
         self.content = content
 
     def print(self, fp):
-        fp.write("\n")
-
         for line in self.content:
             if line.startswith("# "):
                 fp.write(line[2:])
@@ -43,6 +47,7 @@ class Markdown:
                 fp.write("\n")
 
         fp.write("\n")
+
 
 class Python(Markdown):
     def print(self, fp):
@@ -54,7 +59,7 @@ class Python(Markdown):
         for line in self.content:
             fp.write(line)
 
-        fp.write("```\n")
+        fp.write("```\n\n")
 
 
 def process(fname: Path):
@@ -81,6 +86,7 @@ def process(fname: Path):
                         content.append(Markdown(current))
                         current = []
                     state = 'python'
+                current.append(line)
 
         if current:
             if state == 'markdown':
