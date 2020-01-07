@@ -1,9 +1,10 @@
-# coding: utf8
-
 import networkx as nx
 import random
+import types
 
 from typing import List
+
+from ._base import Grammar, Sampler
 
 
 class Graph(nx.DiGraph):
@@ -19,7 +20,7 @@ class Graph(nx.DiGraph):
         previous nodes.
         """
         for node in nx.topological_sort(self):
-            in_nodes = [u for u,v in self.in_edges(node)]
+            in_nodes = [u for u, v in self.in_edges(node)]
             yield (node, in_nodes)
 
     def apply(self, function):
@@ -43,17 +44,38 @@ class Graph(nx.DiGraph):
 
         return value
 
+    def contains_any(self, *items):
+        return any((node in items) for node in self)
 
-def uniform_pattern_selection(patterns):
-    return random.choice(patterns)
+
+def uniform_selection(items):
+    return random.choice(items)
 
 
-def default_init_factory(cls):
-    return dict()
+def first_selection(items):
+    return items[0]
+
+
+def default_initializer(cls):
+    return cls()
+
+
+# Holds a string to class map for automatically generated classes
+_GENERATED_CLASSES = {}
+
+
+def _get_generated_class(name):
+    if name in _GENERATED_CLASSES:
+        return _GENERATED_CLASSES[name]
+
+    clss = types.new_class(name)
+    _GENERATED_CLASSES[name] = clss
+
+    return clss
 
 
 class Production:
-    def __init__(self, pattern, replacement, *, init_factory=None):
+    def __init__(self, pattern, replacement, *, initializer=default_initializer):
         if not isinstance(pattern, Graph):
             obj = pattern
             pattern = Graph()
@@ -64,7 +86,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.init_factory = init_factory or default_init_factory
+        self.initializer = initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -84,9 +106,7 @@ class Production:
 
         return False
 
-    def apply(
-        self, graph: Graph, pattern_selection=uniform_pattern_selection
-    ) -> Graph:
+    def apply(self, graph: Graph, pattern_selection=uniform_selection) -> Graph:
         """
         Applies a production in a graph and returns the modified graph.
         """
@@ -101,18 +121,21 @@ class Production:
 
         graph.remove_node(node)
         self.replacement.build(
-            graph, in_nodes, out_nodes, init_factory=self.init_factory
+            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self.initializer
         )
 
         return graph
 
 
-def uniform_production_selector(productions: List[Production]) -> Production:
-    return random.choice(productions)
-
-
 class GraphPattern:
-    def build(self, graph: Graph, in_nodes, out_nodes):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
         raise NotImplementedError()
 
     def _add_in_nodes(self, graph, in_nodes, node):
@@ -123,18 +146,25 @@ class GraphPattern:
         for out_node in out_nodes:
             graph.add_edge(node, out_node)
 
-    def make(self, *, init_factory=default_init_factory) -> Graph:
+    def make(self, *, initializer=default_initializer) -> Graph:
         graph = Graph()
-        self.build(graph, [], [], init_factory)
+        self.build(graph, in_nodes=[], out_nodes=[], initializer=initializer)
         return graph
 
 
 class Node(GraphPattern):
     def __init__(self, cls):
-        self.cls = cls
+        self.cls = _get_generated_class(cls) if isinstance(cls, str) else cls
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        obj = self.cls(**init_factory(self.cls))
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
+        obj = initializer(self.cls)
         graph.add_node(obj)
         self._add_in_nodes(graph, in_nodes, obj)
         self._add_out_nodes(graph, out_nodes, obj)
@@ -142,10 +172,19 @@ class Node(GraphPattern):
 
 class Path(GraphPattern):
     def __init__(self, *items):
-        self.items = list(items)
+        self.items = [
+            (_get_generated_class(i) if isinstance(i, str) else i) for i in items
+        ]
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        items = [cls(**init_factory(cls)) for cls in self.items]
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
+        items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
         for i, j in zip(items, items[1:]):
@@ -157,10 +196,19 @@ class Path(GraphPattern):
 
 class Block(GraphPattern):
     def __init__(self, *items):
-        self.items = list(items)
+        self.items = [
+            (_get_generated_class(i) if isinstance(i, str) else i) for i in items
+        ]
 
-    def build(self, graph: Graph, in_nodes, out_nodes, init_factory):
-        items = [cls(**init_factory(cls)) for cls in self.items]
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
+        items = [initializer(cls) for cls in self.items]
         graph.add_nodes_from(items)
 
         for item in items:
@@ -168,43 +216,59 @@ class Block(GraphPattern):
             self._add_out_nodes(graph, out_nodes, item)
 
 
-class GraphGrammar:
-    def __init__(self):
-        self.productions: List[Production] = []
+class GraphGrammar(Grammar):
+    def __init__(self, start, *, initializer=default_initializer, non_terminals=None):
+        if isinstance(start, str):
+            start = Node(start)
 
-    def add(self, pattern, replacement: GraphPattern, *, init_factory=None):
-        self.productions.append(
-            Production(pattern, replacement, init_factory=init_factory)
+        if isinstance(start, GraphPattern):
+            start = start.make()
+
+        super(GraphGrammar, self).__init__(start)
+        self._productions: List[Production] = []
+        self._non_terminals = set(non_terminals or [])
+        self._initializer = initializer
+
+    def add(self, pattern, replacement: GraphPattern, *, initializer=None, kwargs=None):
+        if initializer is None:
+            initializer = self._initializer
+
+        if kwargs is not None:
+            initializer = lambda cls: cls(**kwargs)
+
+        if isinstance(pattern, str):
+            pattern = _get_generated_class(pattern)
+            self._non_terminals.add(pattern)
+
+        self._productions.append(
+            Production(pattern, replacement, initializer=initializer)
         )
 
-    def expand(
-        self, graph: Graph, max_iters=100, production_selector=uniform_production_selector,
-    ) -> Graph:
-        if graph is None:
-            raise ValueError("`graph` cannot be `None`")
+    def _sample(self, symbol: Graph, max_iterations: int, sampler: Sampler):
+        if symbol is None:
+            raise ValueError("`symbol` cannot be `None`")
 
-        if not isinstance(graph, Graph):
-            obj = graph
-            graph = Graph()
-            graph.add_node(obj)
-        else:
-            graph = graph.copy()
+        symbol = symbol.copy()
 
-        return self._expand(graph, max_iters, production_selector)
+        while max_iterations > 0:
+            valid_productions = [p for p in self._productions if p.match(symbol)]
 
-    def _expand(self, graph, iters, production_selector):
-        if graph is None:
-            raise ValueError("`graph` cannot be `None`")
+            if self._non_terminals:
+                non_terminal_productions = [
+                    p
+                    for p in valid_productions
+                    if p.pattern.contains_any(*self._non_terminals)
+                ]
 
-        if iters == 0:
-            return graph
+                if non_terminal_productions:
+                    valid_productions = non_terminal_productions
 
-        valid_productions = [p for p in self.productions if p.match(graph)]
+            if not valid_productions:
+                return symbol
 
-        if not valid_productions:
-            return graph
+            production = sampler.choice(valid_productions)
+            symbol = production.apply(symbol)
 
-        production = production_selector(valid_productions)
-        graph = production.apply(graph)
+            max_iterations -= 1
 
-        return self._expand(graph, iters - 1, production_selector)
+        return symbol
