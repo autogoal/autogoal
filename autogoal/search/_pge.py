@@ -1,15 +1,15 @@
 import scipy
 
-from typing import Mapping
+from typing import Mapping, Optional, Dict
 from autogoal.grammar import Sampler
 from ._base import SearchAlgorithm
 
 
 class ModelSampler(Sampler):
-    def __init__(self, model: Mapping = None, **kwargs):
+    def __init__(self, model: Dict = None, **kwargs):
         super().__init__(**kwargs)
-        self._model = model or {}
-        self._updates = {}
+        self._model: Dict = model or {}
+        self._updates: Dict = {}
 
     @property
     def model(self):
@@ -129,16 +129,16 @@ class PESearch(SearchAlgorithm):
         self,
         *args,
         pop_size: int = 100,
-        learning_factor: int = 0.05,
-        selection: int = 0.2,
-        random_state: int = None,
+        learning_factor: float = 0.05,
+        selection: float = 0.2,
+        random_state: Optional[int] = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
         self._pop_size = pop_size
         self._learning_factor = learning_factor
         self._selection = selection
-        self._model = {}
+        self._model: Dict = {}
 
     def _run_one_generation(self):
         self._samplers = []

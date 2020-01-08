@@ -2,7 +2,7 @@ import inspect
 import random
 import warnings
 import sys
-from typing import List, Mapping, Set
+from typing import List, Dict, Set
 
 from ._base import Grammar, Sampler
 
@@ -147,10 +147,10 @@ class ContextFreeGrammar(Grammar):
     """Represents a CFG grammar.
     """
 
-    def __init__(self, start: Symbol, namespace: Mapping = None):
+    def __init__(self, start: Symbol, namespace: Dict[str, type] = None):
         super(ContextFreeGrammar, self).__init__(start)
         self._namespace = namespace or {}
-        self._productions: Mapping[Symbol, Production] = {}
+        self._productions: Dict[Symbol, Production] = {}
 
     def add(self, symbol: Symbol, production: Production) -> None:
         if symbol in self:
@@ -211,7 +211,7 @@ def generate_cfg(
 
         annotation_cls = param_obj.annotation
 
-        if annotation_cls == inspect._empty:
+        if annotation_cls == inspect.Signature.empty:
             warnings.warn(
                 "In <%s>: Couldn't find annotation type for %r"
                 % (cls.__name__, param_obj)

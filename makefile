@@ -63,16 +63,16 @@ dev-install: dev-ensure
 	poetry config virtualenvs.create false
 	poetry install
 	pip install tensorflow==1.14
-
+#
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
 	python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest --doctest-modules --cov=autogoal --cov-report=term-missing -v
+	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-test-full
 dev-test-full: dev-ensure
 	python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest --doctest-modules --cov=autogoal --cov-report=xml
+	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=xml
 
 .PHONY: dev-cov
 dev-cov: dev-ensure
