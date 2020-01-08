@@ -47,7 +47,8 @@ from autogoal.grammar import (
 
 # Next, we will also use two different search strategies, from the `autogoal.search` module.
 
-from autogoal.search import RandomSearch, PESearch, EnlightenLogger # <-- for logging, duh
+from autogoal.search import RandomSearch, PESearch
+from autogoal.search import EnlightenLogger # for logging
 
 # Finally, we will use a toy dataset that comes pre-packaged with `autogoal`.
 # This is the famous [Movie Reviews dataset from Pang & Lee](https://www.cs.cornell.edu/people/pabo/movie-review-data/).
