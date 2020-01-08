@@ -203,7 +203,11 @@ def generate_cfg(
 
     grammar.add(symbol, Empty(symbol, grammar))
     parameters = {}
-    signature = inspect.signature(cls.__init__)
+
+    if inspect.isclass(cls):
+        signature = inspect.signature(cls.__init__)
+    elif inspect.isfunction(cls):
+        signature = inspect.signature(cls)
 
     for param_name, param_obj in signature.parameters.items():
         if param_name in ["self", "args", "kwargs"]:
