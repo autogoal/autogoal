@@ -20,7 +20,11 @@ nav:
     - Contributing: contributing.md
     - History: history.md
 
+    - User Guide:
+        - First steps: guide/index.md
+
     - API:
+        - AutoGOAL: api/index.md
         - Context Free Grammars: api/cfg.md
 
     - Examples:
