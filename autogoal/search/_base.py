@@ -1,13 +1,15 @@
 import enlighten
+import warnings
 
 from autogoal.grammar import Grammar
 
 
 class SearchAlgorithm:
-    def __init__(self, grammar: Grammar, fitness_fn, maximize=True):
+    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise'):
         self._grammar = grammar
         self._fitness_fn = fitness_fn
         self._maximize = maximize
+        self._errors = errors
 
     def run(self, evaluations, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
@@ -16,7 +18,7 @@ class SearchAlgorithm:
             Tuple `(best, fn)` of the best found solution and its corresponding fitness.
         """
         if logger is None:
-            logger = Looger()
+            logger = Logger()
 
         best_solution = None
         best_fn = None
@@ -32,7 +34,17 @@ class SearchAlgorithm:
 
                 for solution in self._run_one_generation():
                     logger.sample_solution(solution)
-                    fn = self._fitness_fn(solution)
+
+                    try:
+                        fn = self._fitness_fn(solution)
+                    except Exception as e:
+                        if self._errors == 'raise':
+                            raise
+                        
+                        fn = 0
+                        if self._errors == 'warn':
+                            warnings.warn(str(e))
+                        
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
 
@@ -55,9 +67,9 @@ class SearchAlgorithm:
 
             return best_solution, best_fn
 
-        except:
+        except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
-            raise
+
 
     def _run_one_generation(self):
         raise NotImplementedError()
@@ -69,8 +81,8 @@ class SearchAlgorithm:
         pass
 
 
-class Looger:
-    def begin(self):
+class Logger:
+    def begin(self, evaluations):
         pass
 
     def end(self, best, best_fn):
@@ -92,7 +104,7 @@ class Looger:
         pass
 
 
-class EnlightenLogger(Looger):
+class EnlightenLogger(Logger):
     def __init__(self, *, log_solutions=False):
         self.log_solutions = log_solutions
 

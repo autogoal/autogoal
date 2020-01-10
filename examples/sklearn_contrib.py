@@ -1,8 +1,18 @@
 from autogoal.contrib.sklearn import SklearnClassifier
 from autogoal.grammar import generate_cfg
+from autogoal.search import RandomSearch, EnlightenLogger
+
+from sklearn.datasets import make_classification
 
 
 g = generate_cfg(SklearnClassifier)
-print(g)
+X, y = make_classification()
 
-print(g.sample())
+
+def fitness(pipeline):
+    pipeline.fit(X, y)
+    return pipeline.score(X, y)
+
+
+search = RandomSearch(g, fitness, random_state=0, errors='warn')
+search.run(1000, logger=EnlightenLogger())
