@@ -46,11 +46,11 @@ Classification = Union("Classification", BayesClassifier, LinearClassifier, sk.S
 class SklearnClassifier(_Pipeline):
     def __init__(
         self,
-        data_preprocesing: DataPreprocessing,
+        data_preprocessing: DataPreprocessing,
         feature_preprocessing: FeaturePreprocessing,
         classification: Classification
     ):
-        self.data_preprocessing = data_preprocesing
+        self.data_preprocessing = data_preprocessing
         self.feature_preprocessing = feature_preprocessing
         self.classification = classification
         
