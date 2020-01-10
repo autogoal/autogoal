@@ -5,4 +5,12 @@ A pipeline is defined as a series of steps, which together form a program that p
 AutoGOAL was designed specifically for optimizing machine learnign pipelines, a problem often called [AutoML](https://automl.org),
 but it can be used to optimize anything that can be defined as a set of steps with parameters.
 
-Let's begin with the simplest possible example. Suppose we have a single function in Python that takes some input and produces some output.
+Let's begin with the simplest possible example. 
+Suppose we have a single function in Python that takes some input and produces some output, and we want to find the optimal values for that function.
+
+```python
+import numpy as np
+
+def f(x, y):
+    pass
+```

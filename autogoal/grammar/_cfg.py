@@ -242,6 +242,9 @@ class Discrete:
         self.min = min
         self.max = max
 
+    def __repr__(self):
+        return f"Discrete(min={self.min}, max={self.max})"
+
     def generate_cfg(self, grammar, head):
         grammar.add(
             head, Distribution(head, grammar, "discrete", min=self.min, max=self.max)
@@ -250,6 +253,9 @@ class Discrete:
 
 
 class Continuous(Discrete):
+    def __repr__(self):
+        return f"Discrete(min={self.min}, max={self.max})"
+
     def generate_cfg(self, grammar, head):
         grammar.add(
             head, Distribution(head, grammar, "continuous", min=self.min, max=self.max)
@@ -257,9 +263,13 @@ class Continuous(Discrete):
         return grammar
 
 
-class Categorical:
+class Categorical:    
     def __init__(self, *options):
         self.options = list(options)
+
+    def __repr__(self):
+        options = ", ".join(repr(o) for o in self.options)
+        return f"Categorical({options})"
 
     def generate_cfg(self, grammar, head):
         grammar.add(
@@ -269,6 +279,9 @@ class Categorical:
 
 
 class Boolean:
+    def __repr__(self):
+        return f"Boolean()"
+
     def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution(head, grammar, "boolean"))
         return grammar

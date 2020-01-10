@@ -236,7 +236,7 @@ def is_algorithm(cls, verbose=False):
         return True
     else:
         if verbose:
-            warnings.warn("%r doesn't have `fit`" % cls)
+            warnings.warn("%r doesn't have `transform`" % cls)
 
     return False
 
