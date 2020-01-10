@@ -243,7 +243,7 @@ class Discrete:
         self.max = max
 
     def __repr__(self):
-        return f"Discrete(min={self.min}, max={self.max})"
+        return "Discrete(min=%r, max=%r)" % (self.min, self.max)
 
     def generate_cfg(self, grammar, head):
         grammar.add(
@@ -254,7 +254,7 @@ class Discrete:
 
 class Continuous(Discrete):
     def __repr__(self):
-        return f"Discrete(min={self.min}, max={self.max})"
+        return "Continuous(min=%r, max=%r)" % (self.min, self.max)
 
     def generate_cfg(self, grammar, head):
         grammar.add(
