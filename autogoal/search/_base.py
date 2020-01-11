@@ -1,12 +1,10 @@
 import enlighten
 import warnings
 
-from autogoal.grammar import Grammar
-
 
 class SearchAlgorithm:
-    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise'):
-        self._grammar = grammar
+    def __init__(self, generator_fn, fitness_fn, *, maximize=True, errors='raise'):
+        self._generator_fn = generator_fn
         self._fitness_fn = fitness_fn
         self._maximize = maximize
         self._errors = errors
@@ -40,11 +38,11 @@ class SearchAlgorithm:
                     except Exception as e:
                         if self._errors == 'raise':
                             raise
-                        
+
                         fn = 0
                         if self._errors == 'warn':
                             warnings.warn(str(e))
-                        
+
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
 
@@ -69,7 +67,6 @@ class SearchAlgorithm:
 
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
-
 
     def _run_one_generation(self):
         raise NotImplementedError()
