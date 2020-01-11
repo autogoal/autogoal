@@ -12,7 +12,7 @@ def main():
     current = Path(__file__)
     folder = current.parent
 
-    for fname in folder.glob("**/*.py"):
+    for fname in folder.rglob("*.py"):
         if fname.name.startswith("_"):
             continue
         if fname.name == current.name:

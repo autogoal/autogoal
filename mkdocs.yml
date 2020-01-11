@@ -21,11 +21,17 @@ nav:
     - History: history.md
 
     - User Guide:
-        - First steps: guide/index.md
+        - Home: guide/index.md
+        - Predesigned Pipelines: guide/predesigned.md
+        - Class-based Pipelines: guide/cfg.md
+        - Graph-based Pipelines: guide/graph.md
+        - Functional Pipelines: guide/functional.md
+
 
     - API:
         - AutoGOAL: api/index.md
-        - Context Free Grammars: api/cfg.md
+        - Grammars: api/grammar.md
+        - Search: api/search.md
 
     - Examples:
         - Sklearn: examples/sklearn_simple_grammar.md
