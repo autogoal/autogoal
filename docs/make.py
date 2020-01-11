@@ -12,10 +12,8 @@ def main():
     current = Path(__file__)
     folder = current.parent
 
-    for fname in folder.iterdir():
+    for fname in folder.glob("**/*.py"):
         if fname.name.startswith("_"):
-            continue
-        if not fname.name.endswith(".py"):
             continue
         if fname.name == current.name:
             continue
@@ -94,7 +92,7 @@ def process(fname: Path):
             else:
                 content.append(Python(current))
 
-    output = fname.parent.parent / "docs" / "examples" / (fname.name[:-3] + ".md")
+    output = fname.parent / (fname.name[:-3] + ".md")
 
     with output.open("w") as fp:
         for c in content:
