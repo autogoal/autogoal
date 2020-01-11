@@ -1,8 +1,6 @@
 import nltk
 import nltk.stem as st
 import nltk.tokenize as tk
-import sklearn
-
 
 import textwrap
 import datetime
@@ -16,6 +14,11 @@ from pathlib import Path
 
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 
+languages = ["arabic", "danish", "dutch", "english", "finnish", "french", "german",\
+             "hungarian", "italian", "norwegian", "portuguese", "romanian", "russian",\
+             "spanish", "swedish"]
+
+languages_re = re.compile("|".join(languages))
 
 def build_nltk_wrappers():
     imports = _walk(nltk)
@@ -43,16 +46,19 @@ def build_nltk_wrappers():
 
 
 def _write_class(cls, fp):
-    args = _get_args(cls)
+    try:
+        args = _get_args(cls)
+    except Exception as e:
+        warnings.warn("Error to generate wrapper for %s : %s" %(cls.__name__, e))
+        return
+
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
 
     print(cls)
-
-    fp.write(textwrap.dedent(
-        f"""
+    class_code = f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
         class {cls.__name__}(_{cls.__name__}):
@@ -65,12 +71,57 @@ def _write_class(cls, fp):
                 super().__init__(
                     {init_str}
                 )
-
+            
+            def fit_transform(
+                self, 
+                X, 
+                y=None
+            ):
+                self.fit(X, y=None)
+                return self.transform(X)
+            
+            def fit(
+                self, 
+                X, 
+                y=None
+            ):
+                pass    
         """
-    ))
+        
+    if _is_stemmer(cls):
+        class_code += _write_stemmer(cls)
+    if _is_tokenizer(cls):
+        class_code += _write_tokenizer(cls)
 
+    fp.write(textwrap.dedent(class_code))
     fp.flush()
 
+def _write_stemmer(cls):
+    return """
+            def dstem(
+                self,
+                document
+            ):
+                return [self.stem(word) for word in document]
+
+            def transform(
+                self, 
+                X,
+                y=None
+            ):
+                return [self.dstem(x) for x in X]
+        """
+
+def _write_tokenizer(cls):
+    return """
+            def transform(
+                self, 
+                X,
+                y=None
+            ):
+                return [self.tokenize(x) for x in X]
+        """
+    
 
 def _is_stemmer(cls, verbose=False):
     if hasattr(cls, "stem"):
@@ -82,6 +133,7 @@ def _is_tokenizer(cls, verbose=False):
         if hasattr(cls, "tokenize"):
             return True
     return False
+
 
 def _walk(module, name="nltk"):
     imports = []
@@ -106,7 +158,6 @@ def _walk(module, name="nltk"):
                     if not (_is_tokenizer(obj) or _is_stemmer(obj)):
                         continue
                     
-                    print("Found:", elem)
                     imports.append(obj)
 
                 # _walk_p(obj, name) If not module do not walk in it
@@ -165,15 +216,23 @@ def _find_parameter_values(parameter, cls):
 
     return sorted(valid)
 
-def _get_args(cls):
-    specs = inspect.getfullargspec(cls.__init__)
+def _find_language_values(cls):
+    global languages_re
+    documentation = cls.__doc__
+    
+    return languages_re.findall(str.lower(documentation))
 
-    args = specs.args
-    specs = specs.defaults
+def _get_args(cls):
+    full_specs = inspect.getfullargspec(cls.__init__)
+
+    args = full_specs.args
+    specs = full_specs.defaults
 
     if not args or not specs:
         return {}
 
+    non_kwargs = [arg for arg in args[:-len(specs):] if arg != "self"]
+    
     args = args[-len(specs) :]
 
     args_map = {k: v for k, v in zip(args, specs)}
@@ -200,9 +259,16 @@ def _get_args(cls):
         if not values:
             continue
         result[arg] = values
-
+        
+    for arg in non_kwargs:
+        #special handling of language
+        if str.lower(arg) == "language": 
+            values = _find_language_values(cls)
+            if values:
+                result[arg] = Categorical(*values)
+                continue
+        raise Exception("No values found for positional argument %s " %(arg))
     return result
-
 
 def _get_arg_values(arg, value, cls):
     if isinstance(value, bool):
@@ -214,7 +280,6 @@ def _get_arg_values(arg, value, cls):
     if isinstance(value, str):
         values = _find_parameter_values(arg, cls)
         return Categorical(*values) if values else None
-
     return None
 
 def _get_integer_values(arg, value, cls):
