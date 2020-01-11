@@ -3,11 +3,14 @@ import warnings
 
 
 class SearchAlgorithm:
-    def __init__(self, generator_fn, fitness_fn, *, maximize=True, errors='raise'):
+    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise'):
         self._generator_fn = generator_fn
-        self._fitness_fn = fitness_fn
+        self._fitness_fn = fitness_fn or self._identity
         self._maximize = maximize
         self._errors = errors
+
+    def _identity(self, x):
+        return x
 
     def run(self, evaluations, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.

@@ -8,6 +8,7 @@ from sklearn.datasets import make_classification
 g = generate_cfg(SklearnClassifier)
 X, y = make_classification()
 
+print(g)
 
 def fitness(pipeline):
     pipeline.fit(X, y)

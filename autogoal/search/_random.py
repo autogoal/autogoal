@@ -5,8 +5,8 @@ from autogoal.grammar import Sampler
 
 
 class RandomSearch(SearchAlgorithm):
-    def __init__(self, generator_fn, fitness_fn, *, random_state: int = None, **kwargs):
-        super(RandomSearch, self).__init__(generator_fn, fitness_fn, **kwargs)
+    def __init__(self, *args, random_state: int = None, **kwargs):
+        super(RandomSearch, self).__init__(*args, **kwargs)
         self._sampler = Sampler(random_state=random_state)
 
     def _run_one_generation(self):

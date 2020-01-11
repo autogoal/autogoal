@@ -50,23 +50,23 @@ class ModelSampler(Sampler):
         self._register_update(option, 1)
         return option
 
-    def discrete(self, handle, min, max):
+    def discrete(self, min=0, max=10, handle=None):
         if handle is None:
-            return super().discrete(handle, min, max)
+            return super().discrete(min, max, handle)
 
         mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
         value = self._clamp(int(self.rand.gauss(mean, stdev)), min, max)
         return self._register_update(handle, value)
 
-    def continuous(self, handle, min, max):
+    def continuous(self, min=0, max=1, handle=None):
         if handle is None:
-            return super().continuous(handle, min, max)
+            return super().continuous(min, max, handle)
 
         mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
         value = self._clamp(self.rand.gauss(mean, stdev), min, max)
         return self._register_update(handle, value)
 
-    def boolean(self, handle):
+    def boolean(self, handle=None):
         if handle is None:
             return super().boolean(handle)
 
@@ -74,9 +74,9 @@ class ModelSampler(Sampler):
         value = self.rand.uniform(0, 1) < p
         return self._register_update(handle, value)
 
-    def categorical(self, handle, options):
+    def categorical(self, options, handle=None):
         if handle is None:
-            return super().categorical(handle, options)
+            return super().categorical(options, handle)
 
         weights = self._get_model_params(handle, [1 for _ in options])
         idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]
@@ -172,6 +172,7 @@ class PESearch(SearchAlgorithm):
 
         model = selected[0].model
 
+        # TODO: aggregate updates before `update_model`
         for sampler in selected:
             model = update_model(model, sampler.updates, self._learning_factor)
 
