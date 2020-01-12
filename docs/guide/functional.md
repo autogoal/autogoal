@@ -7,11 +7,11 @@ the functional API does not require to know before-hand the structure of the spa
 This enables very flexible use cases, in which you can iterate quickly, experiment, and transform deterministic code to solve
 one particular task into optimizable software that seems to magically solve the problem for you in the best possible way.
 
-Let's start with a toy example just to show the basic usage of the API. We want to generate three numbers that
-$$x = y+z$$
+Let's start with a toy example just to show the basic usage of the API.
 
 ```python
 from autogoal.grammar import Sampler
+
 
 def generate(sampler: Sampler):
     x1 = sampler.continuous(0, 1, "x1")

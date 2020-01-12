@@ -215,11 +215,12 @@ def generate_cfg(
 
         annotation_cls = param_obj.annotation
 
-        if annotation_cls == inspect.Signature.empty:
-            warnings.warn(
-                "In <%s>: Couldn't find annotation type for %r"
-                % (cls.__name__, param_obj)
-            )
+        if annotation_cls == inspect.Parameter.empty:
+            if param_obj.default == inspect.Parameter.empty:
+                raise TypeError(
+                    "In <%s>: Couldn't find annotation type for %r"
+                    % (cls.__name__, param_obj)
+                )
             continue
 
         if annotation_cls == "self":
@@ -263,7 +264,7 @@ class Continuous(Discrete):
         return grammar
 
 
-class Categorical:    
+class Categorical:
     def __init__(self, *options):
         self.options = list(options)
 
