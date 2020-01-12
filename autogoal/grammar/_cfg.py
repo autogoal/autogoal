@@ -2,7 +2,7 @@ import inspect
 import random
 import warnings
 import sys
-from typing import List, Mapping, Set
+from typing import List, Dict, Set
 
 from ._base import Grammar, Sampler
 
@@ -147,10 +147,10 @@ class ContextFreeGrammar(Grammar):
     """Represents a CFG grammar.
     """
 
-    def __init__(self, start: Symbol, namespace: Mapping = None):
+    def __init__(self, start: Symbol, namespace: Dict[str, type] = None):
         super(ContextFreeGrammar, self).__init__(start)
         self._namespace = namespace or {}
-        self._productions: Mapping[Symbol, Production] = {}
+        self._productions: Dict[Symbol, Production] = {}
 
     def add(self, symbol: Symbol, production: Production) -> None:
         if symbol in self:
@@ -203,7 +203,11 @@ def generate_cfg(
 
     grammar.add(symbol, Empty(symbol, grammar))
     parameters = {}
-    signature = inspect.signature(cls.__init__)
+
+    if inspect.isclass(cls):
+        signature = inspect.signature(cls.__init__)
+    elif inspect.isfunction(cls):
+        signature = inspect.signature(cls)
 
     for param_name, param_obj in signature.parameters.items():
         if param_name in ["self", "args", "kwargs"]:
@@ -211,11 +215,12 @@ def generate_cfg(
 
         annotation_cls = param_obj.annotation
 
-        if annotation_cls == inspect._empty:
-            warnings.warn(
-                "In <%s>: Couldn't find annotation type for %r"
-                % (cls.__name__, param_obj)
-            )
+        if annotation_cls == inspect.Parameter.empty:
+            if param_obj.default == inspect.Parameter.empty:
+                raise TypeError(
+                    "In <%s>: Couldn't find annotation type for %r"
+                    % (cls.__name__, param_obj)
+                )
             continue
 
         if annotation_cls == "self":
@@ -238,6 +243,9 @@ class Discrete:
         self.min = min
         self.max = max
 
+    def __repr__(self):
+        return "Discrete(min=%r, max=%r)" % (self.min, self.max)
+
     def generate_cfg(self, grammar, head):
         grammar.add(
             head, Distribution(head, grammar, "discrete", min=self.min, max=self.max)
@@ -246,6 +254,9 @@ class Discrete:
 
 
 class Continuous(Discrete):
+    def __repr__(self):
+        return "Continuous(min=%r, max=%r)" % (self.min, self.max)
+
     def generate_cfg(self, grammar, head):
         grammar.add(
             head, Distribution(head, grammar, "continuous", min=self.min, max=self.max)
@@ -257,6 +268,10 @@ class Categorical:
     def __init__(self, *options):
         self.options = list(options)
 
+    def __repr__(self):
+        options = ", ".join(repr(o) for o in self.options)
+        return f"Categorical({options})"
+
     def generate_cfg(self, grammar, head):
         grammar.add(
             head, Distribution(head, grammar, "categorical", options=self.options)
@@ -265,6 +280,9 @@ class Categorical:
 
 
 class Boolean:
+    def __repr__(self):
+        return f"Boolean()"
+
     def generate_cfg(self, grammar, head):
         grammar.add(head, Distribution(head, grammar, "boolean"))
         return grammar

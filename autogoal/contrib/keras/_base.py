@@ -3,6 +3,8 @@ from keras.layers import concatenate, Input
 from keras.models import Model
 from keras.utils import to_categorical
 
+from typing import Optional
+
 
 class KerasNeuralNetwork:
     def __init__(
@@ -16,7 +18,7 @@ class KerasNeuralNetwork:
         self._input_shape = input_shape
         self._epochs = epochs
         self._compile_kwargs = compile_kwargs
-        self._model = None
+        self._model: Optional[Model] = None
 
     def __repr__(self):
         return (

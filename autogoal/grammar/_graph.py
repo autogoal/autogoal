@@ -2,7 +2,7 @@ import networkx as nx
 import random
 import types
 
-from typing import List
+from typing import List, Dict
 
 from ._base import Grammar, Sampler
 
@@ -61,7 +61,7 @@ def default_initializer(cls):
 
 
 # Holds a string to class map for automatically generated classes
-_GENERATED_CLASSES = {}
+_GENERATED_CLASSES: Dict[str, type] = {}
 
 
 def _get_generated_class(name):

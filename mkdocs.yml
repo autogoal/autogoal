@@ -20,8 +20,22 @@ nav:
     - Contributing: contributing.md
     - History: history.md
 
+    - User Guide:
+        - User Guide - Home: guide/index.md
+        - Pipelines:
+            - Pre-designed: guide/predesigned.md
+            - Class-based: guide/cfg.md
+            - Graph-based: guide/graph.md
+            - Functional: guide/functional.md
+
+
     - API:
-        - Context Free Grammars: api/cfg.md
+        - API - Home: api/index.md
+        - Grammars: api/grammar.md
+        - Search: api/search.md
+        - Contrib:
+            - Sklearn: api/sklearn.md
+            - Keras: api/keras.md
 
     - Examples:
         - Sklearn: examples/sklearn_simple_grammar.md
