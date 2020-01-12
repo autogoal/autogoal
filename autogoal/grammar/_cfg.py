@@ -2,7 +2,7 @@ import inspect
 import random
 import warnings
 import sys
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Callable
 
 from ._base import Grammar, Sampler
 
@@ -186,7 +186,30 @@ class ContextFreeGrammar(Grammar):
         return production.sample(sampler, self._namespace)
 
 
-def generate_cfg(
+def generate_cfg(cls):
+    """
+    Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)
+    from an annotated callable (class or function).
+
+    #### Parameters
+
+    * `cls`: class or function with annotated arguments.
+
+    #### Examples
+
+        >>> class MyClass:
+        ...     def __init__(self, x: Discrete(1,3)):
+        ...         pass
+        >>> grammar = generate_cfg(MyClass)
+        >>> print(grammar)
+        <MyClass>   := MyClass (x=<MyClass_x>)
+        <MyClass_x> := discrete (min=1, max=3)
+
+    """
+    return _generate_cfg(cls)
+
+
+def _generate_cfg(
     cls, grammar: ContextFreeGrammar = None, head: Symbol = None
 ) -> ContextFreeGrammar:
     symbol = head or Symbol(cls.__name__)
@@ -231,7 +254,7 @@ def generate_cfg(
         else:
             param_symbol = Symbol("%s_%s" % (cls.__name__, param_name))
 
-        generate_cfg(annotation_cls, grammar, param_symbol)
+        _generate_cfg(annotation_cls, grammar, param_symbol)
         parameters[param_name] = param_symbol
 
     grammar.replace(symbol, Callable(symbol, grammar, cls.__name__, **parameters))
@@ -293,6 +316,10 @@ class Union:
         self.__name__ = name
         self.clss = list(clss)
 
+    def __repr__(self):
+        # args = ", ".join(str(s) for s in self.clss)
+        return self.__name__
+
     def generate_cfg(self, grammar, head):
         symbol = head or Symbol(self.__name__)
 
@@ -305,7 +332,7 @@ class Union:
         for child in self.clss:
             child_symbol = Symbol(child.__name__)
             children.append(child_symbol)
-            generate_cfg(child, grammar, child_symbol)
+            _generate_cfg(child, grammar, child_symbol)
 
         grammar.replace(symbol, OneOf(symbol, grammar, *children))
         return grammar
@@ -317,6 +344,6 @@ class CfgInitializer:
 
     def __call__(self, cls):
         if cls not in self._grammars:
-            self._grammars[cls] = generate_cfg(cls)
+            self._grammars[cls] =  generate_cfg(cls)
 
         return self._grammars[cls].sample()

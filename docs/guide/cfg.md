@@ -1,4 +1,4 @@
-# Class-based Pipelines
+# Class-based API
 
 AutoGOAL's class-based API allows to automatically find optimal instances of complex objects
 in user-defined class hierarchies that solve a given task. A task is simply some method that
@@ -78,9 +78,9 @@ Now we will use AutoGOAL to automatically generate different instances of our `L
 With the class-based API we achieve this by building a **context-free grammar** that describes all possible instances.
 
 ```python
-from autogoal.grammar import generate_cfg
+from autogoal.grammar import  generate_cfg
 
-grammar = generate_cfg(LR)
+grammar =  generate_cfg(LR)
 print(grammar)
 ```
 
@@ -184,9 +184,9 @@ of each of these clases.
 
 ```python
 from autogoal.grammar import Union
-from autogoal.grammar import generate_cfg
+from autogoal.grammar import  generate_cfg
 
-grammar = generate_cfg(Union("Classifier", LR, SVM, NB, DT))
+grammar =  generate_cfg(Union("Classifier", LR, SVM, NB, DT))
 ```
 
 !!! note
@@ -397,7 +397,7 @@ that class, based on the parameters' annotations and recursively building the co
 rules for all classes down to basic parameter types.
 
 ```python
-grammar = generate_cfg(Pipeline)
+grammar =  generate_cfg(Pipeline)
 ```
 
 Notice how the grammar specifies all the possible ways to build a `Pipeline`,

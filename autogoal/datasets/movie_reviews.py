@@ -1,6 +1,6 @@
 import random
 from nltk.corpus import movie_reviews
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split as _split
 
 
 def load(max_examples=None):
@@ -28,7 +28,7 @@ def load(max_examples=None):
 
 def make_fn(test_size=0.25, examples=None):
     X, y = load(examples)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+    X_train, X_test, y_train, y_test = _split(X, y, test_size=test_size)
 
     def fitness_fn(pipeline):
         pipeline.fit(X_train, y_train)

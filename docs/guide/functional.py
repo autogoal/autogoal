@@ -1,4 +1,4 @@
-# # Functional Pipelines
+# # Functional API
 
 # AutoGOAL's functional API allows you to transform any Python callable (e.g., a method)
 # into an optimizable target. In contrast with the [class-based](/guide/cfg/) and [graph-based](/guide/graph/) APIs,
