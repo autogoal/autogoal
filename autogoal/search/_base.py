@@ -5,6 +5,7 @@ import signal
 from autogoal.grammar import Grammar
 
 def run_for(timeout, func, *args, **kwargs):
+    #TODO: encontrar otra manera sin utilizar SIGALRM
     def signal_handler(signum, frame):
         raise Exception("%s reached time limit (%d)" %(func.__name__, timeout))
     
