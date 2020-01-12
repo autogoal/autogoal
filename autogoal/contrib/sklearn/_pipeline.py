@@ -13,7 +13,9 @@ class Noop:
 
     def transform(self, X, y=None):
         return X
-
+    
+    def fit_transform(self, X, y=None):
+        return X
 
 
 class DataPreprocessing(_Pipeline):
@@ -35,7 +37,7 @@ class DataPreprocessing(_Pipeline):
 
     
 Decomposition = Union("Decomposition", sk.FastICA, sk.PCA, sk.TruncatedSVD, sk.KernelPCA)
-FeatureSelection = Union("FeatureSelection", sk.FeatureAgglomeration, sk.PolynomialFeatures) # TODO: Nystrom 
+FeatureSelection = Union("FeatureSelection", sk.FeatureAgglomeration) # TODO: Nystrom 
 FeaturePreprocessing = Union("FeaturePreprocessing", Noop, Decomposition, FeatureSelection)
 
 BayesClassifier = Union("BayesClassifier", sk.GaussianNB, sk.MultinomialNB, sk.ComplementNB, sk.BernoulliNB)

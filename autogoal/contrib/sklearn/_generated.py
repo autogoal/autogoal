@@ -7,6 +7,9 @@ from numpy import inf, nan
 
 from sklearn.cluster._affinity_propagation import AffinityPropagation as _AffinityPropagation
 
+def identity(docs):
+    return docs
+
 class AffinityPropagation(_AffinityPropagation):
     def __init__(
         self,
@@ -796,17 +799,33 @@ class CountVectorizer(_CountVectorizer):
         min_df: Discrete(min=0, max=2),
         binary: Boolean()
     ):
-        self.lowercase=lowercase
         self.max_df=max_df
         self.min_df=min_df
         self.binary=binary
 
         super().__init__(
-            lowercase=lowercase,
+            lowercase=False,
+            tokenizer=identity,
             max_df=max_df,
             min_df=min_df,
             binary=binary
         )
+    
+    def transform(
+        self,
+        X, 
+        y = None
+    ):
+        return super(type(self),self).transform(X).toarray()
+        
+    
+    def fit_transform(
+        self,
+        X, 
+        y = None
+    ):
+        a = super(type(self),self).fit_transform(X, y).todense()
+        return a
 
 
 from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectorizer
@@ -875,7 +894,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer as _TfidfVectorizer
 class TfidfVectorizer(_TfidfVectorizer):
     def __init__(
         self,
-        lowercase: Boolean(),
         max_df: Continuous(min=1e-06, max=1),
         min_df: Discrete(min=0, max=2),
         binary: Boolean(),
@@ -883,16 +901,9 @@ class TfidfVectorizer(_TfidfVectorizer):
         smooth_idf: Boolean(),
         sublinear_tf: Boolean()
     ):
-        self.lowercase=lowercase
-        self.max_df=max_df
-        self.min_df=min_df
-        self.binary=binary
-        self.use_idf=use_idf
-        self.smooth_idf=smooth_idf
-        self.sublinear_tf=sublinear_tf
-
         super().__init__(
-            lowercase=lowercase,
+            lowercase=False,
+            tokenizer=identity,
             max_df=max_df,
             min_df=min_df,
             binary=binary,
@@ -900,6 +911,28 @@ class TfidfVectorizer(_TfidfVectorizer):
             smooth_idf=smooth_idf,
             sublinear_tf=sublinear_tf
         )
+        self.max_df=max_df
+        self.min_df=min_df
+        self.binary=binary
+        self.use_idf=use_idf
+        self.smooth_idf=smooth_idf
+        self.sublinear_tf=sublinear_tf
+    
+    def transform(
+        self,
+        X, 
+        y = None
+    ):
+        return super(type(self),self).transform(X).toarray()
+        
+    
+    def fit_transform(
+        self,
+        X, 
+        y = None
+    ):
+        a = super(type(self),self).fit_transform(X, y).todense()
+        return a
 
 
 from sklearn.impute._base import MissingIndicator as _MissingIndicator
