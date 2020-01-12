@@ -285,14 +285,12 @@ from nltk.stem.snowball import SnowballStemmer as _SnowballStemmer
 class SnowballStemmer(_SnowballStemmer):
     def __init__(
         self,
-        ignore_stopwords: Boolean(),
         language: Categorical('arabic', 'danish', 'dutch', 'english', 'finnish', 'french', 'german', 'hungarian', 'italian', 'norwegian', 'portuguese', 'romanian', 'russian', 'spanish', 'swedish', 'english', 'arabic', 'danish', 'dutch', 'english', 'finnish', 'french', 'german', 'hungarian', 'italian', 'norwegian', 'portuguese', 'romanian', 'russian', 'spanish', 'swedish', 'german', 'german', 'german')
     ):
-        self.ignore_stopwords=ignore_stopwords
         self.language=language
 
         super().__init__(
-            ignore_stopwords=ignore_stopwords,
+            ignore_stopwords=False,
             language=language
         )
 
