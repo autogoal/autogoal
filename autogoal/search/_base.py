@@ -1,15 +1,24 @@
 import enlighten
 import warnings
+import signal
 
 from autogoal.grammar import Grammar
 
+def run_for(timeout, func, *args, **kwargs):
+    def signal_handler(signum, frame):
+        raise Exception("%s reached time limit (%d)" %(func.__name__, timeout))
+    
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(timeout)
+    return func(*args, **kwargs)
 
 class SearchAlgorithm:
-    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise'):
+    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise', evaluation_timeout=300):
         self._grammar = grammar
         self._fitness_fn = fitness_fn
         self._maximize = maximize
         self._errors = errors
+        self._evaluation_timeout = evaluation_timeout
 
     def run(self, evaluations, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
@@ -36,7 +45,7 @@ class SearchAlgorithm:
                     logger.sample_solution(solution)
 
                     try:
-                        fn = self._fitness_fn(solution)
+                        fn = run_for(self._evaluation_timeout, self._fitness_fn, solution)
                     except Exception as e:
                         if self._errors == 'raise':
                             raise
