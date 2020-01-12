@@ -77,7 +77,7 @@ Represents a CFG grammar.
 
 ### `GraphGrammar`
 
-> `GraphGrammar(self, start, *, initializer=<function default_initializer at 0x7f6bdc092730>, non_terminals=None)`
+> `GraphGrammar(self, start, *, initializer=<function default_initializer at 0x7f59d5778730>, non_terminals=None)`
 
 
 !!! warning
@@ -118,18 +118,21 @@ Represents a CFG grammar.
 Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)
 from an annotated callable (class or function).
 
-#### Parameters
+##### Parameters
 
 * `cls`: class or function with annotated arguments.
 
-#### Examples
+##### Examples
 
-    >>> class MyClass:
-    ...     def __init__(self, x: Discrete(1,3)):
-    ...         pass
-    >>> grammar = generate_cfg(MyClass)
-    >>> print(grammar)
-    <MyClass>   := MyClass (x=<MyClass_x>)
-    <MyClass_x> := discrete (min=1, max=3)
+```python
+>>> class MyClass:
+...     def __init__(self, x: Discrete(1,3), y: Continuous(0,1)):
+...         pass
+>>> grammar = generate_cfg(MyClass)
+>>> print(grammar)
+<MyClass>   := MyClass (x=<MyClass_x>, y=<MyClass_y>)
+<MyClass_x> := discrete (min=1, max=3)
+<MyClass_y> := continuous (min=0, max=1)
 
+```
 

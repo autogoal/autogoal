@@ -1,6 +1,6 @@
 from ._base import Grammar, Sampler
 from ._cfg import (
-     generate_cfg,
+    generate_cfg,
     ContextFreeGrammar,
     Discrete,
     Continuous,
@@ -9,4 +9,4 @@ from ._cfg import (
     Union,
     CfgInitializer,
 )
-from ._graph import GraphGrammar, Path, Block, Graph
+from ._graph import GraphGrammar, Path, Block
