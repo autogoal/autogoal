@@ -9,4 +9,4 @@ from ._cfg import (
     Union,
     CfgInitializer,
 )
-from ._graph import GraphGrammar, Path, Block
+from ._graph import GraphGrammar, Path, Block, Graph

@@ -5,47 +5,10 @@
 
 ## Classes
 
-### `Grammar`
+### `Block`
 
-> `Grammar(self, start)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `Sampler`
-
-> `Sampler(self, *, random_state:int=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `ContextFreeGrammar`
-
-> `ContextFreeGrammar(self, start:autogoal.grammar._cfg.Symbol, namespace:Dict[str, type]=None)`
-
-Represents a CFG grammar.
-
-### `Discrete`
-
-> `Discrete(self, min, max)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `Continuous`
-
-> `Continuous(self, min, max)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `Categorical`
-
-> `Categorical(self, *options)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_graph.py#L197)
+> `Block(self, *items)`
 
 
 !!! warning
@@ -53,15 +16,17 @@ Represents a CFG grammar.
 
 ### `Boolean`
 
-> `Boolean(self, /, *args, **kwargs)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L308)
+> `Boolean(self, *args, **kwargs)`
 
 
 !!! warning
     This class has no docstrings.
 
-### `Union`
+### `Categorical`
 
-> `Union(self, name, *clss)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L293)
+> `Categorical(self, *options)`
 
 
 !!! warning
@@ -69,31 +34,42 @@ Represents a CFG grammar.
 
 ### `CfgInitializer`
 
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L344)
 > `CfgInitializer(self)`
 
 
 !!! warning
     This class has no docstrings.
 
-### `GraphGrammar`
+### `ContextFreeGrammar`
 
-> `GraphGrammar(self, start, *, initializer=<function default_initializer at 0x7f59d5778730>, non_terminals=None)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L146)
+> `ContextFreeGrammar(self, start, namespace=None)`
+
+Represents a CFG grammar.
+
+### `Continuous`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L282)
+> `Continuous(self, min, max)`
 
 
 !!! warning
     This class has no docstrings.
 
-### `Path`
+### `Discrete`
 
-> `Path(self, *items)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L267)
+> `Discrete(self, min, max)`
 
 
 !!! warning
     This class has no docstrings.
 
-### `Block`
+### `Grammar`
 
-> `Block(self, *items)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_base.py#L30)
+> `Grammar(self, start)`
 
 
 !!! warning
@@ -101,7 +77,44 @@ Represents a CFG grammar.
 
 ### `Graph`
 
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_graph.py#L10)
 > `Graph(self, **attrs)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `GraphGrammar`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_graph.py#L219)
+> `GraphGrammar(self, start, initializer=None, non_terminals=None)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `Path`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_graph.py#L173)
+> `Path(self, *items)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `Sampler`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_base.py#L4)
+> `Sampler(self, random_state=None)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `Union`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L317)
+> `Union(self, name, *clss)`
 
 
 !!! warning
@@ -112,6 +125,7 @@ Represents a CFG grammar.
 
 ### `generate_cfg`
 
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L189)
 > `generate_cfg(cls)`
 
 

@@ -5,25 +5,10 @@
 
 ## Classes
 
-### `SearchAlgorithm`
-
-> `SearchAlgorithm(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise')`
-
-
-!!! warning
-    This class has no docstrings.
-
 ### `EnlightenLogger`
 
-> `EnlightenLogger(self, *, log_solutions=False)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `RandomSearch`
-
-> `RandomSearch(self, *args, random_state:int=None, **kwargs)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L107)
+> `EnlightenLogger(self, log_solutions=False)`
 
 
 !!! warning
@@ -31,7 +16,8 @@
 
 ### `ModelSampler`
 
-> `ModelSampler(self, model:Dict=None, **kwargs)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_pge.py#L8)
+> `ModelSampler(self, model=None, **kwargs)`
 
 
 !!! warning
@@ -39,7 +25,26 @@
 
 ### `PESearch`
 
-> `PESearch(self, *args, pop_size:int=100, learning_factor:float=0.05, selection:float=0.2, random_state:Union[int, NoneType]=None, **kwargs)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_pge.py#L207)
+> `PESearch(self, *args, pop_size=100, learning_factor=0.05, selection=0.2, random_state=None, **kwargs)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `RandomSearch`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_random.py#L7)
+> `RandomSearch(self, *args, random_state=None, **kwargs)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `SearchAlgorithm`
+
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L5)
+> `SearchAlgorithm(self, generator_fn, fitness_fn=None, maximize=True, errors='raise')`
 
 
 !!! warning

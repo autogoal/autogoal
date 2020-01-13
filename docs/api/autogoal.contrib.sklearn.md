@@ -7,7 +7,8 @@
 
 ### `SklearnClassifier`
 
-> `SklearnClassifier(self, data_preprocessing:autogoal.contrib.sklearn._pipeline.DataPreprocessing, feature_preprocessing:FeaturePreprocessing, classification:Classification)`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/sklearn/_pipeline.py#L46)
+> `SklearnClassifier(self, data_preprocessing, feature_preprocessing, classification)`
 
 
 !!! warning

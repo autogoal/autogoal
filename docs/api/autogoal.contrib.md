@@ -5,5 +5,5 @@
 
 ## Submodules
 
-* [autogoal.contrib.sklearn](/api/autogoal.contrib.sklearn/)
 * [autogoal.contrib.keras](/api/autogoal.contrib.keras/)
+* [autogoal.contrib.sklearn](/api/autogoal.contrib.sklearn/)

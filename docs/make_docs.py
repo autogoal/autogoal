@@ -127,25 +127,9 @@ def generate(module, visited=set()):
     print(name)
 
     path = Path(__file__).parent / 'api' / (name + ".md")
-    submodules = []
-    classes = []
-    functions = []
-
-    for key, obj in vars(module).items():
-        if key.startswith("_"):
-            continue
-
-        if inspect.ismodule(obj):
-            if not obj.__name__.startswith('autogoal'):
-                continue
-
-            submodules.append(obj)
-
-        elif inspect.isclass(obj):
-            classes.append(obj)
-
-        elif inspect.isfunction(obj):
-            functions.append(obj)
+    submodules = inspect.getmembers(module, lambda m: inspect.ismodule(m) and m.__name__.startswith('autogoal') and not "._" in m.__name__)
+    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and not m.__name__.startswith('_'))
+    functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and not m.__name__.startswith('_'))
 
     with open(path, "w") as fp:
         generate_module(module, name, fp)
@@ -153,27 +137,59 @@ def generate(module, visited=set()):
         if submodules:
             fp.write("\n## Submodules\n\n")
 
-        for submodule in submodules:
-            fp.write(f"* [{submodule.__name__}](/api/{submodule.__name__}/)\n")
-            generate(submodule)
+            for _, submodule in submodules:
+                fp.write(f"* [{submodule.__name__}](/api/{submodule.__name__}/)\n")
+                generate(submodule)
 
         if classes:
             fp.write("\n## Classes\n\n")
 
-        for clss in classes:
-            generate_class(clss, name, fp)
+            for _, clss in classes:
+                generate_class(clss, name, fp)
 
         if functions:
             fp.write("\n## Functions\n\n")
 
-        for func in functions:
-            generate_func(func, name, fp)
+            for _, func in functions:
+                generate_func(func, name, fp)
+
+
+def format_param(p: inspect.Parameter) -> str:
+    if p.default != p.empty:
+        return f"{p.name}={repr(p.default)}"
+
+    if p.kind == inspect.Parameter.VAR_POSITIONAL:
+        return f"*{p.name}"
+    
+    if p.kind == inspect.Parameter.VAR_KEYWORD:
+        return f"**{p.name}"
+
+    return f"{p.name}"
+
+
+def format_signature(obj, name=None) -> str:
+    if name is None:
+        name = obj.__name__
+
+    signature = inspect.signature(obj)
+    params = ", ".join(format_param(p) for p in signature.parameters.values())
+    return f"{name}({params})"
 
 
 def generate_class(clss, name, fp):
     print(name, clss)
+
     fp.write(f"### `{clss.__name__}`\n\n")
-    fp.write(f"> `{clss.__name__}{ inspect.signature(clss.__init__) }`\n\n")
+
+    src = inspect.getsourcefile(clss)
+    if src:
+        line = inspect.getsourcelines(clss)[1]
+        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src_link = f"> [`(source)`]({src}#L{line})\n"
+        fp.write(src_link)
+
+    fp.write(f"> `{format_signature(clss.__init__, clss.__name__)}`\n\n")
+
 
     if clss.__doc__:
         fp.write(textwrap.dedent(clss.__doc__))
@@ -186,11 +202,24 @@ def generate_class(clss, name, fp):
             """
         ))
 
+    members = inspect.getmembers(clss, lambda m: inspect.ismethod(m) and not m.__name__.startswith("_"))
 
-def generate_func(func, name, fp):
+    for _, member in members:
+        generate_func(member, name, fp, indent="####")
+
+
+def generate_func(func, name, fp, indent="###"):
     print(name, func)
-    fp.write(f"### `{func.__name__}`\n\n")
-    fp.write(f"> `{func.__name__}{ inspect.signature(func) }`\n\n")
+    fp.write(f"{indent} `{func.__name__}`\n\n")
+
+    src = inspect.getsourcefile(func)
+    if src:
+        line = inspect.getsourcelines(func)[1]
+        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src_link = f"> [`(source)`]({src}#L{line})\n"
+        fp.write(src_link)
+
+    fp.write(f"> `{format_signature(func)}`\n\n")
 
     if func.__doc__:
         fp.write(textwrap.dedent(func.__doc__))

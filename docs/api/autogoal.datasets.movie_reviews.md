@@ -7,6 +7,7 @@
 
 ### `load`
 
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L5)
 > `load(max_examples=None)`
 
 
@@ -15,6 +16,7 @@
 
 ### `make_fn`
 
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L28)
 > `make_fn(test_size=0.25, examples=None)`
 
 
