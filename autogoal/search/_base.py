@@ -6,7 +6,7 @@ from autogoal.utils import ResourceManager
 
 
 class SearchAlgorithm:
-    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise'):
+    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
         self._generator_fn = generator_fn
         self._fitness_fn = fitness_fn or self._identity
         self._maximize = maximize
