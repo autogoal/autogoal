@@ -1,6 +1,5 @@
 import gensim.downloader as api
 
-model = api.load("glove-twitter-25")
 
 class Word2VectEmbedding: 
     """This class transform a word in embedding vector using Word2Vect of `gensim` (using `glove-twitter-25`).
@@ -18,4 +17,4 @@ class Word2VectEmbedding:
     def run(self, input:"Word")-> "Vector": 
         """This method use Word2Vect of gensim for tranform a word in embedding vector. 
         """
-        return self.model.get_vector(word)
+        return self.model.get_vector(input)

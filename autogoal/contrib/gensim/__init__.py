@@ -8,4 +8,4 @@ except:
     raise
 
 
-
+from ._base import Word2VectEmbedding
