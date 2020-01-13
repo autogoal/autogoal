@@ -3,6 +3,7 @@ import resource
 import psutil
 import warnings
 import os
+import multiprocessing
 
 class ResourceManager:
     """
@@ -58,14 +59,22 @@ class ResourceManager:
             limit, _ = memory_amount
             resource.setrlimit(resource.RLIMIT_DATA, (limit, hard))
     
+    def _unrestrict_memory(self):
+        self._restrict_memory(self.original_limit)
+    
     def _run_for(self, function, *args, **kwargs):
-        def signal_handler(signum, frame):
-            raise Exception("%s reached time limit (%d)" %(function.__name__, self.time_limit))
+        def signal_handler(*args):
+            raise TimeoutError()
         
-        signal.signal(signal.SIGALRM, signal_handler)
-        signal.alarm(self.time_limit)
-        
-        return function(*args, **kwargs)
+        try:
+            signal.signal(signal.SIGALRM, signal_handler)
+            signal.alarm(self.time_limit)
+            
+            result = function(*args, **kwargs)
+            signal.alarm(0) #cancel the alarm
+            return result
+        except Exception as e:
+            raise e
     
     def get_used_memory(self):
         """
@@ -74,20 +83,38 @@ class ResourceManager:
         process = psutil.Process(os.getpid())
         return process.memory_info().rss
     
+    def _restricted_function(self, result_bucket, function, args, kwargs):
+        try:
+            self._restrict_memory(self.memory_limit)
+            result = self._run_for(function, *args, **kwargs)
+            result_bucket.put(result)
+        except Exception as e:
+            result_bucket.put(e)
+    
     def run_restricted(self, function, *args, **kwargs):
         """
         Executes a given function with restricted amount of
         CPU time and RAM memory usage
         """
-        self._restrict_memory(self.memory_limit)
         try:
-            return self._run_for(function, *args, **kwargs)
+            result_bucket = multiprocessing.Queue()
+            
+            rprocess = multiprocessing.Process(target=self._restricted_function,
+                                               args=[result_bucket, function, args, kwargs])
+
+            rprocess.start()
+            rprocess.join()
+            
+            result = result_bucket.get()
+            if isinstance(result, Exception): #Exception ocurred
+                raise result
+            return result
+                    
         except MemoryError as e:
-            # restore original memory limit
-            self._restrict_memory(self.original_limit)
             raise MemoryError("Memory error found for function %s" %function.__name__)
             
+        except TimeoutError as e:
+            raise TimeoutError("%s reached time limit (%d)" %(function.__name__, self.time_limit))
+        
         except Exception as e:
-            # restore original memory limit
-            self._restrict_memory(self.original_limit)
             raise e

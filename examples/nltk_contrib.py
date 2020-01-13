@@ -40,6 +40,6 @@ def fitness(pipeline):
     return score
 
 
-search = RandomSearch(g, fitness, random_state=0, errors='warn')
+search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=10)
 result = search.run(100, logger=EnlightenLogger())
 
