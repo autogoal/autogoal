@@ -1,1 +1,1 @@
-from .resource_manager import ResourceManager
+from ._resource import ResourceManager

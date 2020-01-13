@@ -38,6 +38,7 @@ nav:
             - Sklearn: api/autogoal.contrib.sklearn.md
             - Keras: api/autogoal.contrib.keras.md
         - Datasets: api/autogoal.datasets.md
+        - Utils: api/autogoal.utils.md
 
     - Examples:
         - Sklearn: examples/sklearn_simple_grammar.md
