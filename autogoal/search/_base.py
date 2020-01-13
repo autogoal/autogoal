@@ -3,23 +3,16 @@ import warnings
 import signal
 
 from autogoal.grammar import Grammar
-
-def run_for(timeout, func, *args, **kwargs):
-    #TODO: encontrar otra manera sin utilizar SIGALRM
-    def signal_handler(signum, frame):
-        raise Exception("%s reached time limit (%d)" %(func.__name__, timeout))
-    
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(timeout)
-    return func(*args, **kwargs)
+from autogoal.utils import ResourceManager
 
 class SearchAlgorithm:
-    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise', evaluation_timeout=300):
+    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise', evaluation_timeout=360, memory_limit=4294967296):
         self._grammar = grammar
         self._fitness_fn = fitness_fn
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
+        self._memory_limit = memory_limit
 
     def run(self, evaluations, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
@@ -34,8 +27,8 @@ class SearchAlgorithm:
         best_fn = None
 
         logger.begin(evaluations)
-
         try:
+            resource_manager = ResourceManager(time_limit = self._evaluation_timeout, memory_limit = self._memory_limit)
             while evaluations > 0:
                 logger.start_generation()
                 self._start_generation()
@@ -46,7 +39,7 @@ class SearchAlgorithm:
                     logger.sample_solution(solution)
 
                     try:
-                        fn = run_for(self._evaluation_timeout, self._fitness_fn, solution)
+                        fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
                         if self._errors == 'raise':
                             raise
