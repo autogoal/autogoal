@@ -7,7 +7,7 @@
 
 ### `SklearnClassifier`
 
-> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/sklearn/_pipeline.py#L46)
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/sklearn/_pipeline.py#L48)
 > `SklearnClassifier(self, data_preprocessing, feature_preprocessing, classification)`
 
 

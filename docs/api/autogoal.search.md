@@ -7,7 +7,7 @@
 
 ### `EnlightenLogger`
 
-> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L107)
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L112)
 > `EnlightenLogger(self, log_solutions=False)`
 
 
@@ -43,8 +43,8 @@
 
 ### `SearchAlgorithm`
 
-> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L5)
-> `SearchAlgorithm(self, generator_fn, fitness_fn=None, maximize=True, errors='raise')`
+> [`(source)`](https://github.com/sestevez/autogoal/blob/master/autogoal/search/_base.py#L8)
+> `SearchAlgorithm(self, generator_fn, fitness_fn=None, maximize=True, errors='raise', evaluation_timeout=300, memory_limit=4294967296)`
 
 
 !!! warning

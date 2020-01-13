@@ -16,7 +16,7 @@ from autogoal.grammar import (
     Graph,
     GraphGrammar,
     Path,
-     generate_cfg,
+    generate_cfg,
 )
 from autogoal.datasets import movie_reviews
 from autogoal.search import RandomSearch

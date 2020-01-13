@@ -16,3 +16,4 @@ tunable, and then use search algorithms to find the best way to tune or configur
 * [autogoal.datasets](/api/autogoal.datasets/)
 * [autogoal.grammar](/api/autogoal.grammar/)
 * [autogoal.search](/api/autogoal.search/)
+* [autogoal.utils](/api/autogoal.utils/)
