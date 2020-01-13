@@ -2,17 +2,20 @@ import enlighten
 import warnings
 import signal
 
-from autogoal.grammar import Grammar
 from autogoal.utils import ResourceManager
 
+
 class SearchAlgorithm:
-    def __init__(self, grammar: Grammar, fitness_fn, *, maximize=True, errors='raise', evaluation_timeout=360, memory_limit=4294967296):
-        self._grammar = grammar
-        self._fitness_fn = fitness_fn
+    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise'):
+        self._generator_fn = generator_fn
+        self._fitness_fn = fitness_fn or self._identity
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
+
+    def _identity(self, x):
+        return x
 
     def run(self, evaluations, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
@@ -43,11 +46,11 @@ class SearchAlgorithm:
                     except Exception as e:
                         if self._errors == 'raise':
                             raise
-                        
+
                         fn = 0
                         if self._errors == 'warn':
                             warnings.warn(str(e))
-                        
+
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
 
@@ -72,7 +75,6 @@ class SearchAlgorithm:
 
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
-
 
     def _run_one_generation(self):
         raise NotImplementedError()

@@ -16,7 +16,7 @@ from autogoal.grammar import (
     Graph,
     GraphGrammar,
     Path,
-    generate_cfg,
+     generate_cfg,
 )
 from autogoal.datasets import movie_reviews
 from autogoal.search import RandomSearch
@@ -114,7 +114,7 @@ class Pipeline(_Pipeline):
 
 
 def main():
-    grammar = generate_cfg(Pipeline)
+    grammar =  generate_cfg(Pipeline)
     print(grammar)
 
     search = RandomSearch(grammar, movie_reviews.make_fn(max_examples=100))

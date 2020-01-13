@@ -66,7 +66,7 @@ dev-install: dev-ensure
 #
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
-	python -m mypy -p autogoal --ignore-missing-imports
+	# python -m mypy -p autogoal --ignore-missing-imports
 	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-test-full
