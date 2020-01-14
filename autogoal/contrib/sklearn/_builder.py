@@ -15,8 +15,18 @@ import warnings
 
 from pathlib import Path
 
+from autogoal.contrib.sklearn._utils import get_input_output
+
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 
+class SklearnWrapper:
+    def run(self, input):
+        if self.mode == 'training':
+            return self.fit_transform(*input)
+        elif self.mode == 'predicting':
+            return self.predict(input[0])
+        else:
+            raise Exception('Invalid mode')
 
 def build_sklearn_wrappers():
     imports = _walk(sklearn)
@@ -42,13 +52,14 @@ def build_sklearn_wrappers():
     counter.close()
     manager.stop()
 
-
 def _write_class(cls, fp):
     args = _get_args(cls)
+    inputs, outputs = get_input_output(cls)
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
+    input_str, output_str = repr(inputs()), repr(outputs())
 
     print(cls)
 
@@ -56,7 +67,7 @@ def _write_class(cls, fp):
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
-        class {cls.__name__}(_{cls.__name__}):
+        class {cls.__name__}(SklearnWrapper, _{cls.__name__}):
             def __init__(
                 self,
                 {args_str}
@@ -66,7 +77,9 @@ def _write_class(cls, fp):
                 super().__init__(
                     {init_str}
                 )
-
+            
+            def run(self, input: {input_str} -> {output_str}:
+               super().run(input)
         """
     ))
 

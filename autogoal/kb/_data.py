@@ -11,6 +11,7 @@ __all__ = [
     "List",
     "Algorithm",
     "Union",
+    "Stem",
 ]
 
 
@@ -50,6 +51,8 @@ class DataType:
 class Word(DataType):
     pass
 
+class Stem(DataType):
+    pass
 
 class Sentence(DataType):
     pass
@@ -78,6 +81,23 @@ class DenseMatrix(DataType):
 class SparseMatrix(DataType):
     pass
 
+class ContinuousVector(DataType):
+    pass
+
+class DiscreteVector(DataType):
+    pass
+
+class CategoricalVector(DataType):
+    pass
+
+class MatrixContinuous(DataType):
+    pass
+
+class MatrixContinuousDense(DataType):
+    pass
+
+class MatrixContinuousSparse(DataType):
+    pass
 
 class List(DataType):
     def __init__(self, inner):
