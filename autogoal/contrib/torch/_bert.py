@@ -19,7 +19,7 @@ class BertEmbedding:
         self.model = BertModel.from_pretrained('bert-base-uncased')
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-    def run(self, input: Sentence(language='english')) -> 'List[Vector]':
+    def run(self, input: Sentence(language='english')) -> List(Vector()):
         tokens = self.tokenizer.encode(input)
         ids = torch.tensor([tokens])
         
