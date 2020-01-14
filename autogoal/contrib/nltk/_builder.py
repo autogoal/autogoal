@@ -98,18 +98,23 @@ def _write_class(cls, fp):
 
 def _write_stemmer(cls):
     return """
-            def dstem(
+            def _dstem(
                 self,
                 document
             ):
                 return [self.stem(word) for word in document]
 
-            def transform(
+            def _transform(
                 self, 
                 X,
                 y=None
             ):
                 return [self.dstem(x) for x in X]
+
+            def run(self, input: Word(domain='general', language='english')) -> Stem():
+                \"\"\"This methods recive a word and transform this in a stem. 
+                \"\"\"
+                return self.stem(input)
         """
 
 def _write_tokenizer(cls):
@@ -120,6 +125,11 @@ def _write_tokenizer(cls):
                 y=None
             ):
                 return [self.tokenize(x) for x in X]
+
+            def run(self, input: Sentence(domain='general')) -> List(Word()):
+                \"\"\"This methods recive a sentece and transform this in a list of tokens (words). 
+                \"\"\"
+                return self.tokenize(input)
         """
     
 
