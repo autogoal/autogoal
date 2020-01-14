@@ -14,7 +14,7 @@ class Word2VectEmbedding:
     def __init__(self):
         self.model = api.load("glove-twitter-25")
 
-    def run(self, input:"Word")-> "Vector": 
+    def run(self, input:Word(domain='general', language='english'))-> "Vector": 
         """This method use Word2Vect of gensim for tranform a word in embedding vector. 
         """
         return self.model.get_vector(input)
