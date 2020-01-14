@@ -14,14 +14,10 @@ __all__ = [
 
 class DataType:
     def __init__(self, **tags):
-        self._tags = tags
+        self.tags = tags
 
     def get_tag(self, tag):
-        return self._tags.get(tag, None)
-
-    @property
-    def internal_type(self):
-        return self._internal_type
+        return self.tags.get(tag, None)
 
 class Word(DataType):
     pass
@@ -48,9 +44,9 @@ class SparseMatrix(DataType):
     pass
 
 class List(DataType):
-    def __init__(self, inner_type, **tags):
+    def __init__(self, inner_type):
         self._inner_type = inner_type
-        super().__init__(**tags)
+        super().__init__(**inner_type.tags)
 
 
 # class Classifier:
