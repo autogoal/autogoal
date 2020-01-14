@@ -1,6 +1,3 @@
-from typing import List
-
-
 __all__ = [
     "DataType",
     "Document",
@@ -11,6 +8,7 @@ __all__ = [
     "Matrix",
     "DenseMatrix",
     "SparseMatrix",
+    "List",
 ]
 
 
@@ -48,6 +46,11 @@ class DenseMatrix(DataType):
 
 class SparseMatrix(DataType):
     pass
+
+class List(DataType):
+    def __init__(self, inner_type, **tags):
+        self._inner_type = inner_type
+        super().__init__(**tags)
 
 
 # class Classifier:
