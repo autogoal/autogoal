@@ -15,6 +15,12 @@ __all__ = [
 
 
 class DataType:
+    def __init__(self, **tags):
+        self._tags = tags
+
+    def get_tag(self, tag):
+        return self._tags.get(tag, None)
+
     @property
     def internal_type(self):
         return self._internal_type
@@ -42,3 +48,8 @@ class DenseMatrix(DataType):
 
 class SparseMatrix(DataType):
     pass
+
+
+# class Classifier:
+#     def run(self, input: Document(domain='health', language='english')) -> Category():
+#         pass
