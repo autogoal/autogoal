@@ -9,6 +9,7 @@ __all__ = [
     "DenseMatrix",
     "SparseMatrix",
     "List",
+    "Stem"
 ]
 
 
@@ -20,6 +21,9 @@ class DataType:
         return self.tags.get(tag, None)
 
 class Word(DataType):
+    pass
+
+class Stem(DataType):
     pass
 
 class Sentence(DataType):
