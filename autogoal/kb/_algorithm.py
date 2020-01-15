@@ -9,10 +9,6 @@ from autogoal.utils import nice_repr
 def build_pipelines(input, output, registry):
     G = Graph()
 
-    # Initialize the graph
-    G.add_node(GraphSpace.Start)
-    G.add_node(GraphSpace.End)
-
     open_nodes = []
     closed_nodes = set()
 
@@ -21,6 +17,9 @@ def build_pipelines(input, output, registry):
         if input.conforms(_get_annotations(clss).input):
             open_nodes.append(clss)
             G.add_edge(GraphSpace.Start, clss)
+
+    if GraphSpace.Start not in G:
+        raise ValueError("There are no classes compatible with input type.")
 
     while open_nodes:
         clss = open_nodes.pop(0)
@@ -40,9 +39,15 @@ def build_pipelines(input, output, registry):
         if output_type.conforms(output):
             G.add_edge(clss, GraphSpace.End)
 
+    if GraphSpace.End not in G:
+        raise ValueError("No pipelines can be constructed from input to output.")
+
     reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
     unreachable_nodes = set(G.nodes) - reachable_from_end
     G.remove_nodes_from(unreachable_nodes)
+
+    if not GraphSpace.Start in G:
+        raise ValueError("No pipelines can be constructed from input to output.")
 
     return PipelineBuilder(G, registry)
 

@@ -204,11 +204,11 @@ class MatrixContinuous(DataType):
     pass
 
 
-class MatrixContinuousDense(DataType):
+class MatrixContinuousDense(MatrixContinuous):
     pass
 
 
-class MatrixContinuousSparse(DataType):
+class MatrixContinuousSparse(MatrixContinuous):
     pass
 
 

@@ -4,6 +4,7 @@ import types
 
 from typing import List, Dict
 
+from autogoal.utils import nice_repr
 from ._base import Grammar, Sampler
 
 
@@ -274,9 +275,19 @@ class GraphGrammar(Grammar):
         return symbol
 
 
+@nice_repr
+class Start:
+    __slots__ = ()
+
+
+@nice_repr
+class End:
+    __slots__ = ()
+
+
 class GraphSpace(Grammar):
-    Start = object()
-    End = object()
+    Start = Start()
+    End = End()
 
     def __init__(self, graph: Graph, initializer=None):
         self.graph = graph

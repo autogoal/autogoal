@@ -4,7 +4,6 @@ import warnings
 
 import numpy as np
 import scipy.sparse as sp
-from owlready2 import Not
 
 
 class String(str):
@@ -16,32 +15,14 @@ def _get_class_name(cls):
     return str(cls).split(".")[-1]
 
 
-def get_data_for(*classes, name=None):
-    sorted_classes = tuple(sorted(classes, key=_get_class_name))
-    instance_name = name or "".join(_get_class_name(cls) for cls in sorted_classes)
-
-    if len(classes) == 1:
-        instance_name += "Instance"
-
-    solved = onto[instance_name]
-
-    if solved:
-        return solved
-
-    instance = classes[0](instance_name)
-    instance.is_a.extend(classes[1:])
-
-    return instance
-
-
 def combine_types(*types):
     if len(types) == 1:
         return types[0]
 
     types = set(types)
 
-    if types == {MatrixContinuousDense, MatrixContinuousSparse}:
-        return MatrixContinuous
+    if types == {kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()}:
+        return kb.MatrixContinuous()
 
     return None
 
@@ -186,20 +167,20 @@ from autogoal import kb
 
 
 DATA_RESOLVERS = {
-    kb.MatrixContinuousDense: is_matrix_continuous_dense,
-    kb.MatrixContinuousSparse: is_matrix_continuous_sparse,
-    kb.CategoricalVector: is_categorical,
-    kb.ContinuousVector: is_continuous,
+    kb.MatrixContinuousDense(): is_matrix_continuous_dense,
+    kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
+    kb.CategoricalVector(): is_categorical,
+    kb.ContinuousVector(): is_continuous,
     kb.List(kb.Word()): is_string_list,
 }
 
 
 DATA_TYPE_EXAMPLES = {
-    kb.MatrixContinuousDense: np.random.rand(10, 10),
-    kb.MatrixContinuousSparse: sp.rand(10, 10),
-    kb.CategoricalVector: np.asarray(["A"] * 5 + ["B"] * 5),
-    kb.ContinuousVector: np.random.rand(10),
-    kb.DiscreteVector: np.random.randint(0, 10, (10,), dtype=int),
+    kb.MatrixContinuousDense(): np.random.rand(10, 10),
+    kb.MatrixContinuousSparse(): sp.rand(10, 10),
+    kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
+    kb.ContinuousVector(): np.random.rand(10),
+    kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
     kb.List(kb.Word()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
@@ -234,14 +215,14 @@ def is_classifier(cls, verbose=False):
 
     """
     if not is_algorithm(cls, verbose=verbose):
-        return False
+        return False, None
 
     inputs = []
 
-    for input_type in [MatrixContinuousDense, MatrixContinuousSparse]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[CategoricalVector]
+            y = DATA_TYPE_EXAMPLES[kb.CategoricalVector()]
 
             clf = cls()
             clf.fit(X, y)
@@ -256,9 +237,9 @@ def is_classifier(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return (inputs, CategoricalVector)
+        return True, (inputs, kb.CategoricalVector())
     else:
-        return False
+        return False, None
 
 
 def is_regressor(cls, verbose=False):
@@ -275,14 +256,14 @@ def is_regressor(cls, verbose=False):
 
     """
     if not is_algorithm(cls, verbose=verbose):
-        return False
+        return False, None
 
     inputs = []
 
-    for input_type in [MatrixContinuousDense, MatrixContinuousSparse]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[ContinuousVector]
+            y = DATA_TYPE_EXAMPLES[kb.ContinuousVector()]
 
             clf = cls()
             clf.fit(X, y)
@@ -297,9 +278,9 @@ def is_regressor(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return (inputs, ContinuousVector)
+        return True, (inputs, kb.ContinuousVector())
     else:
-        return False
+        return False, None
 
 
 def is_clusterer(cls, verbose=False):
@@ -319,11 +300,11 @@ def is_clusterer(cls, verbose=False):
 
     """
     if not is_algorithm(cls, verbose=verbose):
-        return False
+        return False, None
 
     inputs = []
 
-    for input_type in [MatrixContinuousDense, MatrixContinuousSparse]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -339,9 +320,9 @@ def is_clusterer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return (inputs, DiscreteVector)
+        return True, (inputs, kb.DiscreteVector())
     else:
-        return False
+        return False, None
 
 
 def is_transformer(cls, verbose=False):
@@ -359,13 +340,13 @@ def is_transformer(cls, verbose=False):
 
     """
     if not is_algorithm(cls, verbose=verbose):
-        return False
+        return False, None
 
     allowed_inputs = set()
     allowed_outputs = set()
 
-    for input_type in [MatrixContinuousDense, MatrixContinuousSparse, StringList]:
-        for output_type in [MatrixContinuousDense, MatrixContinuousSparse, StringList]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
+        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
             try:
                 X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -381,14 +362,14 @@ def is_transformer(cls, verbose=False):
                     warnings.warn(str(e))
 
     if len(allowed_outputs) != 1:
-        return False
+        return False, None
 
     inputs = combine_types(*allowed_inputs)
 
     if allowed_inputs:
-        return (inputs, list(allowed_outputs)[0])
+        return True, (inputs, list(allowed_outputs)[0])
     else:
-        return False
+        return False, None
 
 
 def is_data_type(X, data_type):
@@ -406,7 +387,8 @@ def get_input_output(cls, verbose=False):
         matches, types = func(cls, verbose=verbose)
         if matches:
             return types
-    return None
+
+    return None, None
 
 def solve_type(obj):
     for type_, resolver in DATA_RESOLVERS.items():
