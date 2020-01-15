@@ -10,12 +10,12 @@ def algorithm(input_type, output_type):
         pass
 
     def body(ns):
-        ns['run'] = run_method
+        ns["run"] = run_method
 
     return types.new_class(
         name="Algorithm[%s, %s]" % (input_type, output_type),
         bases=(Interface,),
-        exec_body=body
+        exec_body=body,
     )
 
 
@@ -24,7 +24,7 @@ class Interface:
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
 
-        own_methods = _get_annotations(cls, ignore=['generate_cfg'])
+        own_methods = _get_annotations(cls, ignore=["generate_cfg"])
         compatible = []
 
         for _, clss in grammar.namespace.items():
@@ -37,7 +37,9 @@ class Interface:
                 compatible.append(clss)
 
         if not compatible:
-            raise ValueError("Cannot find compatible implementations for interface %r" % cls)
+            raise ValueError(
+                "Cannot find compatible implementations for interface %r" % cls
+            )
 
         grammar = Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
         return grammar
@@ -53,7 +55,10 @@ def _conforms(type1, type2):
     return False
 
 
-def _compatible_annotations(methods_if: Mapping[str, inspect.Signature], methods_im: Mapping[str, inspect.Signature]):
+def _compatible_annotations(
+    methods_if: Mapping[str, inspect.Signature],
+    methods_im: Mapping[str, inspect.Signature],
+):
     for name, mif in methods_if.items():
         if not name in methods_im:
             return False
@@ -102,8 +107,14 @@ def _get_annotations(clss, ignore=[]):
 
     ```
     """
-    methods = inspect.getmembers(clss, lambda m: inspect.ismethod(m) or inspect.isfunction(m))
-    signatures = {name: inspect.signature(method) for name, method in methods if not name.startswith("_")}
+    methods = inspect.getmembers(
+        clss, lambda m: inspect.ismethod(m) or inspect.isfunction(m)
+    )
+    signatures = {
+        name: inspect.signature(method)
+        for name, method in methods
+        if not name.startswith("_")
+    }
 
     for name in ignore:
         signatures.pop(name, None)
@@ -128,7 +139,10 @@ class DataType:
         return issubclass(self.__class__, other.__class__)
 
     def __repr__(self):
-        tags = ", ".join(f"{key}={value}" for key, value in sorted(self.tags.items(), key=lambda t:t[0]))
+        tags = ", ".join(
+            f"{key}={value}"
+            for key, value in sorted(self.tags.items(), key=lambda t: t[0])
+        )
         return f"{self.__class__.__name__}({tags})"
 
     def __eq__(self, other):
@@ -141,8 +155,10 @@ class DataType:
 class Word(DataType):
     pass
 
+
 class Stem(DataType):
     pass
+
 
 class Sentence(DataType):
     pass
@@ -171,23 +187,30 @@ class DenseMatrix(DataType):
 class SparseMatrix(DataType):
     pass
 
+
 class ContinuousVector(DataType):
     pass
+
 
 class DiscreteVector(DataType):
     pass
 
+
 class CategoricalVector(DataType):
     pass
+
 
 class MatrixContinuous(DataType):
     pass
 
+
 class MatrixContinuousDense(DataType):
     pass
 
+
 class MatrixContinuousSparse(DataType):
     pass
+
 
 class List(DataType):
     def __init__(self, inner):
