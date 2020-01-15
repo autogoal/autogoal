@@ -31,7 +31,6 @@ def find_classes(include=".*", exclude=None):
     >>> pprint(find_classes(include='.*Classifier', exclude='.*Tree.*'))
     [<class 'autogoal.contrib.sklearn._generated.KNeighborsClassifier'>,
      <class 'autogoal.contrib.sklearn._generated.PassiveAggressiveClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.RadiusNeighborsClassifier'>,
      <class 'autogoal.contrib.sklearn._generated.RidgeClassifier'>,
      <class 'autogoal.contrib.sklearn._generated.SGDClassifier'>]
 

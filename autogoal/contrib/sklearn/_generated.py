@@ -302,7 +302,7 @@ class LatentDirichletAllocation(SklearnTransformer, _LatentDirichletAllocation):
         learning_decay: Continuous(min=1e-06, max=1),
         learning_offset: Continuous(min=5.0, max=20.0),
         batch_size: Discrete(min=64, max=256),
-        evaluate_every: Discrete(min=-1, max=-2),
+        # evaluate_every: Discrete(min=-1, max=-2),
         total_samples: Continuous(min=500000.0, max=2000000.0),
         perp_tol: Continuous(min=0.001, max=1),
         mean_change_tol: Continuous(min=1e-05, max=1),
@@ -316,7 +316,7 @@ class LatentDirichletAllocation(SklearnTransformer, _LatentDirichletAllocation):
             learning_decay=learning_decay,
             learning_offset=learning_offset,
             batch_size=batch_size,
-            evaluate_every=evaluate_every,
+            # evaluate_every=evaluate_every,
             total_samples=total_samples,
             perp_tol=perp_tol,
             mean_change_tol=mean_change_tol,
@@ -1284,31 +1284,31 @@ class KNeighborsClassifier(SklearnEstimator, _KNeighborsClassifier):
     def run(self, input: MatrixContinuous()) -> CategoricalVector():
        return super().run(input)
 
-from sklearn.neighbors._classification import RadiusNeighborsClassifier as _RadiusNeighborsClassifier
+# from sklearn.neighbors._classification import RadiusNeighborsClassifier as _RadiusNeighborsClassifier
 
-class RadiusNeighborsClassifier(SklearnEstimator, _RadiusNeighborsClassifier):
-    def __init__(
-        self,
-        radius: Continuous(min=1e-06, max=1),
-        weights: Categorical('distance', 'uniform'),
-        algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4),
-        metric: Categorical('minkowski')
-    ):
-        SklearnEstimator.__init__(self)
-        _RadiusNeighborsClassifier.__init__(
-            self,
-            radius=radius,
-            weights=weights,
-            algorithm=algorithm,
-            leaf_size=leaf_size,
-            p=p,
-            metric=metric
-        )
+# class RadiusNeighborsClassifier(SklearnEstimator, _RadiusNeighborsClassifier):
+#     def __init__(
+#         self,
+#         radius: Continuous(min=1e-06, max=1),
+#         weights: Categorical('distance', 'uniform'),
+#         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
+#         leaf_size: Discrete(min=15, max=60),
+#         p: Discrete(min=1, max=4),
+#         # metric: Categorical('minkowski')
+#     ):
+#         SklearnEstimator.__init__(self)
+#         _RadiusNeighborsClassifier.__init__(
+#             self,
+#             radius=radius,
+#             weights=weights,
+#             algorithm=algorithm,
+#             leaf_size=leaf_size,
+#             p=p,
+#             # metric=metric
+#         )
 
-    def run(self, input: MatrixContinuous()) -> CategoricalVector():
-       return super().run(input)
+#     def run(self, input: MatrixContinuous()) -> CategoricalVector():
+#        return super().run(input)
 
 from sklearn.neighbors._graph import KNeighborsTransformer as _KNeighborsTransformer
 
@@ -1345,7 +1345,7 @@ class RadiusNeighborsTransformer(SklearnTransformer, _RadiusNeighborsTransformer
         radius: Continuous(min=1e-06, max=1),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
-        metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
+        # metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
         p: Discrete(min=1, max=4)
     ):
         SklearnTransformer.__init__(self)
@@ -1355,7 +1355,7 @@ class RadiusNeighborsTransformer(SklearnTransformer, _RadiusNeighborsTransformer
             radius=radius,
             algorithm=algorithm,
             leaf_size=leaf_size,
-            metric=metric,
+            # metric=metric,
             p=p
         )
 
@@ -1370,7 +1370,7 @@ class LocalOutlierFactor(SklearnEstimator, _LocalOutlierFactor):
         n_neighbors: Discrete(min=10, max=40),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
-        metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
+        # metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
         p: Discrete(min=1, max=4),
         contamination: Categorical('auto'),
         novelty: Boolean()
@@ -1381,7 +1381,7 @@ class LocalOutlierFactor(SklearnEstimator, _LocalOutlierFactor):
             n_neighbors=n_neighbors,
             algorithm=algorithm,
             leaf_size=leaf_size,
-            metric=metric,
+            # metric=metric,
             p=p,
             contamination=contamination,
             novelty=novelty
@@ -1442,7 +1442,7 @@ class RadiusNeighborsRegressor(SklearnEstimator, _RadiusNeighborsRegressor):
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
         p: Discrete(min=1, max=4),
-        metric: Categorical('minkowski')
+        # metric: Categorical('minkowski')
     ):
         SklearnEstimator.__init__(self)
         _RadiusNeighborsRegressor.__init__(
@@ -1452,7 +1452,7 @@ class RadiusNeighborsRegressor(SklearnEstimator, _RadiusNeighborsRegressor):
             algorithm=algorithm,
             leaf_size=leaf_size,
             p=p,
-            metric=metric
+            # metric=metric
         )
 
     def run(self, input: MatrixContinuous()) -> ContinuousVector():
@@ -1598,25 +1598,25 @@ class OrdinalEncoder(SklearnTransformer, _OrdinalEncoder):
     def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
        return super().run(input)
 
-# from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
+from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
 
-# class LabelBinarizer(SklearnTransformer, _LabelBinarizer):
-#     def __init__(
-#         self,
-#         neg_label: Discrete(min=-100, max=100),
-#         pos_label: Discrete(min=0, max=2),
-#         sparse_output: Boolean()
-#     ):
-#         SklearnTransformer.__init__(self)
-#         _LabelBinarizer.__init__(
-#             self,
-#             neg_label=neg_label,
-#             pos_label=pos_label,
-#             sparse_output=sparse_output
-#         )
+class LabelBinarizer(SklearnTransformer, _LabelBinarizer):
+    def __init__(
+        self,
+        # neg_label: Discrete(min=-100, max=100),
+        # pos_label: Discrete(min=0, max=2),
+        sparse_output: Boolean()
+    ):
+        SklearnTransformer.__init__(self)
+        _LabelBinarizer.__init__(
+            self,
+            # neg_label=neg_label,
+            # pos_label=pos_label,
+            sparse_output=sparse_output
+        )
 
-#     def run(self, input: List(Word())) -> MatrixContinuousDense():
-#        return super().run(input)
+    def run(self, input: List(Word())) -> MatrixContinuousDense():
+       return super().run(input)
 
 from sklearn.svm._classes import LinearSVC as _LinearSVC
 

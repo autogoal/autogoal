@@ -39,7 +39,7 @@ lint:
 
 .PHONY: test-full
 test-full:
-	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run make dev-test-full;)
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run autogoal-tester make dev-test-full;)
 
 .PHONY: docker-build
 docker-build:
@@ -67,12 +67,12 @@ dev-install: dev-ensure
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
 	# python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest autogoal --doctest-modules --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-test-full
 dev-test-full: dev-ensure
-	python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=xml
+	# python -m mypy -p autogoal --ignore-missing-imports
+	python -m pytest autogoal tests --doctest-modules --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-cov
 dev-cov: dev-ensure
