@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "autogoal"
 version = "0.1.0"
-description = "Automatic General-purpose Optimization for Algorithm Learning"
+description = "Automatic Generation Optimization And Learning"
 authors = ["Suilan Estevez-Velarde", "Alejandro Piad-Morffis"]
 license = "MIT"
 readme = "Readme.md"

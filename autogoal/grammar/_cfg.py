@@ -152,6 +152,10 @@ class ContextFreeGrammar(Grammar):
         self._namespace = namespace or {}
         self._productions: Dict[Symbol, Production] = {}
 
+    @property
+    def namespace(self):
+        return self._namespace
+
     def add(self, symbol: Symbol, production: Production) -> None:
         if symbol in self:
             raise ValueError(
@@ -186,7 +190,7 @@ class ContextFreeGrammar(Grammar):
         return production.sample(sampler, self._namespace)
 
 
-def generate_cfg(cls):
+def generate_cfg(cls, registry=None):
     """
     Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)
     from an annotated callable (class or function).
@@ -209,20 +213,25 @@ def generate_cfg(cls):
 
     ```
     """
-    return _generate_cfg(cls)
+    return _generate_cfg(cls, registry=registry)
 
 
 def _generate_cfg(
-    cls, grammar: ContextFreeGrammar = None, head: Symbol = None
+    cls, grammar: ContextFreeGrammar = None, head: Symbol = None, registry = None
 ) -> ContextFreeGrammar:
     symbol = head or Symbol(cls.__name__)
 
     if grammar is None:
         grammar = ContextFreeGrammar(start=symbol)
+
+        # pre-register all classes that are already given
+        if registry:
+            for clss in registry:
+                grammar.namespace[clss.__name__] = clss
     elif symbol in grammar:
         return grammar
 
-    grammar._namespace[symbol.name] = cls
+    grammar.namespace[symbol.name] = cls
 
     if hasattr(cls, "generate_cfg"):
         return cls.generate_cfg(grammar, symbol)
@@ -234,6 +243,8 @@ def _generate_cfg(
         signature = inspect.signature(cls.__init__)
     elif inspect.isfunction(cls):
         signature = inspect.signature(cls)
+    else:
+        raise ValueError("Unable to obtain signature for %r" % cls)
 
     for param_name, param_obj in signature.parameters.items():
         if param_name in ["self", "args", "kwargs"]:
@@ -342,11 +353,12 @@ class Union:
 
 
 class CfgInitializer:
-    def __init__(self):
+    def __init__(self, registry=None):
         self._grammars = {}
+        self._registry = registry
 
     def __call__(self, cls):
         if cls not in self._grammars:
-            self._grammars[cls] =  generate_cfg(cls)
+            self._grammars[cls] =  generate_cfg(cls, self._registry)
 
         return self._grammars[cls].sample()

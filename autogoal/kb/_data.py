@@ -1,24 +1,118 @@
-__all__ = [
-    "DataType",
-    "Document",
-    "Sentence",
-    "Word",
-    "Category",
-    "Vector",
-    "Matrix",
-    "DenseMatrix",
-    "SparseMatrix",
-    "List",
-    "Algorithm",
-    "Union",
-    "Stem",
-]
+import types
+import inspect
+
+from typing import Mapping
+from autogoal.grammar import Symbol
 
 
-class Algorithm:
-    def __init__(self, input, output):
-        self.input = input
-        self.output = output
+def algorithm(input_type, output_type):
+    def run_method(self, input: input_type) -> output_type:
+        pass
+
+    def body(ns):
+        ns['run'] = run_method
+
+    return types.new_class(
+        name="Algorithm[%s, %s]" % (input_type, output_type),
+        bases=(Interface,),
+        exec_body=body
+    )
+
+
+class Interface:
+    @classmethod
+    def generate_cfg(cls, grammar, head):
+        symbol = head or Symbol(cls.__name__)
+
+        own_methods = _get_annotations(cls, ignore=['generate_cfg'])
+        compatible = []
+
+        for _, clss in grammar.namespace.items():
+            if issubclass(clss, Interface):
+                continue
+
+            type_methods = _get_annotations(clss)
+
+            if _compatible_annotations(own_methods, type_methods):
+                compatible.append(clss)
+
+        if not compatible:
+            raise ValueError("Cannot find compatible implementations for interface %r" % cls)
+
+        if len(compatible) > 1:
+            rhs = Union(symbol.name, *compatible)
+        else:
+            rhs = compatible[0]
+
+        print(symbol, rhs)
+
+
+def _conforms(type1, type2):
+    if inspect.isclass(type1) and inspect.isclass(type2):
+        return issubclass(type1, type2)
+
+    if hasattr(type1, "conforms") and type1.conforms(type2):
+        return True
+
+    return False
+
+
+def _compatible_annotations(methods_if: Mapping[str, inspect.Signature], methods_im: Mapping[str, inspect.Signature]):
+    for name, mif in methods_if.items():
+        if not name in methods_im:
+            return False
+
+        mim = methods_im[name]
+
+        for name, param_if in mif.parameters.items():
+            if not name in mim.parameters:
+                return False
+
+            param_im = mim.parameters[name]
+            ann_if = param_if.annotation
+
+            if ann_if == inspect.Parameter.empty:
+                continue
+
+            ann_im = param_im.annotation
+
+            if not _conforms(ann_im, ann_if):
+                return False
+
+        return_if = mif.return_annotation
+
+        if return_if == inspect.Parameter.empty:
+            continue
+
+        return_im = mim.return_annotation
+
+        if not _conforms(return_if, return_im):
+            return False
+
+    return True
+
+
+def _get_annotations(clss, ignore=[]):
+    """
+    Computes the annotations of all public methods in type `clss`.
+
+    ##### Examples
+
+    ```python
+    >>> class A:
+    ...     def f(self, input: int) -> float:
+    ...         pass
+    >>> _get_annotations(A)
+
+    ```
+    """
+    methods = inspect.getmembers(clss, lambda m: inspect.ismethod(m) or inspect.isfunction(m))
+    signatures = {name: inspect.signature(method) for name, method in methods if not name.startswith("_")}
+
+    for name in ignore:
+        signatures.pop(name, None)
+
+    return signatures
 
 
 class DataType:
@@ -144,6 +238,24 @@ class Union(DataType):
         return False
 
 
-# class Classifier:
-#     def run(self, input: Document(domain='health', language='english')) -> Category():
-#         pass
+__all__ = [
+    "algorithm",
+    "CategoricalVector",
+    "Category",
+    "ContinuousVector",
+    "DataType",
+    "DenseMatrix",
+    "DiscreteVector",
+    "Document",
+    "List",
+    "Matrix",
+    "MatrixContinuous",
+    "MatrixContinuousDense",
+    "MatrixContinuousSparse",
+    "Sentence",
+    "SparseMatrix",
+    "Stem",
+    "Union",
+    "Vector",
+    "Word",
+]

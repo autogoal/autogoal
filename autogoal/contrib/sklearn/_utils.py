@@ -182,22 +182,25 @@ def is_string_list(obj):
         return False
 
 
+from autogoal import kb
+
+
 DATA_RESOLVERS = {
-    MatrixContinuousDense: is_matrix_continuous_dense,
-    MatrixContinuousSparse: is_matrix_continuous_sparse,
-    CategoricalVector: is_categorical,
-    ContinuousVector: is_continuous,
-    StringList: is_string_list,
+    kb.MatrixContinuousDense: is_matrix_continuous_dense,
+    kb.MatrixContinuousSparse: is_matrix_continuous_sparse,
+    kb.CategoricalVector: is_categorical,
+    kb.ContinuousVector: is_continuous,
+    kb.List(kb.Word()): is_string_list,
 }
 
 
 DATA_TYPE_EXAMPLES = {
-    MatrixContinuousDense: np.random.rand(10, 10),
-    MatrixContinuousSparse: sp.rand(10, 10),
-    CategoricalVector: np.asarray(["A"] * 5 + ["B"] * 5),
-    ContinuousVector: np.random.rand(10),
-    DiscreteVector: np.random.randint(0, 10, (10,), dtype=int),
-    StringList: ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
+    kb.MatrixContinuousDense: np.random.rand(10, 10),
+    kb.MatrixContinuousSparse: sp.rand(10, 10),
+    kb.CategoricalVector: np.asarray(["A"] * 5 + ["B"] * 5),
+    kb.ContinuousVector: np.random.rand(10),
+    kb.DiscreteVector: np.random.randint(0, 10, (10,), dtype=int),
+    kb.List(kb.Word()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
 

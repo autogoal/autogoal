@@ -7,6 +7,7 @@ from ._cfg import (
     Categorical,
     Boolean,
     Union,
+    Symbol,
     CfgInitializer,
 )
-from ._graph import GraphGrammar, Path, Block, Graph
+from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace

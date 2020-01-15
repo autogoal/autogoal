@@ -44,7 +44,7 @@ def build_sklearn_wrappers():
             from numpy import inf, nan
             """
         ))
-        
+
         for cls in imports:
             counter.update()
             _write_class(cls, fp)
@@ -77,7 +77,7 @@ def _write_class(cls, fp):
                 super().__init__(
                     {init_str}
                 )
-            
+
             def run(self, input: {input_str} -> {output_str}:
                super().run(input)
         """

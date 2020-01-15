@@ -272,3 +272,35 @@ class GraphGrammar(Grammar):
             max_iterations -= 1
 
         return symbol
+
+
+class GraphSpace(Grammar):
+    Start = object()
+    End = object()
+
+    def __init__(self, graph: Graph, initializer=None):
+        self.graph = graph
+        self.initializer = initializer or default_initializer
+
+    @property
+    def _start(self):
+        return [GraphSpace.Start]
+
+    def _sample(self, symbol, max_iterations, sampler):
+        path = symbol
+
+        while max_iterations > 0:
+            last_node = path[-1]
+
+            if last_node == GraphSpace.End:
+                break
+
+            next_nodes = list(self.graph.neighbors(last_node))
+
+            if not next_nodes:
+                raise ValueError("Cannot continue sampling. Graph is disconnected.")
+
+            next_node = sampler.choice(next_nodes, handle=last_node)
+            path.append(next_node)
+
+        [self.initializer(clss) for clss in path[1:-1]]

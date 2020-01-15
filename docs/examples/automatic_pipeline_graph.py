@@ -1,9 +1,14 @@
-from autogoal.kb import Word, Sentence, Matrix, Category, Vector, List, Algorithm, Union
+from autogoal.kb import Word, Sentence, Matrix, Category, Vector, List, algorithm, Union
 from autogoal.kb import build_pipelines
 
 
 class Vectorizer1:
     def run(self, input: Word()) -> Vector():
+        pass
+
+
+class Reductor1:
+    def run(self, input: Matrix()) -> Matrix():
         pass
 
 
@@ -24,9 +29,9 @@ class Tokenizer2:
 
 class SentenceVectorizer:
     def __init__(
-        self, 
-        tokenizer: Algorithm(Sentence(), List(Word())), 
-        vectorizer: Algorithm(Word(), Vector())
+        self,
+        tokenizer: algorithm(Sentence(), List(Word())),
+        vectorizer: algorithm(Word(), Vector()),
     ):
         pass
 
@@ -35,15 +40,29 @@ class SentenceVectorizer:
 
 
 class Classifier1:
-    def run(self, input: Union(Matrix(), Category())) -> Category():
+    def run(self, input: Matrix()) -> Category():
         pass
 
 
 class Classifier2:
-    def run(self, input: Union(Matrix(), Category())) -> Category():
+    def run(self, input: Matrix()) -> Category():
         pass
 
 
-build_pipelines(input=Union(Sentence(), Category()), output=Category(), registry=[
-    Vectorizer1, Vectorizer2, Tokenizer1, Tokenizer2, SentenceVectorizer, Classifier1, Classifier2
-])
+space = build_pipelines(
+    input=Sentence(),
+    output=Category(),
+    registry=[
+        Vectorizer1,
+        Vectorizer2,
+        Tokenizer1,
+        Tokenizer2,
+        SentenceVectorizer,
+        Classifier1,
+        Classifier2,
+        Reductor1,
+    ],
+)
+
+path = space.sample()
+print(path)
