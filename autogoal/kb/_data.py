@@ -135,22 +135,26 @@ def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
 
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
+    name = 'CompositeAlgorithm[%s, %s]' % (input_type, output_type)
 
-
-    def init_method(self, internal_algorithm: algorithm(internal_input, internal_output)):
-        self.internal_algorithm = internal_algorithm
+    def init_method(self, inner: algorithm(internal_input, internal_output)):
+        self.inner = inner
 
     def run_method(self, input: input_type) -> output_type:
         elements = list(input)
-        elements[index] = self.internal_algorithm.run(elements[index])
+        elements[index] = self.inner.run(elements[index])
         return tuple(elements)
+
+    def repr_method(self):
+        return f"{name}(inner={repr(self.inner)})"
 
     def body(ns):
         ns['__init__'] = init_method
         ns['run'] = run_method
+        ns['__repr__'] = repr_method
 
     return types.new_class(
-        name='CompositeAlgorithm[%s, %s]' % (input_type, output_type),
+        name=name,
         bases=(),
         exec_body=body
     )
@@ -254,8 +258,8 @@ class List(DataType):
 
 class Tuple(DataType):
     def __init__(self, *inner):
-        self.inner = sorted(inner, key=repr)
-        super().__init__(**inner[0].tags)
+        self.inner = inner
+        # super().__init__(**inner[0].tags)
 
     def __repr__(self):
         items = ", ".join(repr(s) for s in self.inner)
@@ -265,11 +269,11 @@ class Tuple(DataType):
         if not isinstance(other, Tuple):
             return False
 
-        for x in self.inner:
-            for y in other.inner:
-                if x._conforms(y):
-                    break
-            else:
+        if len(self.inner) != len(other.inner):
+            return False
+
+        for x, y in zip(self.inner, other.inner):
+            if not conforms(x, y):
                 return False
 
         return True

@@ -24,11 +24,40 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     open_nodes = []
     closed_nodes = set()
 
+    def connect_tuple_wrappers(node, output_type):
+        if not isinstance(output_type, Tuple):
+            return
+
+        for index in range(0, len(output_type.inner)):
+            internal_input = output_type.inner[index]
+
+            for other_clss in registry:
+                annotations = _get_annotations(other_clss)
+                other_input = annotations.input
+
+                if not (conforms(internal_input, other_input) and other_clss != node):
+                    continue
+
+                # `other_class` has input compatible with one element in the Tuple
+                # build the output `Tuple[..., internal_output, ...]` of the wrapper class
+                internal_output = annotations.output
+                output_tuple = list(output_type.inner)
+                output_tuple[index] = internal_output
+                output_tuple_type = Tuple(*output_tuple)
+
+                # dynamic class representing the wrapper algorithm
+                other_wrapper = build_composite(index, output_type, output_tuple_type)
+                open_nodes.append(other_wrapper)
+
+                G.add_edge(node, other_wrapper)
+
     # Enqueue open nodes
     for clss in registry:
         if conforms(input, _get_annotations(clss).input):
             open_nodes.append(clss)
             G.add_edge(GraphSpace.Start, clss)
+
+    connect_tuple_wrappers(GraphSpace.Start, input)
 
     if GraphSpace.Start not in G:
         raise ValueError("There are no classes compatible with input type.")
@@ -48,10 +77,7 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 open_nodes.append(other_clss)
                 G.add_edge(clss, other_clss)
 
-        if isinstance(output_type, Tuple):
-            index = 0
-            internal_input = output_type.inner[index]
-            
+        connect_tuple_wrappers(clss, output_type)
 
         if conforms(output_type, output):
             G.add_edge(clss, GraphSpace.End)
