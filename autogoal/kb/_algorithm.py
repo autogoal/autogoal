@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from autogoal.grammar import GraphSpace, Graph, CfgInitializer
 from autogoal.utils import nice_repr
-from autogoal.kb._data import conforms
+from autogoal.kb._data import conforms, build_composite, Tuple
 
 
 def build_pipelines(input, output, registry) -> 'PipelineBuilder':
@@ -47,6 +47,11 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
             if conforms(output_type, other_input) and other_clss != clss:
                 open_nodes.append(other_clss)
                 G.add_edge(clss, other_clss)
+
+        if isinstance(output_type, Tuple):
+            index = 0
+            internal_input = output_type.inner[index]
+            
 
         if conforms(output_type, output):
             G.add_edge(clss, GraphSpace.End)

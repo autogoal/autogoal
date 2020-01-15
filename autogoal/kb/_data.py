@@ -126,6 +126,36 @@ def _get_annotations(clss, ignore=[]):
     return signatures
 
 
+def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
+    """
+    Dynamically generate a class `CompositeAlgorithmXXX` that wraps
+    another algorithm to receive a Tuple but pass only one of the
+    parameters to the internal algorithm.
+    """
+
+    internal_input = input_type.inner[index]
+    internal_output = output_type.inner[index]
+
+
+    def init_method(self, internal_algorithm: algorithm(internal_input, internal_output)):
+        self.internal_algorithm = internal_algorithm
+
+    def run_method(self, input: input_type) -> output_type:
+        elements = list(input)
+        elements[index] = self.internal_algorithm.run(elements[index])
+        return tuple(elements)
+
+    def body(ns):
+        ns['__init__'] = init_method
+        ns['run'] = run_method
+
+    return types.new_class(
+        name='CompositeAlgorithm[%s, %s]' % (input_type, output_type),
+        bases=(),
+        exec_body=body
+    )
+
+
 class DataType:
     def __init__(self, **tags):
         self.tags = tags
@@ -212,7 +242,7 @@ class MatrixContinuousSparse(MatrixContinuous):
 
 class List(DataType):
     def __init__(self, inner):
-        self._inner = inner
+        self.inner = inner
         super().__init__(**inner.tags)
 
     def __conforms__(self, other):
@@ -224,19 +254,19 @@ class List(DataType):
 
 class Tuple(DataType):
     def __init__(self, *inner):
-        self._inner = sorted(inner, key=repr)
+        self.inner = sorted(inner, key=repr)
         super().__init__(**inner[0].tags)
 
     def __repr__(self):
-        items = ", ".join(repr(s) for s in self._inner)
+        items = ", ".join(repr(s) for s in self.inner)
         return "Tuple(%s)" % items
 
     def __conforms__(self, other):
         if not isinstance(other, Tuple):
             return False
 
-        for x in self._inner:
-            for y in other._inner:
+        for x in self.inner:
+            for y in other.inner:
                 if x._conforms(y):
                     break
             else:
