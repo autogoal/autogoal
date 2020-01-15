@@ -15,12 +15,12 @@ import warnings
 
 from pathlib import Path
 
-from autogoal.contrib.sklearn._utils import get_input_output
+from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 
 
-class SklearnWrapper:
+class SklearnEstimator:
     def __init__(self):
         self.mode = 'train'
 
@@ -31,12 +31,35 @@ class SklearnWrapper:
         self.mode = 'eval'
 
     def run(self, input):
+        X, y = input
         if self.mode == 'train':
-            return self.fit_transform(*input)
+            self.fit(X, y)
+            return X, y
         elif self.mode == 'eval':
-            return self.predict(input[0])
+            return X, self.predict(X)
         else:
             raise Exception('Invalid mode')
+
+
+class SklearnTransformer:
+    def __init__(self):
+        self.mode = 'train'
+
+    def train(self):
+        self.mode = 'train'
+
+    def eval(self):
+        self.mode = 'eval'
+
+    def run(self, input):
+        X, y = input
+        if self.mode == 'train':
+            return self.fit_transform(X), y
+        elif self.mode == 'eval':
+            return self.transform(X), y
+        else:
+            raise Exception('Invalid mode')
+
 
 
 def build_sklearn_wrappers():
@@ -54,7 +77,7 @@ def build_sklearn_wrappers():
             from numpy import inf, nan
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
-            from autogoal.contrib.sklearn._builder import SklearnWrapper
+            from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
             from autogoal.kb import *
             """
         ))
@@ -79,6 +102,7 @@ def _write_class(cls, fp):
     self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
+    base_class = 'SklearnEstimator' if is_algorithm(cls) == 'estimator' else 'SklearnTransformer'
 
     print(cls)
 
@@ -86,12 +110,12 @@ def _write_class(cls, fp):
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
-        class {cls.__name__}(SklearnWrapper, _{cls.__name__}):
+        class {cls.__name__}({base_class}, _{cls.__name__}):
             def __init__(
                 self,
                 {args_str}
             ):
-                SklearnWrapper.__init__(self)
+                {base_class}.__init__(self)
                 _{cls.__name__}.__init__(
                     self,
                     {init_str}

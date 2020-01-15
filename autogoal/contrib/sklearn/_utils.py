@@ -186,14 +186,14 @@ DATA_TYPE_EXAMPLES = {
 
 
 def is_algorithm(cls, verbose=False):
-    if hasattr(cls, "fit"):
-        return True
+    if hasattr(cls, "fit") and hasattr(cls, "predict"):
+        return "estimator"
     else:
         if verbose:
             warnings.warn("%r doesn't have `fit`" % cls)
 
     if hasattr(cls, "transform"):
-        return True
+        return "transformer"
     else:
         if verbose:
             warnings.warn("%r doesn't have `transform`" % cls)
