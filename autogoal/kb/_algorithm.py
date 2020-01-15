@@ -8,7 +8,17 @@ from autogoal.utils import nice_repr
 from autogoal.kb._data import conforms
 
 
-def build_pipelines(input, output, registry):
+def build_pipelines(input, output, registry) -> 'PipelineBuilder':
+    """
+    Creates a `PipelineBuilder` instance that generates all pipelines
+    from `input` to `output` types.
+
+    ##### Parameters
+
+    - `input`: type descriptor for the desired input.
+    - `output`: type descriptor for the desired output.
+    - `registry`: list of available classes to build the pipelines.
+    """
     G = Graph()
 
     open_nodes = []
