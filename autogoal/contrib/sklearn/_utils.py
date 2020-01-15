@@ -209,9 +209,9 @@ def is_classifier(cls, verbose=False):
 
     >>> from sklearn.linear_model import LogisticRegression, LinearRegression
     >>> is_classifier(LogisticRegression)
-    (ontoml.ContinuousMatrix, ontoml.CategoricalVector)
+    (True, (MatrixContinuous(), CategoricalVector()))
     >>> is_classifier(LinearRegression)
-    False
+    (False, None)
 
     """
     if not is_algorithm(cls, verbose=verbose):
@@ -250,9 +250,9 @@ def is_regressor(cls, verbose=False):
 
     >>> from sklearn.linear_model import LogisticRegression, LinearRegression
     >>> is_regressor(LogisticRegression)
-    False
+    (False, None)
     >>> is_regressor(LinearRegression)
-    (ontoml.ContinuousMatrix, ontoml.ContinuousVector)
+    (True, (MatrixContinuous(), ContinuousVector()))
 
     """
     if not is_algorithm(cls, verbose=verbose):
@@ -291,12 +291,12 @@ def is_clusterer(cls, verbose=False):
 
     >>> from sklearn.linear_model import LogisticRegression, LinearRegression
     >>> is_clusterer(LogisticRegression)
-    False
+    (False, None)
     >>> is_clusterer(LinearRegression)
-    False
+    (False, None)
     >>> from sklearn.cluster import KMeans
     >>> is_clusterer(KMeans)
-    (ontoml.ContinuousMatrix, ontoml.DiscreteVector)
+    (True, (MatrixContinuous(), DiscreteVector()))
 
     """
     if not is_algorithm(cls, verbose=verbose):
@@ -333,10 +333,10 @@ def is_transformer(cls, verbose=False):
 
     >>> from sklearn.feature_extraction.text import CountVectorizer
     >>> is_transformer(CountVectorizer)
-    (ontoml.StringList, ontoml.ContinuousMatrixSparse)
+    (True, (List(Word()), MatrixContinuousSparse()))
     >>> from sklearn.decomposition.pca import PCA
     >>> is_transformer(PCA)
-    (ontoml.ContinuousDenseMatrix, ontoml.ContinuousDenseMatrix)
+    (True, (MatrixContinuousDense(), MatrixContinuousDense()))
 
     """
     if not is_algorithm(cls, verbose=verbose):

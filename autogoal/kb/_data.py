@@ -45,11 +45,14 @@ class Interface:
         return grammar
 
 
-def _conforms(type1, type2):
+def conforms(type1, type2):
     if inspect.isclass(type1) and inspect.isclass(type2):
         return issubclass(type1, type2)
 
-    if hasattr(type1, "conforms") and type1.conforms(type2):
+    if hasattr(type1, "__conforms__") and type1.__conforms__(type2):
+        return True
+
+    if hasattr(type2, "__rconforms__") and type2.__rconforms__(type1):
         return True
 
     return False
@@ -77,7 +80,7 @@ def _compatible_annotations(
 
             ann_im = param_im.annotation
 
-            if not _conforms(ann_im, ann_if):
+            if not conforms(ann_im, ann_if):
                 return False
 
         return_if = mif.return_annotation
@@ -87,7 +90,7 @@ def _compatible_annotations(
 
         return_im = mim.return_annotation
 
-        if not _conforms(return_if, return_im):
+        if not conforms(return_if, return_im):
             return False
 
     return True
@@ -104,6 +107,7 @@ def _get_annotations(clss, ignore=[]):
     ...     def f(self, input: int) -> float:
     ...         pass
     >>> _get_annotations(A)
+    {'f': <Signature (self, input:int) -> float>}
 
     ```
     """
@@ -129,15 +133,6 @@ class DataType:
     def get_tag(self, tag):
         return self.tags.get(tag, None)
 
-    def conforms(self, other):
-        return self._conforms(other) or other._rconforms(self)
-
-    def _conforms(self, other):
-        return issubclass(self.__class__, other.__class__)
-
-    def _rconforms(self, other):
-        return issubclass(self.__class__, other.__class__)
-
     def __repr__(self):
         tags = ", ".join(
             f"{key}={value}"
@@ -150,6 +145,9 @@ class DataType:
 
     def __hash__(self):
         return hash(repr(self))
+
+    def __conforms__(self, other):
+        return issubclass(self.__class__, other.__class__)
 
 
 class Word(DataType):
@@ -217,8 +215,8 @@ class List(DataType):
         self._inner = inner
         super().__init__(**inner.tags)
 
-    def _conforms(self, other):
-        return isinstance(other, List) and self._inner.conforms(other._inner)
+    def __conforms__(self, other):
+        return isinstance(other, List) and conforms(self._inner, other._inner)
 
     def __repr__(self):
         return "List(%r)" % self._inner
@@ -231,10 +229,10 @@ class Tuple(DataType):
 
     def __repr__(self):
         items = ", ".join(repr(s) for s in self._inner)
-        return "Union(%s)" % items
+        return "Tuple(%s)" % items
 
-    def _conforms(self, other):
-        if not isinstance(other, Union):
+    def __conforms__(self, other):
+        if not isinstance(other, Tuple):
             return False
 
         for x in self._inner:
@@ -245,16 +243,6 @@ class Tuple(DataType):
                 return False
 
         return True
-
-    def _rconforms(self, other):
-        if isinstance(other, Union):
-            return False
-
-        for x in self._inner:
-            if other._conforms(x):
-                return True
-
-        return False
 
 
 __all__ = [

@@ -1319,7 +1319,7 @@ class KNeighborsTransformer(SklearnTransformer, _KNeighborsTransformer):
         n_neighbors: Discrete(min=2, max=10),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
-        metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'mahalanobis', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
+        # metric: Categorical('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'kulsinski', 'l1', 'l2', 'mahalanobis', 'manhattan', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'),
         p: Discrete(min=1, max=4)
     ):
         SklearnTransformer.__init__(self)
@@ -1329,7 +1329,7 @@ class KNeighborsTransformer(SklearnTransformer, _KNeighborsTransformer):
             n_neighbors=n_neighbors,
             algorithm=algorithm,
             leaf_size=leaf_size,
-            metric=metric,
+            # metric=metric,
             p=p
         )
 
@@ -1598,25 +1598,25 @@ class OrdinalEncoder(SklearnTransformer, _OrdinalEncoder):
     def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
        return super().run(input)
 
-from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
+# from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
 
-class LabelBinarizer(SklearnTransformer, _LabelBinarizer):
-    def __init__(
-        self,
-        neg_label: Discrete(min=-100, max=100),
-        pos_label: Discrete(min=0, max=2),
-        sparse_output: Boolean()
-    ):
-        SklearnTransformer.__init__(self)
-        _LabelBinarizer.__init__(
-            self,
-            neg_label=neg_label,
-            pos_label=pos_label,
-            sparse_output=sparse_output
-        )
+# class LabelBinarizer(SklearnTransformer, _LabelBinarizer):
+#     def __init__(
+#         self,
+#         neg_label: Discrete(min=-100, max=100),
+#         pos_label: Discrete(min=0, max=2),
+#         sparse_output: Boolean()
+#     ):
+#         SklearnTransformer.__init__(self)
+#         _LabelBinarizer.__init__(
+#             self,
+#             neg_label=neg_label,
+#             pos_label=pos_label,
+#             sparse_output=sparse_output
+#         )
 
-    def run(self, input: List(Word())) -> MatrixContinuousDense():
-       return super().run(input)
+#     def run(self, input: List(Word())) -> MatrixContinuousDense():
+#        return super().run(input)
 
 from sklearn.svm._classes import LinearSVC as _LinearSVC
 

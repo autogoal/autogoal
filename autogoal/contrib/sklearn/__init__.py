@@ -6,7 +6,7 @@ try:
 except:
     print("(!) Code in `autogoal.contrib.sklearn` requires `sklearn=^0.22`.")
     print("(!) You can install it with `pip install autogoal[sklearn]`.")
-    raise
+    raise ImportError()
 
 
 import inspect
@@ -27,7 +27,13 @@ def find_classes(include=".*", exclude=None):
     ##### Examples
 
     ```python
-    >>> find_classes(include='.*Classifier', exclude='DecisionTree.*')
+    >>> from pprint import pprint
+    >>> pprint(find_classes(include='.*Classifier', exclude='.*Tree.*'))
+    [<class 'autogoal.contrib.sklearn._generated.KNeighborsClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.PassiveAggressiveClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.RadiusNeighborsClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.RidgeClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.SGDClassifier'>]
 
     ```
     """

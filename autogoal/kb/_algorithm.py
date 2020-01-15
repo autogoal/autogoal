@@ -1,9 +1,11 @@
 import inspect
+import warnings
 import networkx as nx
 from collections import namedtuple
 
 from autogoal.grammar import GraphSpace, Graph, CfgInitializer
 from autogoal.utils import nice_repr
+from autogoal.kb._data import conforms
 
 
 def build_pipelines(input, output, registry):
@@ -14,7 +16,7 @@ def build_pipelines(input, output, registry):
 
     # Enqueue open nodes
     for clss in registry:
-        if input.conforms(_get_annotations(clss).input):
+        if conforms(input, _get_annotations(clss).input):
             open_nodes.append(clss)
             G.add_edge(GraphSpace.Start, clss)
 
@@ -32,11 +34,11 @@ def build_pipelines(input, output, registry):
 
         for other_clss in registry:
             other_input = _get_annotations(other_clss).input
-            if output_type.conforms(other_input) and other_clss != clss:
+            if conforms(output_type, other_input) and other_clss != clss:
                 open_nodes.append(other_clss)
                 G.add_edge(clss, other_clss)
 
-        if output_type.conforms(output):
+        if conforms(output_type, output):
             G.add_edge(clss, GraphSpace.End)
 
     if GraphSpace.End not in G:
@@ -58,9 +60,14 @@ class Pipeline:
         self.steps = steps
 
     def send(self, msg: str, *args, **kwargs):
+        found = False
         for step in self.steps:
             if hasattr(step, msg):
                 getattr(step, msg)(*args, **kwargs)
+                found = True
+        if not found:
+            warnings.warn(f'No step answered message {msg}.')
+
 
     def run(self, x):
         for step in self.steps:
@@ -91,8 +98,8 @@ def _get_annotations(clss):
 
 
 def _has_input(clss, input):
-    return input.conforms(_get_annotations(clss).input)
+    return conforms(input, _get_annotations(clss).input)
 
 
 def _has_output(clss, output):
-    return _get_annotations(clss).output.conforms(output)
+    return conforms(_get_annotations(clss).output, output)

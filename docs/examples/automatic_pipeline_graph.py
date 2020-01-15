@@ -10,7 +10,7 @@ from autogoal.contrib.sklearn import find_classes
 pipeline_generator = build_pipelines(
     input=List(Word()),
     output=CategoricalVector(),
-    registry=find_classes(".*Classifier") + find_classes(".*Vectorizer"),
+    registry=find_classes(r"(.*Classifier|.*Vectorizer)"),
 )
 
 fitness_fn = movie_reviews.make_fn(examples=100)
