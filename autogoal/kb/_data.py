@@ -2,7 +2,7 @@ import types
 import inspect
 
 from typing import Mapping
-from autogoal.grammar import Symbol
+from autogoal.grammar import Symbol, Union, Empty
 
 
 def algorithm(input_type, output_type):
@@ -39,12 +39,8 @@ class Interface:
         if not compatible:
             raise ValueError("Cannot find compatible implementations for interface %r" % cls)
 
-        if len(compatible) > 1:
-            rhs = Union(symbol.name, *compatible)
-        else:
-            rhs = compatible[0]
-
-        print(symbol, rhs)
+        grammar = Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
+        return grammar
 
 
 def _conforms(type1, type2):
@@ -205,7 +201,7 @@ class List(DataType):
         return "List(%r)" % self._inner
 
 
-class Union(DataType):
+class Tuple(DataType):
     def __init__(self, *inner):
         self._inner = sorted(inner, key=repr)
         super().__init__(**inner[0].tags)
@@ -255,7 +251,7 @@ __all__ = [
     "Sentence",
     "SparseMatrix",
     "Stem",
-    "Union",
+    "Tuple",
     "Vector",
     "Word",
 ]

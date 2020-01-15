@@ -303,4 +303,4 @@ class GraphSpace(Grammar):
             next_node = sampler.choice(next_nodes, handle=last_node)
             path.append(next_node)
 
-        [self.initializer(clss) for clss in path[1:-1]]
+        return [self.initializer(clss) for clss in path[1:-1]]

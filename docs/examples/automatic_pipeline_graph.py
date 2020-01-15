@@ -1,4 +1,4 @@
-from autogoal.kb import Word, Sentence, Matrix, Category, Vector, List, algorithm, Union
+from autogoal.kb import Word, Sentence, Matrix, Category, Vector, List, algorithm, Tuple
 from autogoal.kb import build_pipelines
 
 
