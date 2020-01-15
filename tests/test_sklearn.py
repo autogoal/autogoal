@@ -10,14 +10,16 @@ def sklearn_classes():
     for _, clss in inspect.getmembers(
         sklearn,
         lambda c: inspect.isclass(c)
-        and issubclass(c, (sklearn.SklearnEstimator, sklearn.SklearnTransformer)),
+        and issubclass(c, (sklearn.SklearnEstimator, sklearn.SklearnTransformer))
+        and c not in (sklearn.SklearnEstimator, sklearn.SklearnTransformer),
     ):
         classes.append(clss)
 
     return classes
 
 
-@pytest.mark.slow
+@pytest.mark.contrib
+@pytest.mark.sklearn
 @pytest.mark.parametrize("clss", sklearn_classes())
 def test_create_grammar_for_generated_class(clss):
     from autogoal.grammar import generate_cfg
@@ -25,6 +27,8 @@ def test_create_grammar_for_generated_class(clss):
 
 
 @pytest.mark.slow
+@pytest.mark.contrib
+@pytest.mark.sklearn
 @pytest.mark.parametrize("clss", sklearn_classes())
 def test_sample_generated_class(clss):
     from autogoal.grammar import generate_cfg, Sampler

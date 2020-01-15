@@ -1,26 +1,26 @@
+import datetime
+import inspect
+import re
+import textwrap
+import warnings
+from pathlib import Path
+
+import enlighten
+import numpy as np
 import sklearn
 import sklearn.cluster
 import sklearn.cross_decomposition
 import sklearn.feature_extraction
-import sklearn.naive_bayes
 import sklearn.impute
-
-import textwrap
-import datetime
-import inspect
-import re
-import enlighten
-import numpy as np
-import warnings
-
-from pathlib import Path
+import sklearn.naive_bayes
 
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
+from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 
-from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
+import abc
 
 
-class SklearnEstimator:
+class SklearnWrapper(metaclass=abc.ABCMeta):
     def __init__(self):
         self.mode = 'train'
 
@@ -31,35 +31,82 @@ class SklearnEstimator:
         self.mode = 'eval'
 
     def run(self, input):
-        X, y = input
         if self.mode == 'train':
-            self.fit(X, y)
-            return X, y
+            return self._train(input)
         elif self.mode == 'eval':
-            return X, self.predict(X)
-        else:
-            raise Exception('Invalid mode')
+            return self._eval(input)
+
+        raise ValueError("Invalid mode: %s" % self.mode)
+
+    @abc.abstractmethod
+    def _train(self, input):
+        pass
+
+    @abc.abstractmethod
+    def _eval(self, input):
+        pass
 
 
-class SklearnTransformer:
-    def __init__(self):
-        self.mode = 'train'
-
-    def train(self):
-        self.mode = 'train'
-
-    def eval(self):
-        self.mode = 'eval'
-
-    def run(self, input):
+class SklearnEstimator(SklearnWrapper):
+    def _train(self, input):
         X, y = input
-        if self.mode == 'train':
-            return self.fit_transform(X), y
-        elif self.mode == 'eval':
-            return self.transform(X), y
-        else:
-            raise Exception('Invalid mode')
+        self.fit(X, y)
+        return X, y
 
+    def _eval(self, input):
+        X, _ = input
+        return X, self.predict(X)
+
+    @abc.abstractmethod
+    def fit(self, X, y):
+        pass
+
+    @abc.abstractmethod
+    def predict(self, X):
+        pass
+
+
+class SklearnTransformer(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        return self.fit_transform(X), y
+
+    def _eval(self, input):
+        X, y = input
+        return self.transform(X), y
+
+    @abc.abstractmethod
+    def fit_transform(self, X, y=None):
+        pass
+
+    @abc.abstractmethod
+    def transform(self, X, y=None):
+        pass
+
+
+GENERATION_RULES = dict(
+    LatentDirichletAllocation=dict(
+        ignore_params=set(['evaluate_every'])
+    ),
+    RadiusNeighborsClassifier=dict(
+        ignore=True,
+    ),
+    KNeighborsTransformer=dict(
+        ignore_params=set(['metric'])
+    ),
+    RadiusNeighborsTransformer=dict(
+        ignore_params=set(['metric'])
+    ),
+    LocalOutlierFactor=dict(
+        ignore_params=set(['metric'])
+    ),
+    RadiusNeighborsRegressor=dict(
+        ignore_params=set(['metric'])
+    ),
+    LabelBinarizer=dict(
+        ignore_params=set(['neg_label', 'pos_label'])
+    ),
+)
 
 
 def build_sklearn_wrappers():
@@ -90,8 +137,21 @@ def build_sklearn_wrappers():
     # manager.stop()
 
 def _write_class(cls, fp):
+    rules = GENERATION_RULES.get(cls.__name__)
+
+    if rules:
+        if rules.get('ignore'):
+            return
+
+        ignore_args = rules.get('ignore_params', [])
+    else:
+        ignore_args = []
+
     args = _get_args(cls)
     inputs, outputs = get_input_output(cls)
+
+    for a in ignore_args:
+        args.pop(a)
 
     if not inputs:
         warnings.warn("Cannot find correct types for %r" % cls)
@@ -99,7 +159,7 @@ def _write_class(cls, fp):
 
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
-    self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
+    # self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
     base_class = 'SklearnEstimator' if is_algorithm(cls) == 'estimator' else 'SklearnTransformer'
@@ -110,7 +170,7 @@ def _write_class(cls, fp):
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
-        class {cls.__name__}({base_class}, _{cls.__name__}):
+        class {cls.__name__}(_{cls.__name__}, {base_class}):
             def __init__(
                 self,
                 {args_str}
@@ -122,7 +182,7 @@ def _write_class(cls, fp):
                 )
 
             def run(self, input: {input_str}) -> {output_str}:
-               return super().run(input)
+               return {base_class}.run(self, input)
         """
     ))
 
@@ -171,7 +231,7 @@ def _walk(module, name="sklearn"):
                     imports.append(obj)
 
                 _walk_p(obj, name)
-            except Exception as e:
+            except: # Exception as e:
                 pass
 
             try:
@@ -222,7 +282,7 @@ def _find_parameter_values(parameter, cls):
                 warnings.simplefilter("ignore")
                 cls(**{parameter: opt}).fit(np.ones((10, 10)), [True] * 5 + [False] * 5)
                 valid.append(opt)
-        except Exception as e:
+        except: # Exception as e:
             invalid.append(opt)
 
     return sorted(valid)
