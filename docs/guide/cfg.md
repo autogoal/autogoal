@@ -184,7 +184,7 @@ of each of these clases.
 
 ```python
 from autogoal.grammar import Union
-from autogoal.grammar import  generate_cfg
+from autogoal.grammar import generate_cfg
 
 grammar =  generate_cfg(Union("Classifier", LR, SVM, NB, DT))
 ```

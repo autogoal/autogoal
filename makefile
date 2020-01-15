@@ -11,11 +11,11 @@ notebook:
 
 .PHONY: docs-serve
 docs-serve:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && mkdocs serve
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && mkdocs serve
 
 .PHONY: docs-deploy
 docs-deploy:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && cp docs/index.md Readme.md && mkdocs gh-deploy
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && cp docs/index.md Readme.md && mkdocs gh-deploy
 
 .PHONY: shell
 shell:
