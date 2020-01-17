@@ -28,7 +28,8 @@ class ResourceManager:
     def __init__(self, time_limit:int = 360, memory_limit:int = 4294967296):
         self.set_time_limit(time_limit)
         self.set_memory_limit(memory_limit)
-     
+        signal.signal(signal.SIGXCPU, alarm_handler)
+    
     def set_memory_limit(self, limit):
         """
         set memory limit for future restricted functions
@@ -53,27 +54,25 @@ class ResourceManager:
     def set_time_limit(self, limit):
         self.time_limit = limit
         
-    def _restrict_memory(self, memory_amount):
+    def _restrict(self, memory_amount):
         if memory_amount:
             _, hard = self.original_limit
             limit, _ = memory_amount
             resource.setrlimit(resource.RLIMIT_DATA, (limit, hard))
+            resource.setrlimit(resource.RLIMIT_CPU, (self.time_limit, hard))
     
     def _unrestrict_memory(self):
         self._restrict_memory(self.original_limit)
     
     def _run_for(self, function, *args, **kwargs):
-        def signal_handler(*args):
-            raise TimeoutError()
-        
         try:
-            signal.signal(signal.SIGALRM, signal_handler)
-            signal.alarm(self.time_limit)
+            # signal.alarm(self.time_limit)
             
             result = function(*args, **kwargs)
-            signal.alarm(0) #cancel the alarm
+            # signal.alarm(0) #cancel the alarm
             return result
         except Exception as e:
+            # signal.alarm(0) #cancel the alarm
             raise e
     
     def get_used_memory(self):
@@ -85,11 +84,11 @@ class ResourceManager:
     
     def _restricted_function(self, result_bucket, function, args, kwargs):
         try:
-            self._restrict_memory(self.memory_limit)
-            result = self._run_for(function, *args, **kwargs)
-            result_bucket.put(result)
+            self._restrict(self.memory_limit)
+            result = function(*args, **kwargs)
+            result_bucket["result"] = result
         except Exception as e:
-            result_bucket.put(e)
+            result_bucket["result"] = e
     
     def run_restricted(self, function, *args, **kwargs):
         """
@@ -97,24 +96,24 @@ class ResourceManager:
         CPU time and RAM memory usage
         """
         try:
-            result_bucket = multiprocessing.Queue()
+            manager = multiprocessing.Manager()
+            result_bucket = manager.dict()
             
             rprocess = multiprocessing.Process(target=self._restricted_function,
                                                args=[result_bucket, function, args, kwargs])
 
             rprocess.start()
+            # print("started process:", rprocess.pid)
             rprocess.join()
-            
-            result = result_bucket.get()
+            # print("ended process:", rprocess.pid)
+            result = result_bucket["result"]
             if isinstance(result, Exception): #Exception ocurred
                 raise result
             return result
-                    
-        except MemoryError as e:
-            raise MemoryError("Memory error found for function %s" %function.__name__)
-            
-        except TimeoutError as e:
-            raise TimeoutError("%s reached time limit (%d)" %(function.__name__, self.time_limit))
         
         except Exception as e:
             raise e
+        
+
+def alarm_handler(*args):
+    raise TimeoutError("process %d got to time limit" %os.getpid())
