@@ -1,6 +1,6 @@
 import scipy
 
-from typing import Mapping, Optional, Dict
+from typing import Mapping, Optional, Dict, List, Sequence
 from autogoal.grammar import Sampler
 from ._base import SearchAlgorithm
 
@@ -42,7 +42,7 @@ class ModelSampler(Sampler):
 
     def choice(self, options, handle=None):
         if handle is not None:
-            return self._sample_categorical(handle, options)
+            return self.categorical(handle, options)
 
         weights = [self._get_model_params(option, 1) for option in options]
         idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]
@@ -50,33 +50,33 @@ class ModelSampler(Sampler):
         self._register_update(option, 1)
         return option
 
-    def _sample_discrete(self, handle, min, max):
+    def discrete(self, min=0, max=10, handle=None):
         if handle is None:
-            return super()._sample_discrete(handle, min, max)
+            return super().discrete(min, max, handle)
 
         mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
         value = self._clamp(int(self.rand.gauss(mean, stdev)), min, max)
         return self._register_update(handle, value)
 
-    def _sample_continuous(self, handle, min, max):
+    def continuous(self, min=0, max=1, handle=None):
         if handle is None:
-            return super()._sample_continuous(handle, min, max)
+            return super().continuous(min, max, handle)
 
         mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
         value = self._clamp(self.rand.gauss(mean, stdev), min, max)
         return self._register_update(handle, value)
 
-    def _sample_boolean(self, handle):
+    def boolean(self, handle=None):
         if handle is None:
-            return super()._sample_boolean(handle)
+            return super().boolean(handle)
 
         p = self._get_model_params(handle, (0.5,))[0]
         value = self.rand.uniform(0, 1) < p
         return self._register_update(handle, value)
 
-    def _sample_categorical(self, handle, options):
+    def categorical(self, options, handle=None):
         if handle is None:
-            return super()._sample_categorical(handle, options)
+            return super().categorical(options, handle)
 
         weights = self._get_model_params(handle, [1 for _ in options])
         idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]
@@ -124,6 +124,86 @@ def update_model(model, updates, alpha: float = 1):
     return new_model
 
 
+def _argsort(l):
+    # taken from https://stackoverflow.com/questions/6422700
+    return sorted(range(len(l)), key=l.__getitem__)
+
+
+def best_indices(values: List, k: int = 1, maximize: bool = False) -> List[int]:
+    """
+    Computes the `k` best indices from values, i.e., the indices of the values
+    that are the top minimum (or maximum).
+
+    Args:
+
+    * `values: List`: Values to compare, must be a sortable type (e.g., `int`, `float`, ...).
+    * `k: int`: Number of indices to calculate. Defaults to `1`.
+    * `maximize: bool`: Whether to compute the maximum or minimum values. Defaults to `False`, i.e., minimize by default.
+
+    Returns:
+
+    * `indices: List[int]`: list of the indices that correspond to maximum (or minimum) values in `values`.
+
+    Examples:
+
+        >>> best_indices([.33, 0.12, 0.55, 0.09], k=2)
+        [1, 3]
+
+        >>> best_indices([.33, 0.12, 0.55, 0.09], k=3, maximize=True)
+        [0, 1, 2]
+
+        >>> best_indices([.33, 0.12, 0.55, 0.09])
+        [3]
+
+    !!! note
+        Note that indices are returned in sorted index order, **not** in the order in which
+        the values would be sorted themselves.
+    """
+    indices = _argsort(_argsort(values))
+
+    if maximize:
+        threshold = len(values) - k
+        return [i for i in range(len(values)) if indices[i] >= threshold]
+    else:
+        threshold = k
+        return [i for i in range(len(values)) if indices[i] < threshold]
+
+
+def merge_updates(*updates: Sequence[Dict]) -> Dict:
+    """
+    Merges a bunch of update dicts from `ModelSampler`
+    into a single dictionary.
+
+    Args:
+
+    * `updates: Sequence[Dict]`: Sequence of update dictionaries obtained
+      from calling `ModelSampler.updates`.
+
+    Returns:
+
+    * `update: Dict`: A single dictionary with the combined (appended) updates.
+
+    Examples:
+
+        >>> up1 = {'a': [1]}
+        >>> up2 = {'b': [2,3]}
+        >>> up3 = {'a': [4]}
+        >>> merge_updates(up1, up2, up3)
+        {'a': [1, 4], 'b': [2, 3]}
+
+    """
+    result = {}
+
+    for upd in updates:
+        for key, value in upd.items():
+            if not key in result:
+                result[key] = []
+
+            result[key].extend(value)
+
+    return result
+
+
 class PESearch(SearchAlgorithm):
     def __init__(
         self,
@@ -146,37 +226,12 @@ class PESearch(SearchAlgorithm):
         for _ in range(self._pop_size):
             sampler = ModelSampler(self._model)
             self._samplers.append(sampler)
-            yield self._grammar.sample(sampler=sampler)
-
-    @staticmethod
-    def _indices(l):
-        # taken from https://stackoverflow.com/questions/6422700
-        def argsort(l):
-            return sorted(range(len(l)), key=l.__getitem__)
-
-        return argsort(argsort(l))
+            yield self._generator_fn(sampler=sampler)
 
     def _finish_generation(self, fns):
-        # taken from https://stackoverflow.com/questions/6422700
-        indices = self._indices(fns)
-        to_select = int(self._selection * len(fns))
+        # Compute the marginal model of the best pipelines
+        samplers: List[ModelSampler] = [self._samplers[i] for i in best_indices(fns)]
+        updates: Dict = merge_updates(*[sampler.updates for sampler in samplers])
 
-        if to_select == 0:
-            to_select = len(fns)
-
-        if self._maximize:
-            to_select = len(fns) - to_select
-            selected = [self._samplers[i] for i in range(len(fns)) if indices[i] >= to_select]
-        else:
-            selected = [self._samplers[i] for i in range(len(fns)) if indices[i] < to_select]
-
-        model = selected[0].model
-
-        for sampler in selected:
-            model = update_model(model, sampler.updates, self._learning_factor)
-
-        # TODO: implement propper loging
-        # import pprint
-        # pprint.pprint(model)
-
-        self._model = model
+        # Update the probabilistic model with the marginal model from the best pipelines
+        self._model = update_model(self._model, updates, self._learning_factor)

@@ -75,7 +75,7 @@ def _get_generated_class(name):
 
 
 class Production:
-    def __init__(self, pattern, replacement, *, initializer=default_initializer):
+    def __init__(self, pattern, replacement, *, initializer=None):
         if not isinstance(pattern, Graph):
             obj = pattern
             pattern = Graph()
@@ -86,7 +86,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.initializer = initializer
+        self.initializer = initializer or default_initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -217,7 +217,7 @@ class Block(GraphPattern):
 
 
 class GraphGrammar(Grammar):
-    def __init__(self, start, *, initializer=default_initializer, non_terminals=None):
+    def __init__(self, start, *, initializer=None, non_terminals=None):
         if isinstance(start, str):
             start = Node(start)
 
@@ -227,7 +227,7 @@ class GraphGrammar(Grammar):
         super(GraphGrammar, self).__init__(start)
         self._productions: List[Production] = []
         self._non_terminals = set(non_terminals or [])
-        self._initializer = initializer
+        self._initializer = initializer or default_initializer
 
     def add(self, pattern, replacement: GraphPattern, *, initializer=None, kwargs=None):
         if initializer is None:

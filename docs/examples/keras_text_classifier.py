@@ -114,7 +114,7 @@ class Pipeline(_Pipeline):
 
 
 def main():
-    grammar = generate_cfg(Pipeline)
+    grammar =  generate_cfg(Pipeline)
     print(grammar)
 
     search = RandomSearch(grammar, movie_reviews.make_fn(max_examples=100))

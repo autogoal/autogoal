@@ -22,10 +22,22 @@ nav:
 
     - User Guide:
         - First steps: guide/index.md
+        - Pre-designed pipelines: guide/predesigned.md
+        - Defining the space:
+            - Class-based API: guide/cfg.md
+            - Graph-based API: guide/graph.md
+            - Functional API: guide/functional.md
+
 
     - API:
-        - AutoGOAL: api/index.md
-        - Context Free Grammars: api/cfg.md
+        - AutoGOAL API: api/autogoal.md
+        - Grammars: api/autogoal.grammar.md
+        - Search: api/autogoal.search.md
+        - Contrib:
+            - Contrib API: api/autogoal.contrib.md
+            - Sklearn: api/autogoal.contrib.sklearn.md
+            - Keras: api/autogoal.contrib.keras.md
+        - Datasets: api/autogoal.datasets.md
 
     - Examples:
         - Sklearn: examples/sklearn_simple_grammar.md

@@ -41,7 +41,7 @@ from autogoal.grammar import (
     Categorical,
     Union,
     Boolean,
-    generate_cfg,
+     generate_cfg,
     Sampler,
 )
 
@@ -206,7 +206,7 @@ class Pipeline(SkPipeline):
 # that class, based on the parameters' annotations and recursively building the corresponding
 # rules for all classes down to basic parameter types.
 
-grammar = generate_cfg(Pipeline)
+grammar =  generate_cfg(Pipeline)
 print(grammar)
 
 # If you run the code up to this point, it should print something like:

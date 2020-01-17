@@ -48,7 +48,7 @@ from autogoal.grammar import (
     Categorical,
     Union,
     Boolean,
-    generate_cfg,
+     generate_cfg,
     Sampler,
 )
 ```
@@ -219,7 +219,7 @@ that class, based on the parameters' annotations and recursively building the co
 rules for all classes down to basic parameter types.
 
 ```python
-grammar = generate_cfg(Pipeline)
+grammar =  generate_cfg(Pipeline)
 print(grammar)
 ```
 
