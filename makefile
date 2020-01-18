@@ -63,6 +63,8 @@ dev-install: dev-ensure
 	poetry config virtualenvs.create false
 	poetry install
 	pip install tensorflow==1.14
+	pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
 #
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
