@@ -440,9 +440,6 @@ for _ in range(10):
 # ## Finding the best pipeline
 
 # To continue with the example, we will now search for the best pipeline.
-# We will explore two different search strategies: a random search and a probabilistic
-# evolutionary search that _should_ be better than the random.
-
 # We will evaluate our pipelines on the `movie_reviews` corpus. For that purpose
 # we need a fitness function, which is a simple callable that takes a pipeline and outputs
 # a score. Fortunately, the `movie_reviews.make_fn` function does this for us, taking
