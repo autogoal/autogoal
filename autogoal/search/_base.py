@@ -40,7 +40,7 @@ class SearchAlgorithm:
 
                 for solution in self._run_one_generation():
                     logger.sample_solution(solution)
-
+                    
                     try:
                         fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
