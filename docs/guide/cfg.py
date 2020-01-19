@@ -436,6 +436,7 @@ for _ in range(10):
 # Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
 #          vectorizer=TfIdf(ngram=3, use_idf=True))
 # ```
+
 # ## Finding the best pipeline
 
 # To continue with the example, we will now search for the best pipeline.
@@ -455,8 +456,7 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # but it serves as a good baseline implementation.
 
 # We will run it for a total of `1000` fitness evaluations, or equivalently, a total
-# of `1000` different random pipelines. To see what's actually going on we will use
-# the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
+# of `1000` different random pipelines.
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
 best, score = random_search.run(100)

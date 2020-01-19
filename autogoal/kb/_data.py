@@ -212,11 +212,11 @@ class Matrix(DataType):
     pass
 
 
-class DenseMatrix(DataType):
+class DenseMatrix(Matrix):
     pass
 
 
-class SparseMatrix(DataType):
+class SparseMatrix(Matrix):
     pass
 
 
@@ -232,15 +232,15 @@ class CategoricalVector(DataType):
     pass
 
 
-class MatrixContinuous(DataType):
+class MatrixContinuous(Matrix):
     pass
 
 
-class MatrixContinuousDense(MatrixContinuous):
+class MatrixContinuousDense(MatrixContinuous, DenseMatrix):
     pass
 
 
-class MatrixContinuousSparse(MatrixContinuous):
+class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
     pass
 
 
@@ -250,10 +250,10 @@ class List(DataType):
         super().__init__(**inner.tags)
 
     def __conforms__(self, other):
-        return isinstance(other, List) and conforms(self._inner, other._inner)
+        return isinstance(other, List) and conforms(self.inner, other._inner)
 
     def __repr__(self):
-        return "List(%r)" % self._inner
+        return "List(%r)" % self.inner
 
 
 class Tuple(DataType):
