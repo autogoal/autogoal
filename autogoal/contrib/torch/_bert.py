@@ -1,7 +1,7 @@
 from transformers import BertModel, BertTokenizer
 import torch
 
-from autogoal.kb import Sentence
+from autogoal.kb import Sentence, MatrixContinuousDense
 
 
 class BertEmbedding:
@@ -19,10 +19,10 @@ class BertEmbedding:
         self.model = BertModel.from_pretrained('bert-base-uncased')
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-    def run(self, input: Sentence(language='english')) -> List(Vector()):
+    def run(self, input: Sentence(language='english')) -> MatrixContinuousDense():
         tokens = self.tokenizer.encode(input)
         ids = torch.tensor([tokens])
-        
+
         with torch.no_grad():
             output = self.model(ids)[0].numpy()
 
