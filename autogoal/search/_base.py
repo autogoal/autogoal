@@ -39,13 +39,12 @@ class SearchAlgorithm:
                 fns = []
 
                 for solution in self._run_one_generation():
-                    logger.sample_solution(solution)
-                    
                     try:
+                        logger.sample_solution(solution)
                         fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
                         if self._errors == 'raise':
-                            raise
+                            raise e
 
                         fn = 0
                         if self._errors == 'warn':
@@ -72,7 +71,7 @@ class SearchAlgorithm:
                 self._finish_generation(fns)
 
             return best_solution, best_fn
-
+        
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
 

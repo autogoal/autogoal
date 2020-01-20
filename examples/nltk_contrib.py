@@ -1,4 +1,4 @@
-from autogoal.contrib.nltk import SklearnNLPClassifier
+from autogoal.contrib.nlp import SklearnNLPClassifier
 from autogoal.grammar import generate_cfg
 from autogoal.search import RandomSearch, EnlightenLogger, PESearch
 from nltk.corpus import movie_reviews
@@ -49,7 +49,7 @@ def load_corpus(path):
 
 if __name__ == "__main__":
     g = generate_cfg(SklearnNLPClassifier)
-    X, y = load_movie_reviews(100)
+    X, y = load_movie_reviews(500)
     # X, y = load_corpus("examples/Revolico")
 
     def fitness(pipeline):
@@ -57,6 +57,6 @@ if __name__ == "__main__":
         score = pipeline.score(X, y)
         return score
 
-
-    search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=100)
+    search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=20)
     result = search.run(50, logger=EnlightenLogger())
+    print(result)

@@ -8,5 +8,7 @@ from ._cfg import (
     Boolean,
     Union,
     CfgInitializer,
+    Symbol,
+    Empty
 )
 from ._graph import GraphGrammar, Path, Block, Graph

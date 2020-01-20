@@ -129,7 +129,7 @@ class Callable(Production):
 
         obj = namespace[self._name](**kwargs)
 
-        if hasattr(obj, "sample"):
+        if hasattr(obj, "sample") and callable(obj.sample):
             obj.sample(sampler)
 
         return obj
