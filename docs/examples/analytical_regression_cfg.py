@@ -24,3 +24,7 @@ data = [
 ]
 
 #
+
+class Sum:
+    def __init__(self, left, right):
+        pass
