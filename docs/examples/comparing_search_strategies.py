@@ -75,27 +75,13 @@ for i in range(100):
         continue
 
 
-class Logger(ConsoleLogger):
-    def __init__(self, search: PESearch):
-        self.search = search
+search_rand = RandomSearch(grammar, evaluate)
+best_rand, best_fn_rand = search_rand.run(1000, logger=CustomLogger())
 
-    def start_generation(self, *args):
-        super().start_generation(*args)
-        print("model at start", self.search._model)
-        input()
+search_pe = PESearch(grammar, evaluate, learning_factor=0.05, pop_size=10)
+best_pe, best_fn_pe = search_pe.run(1000, logger=CustomLogger())
 
-    def finish_generation(self, fns):
-        print("fns", fns)
-        print("model", self.search._model)
-
-# search_rand = RandomSearch(grammar, evaluate, errors="warn")
-# best_rand, best_fn_rand = search_rand.run(1000, logger=ConsoleLogger())
-
-search_pe = PESearch(grammar, evaluate, learning_factor=0.05, pop_size=10, errors="warn")
-logger = Logger(search_pe)
-best_pe, best_fn_pe = search_pe.run(1000, logger)
-
-# print(best_rand, best_fn_rand)
+print(best_rand, best_fn_rand)
 print(best_pe, best_fn_pe)
 
 print(search_pe._model)

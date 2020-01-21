@@ -107,7 +107,7 @@ GENERATION_RULES = dict(
         ignore_params=set(['neg_label', 'pos_label'])
     ),
     HashingVectorizer=dict(
-        ignore_params=set(['token_pattern', 'analyzer'])
+        ignore_params=set(['token_pattern', 'analyzer', 'input', 'decode_error'])
     )
 )
 

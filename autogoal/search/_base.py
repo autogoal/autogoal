@@ -50,12 +50,10 @@ class SearchAlgorithm:
                         fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
                         fn = 0
+                        logger.error(e, solution)
 
                         if self._errors == 'raise':
                             raise
-
-                        if self._errors == 'warn':
-                            warnings.warn(str(e))
 
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
@@ -111,6 +109,9 @@ class Logger:
     def eval_solution(self, solution, fitness):
         pass
 
+    def error(self, e: Exception, solution):
+        pass
+
     def update_best(self, new_best, new_fn, previous_best, previous_fn):
         pass
 
@@ -129,6 +130,9 @@ class ConsoleLogger(Logger):
         elapsed = datetime.timedelta(seconds=elapsed)
         remaining = datetime.timedelta(seconds=remaining)
         print("New generation started: best_fn=%.3f, evaluations=%i, elapsed=%s, remaining=%s" % (best_fn or 0, evaluations, elapsed, remaining))
+
+    def error(self, e:Exception, solution):
+        print("(!) Error evaluating pipeline: %r" % e)
 
     def end(self, best, best_fn):
         print("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best))

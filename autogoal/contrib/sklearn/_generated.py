@@ -467,8 +467,8 @@ from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectori
 class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
     def __init__(
         self,
-        input: Categorical('content', 'file', 'filename', 'read'),
-        decode_error: Categorical('ignore', 'replace', 'strict'),
+        # input: Categorical('content', 'file', 'filename', 'read'),
+        # decode_error: Categorical('ignore', 'replace', 'strict'),
         lowercase: Boolean(),
         # token_pattern: Categorical('word'),
         # analyzer: Categorical('char', 'char_wb', 'word'),
@@ -480,8 +480,8 @@ class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
         SklearnTransformer.__init__(self)
         _HashingVectorizer.__init__(
             self,
-            input=input,
-            decode_error=decode_error,
+            # input=input,
+            # decode_error=decode_error,
             lowercase=lowercase,
             # token_pattern=token_pattern,
             # analyzer=analyzer,

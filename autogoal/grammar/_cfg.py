@@ -2,7 +2,7 @@ import inspect
 import random
 import warnings
 import sys
-from typing import List, Dict, Set, Callable
+from typing import List, Dict, Set
 
 from ._base import Grammar, Sampler
 
@@ -369,8 +369,8 @@ class CfgInitializer:
         self._grammars = {}
         self._registry = registry
 
-    def __call__(self, cls):
+    def __call__(self, cls, sampler=None):
         if cls not in self._grammars:
             self._grammars[cls] =  generate_cfg(cls, self._registry)
 
-        return self._grammars[cls].sample()
+        return self._grammars[cls].sample(sampler=sampler)

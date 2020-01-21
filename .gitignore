@@ -140,3 +140,4 @@ dmypy.json
 
 .ipynb_checkpoints
 PGE-*.json
+docs/examples/errors.log
