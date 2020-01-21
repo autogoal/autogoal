@@ -278,17 +278,29 @@ def _find_parameter_values(parameter, cls):
 
     for opt in options:
         opt = opt.lower()
+
         if opt in skip:
             continue
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                cls(**{parameter: opt}).fit(np.ones((10, 10)), [True] * 5 + [False] * 5)
-                valid.append(opt)
-        except: # Exception as e:
-            invalid.append(opt)
 
-    return sorted(valid)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            if _try(cls, parameter, opt):
+                valid.append(opt)
+            else:
+                invalid.append(opt)
+
+    if valid:
+        return Categorical(*sorted(valid))
+
+    return None
+
+
+def _try(cls, arg, value):
+    try:
+        cls(**{arg: value}).fit(np.ones((10, 10)), [True] * 5 + [False] * 5)
+        return True
+    except:
+        return False
 
 
 def _get_args(cls):
@@ -335,42 +347,83 @@ def _get_arg_values(arg, value, cls):
     if isinstance(value, bool):
         return Boolean()
     if isinstance(value, int):
-        return Discrete(*_get_integer_values(arg, value, cls))
+        return _get_integer_values(arg, value, cls)
     if isinstance(value, float):
         return Continuous(*_get_float_values(arg, value, cls))
     if isinstance(value, str):
-        values = _find_parameter_values(arg, cls)
-        return Categorical(*values) if values else None
+        return _find_parameter_values(arg, cls)
 
     return None
 
 
 def _get_integer_values(arg, value, cls):
-    if value == 0:
-        min_val = -100
-        max_val = 100
-    else:
-        min_val = value // 2
-        max_val = 2 * value
+    min_value = -1000000
+    max_value =  1000000
 
-    return min_val, max_val
+    # binary search for minimum value
+    current_value = min_value
+
+    while current_value < value:
+        if not _try(cls, arg, current_value):
+            next_value = int((current_value + value) / 2)
+            if next_value == current_value:
+                min_value = value
+                break
+        else:
+            min_value = current_value
+            break
+
+    # binary search for maximum value
+    current_value = max_value
+
+    while current_value > value:
+        if not _try(cls, arg, current_value):
+            next_value = int((current_value + value) / 2)
+            if next_value == current_value:
+                max_value = value
+                break
+        else:
+            max_value = current_value
+            break
+
+    if min_value < max_value:
+        return Discrete(min=min_value, max=max_value)
+
+    return None
 
 
 def _get_float_values(arg, value, cls):
-    if value == 0:
-        min_val = -1
-        max_val = 1
-    elif 0 < value <= 0.1:
-        min_val = value / 100
-        max_val = 1
-    elif 0 < value <= 1:
-        min_val = 1e-6
-        max_val = 1
-    else:
-        min_val = value / 2
-        max_val = 2 * value
+    min_value = -1000.0
+    max_value =  1000.0
 
-    return min_val, max_val
+    # binary search for minimum value
+    current_value = min_value
+
+    while current_value < value:
+        if not _try(cls, arg, current_value):
+            next_value = (current_value + value) / 2
+            if abs(next_value - current_value) < 1e-6:
+                min_value = value
+                break
+        else:
+            min_value = current_value
+
+    # binary search for maximum value
+    current_value = max_value
+
+    while current_value > value:
+        if not _try(cls, arg, current_value):
+            next_value = (current_value + value) / 2
+            if next_value == current_value:
+                max_value = value
+                break
+        else:
+            max_value = current_value
+
+    if min_value <= max_value - 1.0:
+        return Continuous(min=min_value, max=max_value)
+
+    return None
 
 
 if __name__ == "__main__":
