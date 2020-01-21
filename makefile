@@ -9,8 +9,8 @@ test-fast:
 notebook:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose up
 
-.PHONY: docs-serve
-docs-serve:
+.PHONY: docs
+docs:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && mkdocs serve
 
 .PHONY: docs-deploy

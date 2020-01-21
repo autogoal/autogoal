@@ -48,6 +48,10 @@ class AutoClassifier:
         self.best_pipeline_.run((X, y))
         self.best_pipeline_.send("eval")
 
+    def score(self, X, y):
+        _, y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
+        return (y_pred == y).astype(float).mean()
+
     def _start_type(self):
         return Matrix()
 

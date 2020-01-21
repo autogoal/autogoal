@@ -473,12 +473,10 @@ Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
 Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
          vectorizer=TfIdf(ngram=3, use_idf=True))
 ```
+
 ## Finding the best pipeline
 
 To continue with the example, we will now search for the best pipeline.
-We will explore two different search strategies: a random search and a probabilistic
-evolutionary search that _should_ be better than the random.
-
 We will evaluate our pipelines on the `movie_reviews` corpus. For that purpose
 we need a fitness function, which is a simple callable that takes a pipeline and outputs
 a score. Fortunately, the `movie_reviews.make_fn` function does this for us, taking
@@ -494,8 +492,7 @@ and stores the best performing pipeline. It has no intelligence whatsoever,
 but it serves as a good baseline implementation.
 
 We will run it for a total of `1000` fitness evaluations, or equivalently, a total
-of `1000` different random pipelines. To see what's actually going on we will use
-the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
+of `1000` different random pipelines.
 
 ```python
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)

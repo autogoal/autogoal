@@ -32,6 +32,32 @@ Resource manager class.
 > `nice_repr(cls)`
 
 
-!!! warning
-    This class has no docstrings.
+A decorator that adds a nice `repr(.)` to any decorated class.
+
+Decorate a class with `@nice_repr` to automatically generate a `__repr__()`
+method that prints the class name along with any parameters defined in the
+constructor which can be found in `dir(self)`.
+
+##### Examples
+
+All of the parameters that you want to be printed in `repr(.)` should
+be either stored in the instance or accesible by name (e.g., as a property).
+
+```python
+>>> @nice_repr
+... class MyType:
+...     def __init__(self, a, b, c):
+...         self.a = a
+...         self._b = b
+...         self._c = c
+...
+...     @property
+...     def b(self):
+...         return self._b
+...
+>>> x = MyType(42, b='hello', c='world')
+>>> x
+MyType(a=42, b='hello')
+
+```
 
