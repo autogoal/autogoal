@@ -22,21 +22,21 @@ import abc
 
 class SklearnWrapper(metaclass=abc.ABCMeta):
     def __init__(self):
-        self.mode = 'train'
+        self._mode = 'train'
 
     def train(self):
-        self.mode = 'train'
+        self._mode = 'train'
 
     def eval(self):
-        self.mode = 'eval'
+        self._mode = 'eval'
 
     def run(self, input):
-        if self.mode == 'train':
+        if self._mode == 'train':
             return self._train(input)
-        elif self.mode == 'eval':
+        elif self._mode == 'eval':
             return self._eval(input)
 
-        raise ValueError("Invalid mode: %s" % self.mode)
+        raise ValueError("Invalid mode: %s" % self._mode)
 
     @abc.abstractmethod
     def _train(self, input):
