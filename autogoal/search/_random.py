@@ -9,5 +9,5 @@ class RandomSearch(SearchAlgorithm):
         super(RandomSearch, self).__init__(*args, **kwargs)
         self._sampler = Sampler(random_state=random_state)
 
-    def _run_one_generation(self):
-        yield self._generator_fn(self._sampler)
+    def _build_sampler(self):
+        return self._sampler

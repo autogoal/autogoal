@@ -7,9 +7,10 @@ from autogoal.utils import ResourceManager
 
 
 class SearchAlgorithm:
-    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
+    def __init__(self, generator_fn, fitness_fn=None, pop_size=1, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
         self._generator_fn = generator_fn
         self._fitness_fn = fitness_fn or self._identity
+        self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
@@ -40,16 +41,19 @@ class SearchAlgorithm:
 
                 fns = []
 
-                for solution in self._run_one_generation():
-                    logger.sample_solution(solution)
+                for _ in range(self._pop_size):
+                    solution = None
 
                     try:
+                        solution = self._generator_fn(self._build_sampler())
+                        logger.sample_solution(solution)
                         fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
+                        fn = 0
+
                         if self._errors == 'raise':
                             raise
 
-                        fn = 0
                         if self._errors == 'warn':
                             warnings.warn(str(e))
 
@@ -78,7 +82,7 @@ class SearchAlgorithm:
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
 
-    def _run_one_generation(self):
+    def _build_sampler(self):
         raise NotImplementedError()
 
     def _start_generation(self):

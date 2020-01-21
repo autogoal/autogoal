@@ -8,7 +8,7 @@ from ._base import SearchAlgorithm
 class ModelSampler(Sampler):
     def __init__(self, model: Dict = None, **kwargs):
         super().__init__(**kwargs)
-        self._model: Dict = model or {}
+        self._model: Dict = {} if model is None else model
         self._updates: Dict = {}
 
     @property
@@ -98,10 +98,18 @@ def update_model(model, updates, alpha: float = 1):
             # float or int means a single un-normalized weight
             new_model[handle] = params + alpha * sum(upd)
         elif isinstance(params, list):
-            # a list means a (potentially un-normalized) distribution over categories
-            new_model[handle] = list(params)
+            # a list means a distribution over categories
+            params = list(params)
             for i in upd:
-                new_model[handle][i] += alpha
+                params[i] += alpha
+
+            total = sum(params)
+
+            for i in range(0, len(params)):
+                params[i] /= total
+
+            new_model[handle] = params
+
         elif isinstance(params, tuple):
             # a tuple means specific distribution parameters, like mean and stdev
             if len(params) == 2:
@@ -208,25 +216,23 @@ class PESearch(SearchAlgorithm):
     def __init__(
         self,
         *args,
-        pop_size: int = 100,
         learning_factor: float = 0.05,
         selection: float = 0.2,
         random_state: Optional[int] = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self._pop_size = pop_size
         self._learning_factor = learning_factor
         self._selection = selection
         self._model: Dict = {}
 
-    def _run_one_generation(self):
+    def _start_generation(self):
         self._samplers = []
 
-        for _ in range(self._pop_size):
-            sampler = ModelSampler(self._model)
-            self._samplers.append(sampler)
-            yield self._generator_fn(sampler=sampler)
+    def _build_sampler(self):
+        sampler = ModelSampler(self._model)
+        self._samplers.append(sampler)
+        return sampler
 
     def _finish_generation(self, fns):
         # Compute the marginal model of the best pipelines
