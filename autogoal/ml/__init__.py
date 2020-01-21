@@ -26,7 +26,7 @@ class AutoClassifier:
         self.validation_split = validation_split
         self.errors = errors
 
-    def fit(self, X, y):
+    def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
             input=self._start_type(),
             output=CategoricalVector(),
@@ -42,7 +42,7 @@ class AutoClassifier:
             **self.search_kwargs,
         )
 
-        self.best_pipeline_, self.best_score_ = search.run(self.search_iterations)
+        self.best_pipeline_, self.best_score_ = search.run(self.search_iterations, **kwargs)
 
         self.best_pipeline_.send("train")
         self.best_pipeline_.run((X, y))

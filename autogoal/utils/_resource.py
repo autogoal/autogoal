@@ -65,7 +65,7 @@ class ResourceManager:
             resource.setrlimit(resource.RLIMIT_CPU, (self.time_limit, hard))
 
     def _unrestrict_memory(self):
-        self._restrict_memory(self.original_limit)
+        self._restrict(self.original_limit)
 
     def _run_for(self, function, *args, **kwargs):
         def signal_handler(*args):

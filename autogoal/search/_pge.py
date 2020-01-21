@@ -42,7 +42,7 @@ class ModelSampler(Sampler):
 
     def choice(self, options, handle=None):
         if handle is not None:
-            return self.categorical(handle, options)
+            return self.categorical(options, handle)
 
         weights = [self._get_model_params(option, 1) for option in options]
         idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]

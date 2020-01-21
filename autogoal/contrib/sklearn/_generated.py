@@ -470,8 +470,8 @@ class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
         input: Categorical('content', 'file', 'filename', 'read'),
         decode_error: Categorical('ignore', 'replace', 'strict'),
         lowercase: Boolean(),
-        token_pattern: Categorical('word'),
-        analyzer: Categorical('char', 'char_wb', 'word'),
+        # token_pattern: Categorical('word'),
+        # analyzer: Categorical('char', 'char_wb', 'word'),
         n_features: Discrete(min=524288, max=2097152),
         binary: Boolean(),
         norm: Categorical('l1'),
@@ -483,8 +483,8 @@ class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
             input=input,
             decode_error=decode_error,
             lowercase=lowercase,
-            token_pattern=token_pattern,
-            analyzer=analyzer,
+            # token_pattern=token_pattern,
+            # analyzer=analyzer,
             n_features=n_features,
             binary=binary,
             norm=norm,
@@ -1266,7 +1266,7 @@ class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
         p: Discrete(min=1, max=4),
-        metric: Categorical('minkowski')
+        # metric: Categorical('minkowski')
     ):
         SklearnEstimator.__init__(self)
         _KNeighborsClassifier.__init__(
@@ -1276,7 +1276,7 @@ class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
             algorithm=algorithm,
             leaf_size=leaf_size,
             p=p,
-            metric=metric
+            # metric=metric
         )
 
     def run(self, input: MatrixContinuous()) -> CategoricalVector():
@@ -1382,7 +1382,7 @@ class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
         leaf_size: Discrete(min=15, max=60),
         p: Discrete(min=1, max=4),
-        metric: Categorical('minkowski')
+        # metric: Categorical('minkowski')
     ):
         SklearnEstimator.__init__(self)
         _KNeighborsRegressor.__init__(
@@ -1392,7 +1392,7 @@ class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
             algorithm=algorithm,
             leaf_size=leaf_size,
             p=p,
-            metric=metric
+            # metric=metric
         )
 
     def run(self, input: MatrixContinuous()) -> ContinuousVector():

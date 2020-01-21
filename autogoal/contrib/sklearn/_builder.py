@@ -106,6 +106,9 @@ GENERATION_RULES = dict(
     LabelBinarizer=dict(
         ignore_params=set(['neg_label', 'pos_label'])
     ),
+    HashingVectorizer=dict(
+        ignore_params=set(['token_pattern', 'analyzer'])
+    )
 )
 
 

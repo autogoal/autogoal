@@ -1,6 +1,7 @@
 import enlighten
 import warnings
-import signal
+import time
+import datetime
 
 from autogoal.utils import ResourceManager
 
@@ -30,17 +31,18 @@ class SearchAlgorithm:
         best_fn = None
 
         logger.begin(evaluations)
+        resource_manager = ResourceManager(time_limit = self._evaluation_timeout, memory_limit = self._memory_limit)
+
         try:
-            resource_manager = ResourceManager(time_limit = self._evaluation_timeout, memory_limit = self._memory_limit)
             while evaluations > 0:
-                logger.start_generation()
+                logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
                 fns = []
 
                 for solution in self._run_one_generation():
                     logger.sample_solution(solution)
-                    
+
                     try:
                         fn = resource_manager.run_restricted(self._fitness_fn, solution)
                     except Exception as e:
@@ -93,7 +95,7 @@ class Logger:
     def end(self, best, best_fn):
         pass
 
-    def start_generation(self):
+    def start_generation(self, evaluations, best_fn):
         pass
 
     def finish_generation(self, fns):
@@ -107,6 +109,34 @@ class Logger:
 
     def update_best(self, new_best, new_fn, previous_best, previous_fn):
         pass
+
+
+class ConsoleLogger(Logger):
+    def begin(self, evaluations):
+        print("Starting search: evaluations=%i" % evaluations)
+        self.start_time = time.time()
+        self.start_evaluations = evaluations
+
+    def start_generation(self, evaluations, best_fn):
+        current_time = time.time()
+        elapsed = int(current_time - self.start_time)
+        avg_time = elapsed / (self.start_evaluations - evaluations + 1)
+        remaining = int(avg_time * evaluations)
+        elapsed = datetime.timedelta(seconds=elapsed)
+        remaining = datetime.timedelta(seconds=remaining)
+        print("New generation started: best_fn=%.3f, evaluations=%i, elapsed=%s, remaining=%s" % (best_fn or 0, evaluations, elapsed, remaining))
+
+    def end(self, best, best_fn):
+        print("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best))
+
+    def sample_solution(self, solution):
+        print("Evaluating pipeline:\n%r" % solution)
+
+    def eval_solution(self, solution, fitness):
+        print("Fitness=%.3f" % fitness)
+
+    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+        print("Best solution: improved=%.3f, previous=%.3f" % (new_fn, previous_fn or 0))
 
 
 class EnlightenLogger(Logger):

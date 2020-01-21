@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from autogoal.datasets import datapath
+from autogoal.datasets import datapath, download
 
 
 def load_raw():
@@ -25,8 +25,11 @@ def load_raw():
     ```
     """
 
+    download("haha_2019")
+
     train_df = pd.read_csv(datapath("haha_2019") / "haha_2019_train.csv")
     test_df = pd.read_csv(datapath("haha_2019") / "haha_2019_test_gold.csv")
+
     return train_df, test_df
 
 
