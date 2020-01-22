@@ -10,5 +10,6 @@ from ._cfg import (
     Symbol,
     CfgInitializer,
     Empty,
+    Symbol,
 )
 from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace

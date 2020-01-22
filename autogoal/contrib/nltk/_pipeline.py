@@ -1,33 +1,63 @@
 from sklearn.pipeline import Pipeline as _Pipeline
 
-from . import _generated as nlp
+from . import _generated as gnlp
+from . import _manual as mnlp
 from autogoal.contrib.sklearn import _generated as sk
 from autogoal.grammar import Union
 from autogoal.contrib.sklearn._pipeline import Noop, SklearnClassifier
 
 
-Tokenization = Union("Tokenization", nlp.BlanklineTokenizer, nlp.LineTokenizer, nlp.MWETokenizer,\
-                    nlp.SExprTokenizer, nlp.SpaceTokenizer, nlp.TabTokenizer, nlp.TextTilingTokenizer,\
-                    nlp.ToktokTokenizer, nlp.TreebankWordTokenizer, nlp.TweetTokenizer, nlp.WhitespaceTokenizer, nlp.WordPunctTokenizer)
-Stemmer = Union("Stemmer", nlp.Cistem, nlp.ISRIStemmer, nlp.LancasterStemmer, nlp.PorterStemmer,\
-                nlp.RSLPStemmer, nlp.SnowballStemmer, Noop)
-Vectorization = Union("Vectorization", sk.TfidfVectorizer, sk.CountVectorizer)
+RawNormalizer = Union("RawNormalizer", mnlp.TextLowerer, Noop)
+
+Tokenization = Union("Tokenization", gnlp.BlanklineTokenizer,\
+                                     gnlp.LineTokenizer,\
+                                     gnlp.MWETokenizer,\
+                                     gnlp.SExprTokenizer,\
+                                     gnlp.SpaceTokenizer,\
+                                     gnlp.TabTokenizer,\
+                                     gnlp.TextTilingTokenizer,\
+                                     gnlp.ToktokTokenizer,\
+                                     gnlp.TreebankWordTokenizer,\
+                                     gnlp.TweetTokenizer,\
+                                     gnlp.WhitespaceTokenizer,\
+                                     gnlp.WordPunctTokenizer)
+
+Stopwords = Union("Stopwords", mnlp.StopwordRemover, Noop)
+
+Stemmer = Union("Stemmer", gnlp.Cistem,\
+                           gnlp.ISRIStemmer,\
+                           gnlp.LancasterStemmer,\
+                           gnlp.PorterStemmer,\
+                           gnlp.RSLPStemmer,\
+                           gnlp.SnowballStemmer)
+
+Lemmatizer = Union("Lemmatizer", gnlp.WordNetLemmatizer)
+
+Normalizer = Union("Normalizer", Stemmer, Lemmatizer, Noop)
+
+Vectorization = Union("Vectorization", sk.TfidfVectorizer, sk.CountVectorizer, mnlp.Doc2Vec)
 
 
 class TextPreprocessing(_Pipeline):
     def __init__(
         self, 
+        raw_normalizing:RawNormalizer,
         tokenization:Tokenization,
-        stemming:Stemmer, 
+        stopwords_removing:Stopwords,
+        normalizing:Normalizer, 
         vectorization:Vectorization,
     ):
+        self.raw_normalizing = raw_normalizing
         self.tokenization = tokenization
-        self.stemming = stemming
+        self.stopwords_removing = stopwords_removing
+        self.normalizing = normalizing
         self.vectorization = vectorization
 
         super().__init__(steps=[
+            ('raw_normalizer', self.raw_normalizing),
             ('tokenizer', self.tokenization),
-            ('stemmer', self.stemming),
+            ('stopwords_remover', self.stopwords_removing),
+            ('normalizer', self.normalizing),
             ('vectorizer', self.vectorization),
         ])
 

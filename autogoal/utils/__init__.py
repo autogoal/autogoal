@@ -1,4 +1,6 @@
 from ._resource import ResourceManager
+from .process import  RestrictedWorker
+
 
 import inspect
 
@@ -51,3 +53,5 @@ def nice_repr(cls):
 
     cls.__repr__ = repr_method
     return cls
+
+

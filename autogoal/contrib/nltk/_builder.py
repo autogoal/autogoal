@@ -1,27 +1,40 @@
+import gensim
 import nltk
-import nltk.stem as st
-import nltk.tokenize as tk
 
 import textwrap
 import datetime
 import inspect
 import re
-import enlighten
 import numpy as np
 import warnings
+
 
 from pathlib import Path
 
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 
-languages = ["arabic", "danish", "dutch", "english", "finnish", "french", "german",\
-             "hungarian", "italian", "norwegian", "portuguese", "romanian", "russian",\
-             "spanish", "swedish"]
+languages = ["arabic",\
+             "danish",\
+             "dutch",\
+             "english",\
+             "finnish",\
+             "french",\
+             "german",\
+             "hungarian",\
+             "italian",\
+             "norwegian",\
+             "portuguese",\
+             "romanian",\
+             "russian",\
+             "spanish",\
+             "swedish"]
 
 languages_re = re.compile("|".join(languages))
 
 def build_nltk_wrappers():
     imports = _walk(nltk)
+    imports += _walk(nltk.cluster)
+    imports += _walk(gensim.models)
     
     manager = enlighten.get_manager()
     counter = manager.counter(total=len(imports), unit="classes")
@@ -33,6 +46,7 @@ def build_nltk_wrappers():
             ## DO NOT MODIFY THIS FILE MANUALLY
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
+            from autogoal.kb._data import *
             from numpy import inf, nan
             """
         ))
@@ -56,7 +70,7 @@ def _write_class(cls, fp):
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
-
+    
     print(cls)
     class_code = f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
@@ -88,13 +102,33 @@ def _write_class(cls, fp):
                 pass    
         """
         
-    if _is_stemmer(cls):
+    if _is_stemmer(cls): #generate stemmer
         class_code += _write_stemmer(cls)
-    if _is_tokenizer(cls):
-        class_code += _write_tokenizer(cls)
+        
+    if _is_lemmatizer(cls): #generate lemmatizer
+        class_code += _write_lemmatizer(cls)
+        
+    if _is_word_tokenizer(cls): #generate word tokenizer
+        class_code += _write_word_tokenizer(cls)
+        
+    if _is_sent_tokenizer(cls): #generate sentence tokenizer
+        class_code += _write_sent_tokenizer(cls)
+        
+    if _is_clusterer(cls): #generate clusterer
+        class_code += _write_clusterer(cls)
+        
+    if _is_word_embbeder(cls): #generate word embbeder
+        class_code += _write_word_embbeder(cls)
+        print("set as word embbeding algorithm")
+        
+    if _is_doc_embbeder(cls): #generate document embbeder
+        class_code += _write_doc_embbeder(cls)
+        print("set as doc embedding algorithm")
+    
 
     fp.write(textwrap.dedent(class_code))
     fp.flush()
+
 
 def _write_stemmer(cls):
     return """
@@ -116,8 +150,29 @@ def _write_stemmer(cls):
                 \"\"\"
                 return self.stem(input)
         """
+        
+def _write_lemmatizer(cls):
+    return """
+            def dlemmatize(
+                self,
+                document
+            ):
+                return [self.lemmatize(word) for word in document]
 
-def _write_tokenizer(cls):
+            def transform(
+                self, 
+                X,
+                y=None
+            ):
+                return [self.dlemmatize(x) for x in X]
+
+            def run(self, input: Word(domain='general', language='english')) -> Stem():
+                \"\"\"This methods recive a word and transform this in a stem. 
+                \"\"\"
+                return self.lemmatize(input)
+        """
+
+def _write_word_tokenizer(cls):
     return """
             def transform(
                 self, 
@@ -131,17 +186,166 @@ def _write_tokenizer(cls):
                 \"\"\"
                 return self.tokenize(input)
         """
-    
+        
+def _write_sent_tokenizer(cls):
+    return """
+            def transform(
+                self, 
+                X,
+                y=None
+            ):
+                return [self.tokenize(x) for x in X]
+
+            def run(self, input: Document(domain='general')) -> List(Sentence()):
+                \"\"\"This methods recive a document and transform this in a list of sentences. 
+                \"\"\"
+                return self.tokenize(input)
+        """
+
+def _write_clusterer(cls):
+    return """
+            def fit(
+                self, 
+                X,
+                y = None
+            ):
+                return self.cluster(X)
+            
+            def predict(
+                self,
+                x 
+            ):
+                return self.classify(x)
+
+            #def run(self, input: Document(domain='general')) -> List(Sentence()):
+            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
+            #    \"\"\"
+            #    return self.tokenize(input)"""
+
+def _write_classifier(cls):
+    return """
+            def fit(
+                self, 
+                X,
+                y
+            ):
+                return self.train(list(zip(X, y)))
+            
+            def predict(
+                self,
+                x  
+            ):
+                return self.classify(x)
+
+            #def run(self, input: Document(domain='general')) -> List(Sentence()):
+            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
+            #    \"\"\"
+            #    return self.tokenize(input)"""
+
+def _write_doc_embbeder(cls):
+    return """
+            def fit(
+                self, 
+                X,
+                y
+            ):
+                #Data must be turned to tagged data as TaggedDocument(List(Token), Tag)
+                #Tag use to be an unique integer
+                
+                from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
+                tagged_data = [_TaggedDocument(X[i], str(i)) for i in range(len(X))]
+                
+                self.build_vocab(tagged_data)
+                return self.train(tagged_data, total_examples=model.corpus_count, epochs=model.iter)
+                
+            
+            def transform(
+                self,
+                X,
+                y=None  
+            ):
+                return [self.infer_vector(x) for x in X]
+
+            #def run(self, input: Document(domain='general')) -> List(Sentence()):
+            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
+            #    \"\"\"
+            #    return self.tokenize(input)"""
+            
+def _write_word_embbeder(cls):
+    return """
+            def fit(
+                self, 
+                X,
+                y
+            ):  
+                self.build_vocab(X)
+                return self.train(X, total_examples=model.corpus_count, epochs=model.iter)
+                
+            
+            def transform(
+                self,
+                X,
+                y=None  
+            ):
+                #Returns 3d matrix for a document list as every word will turn into a vector
+                #This will break when indexing a word that is not in the vocabulary trained
+                
+                return [[self.wv[word] for word in document] for document in X]
+
+            #def run(self, input: Word(domain='general')) -> List(Float()):
+            #    \"\"\"This methods recive a word and transform this in a List of floats. 
+            #    \"\"\"
+            #    return self.tokenize(input)"""
+
+
+def _is_algorithm(cls, verbose = False):
+    return  _is_stemmer(cls, verbose) or\
+            _is_lemmatizer(cls, verbose) or\
+            _is_word_tokenizer(cls, verbose) or\
+            _is_sent_tokenizer(cls, verbose) or\
+            _is_clusterer(cls, verbose) or\
+            _is_classifier(cls, verbose) or\
+            _is_word_embbeder(cls, verbose) or\
+            _is_doc_embbeder(cls, verbose)
 
 def _is_stemmer(cls, verbose=False):
     if hasattr(cls, "stem"):
         return True
     return False
 
-def _is_tokenizer(cls, verbose=False):
-    if not "sentence" in str.lower(cls.__name__):
-        if hasattr(cls, "tokenize"):
+def _is_lemmatizer(cls, verbose=False):
+    if hasattr(cls, "lemmatize"):
+        return True
+    return False
+
+def _is_word_tokenizer(cls, verbose=False):
+    if not _is_sent_tokenizer(cls) and (hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize")):
+        return True
+    return False
+
+def _is_sent_tokenizer(cls, verbose=False):
+    if "sentence" in str.lower(cls.__name__) or hasattr(cls, "sent_tokenize"):
             return True
+    return False
+
+def _is_clusterer(cls, verbose=False):
+    if (hasattr(cls, "classify") and hasattr(cls, "cluster")):
+        return True
+    return False
+
+def _is_classifier(cls, verbose = False):
+    if (hasattr(cls, "classify") and hasattr(cls, "train")):
+        return True
+    return False
+
+def _is_word_embbeder(cls, verbose = False):
+    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "wv")):
+        return True
+    return False
+
+def _is_doc_embbeder(cls, verbose = False):
+    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "infer_vector")):
+        return True
     return False
 
 
@@ -165,7 +369,7 @@ def _walk(module, name="nltk"):
                     if name.endswith("I"):
                         continue
 
-                    if not (_is_tokenizer(obj) or _is_stemmer(obj)):
+                    if not _is_algorithm(obj):
                         continue
                     
                     imports.append(obj)
@@ -247,6 +451,8 @@ def _get_args(cls):
 
     args_map = {k: v for k, v in zip(args, specs)}
 
+    
+
     drop_args = [
         "url",
         "n_jobs",
@@ -257,6 +463,7 @@ def _get_args(cls):
         "copy_x",
         "copy",
         "eps",
+        "ignore_stopwords"
     ]
 
     for arg in drop_args:

@@ -4,7 +4,7 @@ import time
 import datetime
 import statistics
 
-from autogoal.utils import ResourceManager
+from autogoal.utils import ResourceManager, RestrictedWorker
 
 
 class SearchAlgorithm:
@@ -62,7 +62,6 @@ class SearchAlgorithm:
                 self._start_generation()
 
                 no_improvement += 1
-
                 fns = []
 
                 for _ in range(self._pop_size):
@@ -71,7 +70,7 @@ class SearchAlgorithm:
                     try:
                         solution = self._generator_fn(self._build_sampler())
                         logger.sample_solution(solution)
-                        fn = resource_manager.run_restricted(self._fitness_fn, solution)
+                        fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
                     except Exception as e:
                         fn = 0
                         logger.error(e, solution)
@@ -105,7 +104,7 @@ class SearchAlgorithm:
                     break
 
             return best_solution, best_fn
-
+        
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
 
