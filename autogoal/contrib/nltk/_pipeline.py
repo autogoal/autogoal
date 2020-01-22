@@ -6,6 +6,9 @@ from autogoal.contrib.sklearn import _generated as sk
 from autogoal.grammar import Union
 from autogoal.contrib.sklearn._pipeline import Noop, SklearnClassifier
 
+
+RawNormalizer = Union("RawNormalizer", mnlp.TextLowerer, Noop)
+
 Tokenization = Union("Tokenization", gnlp.BlanklineTokenizer,\
                                      gnlp.LineTokenizer,\
                                      gnlp.MWETokenizer,\
@@ -18,6 +21,8 @@ Tokenization = Union("Tokenization", gnlp.BlanklineTokenizer,\
                                      gnlp.TweetTokenizer,\
                                      gnlp.WhitespaceTokenizer,\
                                      gnlp.WordPunctTokenizer)
+
+Stopwords = Union("Stopwords", mnlp.StopwordRemover, Noop)
 
 Stemmer = Union("Stemmer", gnlp.Cistem,\
                            gnlp.ISRIStemmer,\
@@ -36,16 +41,22 @@ Vectorization = Union("Vectorization", sk.TfidfVectorizer, sk.CountVectorizer, m
 class TextPreprocessing(_Pipeline):
     def __init__(
         self, 
+        raw_normalizing:RawNormalizer,
         tokenization:Tokenization,
+        stopwords_removing:Stopwords,
         normalizing:Normalizer, 
         vectorization:Vectorization,
     ):
+        self.raw_normalizing = raw_normalizing
         self.tokenization = tokenization
+        self.stopwords_removing = stopwords_removing
         self.normalizing = normalizing
         self.vectorization = vectorization
 
         super().__init__(steps=[
+            ('raw_normalizer', self.raw_normalizing),
             ('tokenizer', self.tokenization),
+            ('stopwords_remover', self.stopwords_removing),
             ('normalizer', self.normalizing),
             ('vectorizer', self.vectorization),
         ])

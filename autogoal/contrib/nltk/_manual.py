@@ -71,3 +71,77 @@ class Doc2Vec(_Doc2Vec):
     #    """This methods recive a document and transform this in a list of sentences. 
     #    """
     #    return self.tokenize(input)
+    
+from nltk.corpus import stopwords
+class StopwordRemover():
+    def __init__(
+        self,
+        language:Categorical('danish',\
+                             'dutch',\
+                             'english',\
+                             'finnish',\
+                             'french',\
+                             'german',\
+                             'hungarian',\
+                             'italian',\
+                             'norwegian',\
+                             'portuguese',\
+                             'russian',\
+                             'spanish',\
+                             'swedish',\
+                             'turkish')
+    ):
+        self.language = language
+        self.words = stopwords.words(language)
+        
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass
+    
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def transform(
+        self,
+        X,
+        y=None  
+    ):
+        #Considering data as list of tokenized documents
+        return [[word for word in document if word not in self.words] for document in X]
+        
+class TextLowerer():
+    def __init__(
+        self
+    ):
+        pass
+    
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass
+    
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def transform(
+        self,
+        X,
+        y=None  
+    ):
+        #Considering data as list of raw documents
+        return [str.lower(x) for x in X]
