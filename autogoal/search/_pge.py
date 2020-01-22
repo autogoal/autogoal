@@ -218,19 +218,25 @@ class PESearch(SearchAlgorithm):
         *args,
         learning_factor: float = 0.05,
         selection: float = 0.2,
+        epsilon_greed: float = 0.1,
         random_state: Optional[int] = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
         self._learning_factor = learning_factor
         self._selection = selection
+        self._epsilon_greed = epsilon_greed
         self._model: Dict = {}
 
     def _start_generation(self):
         self._samplers = []
 
     def _build_sampler(self):
-        sampler = ModelSampler(self._model)
+        if len(self._samplers) < self._epsilon_greed * self._pop_size:
+            sampler = ModelSampler()
+        else:
+            sampler = ModelSampler(self._model)
+
         self._samplers.append(sampler)
         return sampler
 

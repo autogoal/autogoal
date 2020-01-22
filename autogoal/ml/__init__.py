@@ -1,5 +1,5 @@
 from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word, Matrix
+from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -53,7 +53,7 @@ class AutoClassifier:
         return (y_pred == y).astype(float).mean()
 
     def _start_type(self):
-        return Matrix()
+        return MatrixContinuous()
 
     def _make_fitness_fn(self, X, y):
         X = np.asarray(X)

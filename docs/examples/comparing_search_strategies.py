@@ -75,11 +75,11 @@ for i in range(100):
         continue
 
 
-search_rand = RandomSearch(grammar, evaluate)
-best_rand, best_fn_rand = search_rand.run(1000, logger=CustomLogger())
+search_rand = RandomSearch(grammar, evaluate, errors='ignore')
+best_rand, best_fn_rand = search_rand.run(1000, logger=ConsoleLogger())
 
-search_pe = PESearch(grammar, evaluate, learning_factor=0.05, pop_size=10)
-best_pe, best_fn_pe = search_pe.run(1000, logger=CustomLogger())
+search_pe = PESearch(grammar, evaluate, pop_size=10, errors='ignore')
+best_pe, best_fn_pe = search_pe.run(1000, logger=ConsoleLogger())
 
 print(best_rand, best_fn_rand)
 print(best_pe, best_fn_pe)
