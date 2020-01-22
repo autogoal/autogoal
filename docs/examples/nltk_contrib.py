@@ -1,6 +1,6 @@
 from autogoal.contrib.nltk import SklearnNLPClassifier
 from autogoal.grammar import generate_cfg
-from autogoal.search import RandomSearch, EnlightenLogger, PESearch
+from autogoal.search import RandomSearch, ProgressLogger, PESearch
 from nltk.corpus import movie_reviews
 import random
 import enlighten
@@ -59,4 +59,4 @@ if __name__ == "__main__":
 
 
     search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=100)
-    result = search.run(50, logger=EnlightenLogger())
+    result = search.run(50, logger=ProgressLogger())
