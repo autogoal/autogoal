@@ -244,6 +244,14 @@ class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
     pass
 
 
+class Entity(DataType):
+    pass
+
+
+class Summary(Document):
+    pass 
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner
