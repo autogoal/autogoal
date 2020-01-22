@@ -14,6 +14,7 @@ pyyaml = "^5.2"
 toml = "^0.10.0"
 psutil = "^5.6.7"
 black = "^19.10b0"
+fire = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 codecov = "^2.0.15"
