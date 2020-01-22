@@ -190,7 +190,7 @@ class ContextFreeGrammar(Grammar):
         return production.sample(sampler, self._namespace)
 
 
-def generate_cfg(cls, registry=None):
+def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
     """
     Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)
     from an annotated callable (class or function).
@@ -198,6 +198,10 @@ def generate_cfg(cls, registry=None):
     ##### Parameters
 
     * `cls`: class or function with annotated arguments.
+
+    ##### Returns
+
+    * `ContextFreeGrammar`: the generated grammar.
 
     ##### Examples
 

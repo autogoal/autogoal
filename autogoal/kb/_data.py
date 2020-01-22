@@ -250,10 +250,10 @@ class List(DataType):
         super().__init__(**inner.tags)
 
     def __conforms__(self, other):
-        return isinstance(other, List) and conforms(self._inner, other._inner)
+        return isinstance(other, List) and conforms(self.inner, other.inner)
 
     def __repr__(self):
-        return "List(%r)" % self._inner
+        return "List(%r)" % self.inner
 
 
 class Tuple(DataType):
