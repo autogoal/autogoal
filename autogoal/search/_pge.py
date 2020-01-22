@@ -236,7 +236,10 @@ class PESearch(SearchAlgorithm):
 
     def _finish_generation(self, fns):
         # Compute the marginal model of the best pipelines
-        samplers: List[ModelSampler] = [self._samplers[i] for i in best_indices(fns)]
+        indices = best_indices(
+            fns, k=int(self._selection * len(fns)), maximize=self._maximize
+        )
+        samplers: List[ModelSampler] = [self._samplers[i] for i in indices]
         updates: Dict = merge_updates(*[sampler.updates for sampler in samplers])
 
         # Update the probabilistic model with the marginal model from the best pipelines
