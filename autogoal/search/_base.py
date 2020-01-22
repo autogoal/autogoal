@@ -2,7 +2,7 @@ import enlighten
 import warnings
 import signal
 
-from autogoal.utils import ResourceManager
+from autogoal.utils import ResourceManager, RestrictedWorker
 
 
 class SearchAlgorithm:
@@ -31,7 +31,6 @@ class SearchAlgorithm:
 
         logger.begin(evaluations)
         try:
-            resource_manager = ResourceManager(time_limit = self._evaluation_timeout, memory_limit = self._memory_limit)
             while evaluations > 0:
                 logger.start_generation()
                 self._start_generation()
@@ -41,7 +40,7 @@ class SearchAlgorithm:
                 for solution in self._run_one_generation():
                     try:
                         logger.sample_solution(solution)
-                        fn = resource_manager.run_restricted(self._fitness_fn, solution)
+                        fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
                     except Exception as e:
                         if self._errors == 'raise':
                             raise e

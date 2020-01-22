@@ -49,7 +49,7 @@ def load_corpus(path):
 
 if __name__ == "__main__":
     g = generate_cfg(SklearnNLPClassifier)
-    X, y = load_movie_reviews(2000)
+    X, y = load_movie_reviews(1000)
     # X, y = load_corpus("examples/Revolico")
 
     def fitness(pipeline):
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         score = pipeline.score(X, y)
         return score
 
-    search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=20)
+    search = RandomSearch(g, fitness, random_state=0, errors='warn', evaluation_timeout=2)
     result = search.run(50, logger=EnlightenLogger())
     print(result[0])
     print(result[1])

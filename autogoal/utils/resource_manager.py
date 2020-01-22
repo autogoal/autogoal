@@ -95,24 +95,21 @@ class ResourceManager:
         Executes a given function with restricted amount of
         CPU time and RAM memory usage
         """
-        try:
-            manager = multiprocessing.Manager()
-            result_bucket = manager.dict()
-            
-            rprocess = multiprocessing.Process(target=self._restricted_function,
-                                               args=[result_bucket, function, args, kwargs])
-
-            rprocess.start()
-            # print("started process:", rprocess.pid)
-            rprocess.join()
-            # print("ended process:", rprocess.pid)
-            result = result_bucket["result"]
-            if isinstance(result, Exception): #Exception ocurred
-                raise result
-            return result
+        manager = multiprocessing.Manager()
+        result_bucket = manager.dict()
         
-        except Exception as e:
-            raise e
+        rprocess = multiprocessing.Process(target=self._restricted_function,
+                                            args=[result_bucket, function, args, kwargs])
+
+        rprocess.start()
+        # print("started process:", rprocess.pid)
+        rprocess.join()
+        # print("ended process:", rprocess.pid)
+        result = result_bucket["result"]
+        if isinstance(result, Exception): #Exception ocurred
+            raise result
+        return result
+        
         
 
 def alarm_handler(*args):
