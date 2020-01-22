@@ -7,14 +7,20 @@ from autogoal.utils import ResourceManager
 
 
 class SearchAlgorithm:
-    def __init__(self, generator_fn, fitness_fn=None, pop_size=1, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
-        self._generator_fn = generator_fn
+    def __init__(self, generator_fn=None, fitness_fn=None, pop_size=1, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
+        if generator_fn is None and fitness_fn is None:
+            raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
+        
+        self._generator_fn = generator_fn or self._generate_sampler
         self._fitness_fn = fitness_fn or self._identity
         self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
+
+    def _generate_sampler(self):
+        raise NotImplementedError("")
 
     def _identity(self, x):
         return x

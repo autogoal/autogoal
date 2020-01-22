@@ -49,6 +49,10 @@ docker-build:
 docker-push:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose push;)
 
+.PHONY: docker-pull
+docker-pull:
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose pull;)
+
 # Below are the commands that will be run INSIDE the development environment, i.e., inside Docker or Travis
 # These commands are NOT supposed to be run by the developer directly, and will fail to do so.
 
