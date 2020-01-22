@@ -9,10 +9,10 @@ import enlighten
 import numpy as np
 import warnings
 
-
 from pathlib import Path
-
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
+from autogoal.contrib.sklearn._builder import SklearnWrapper
+from ._utils import *
 
 languages = ["arabic",\
              "danish",\
@@ -29,8 +29,43 @@ languages = ["arabic",\
              "russian",\
              "spanish",\
              "swedish"]
-
 languages_re = re.compile("|".join(languages))
+
+class NltkTokenizer(SklearnWrapper):
+    def _train(self, input):
+        return [[self.tokenize(word) for word in document] for document in X]
+
+    def _eval(self, input):
+        X, _ = input
+        return X, [[self.tokenize(word) for word in document] for document in X]
+    
+    @abc.abstractmethod
+    def tokenize(self, X, y=None):
+        pass
+    
+class NltkStemmer(SklearnWrapper):
+    def _train(self, input):
+        return [[self.stem(word) for word in document] for document in X]
+
+    def _eval(self, input):
+        X, _ = input
+        return X, [[self.stem(word) for word in document] for document in X]
+    
+    @abc.abstractmethod
+    def stem(self, X, y=None):
+        pass
+    
+class NltkLemmatizer(SklearnWrapper):
+    def _train(self, input):
+        return [[self.lemmatize(word) for word in document] for document in X]
+
+    def _eval(self, input):
+        X, _ = input
+        return X, [[self.lemmatize(word) for word in document] for document in X]
+    
+    @abc.abstractmethod
+    def lemmatize(self, X, y=None):
+        pass
 
 def build_nltk_wrappers():
     imports = _walk(nltk)
@@ -59,7 +94,6 @@ def build_nltk_wrappers():
     counter.close()
     manager.stop()
 
-
 def _write_class(cls, fp):
     try:
         args = _get_args(cls)
@@ -67,69 +101,93 @@ def _write_class(cls, fp):
         warnings.warn("Error to generate wrapper for %s : %s" %(cls.__name__, e))
         return
 
+    inputs, outputs = get_input_output(cls)
+    
+    if not inputs:
+        warnings.warn("Cannot find correct types for %r" % cls)
+        return
+    
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
-    self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
+    input_str, output_str = repr(inputs), repr(outputs)
+    base_class = 'SklearnEstimator' if is_algorithm(cls) == 'estimator' else 'SklearnTransformer'
     
     print(cls)
-    class_code = f"""
+    # class_code = f"""
+    #     from {cls.__module__} import {cls.__name__} as _{cls.__name__}
+
+    #     class {cls.__name__}(_{cls.__name__}):
+    #         def __init__(
+    #             self,
+    #             {args_str}
+    #         ):
+    #             {self_str}
+
+    #             super().__init__(
+    #                 {init_str}
+    #             )
+            
+    #         def fit_transform(
+    #             self, 
+    #             X, 
+    #             y=None
+    #         ):
+    #             self.fit(X, y=None)
+    #             return self.transform(X)
+            
+    #         def fit(
+    #             self, 
+    #             X, 
+    #             y=None
+    #         ):
+    #             pass    
+    #     """
+       
+    fp.write(textwrap.dedent(
+        f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
-        class {cls.__name__}(_{cls.__name__}):
+        class {cls.__name__}(_{cls.__name__}, {base_class}):
             def __init__(
                 self,
                 {args_str}
             ):
-                {self_str}
-
-                super().__init__(
+                {base_class}.__init__(self)
+                _{cls.__name__}.__init__(
+                    self,
                     {init_str}
                 )
-            
-            def fit_transform(
-                self, 
-                X, 
-                y=None
-            ):
-                self.fit(X, y=None)
-                return self.transform(X)
-            
-            def fit(
-                self, 
-                X, 
-                y=None
-            ):
-                pass    
+
+            def run(self, input: {input_str}) -> {output_str}:
+               return {base_class}.run(self, input)
         """
+    ))
+     
+    # if _is_stemmer(cls): #generate stemmer
+    #     class_code += _write_stemmer(cls)
         
-    if _is_stemmer(cls): #generate stemmer
-        class_code += _write_stemmer(cls)
+    # if _is_lemmatizer(cls): #generate lemmatizer
+    #     class_code += _write_lemmatizer(cls)
         
-    if _is_lemmatizer(cls): #generate lemmatizer
-        class_code += _write_lemmatizer(cls)
+    # if _is_word_tokenizer(cls): #generate word tokenizer
+    #     class_code += _write_word_tokenizer(cls)
         
-    if _is_word_tokenizer(cls): #generate word tokenizer
-        class_code += _write_word_tokenizer(cls)
+    # if _is_sent_tokenizer(cls): #generate sentence tokenizer
+    #     class_code += _write_sent_tokenizer(cls)
         
-    if _is_sent_tokenizer(cls): #generate sentence tokenizer
-        class_code += _write_sent_tokenizer(cls)
+    # if _is_clusterer(cls): #generate clusterer
+    #     class_code += _write_clusterer(cls)
         
-    if _is_clusterer(cls): #generate clusterer
-        class_code += _write_clusterer(cls)
+    # if _is_word_embbeder(cls): #generate word embbeder
+    #     class_code += _write_word_embbeder(cls)
         
-    if _is_word_embbeder(cls): #generate word embbeder
-        class_code += _write_word_embbeder(cls)
-        print("set as word embbeding algorithm")
-        
-    if _is_doc_embbeder(cls): #generate document embbeder
-        class_code += _write_doc_embbeder(cls)
-        print("set as doc embedding algorithm")
+    # if _is_doc_embbeder(cls): #generate document embbeder
+    #     class_code += _write_doc_embbeder(cls)
     
 
-    fp.write(textwrap.dedent(class_code))
+    # fp.write(textwrap.dedent(class_code))
     fp.flush()
-
 
 def _write_stemmer(cls):
     return """
@@ -297,57 +355,6 @@ def _write_word_embbeder(cls):
             #    \"\"\"This methods recive a word and transform this in a List of floats. 
             #    \"\"\"
             #    return self.tokenize(input)"""
-
-
-def _is_algorithm(cls, verbose = False):
-    return  _is_stemmer(cls, verbose) or\
-            _is_lemmatizer(cls, verbose) or\
-            _is_word_tokenizer(cls, verbose) or\
-            _is_sent_tokenizer(cls, verbose) or\
-            _is_clusterer(cls, verbose) or\
-            _is_classifier(cls, verbose) or\
-            _is_word_embbeder(cls, verbose) or\
-            _is_doc_embbeder(cls, verbose)
-
-def _is_stemmer(cls, verbose=False):
-    if hasattr(cls, "stem"):
-        return True
-    return False
-
-def _is_lemmatizer(cls, verbose=False):
-    if hasattr(cls, "lemmatize"):
-        return True
-    return False
-
-def _is_word_tokenizer(cls, verbose=False):
-    if not _is_sent_tokenizer(cls) and (hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize")):
-        return True
-    return False
-
-def _is_sent_tokenizer(cls, verbose=False):
-    if "sentence" in str.lower(cls.__name__) or hasattr(cls, "sent_tokenize"):
-            return True
-    return False
-
-def _is_clusterer(cls, verbose=False):
-    if (hasattr(cls, "classify") and hasattr(cls, "cluster")):
-        return True
-    return False
-
-def _is_classifier(cls, verbose = False):
-    if (hasattr(cls, "classify") and hasattr(cls, "train")):
-        return True
-    return False
-
-def _is_word_embbeder(cls, verbose = False):
-    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "wv")):
-        return True
-    return False
-
-def _is_doc_embbeder(cls, verbose = False):
-    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "infer_vector")):
-        return True
-    return False
 
 
 def _walk(module, name="nltk"):
