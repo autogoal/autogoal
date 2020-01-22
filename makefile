@@ -11,11 +11,11 @@ notebook:
 
 .PHONY: docs-serve
 docs-serve:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && mkdocs serve
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && mkdocs serve
 
 .PHONY: docs-deploy
 docs-deploy:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/examples/make.py && cp docs/index.md Readme.md && mkdocs gh-deploy
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && cp docs/index.md Readme.md && mkdocs gh-deploy
 
 .PHONY: shell
 shell:
@@ -39,7 +39,7 @@ lint:
 
 .PHONY: test-full
 test-full:
-	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run make dev-test-full;)
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run autogoal-tester make dev-test-full;)
 
 .PHONY: docker-build
 docker-build:
@@ -63,16 +63,18 @@ dev-install: dev-ensure
 	poetry config virtualenvs.create false
 	poetry install
 	pip install tensorflow==1.14
+	pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
 #
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
 	# python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-test-full
 dev-test-full: dev-ensure
-	python -m mypy -p autogoal --ignore-missing-imports
-	python -m pytest --doctest-modules --ignore=notebooks --ignore=examples --ignore=docs --ignore=autogoal/_old --cov=autogoal --cov-report=xml
+	# python -m mypy -p autogoal --ignore-missing-imports
+	python -m pytest autogoal tests --doctest-modules --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
 .PHONY: dev-cov
 dev-cov: dev-ensure

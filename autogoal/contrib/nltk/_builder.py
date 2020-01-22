@@ -133,13 +133,13 @@ def _write_class(cls, fp):
 
 def _write_stemmer(cls):
     return """
-            def dstem(
+            def _dstem(
                 self,
                 document
             ):
                 return [self.stem(word) for word in document]
 
-            def transform(
+            def _transform(
                 self, 
                 X,
                 y=None

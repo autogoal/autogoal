@@ -109,7 +109,6 @@ class Pipeline:
         if not found:
             warnings.warn(f'No step answered message {msg}.')
 
-
     def run(self, x):
         for step in self.steps:
             x = step.run(x)

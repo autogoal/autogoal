@@ -13,17 +13,17 @@ class Noop:
 
     def transform(self, X, y=None):
         return X
-    
+
     def fit_transform(self, X, y=None):
         return X
 
 
 class DataPreprocessing(_Pipeline):
     def __init__(
-        self, 
+        self,
         encoding: Union("Encoder", Noop, sk.OneHotEncoder),
-        rescaling: Union("Rescaler", Noop, sk.MinMaxScaler, sk.StandardScaler, sk.QuantileTransformer), 
-        imputation: Union("Imputer", Noop, sk.SimpleImputer, sk.KNNImputer)
+        rescaling: Union("Rescaler", Noop, sk.MinMaxScaler, sk.StandardScaler), #, sk.QuantileTransformer),
+        imputation: Union("Imputer", Noop, sk.KNNImputer)# , sk.SimpleImputer),
     ):
         self.encoding = encoding
         self.rescaling = rescaling
@@ -35,9 +35,9 @@ class DataPreprocessing(_Pipeline):
             ('imputer', self.imputation),
         ])
 
-    
+
 Decomposition = Union("Decomposition", sk.FastICA, sk.PCA, sk.TruncatedSVD, sk.KernelPCA)
-FeatureSelection = Union("FeatureSelection", sk.FeatureAgglomeration, sk.PolynomialFeatures) # TODO: Nystrom 
+FeatureSelection = Union("FeatureSelection", sk.FeatureAgglomeration) #, sk.PolynomialFeatures) # TODO: Nystrom
 FeaturePreprocessing = Union("FeaturePreprocessing", Noop, Decomposition, FeatureSelection)
 
 BayesClassifier = Union("BayesClassifier", sk.GaussianNB, sk.MultinomialNB, sk.ComplementNB, sk.BernoulliNB)
@@ -55,7 +55,7 @@ class SklearnClassifier(_Pipeline):
         self.data_preprocessing = data_preprocessing
         self.feature_preprocessing = feature_preprocessing
         self.classification = classification
-        
+
         super().__init__(steps = [
             ('data_preprocesor', self.data_preprocessing),
             ('feature_preprocesor', self.feature_preprocessing),

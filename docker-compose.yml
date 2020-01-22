@@ -2,8 +2,8 @@ version: "3"
 
 services:
   autogoal-tester:
-    container_name: autogoal-tester-${PYTHON_VERSION}
-    image: docker.pkg.github.com/sestevez/autogoal/autogoal:${PYTHON_VERSION}
+    container_name: autogoal-dev-${PYTHON_VERSION}
+    image: apiad/autogoal-dev:${PYTHON_VERSION}
     build:
       context: "."
       args:
