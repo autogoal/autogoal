@@ -212,11 +212,11 @@ class Matrix(DataType):
     pass
 
 
-class DenseMatrix(DataType):
+class DenseMatrix(Matrix):
     pass
 
 
-class SparseMatrix(DataType):
+class SparseMatrix(Matrix):
     pass
 
 
@@ -232,15 +232,15 @@ class CategoricalVector(DataType):
     pass
 
 
-class MatrixContinuous(DataType):
+class MatrixContinuous(Matrix):
     pass
 
 
-class MatrixContinuousDense(MatrixContinuous):
+class MatrixContinuousDense(MatrixContinuous, DenseMatrix):
     pass
 
 
-class MatrixContinuousSparse(MatrixContinuous):
+class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
     pass
 
 

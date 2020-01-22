@@ -1,5 +1,5 @@
 from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word
+from autogoal.kb import build_pipelines, CategoricalVector, List, Word, Matrix
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -49,7 +49,7 @@ class AutoClassifier:
         self.best_pipeline_.send("eval")
 
     def _start_type(self):
-        raise NotImplementedError()
+        return Matrix()
 
     def _make_fitness_fn(self, X, y):
         X = np.asarray(X)
