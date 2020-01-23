@@ -93,9 +93,9 @@ def is_categorical(obj):
         original_length = len(obj)
         obj = set(obj)
 
-        return len(obj) < max(0.1 * original_length, 10) and all(
-            isinstance(x, (str, int)) for x in obj
-        )
+        a = len(obj) < max(0.1 * original_length, 10)
+        b = all(isinstance(x, (str, int, np.int64, np.int32)) for x in obj)
+        return a and b
     except:
         return False
 
