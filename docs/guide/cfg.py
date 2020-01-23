@@ -456,7 +456,7 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # of `1000` different random pipelines.
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
-best, score = random_search.run(100)
+best, score = random_search.run(1000)
 
 # !!! note
 #     For reproducibility purposes we can pass a fixed random seed in `random_state`.

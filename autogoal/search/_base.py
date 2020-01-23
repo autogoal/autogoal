@@ -15,7 +15,7 @@ class SearchAlgorithm:
         pop_size=1,
         maximize=True,
         errors="raise",
-        early_stop=10,
+        early_stop=None,
         evaluation_timeout: int = 300,
         memory_limit: int = 4 * 1024 ** 3,
     ):
@@ -104,7 +104,7 @@ class SearchAlgorithm:
                     break
 
             return best_solution, best_fn
-        
+
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
 

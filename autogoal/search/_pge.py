@@ -1,4 +1,5 @@
-import scipy
+import statistics
+import abc
 
 from typing import Mapping, Optional, Dict, List, Sequence
 from autogoal.grammar import Sampler
@@ -44,8 +45,8 @@ class ModelSampler(Sampler):
         if handle is not None:
             return self.categorical(options, handle)
 
-        weights = [self._get_model_params(option, 1) for option in options]
-        idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]
+        weights = [self._get_model_params(option, UnormalizedWeightParam(value=1)) for option in options]
+        idx = self.rand.choices(range(len(options)), weights=[w.value for w in weights], k=1)[0]
         option = options[idx]
         self._register_update(option, 1)
         return option
@@ -54,33 +55,85 @@ class ModelSampler(Sampler):
         if handle is None:
             return super().discrete(min, max, handle)
 
-        mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
-        value = self._clamp(int(self.rand.gauss(mean, stdev)), min, max)
+        params = self._get_model_params(handle, MeanDevParam(mean=(min + max) / 2, dev=(max - min)))
+        value = self._clamp(int(self.rand.gauss(params.mean, params.stdev)), min, max)
         return self._register_update(handle, value)
 
     def continuous(self, min=0, max=1, handle=None):
         if handle is None:
             return super().continuous(min, max, handle)
 
-        mean, stdev = self._get_model_params(handle, ((min + max) / 2, (max - min)))
-        value = self._clamp(self.rand.gauss(mean, stdev), min, max)
+        params = self._get_model_params(handle, MeanDevParam(mean=(min + max) / 2, dev=(max - min)))
+        value = self._clamp(self.rand.gauss(params.mean, params.dev), min, max)
         return self._register_update(handle, value)
 
     def boolean(self, handle=None):
         if handle is None:
             return super().boolean(handle)
 
-        p = self._get_model_params(handle, (0.5,))[0]
-        value = self.rand.uniform(0, 1) < p
+        params = self._get_model_params(handle, WeightParam(value=0.5))
+        value = self.rand.uniform(0, 1) < params.value
         return self._register_update(handle, value)
 
     def categorical(self, options, handle=None):
         if handle is None:
             return super().categorical(options, handle)
 
-        weights = self._get_model_params(handle, [1 for _ in options])
-        idx = self.rand.choices(range(len(options)), weights=weights, k=1)[0]
+        params = self._get_model_params(handle, DistributionParam(weights=[1 for _ in options]))
+        idx = self.rand.choices(range(len(options)), weights=params.weights, k=1)[0]
         return options[self._register_update(handle, idx)]
+
+
+class ModelParam(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def update(self, alpha: float, updates) -> "ModelParam":
+        pass
+
+
+class UnormalizedWeightParam(ModelParam):
+    def __init__(self, value):
+        self.value = value
+
+    def update(self, alpha: float, updates: list) -> "UnormalizedWeightParam":
+        return UnormalizedWeightParam(self.value + alpha * sum(updates))
+
+
+class DistributionParam(ModelParam):
+    def __init__(self, weights):
+        total = sum(weights) or 1
+        self.weights = [w / total for w in weights]
+
+    def update(self, alpha: float, updates: list) -> "DistributionParam":
+        weights = list(self.weights)
+
+        for i in updates:
+            weights[i] += alpha
+
+        return DistributionParam(weights)
+
+
+class MeanDevParam(ModelParam):
+    def __init__(self, mean, dev):
+        self.mean = mean
+        self.dev = dev
+
+    def update(self, alpha: float, updates) -> "MeanDevParam":
+        new_mean = statistics.mean(updates)
+        new_dev = statistics.stdev(updates, new_mean) if len(updates) > 1 else 0
+
+        return MeanDevParam(
+            mean=self.mean * (1 - alpha) + new_mean * alpha,
+            dev=self.dev * (1 - alpha) + new_dev * alpha,
+        )
+
+
+class WeightParam(ModelParam):
+    def __init__(self, value):
+        self.value = value
+
+    def update(self, alpha: float, updates) -> "WeightParam":
+        new_value = statistics.mean(updates)
+        return WeightParam(value=self.value * (1 - alpha) + new_value * alpha,)
 
 
 def update_model(model, updates, alpha: float = 1):
@@ -91,43 +144,8 @@ def update_model(model, updates, alpha: float = 1):
 
         if upd is None:
             new_model[handle] = params
-            continue
-
-        # TODO: refactor to a more Object Oriented way
-        if isinstance(params, (float, int)):
-            # float or int means a single un-normalized weight
-            new_model[handle] = params + alpha * sum(upd)
-        elif isinstance(params, list):
-            # a list means a distribution over categories
-            params = list(params)
-            for i in upd:
-                params[i] += alpha
-
-            total = sum(params)
-
-            for i in range(0, len(params)):
-                params[i] /= total
-
-            new_model[handle] = params
-
-        elif isinstance(params, tuple):
-            # a tuple means specific distribution parameters, like mean and stdev
-            if len(params) == 2:
-                mean, stdev = params
-                new_mean = scipy.mean(upd)
-                new_stdev = scipy.std(upd)
-                new_model[handle] = (
-                    mean * (1 - alpha) + new_mean * alpha,
-                    stdev * (1 - alpha) + new_stdev * alpha,
-                )
-            elif len(params) == 1:
-                p = params[0]
-                new_p = upd.count(True)
-                new_model[handle] = (p * (1 - alpha) + new_p * alpha,)
-            else:
-                raise ValueError("Unrecognized params %r" % params)
         else:
-            raise ValueError("Unrecognized params %r" % params)
+            new_model[handle] = params.update(alpha, upd)
 
     return new_model
 
