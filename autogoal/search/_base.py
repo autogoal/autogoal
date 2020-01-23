@@ -48,13 +48,9 @@ class SearchAlgorithm:
 
         best_solution = None
         best_fn = None
+        no_improvement = 0
 
         logger.begin(evaluations)
-        resource_manager = ResourceManager(
-            time_limit=self._evaluation_timeout, memory_limit=self._memory_limit
-        )
-
-        no_improvement = 0
 
         try:
             while evaluations > 0:
