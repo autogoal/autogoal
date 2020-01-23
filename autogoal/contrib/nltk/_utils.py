@@ -1,3 +1,8 @@
+import warnings
+
+import numpy as np
+import scipy.sparse as sp
+
 from autogoal import kb
 from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_matrix_continuous_sparse,\
@@ -5,23 +10,16 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_continuous,\
                                             is_string_list
 
-DATA_RESOLVERS = {
-    kb.MatrixContinuousDense(): is_matrix_continuous_dense,
-    kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
-    kb.CategoricalVector(): is_categorical,
-    kb.ContinuousVector(): is_continuous,
-    kb.List(kb.Word()): is_string_list,
-    kb.List(kb.List(kb.Stem())): is_string_list_list,
-}
-
 DATA_TYPE_EXAMPLES = {
     kb.MatrixContinuousDense(): np.random.rand(10, 10),
     kb.MatrixContinuousSparse(): sp.rand(10, 10),
     kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
     kb.ContinuousVector(): np.random.rand(10),
     kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
-    kb.List(kb.Document()): ["abc ipsu lorem say hello"] * 10,
-    kb.List(kb.List(kb.Stem())): [["abc", "ipsu" "lorem"] * 10]
+    kb.List(kb.Document()): ["abc ipsu lorem say hello", "ipsum lorem", "abc"] * 2,
+    kb.List(kb.List(kb.Stem())): [["abc", "ipsu", "lorem"] * 10],
+    kb.List(kb.List(kb.Word())): [["abc", "ipsu", "lorem"] * 10],
+    kb.List(kb.List(kb.Sentence())): [["abc a sentence lorem"], ["ipsum lorem"], ["abc"]]
 }
 
 def is_algorithm(cls, verbose=False):
@@ -115,20 +113,19 @@ def is_stemmer(cls, verbose=False):
     (False, None)
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_stemmer(cls, verbose=verbose):
         return False, None
 
     inputs = []
 
-    for input_type in [kb.List(kb.Document())]:
+    for input_type in [kb.List(kb.List(kb.Word()))]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[kb.List(kb.List(kb.Stem()))]
 
             stemmer = cls()
             y = [[stemmer.stem(word) for word in document] for document in X]
 
-            assert is_string_list_list(y)
+            assert is_word_list_list(y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -137,7 +134,7 @@ def is_stemmer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.CategoricalVector())
+        return True, (inputs, kb.List(kb.List(kb.Stem())))
     else:
         return False, None
 
@@ -154,20 +151,19 @@ def is_lemmatizer(cls, verbose=False):
     (True, (MatrixContinuous(), ContinuousVector()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_lemmatizer(cls, verbose=verbose):
         return False, None
 
     inputs = []
 
-    for input_type in [kb.List(kb.Document())]:
+    for input_type in [kb.List(kb.List(kb.Word()))]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[kb.List(kb.List(kb.Stem()))]
 
             stemmer = cls()
             y = [[stemmer.lemmatize(word) for word in document] for document in X]
 
-            assert is_string_list_list(y)
+            assert is_word_list_list(y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -176,12 +172,12 @@ def is_lemmatizer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.ContinuousVector())
+        return True, (inputs, kb.List(kb.List(kb.Stem())))
     else:
         return False, None
 
 def is_word_tokenizer(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn clustering algorithm.
+    """Determine if `cls` corresponds to something that resembles an nltk word tokenizer algorithm.
     If True, returns the valid (input, output) types.
 
     Examples:
@@ -196,19 +192,19 @@ def is_word_tokenizer(cls, verbose=False):
     (True, (MatrixContinuous(), DiscreteVector()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_word_tokenizer(cls, verbose=verbose):
         return False, None
 
     inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
+    for input_type in [kb.List(kb.Document())]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
-            clf = cls()
-            y = clf.fit_predict(X)
+            tokenizer = cls()
+            y = [tokenizer.tokenize(x) for x in X]
 
-            assert is_discrete(y)
+            assert is_word_list_list(y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -217,12 +213,12 @@ def is_word_tokenizer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.DiscreteVector())
+        return True, (inputs, kb.List(kb.List(kb.Word())))
     else:
         return False, None
 
 def is_sent_tokenizer(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn general transformer.
+    """Determine if `cls` corresponds to something that resembles an nltk sentence tokenizer.
     If True, returns the valid (input, output) types.
 
     Examples:
@@ -235,40 +231,33 @@ def is_sent_tokenizer(cls, verbose=False):
     (True, (MatrixContinuousDense(), MatrixContinuousDense()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_sent_tokenizer(cls, verbose=verbose):
         return False, None
 
-    allowed_inputs = set()
-    allowed_outputs = set()
+    inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-            try:
-                X = DATA_TYPE_EXAMPLES[input_type]
+    for input_type in [kb.List(kb.Document())]:
+        try:
+            X = DATA_TYPE_EXAMPLES[input_type]
 
-                clf = cls()
-                X = clf.fit_transform(X)
+            tokenizer = cls()
+            y = [tokenizer.tokenize(x) for x in X]
 
-                assert is_data_type(X, output_type)
+            assert is_text_list_list(y)
+            inputs.append(input_type)
+        except Exception as e:
+            if verbose:
+                warnings.warn(str(e))
 
-                allowed_inputs.add(input_type)
-                allowed_outputs.add(output_type)
-            except Exception as e:
-                if verbose:
-                    warnings.warn(str(e))
+    inputs = combine_types(*inputs)
 
-    if len(allowed_outputs) != 1:
-        return False, None
-
-    inputs = combine_types(*allowed_inputs)
-
-    if allowed_inputs:
-        return True, (inputs, list(allowed_outputs)[0])
+    if inputs:
+        return True, (inputs, kb.List(kb.List(kb.Word())))
     else:
         return False, None
 
 def is_clusterer(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn classifier.
+    """Determine if `cls` corresponds to something that resembles an nltk clusterer.
     If True, returns the valid (input, output) types.
 
     Examples:
@@ -280,7 +269,7 @@ def is_clusterer(cls, verbose=False):
     (False, None)
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_clusterer(cls, verbose=verbose):
         return False, None
 
     inputs = []
@@ -290,9 +279,9 @@ def is_clusterer(cls, verbose=False):
             X = DATA_TYPE_EXAMPLES[input_type]
             y = DATA_TYPE_EXAMPLES[kb.CategoricalVector()]
 
-            clf = cls()
-            clf.fit(X, y)
-            y = clf.predict(X)
+            clusterer = cls()
+            clusterer.cluster(X)
+            y = [clusterer.classify(x) for x in X]
 
             assert is_categorical(y)
             inputs.append(input_type)
@@ -308,7 +297,7 @@ def is_clusterer(cls, verbose=False):
         return False, None
 
 def is_classifier(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn regressor.
+    """Determine if `cls` corresponds to something that resembles an nltk classifier.
     If True, returns the valid (input, output) types.
 
     Examples:
@@ -320,7 +309,7 @@ def is_classifier(cls, verbose=False):
     (True, (MatrixContinuous(), ContinuousVector()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_algorithm(cls, verbose=verbose):
         return False, None
 
     inputs = []
@@ -363,7 +352,7 @@ def is_word_embbeder(cls, verbose=False):
     (True, (MatrixContinuous(), DiscreteVector()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_algorithm(cls, verbose=verbose):
         return False, None
 
     inputs = []
@@ -402,7 +391,7 @@ def is_doc_embbeder(cls, verbose=False):
     (True, (MatrixContinuousDense(), MatrixContinuousDense()))
 
     """
-    if not is_algorithm(cls, verbose=verbose):
+    if not _is_algorithm(cls, verbose=verbose):
         return False, None
 
     allowed_inputs = set()
@@ -468,7 +457,30 @@ def combine_types(*types):
 
     return None
 
-def is_string_list_list(obj):
+def is_word_list(obj):
+    """Determines if `obj` is a sequence of sequence of strings.
+
+    Examples:
+
+    >>> is_string_list_list([['hello', world'], ['another'], ['sentence']])
+    True
+    >>> is_string_list_list(np.random.rand(10))
+    False
+
+    """
+    try:
+        oset = set()
+        
+        for word in obj:
+            if len(word.split()) > 1:
+                return False
+            oset.add(word)
+                
+        return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
+    except:
+        return False
+
+def is_word_list_list(obj):
     """Determines if `obj` is a sequence of sequence of strings.
 
     Examples:
@@ -484,9 +496,43 @@ def is_string_list_list(obj):
         
         for sent in obj:
             for word in sent:
+                if len(word.split()) > 1:
+                    return False
                 oset.add(word)
                 
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
+
+def is_text_list_list(obj):
+    """Determines if `obj` is a sequence of sequence of strings.
+
+    Examples:
+
+    >>> is_string_list_list([['hello', world'], ['another'], ['sentence']])
+    True
+    >>> is_string_list_list(np.random.rand(10))
+    False
+
+    """
+    try:
+        oset = set()
+        
+        for sent in obj:
+            for text in sent:
+                oset.add(text)
+                
+        return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
+    except:
+        return False
+
     
+DATA_RESOLVERS = {
+    kb.MatrixContinuousDense(): is_matrix_continuous_dense,
+    kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
+    kb.CategoricalVector(): is_categorical,
+    kb.ContinuousVector(): is_continuous,
+    kb.List(kb.Word()): is_word_list,
+    kb.List(kb.List(kb.Stem())): is_word_list_list,
+    kb.List(kb.List(kb.Word())): is_word_list_list,
+}

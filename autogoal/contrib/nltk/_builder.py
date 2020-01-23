@@ -8,11 +8,14 @@ import re
 import enlighten
 import numpy as np
 import warnings
+import abc
+import importlib
 
 from pathlib import Path
+from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import *
+from _utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = ["arabic",\
              "danish",\
@@ -33,16 +36,16 @@ languages_re = re.compile("|".join(languages))
 
 class NltkTokenizer(SklearnWrapper):
     def _train(self, input):
-        return [[self.tokenize(word) for word in document] for document in X]
+        return [self.tokenize(document) for document in X]
 
     def _eval(self, input):
         X, _ = input
-        return X, [[self.tokenize(word) for word in document] for document in X]
+        return X, [self.tokenize(document) for document in X]
     
     @abc.abstractmethod
     def tokenize(self, X, y=None):
         pass
-    
+
 class NltkStemmer(SklearnWrapper):
     def _train(self, input):
         return [[self.stem(word) for word in document] for document in X]
@@ -67,10 +70,44 @@ class NltkLemmatizer(SklearnWrapper):
     def lemmatize(self, X, y=None):
         pass
 
+class NltkClusterer(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        return self.cluster(X)
+    
+    def _eval(self, input):
+        X, y = input
+        return X, [self.classify(x) for x in X]
+    
+    @abc.abstractmethod
+    def cluster(self, X, y=None):
+        pass
+    
+    @abc.abstractmethod
+    def classify(self, X, y=None):
+        pass
+
+base_classes = {"classifier":"SklearnWrapper",
+                "clusterer":"SklearnWrapper",
+                "sent_tokenizer":"NltkTokenizer",
+                "word_tokenizer":"NltkTokenizer",
+                "lemmatizer":"NltkLemmatizer",
+                "stemmer":"NltkStemmer",
+                "word_embbeder":"SklearnWrapper",
+                "doc_embbeder":"SklearnWrapper"}
+
+GENERATION_RULES = dict(
+    SnowballStemmer = dict(
+        assume = True,
+        assume_input=List(List(Word())),
+        assume_output=List(List(Stem()))
+    ),
+)
+
 def build_nltk_wrappers():
     imports = _walk(nltk)
     imports += _walk(nltk.cluster)
-    imports += _walk(gensim.models)
+    # imports += _walk(gensim.models)
     
     manager = enlighten.get_manager()
     counter = manager.counter(total=len(imports), unit="classes")
@@ -101,7 +138,17 @@ def _write_class(cls, fp):
         warnings.warn("Error to generate wrapper for %s : %s" %(cls.__name__, e))
         return
 
-    inputs, outputs = get_input_output(cls)
+    rules = GENERATION_RULES.get(cls.__name__)
+    assumed = False
+    
+    if rules:
+        if rules.get("assume"):
+            assumed = True
+            inputs = rules.get("assume_input")
+            outputs = rules.get("assume_output")
+            
+    if not assumed:
+        inputs, outputs = get_input_output(cls)
     
     if not inputs:
         warnings.warn("Cannot find correct types for %r" % cls)
@@ -111,39 +158,10 @@ def _write_class(cls, fp):
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
-    base_class = 'SklearnEstimator' if is_algorithm(cls) == 'estimator' else 'SklearnTransformer'
+    base_class = base_classes[is_algorithm(cls)] #set correct base class
     
     print(cls)
-    # class_code = f"""
-    #     from {cls.__module__} import {cls.__name__} as _{cls.__name__}
-
-    #     class {cls.__name__}(_{cls.__name__}):
-    #         def __init__(
-    #             self,
-    #             {args_str}
-    #         ):
-    #             {self_str}
-
-    #             super().__init__(
-    #                 {init_str}
-    #             )
-            
-    #         def fit_transform(
-    #             self, 
-    #             X, 
-    #             y=None
-    #         ):
-    #             self.fit(X, y=None)
-    #             return self.transform(X)
-            
-    #         def fit(
-    #             self, 
-    #             X, 
-    #             y=None
-    #         ):
-    #             pass    
-    #     """
-       
+    
     fp.write(textwrap.dedent(
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
@@ -164,198 +182,7 @@ def _write_class(cls, fp):
         """
     ))
      
-    # if _is_stemmer(cls): #generate stemmer
-    #     class_code += _write_stemmer(cls)
-        
-    # if _is_lemmatizer(cls): #generate lemmatizer
-    #     class_code += _write_lemmatizer(cls)
-        
-    # if _is_word_tokenizer(cls): #generate word tokenizer
-    #     class_code += _write_word_tokenizer(cls)
-        
-    # if _is_sent_tokenizer(cls): #generate sentence tokenizer
-    #     class_code += _write_sent_tokenizer(cls)
-        
-    # if _is_clusterer(cls): #generate clusterer
-    #     class_code += _write_clusterer(cls)
-        
-    # if _is_word_embbeder(cls): #generate word embbeder
-    #     class_code += _write_word_embbeder(cls)
-        
-    # if _is_doc_embbeder(cls): #generate document embbeder
-    #     class_code += _write_doc_embbeder(cls)
-    
-
-    # fp.write(textwrap.dedent(class_code))
     fp.flush()
-
-def _write_stemmer(cls):
-    return """
-            def _dstem(
-                self,
-                document
-            ):
-                return [self.stem(word) for word in document]
-
-            def _transform(
-                self, 
-                X,
-                y=None
-            ):
-                return [self.dstem(x) for x in X]
-
-            def run(self, input: Word(domain='general', language='english')) -> Stem():
-                \"\"\"This methods recive a word and transform this in a stem. 
-                \"\"\"
-                return self.stem(input)
-        """
-        
-def _write_lemmatizer(cls):
-    return """
-            def dlemmatize(
-                self,
-                document
-            ):
-                return [self.lemmatize(word) for word in document]
-
-            def transform(
-                self, 
-                X,
-                y=None
-            ):
-                return [self.dlemmatize(x) for x in X]
-
-            def run(self, input: Word(domain='general', language='english')) -> Stem():
-                \"\"\"This methods recive a word and transform this in a stem. 
-                \"\"\"
-                return self.lemmatize(input)
-        """
-
-def _write_word_tokenizer(cls):
-    return """
-            def transform(
-                self, 
-                X,
-                y=None
-            ):
-                return [self.tokenize(x) for x in X]
-
-            def run(self, input: Sentence(domain='general')) -> List(Word()):
-                \"\"\"This methods recive a sentece and transform this in a list of tokens (words). 
-                \"\"\"
-                return self.tokenize(input)
-        """
-        
-def _write_sent_tokenizer(cls):
-    return """
-            def transform(
-                self, 
-                X,
-                y=None
-            ):
-                return [self.tokenize(x) for x in X]
-
-            def run(self, input: Document(domain='general')) -> List(Sentence()):
-                \"\"\"This methods recive a document and transform this in a list of sentences. 
-                \"\"\"
-                return self.tokenize(input)
-        """
-
-def _write_clusterer(cls):
-    return """
-            def fit(
-                self, 
-                X,
-                y = None
-            ):
-                return self.cluster(X)
-            
-            def predict(
-                self,
-                x 
-            ):
-                return self.classify(x)
-
-            #def run(self, input: Document(domain='general')) -> List(Sentence()):
-            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
-            #    \"\"\"
-            #    return self.tokenize(input)"""
-
-def _write_classifier(cls):
-    return """
-            def fit(
-                self, 
-                X,
-                y
-            ):
-                return self.train(list(zip(X, y)))
-            
-            def predict(
-                self,
-                x  
-            ):
-                return self.classify(x)
-
-            #def run(self, input: Document(domain='general')) -> List(Sentence()):
-            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
-            #    \"\"\"
-            #    return self.tokenize(input)"""
-
-def _write_doc_embbeder(cls):
-    return """
-            def fit(
-                self, 
-                X,
-                y
-            ):
-                #Data must be turned to tagged data as TaggedDocument(List(Token), Tag)
-                #Tag use to be an unique integer
-                
-                from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
-                tagged_data = [_TaggedDocument(X[i], str(i)) for i in range(len(X))]
-                
-                self.build_vocab(tagged_data)
-                return self.train(tagged_data, total_examples=model.corpus_count, epochs=model.iter)
-                
-            
-            def transform(
-                self,
-                X,
-                y=None  
-            ):
-                return [self.infer_vector(x) for x in X]
-
-            #def run(self, input: Document(domain='general')) -> List(Sentence()):
-            #    \"\"\"This methods recive a document and transform this in a list of sentences. 
-            #    \"\"\"
-            #    return self.tokenize(input)"""
-            
-def _write_word_embbeder(cls):
-    return """
-            def fit(
-                self, 
-                X,
-                y
-            ):  
-                self.build_vocab(X)
-                return self.train(X, total_examples=model.corpus_count, epochs=model.iter)
-                
-            
-            def transform(
-                self,
-                X,
-                y=None  
-            ):
-                #Returns 3d matrix for a document list as every word will turn into a vector
-                #This will break when indexing a word that is not in the vocabulary trained
-                
-                return [[self.wv[word] for word in document] for document in X]
-
-            #def run(self, input: Word(domain='general')) -> List(Float()):
-            #    \"\"\"This methods recive a word and transform this in a List of floats. 
-            #    \"\"\"
-            #    return self.tokenize(input)"""
-
 
 def _walk(module, name="nltk"):
     imports = []
@@ -442,7 +269,7 @@ def _find_language_values(cls):
     global languages_re
     documentation = cls.__doc__
     
-    return languages_re.findall(str.lower(documentation))
+    return set(languages_re.findall(str.lower(documentation)))
 
 def _get_args(cls):
     full_specs = inspect.getfullargspec(cls.__init__)
