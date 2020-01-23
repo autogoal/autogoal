@@ -75,8 +75,8 @@ def _is_word_tokenizer(cls, verbose=False):
     return False
 
 def _is_sent_tokenizer(cls, verbose=False):
-    if "sentence" in str.lower(cls.__name__) or hasattr(cls, "sent_tokenize"):
-            return True
+    if ("sentence" in str.lower(cls.__name__) or hasattr(cls, "sent_tokenize")) and (hasattr(cls, "tokenize")):
+        return True
     return False
 
 def _is_clusterer(cls, verbose=False):
@@ -106,10 +106,11 @@ def is_stemmer(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_classifier(LogisticRegression)
-    (True, (MatrixContinuous(), CategoricalVector()))
-    >>> is_classifier(LinearRegression)
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.stem import Cistem
+    >>> is_stemmer(Cistem)
+    (True, (List(List(Word())), List(List(Stem())))
+    >>> is_stemmer(LogisticRegression)
     (False, None)
 
     """
@@ -144,11 +145,12 @@ def is_lemmatizer(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_regressor(LogisticRegression)
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.stem import WordNetLemmatizer
+    >>> is_lemmatizer(WordNetLemmatizer)
+    (True, (List(List(Word())), List(List(Stem())))
+    >>> is_lemmatizer(LogisticRegression)
     (False, None)
-    >>> is_regressor(LinearRegression)
-    (True, (MatrixContinuous(), ContinuousVector()))
 
     """
     if not _is_lemmatizer(cls, verbose=verbose):
@@ -182,14 +184,12 @@ def is_word_tokenizer(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_clusterer(LogisticRegression)
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.tokenize import PunktWordTokenizer
+    >>> is_word_tokenizer(PunktWordTokenizer)
+    (True, (List(Document()), List(List(Word())))
+    >>> is_word_tokenizer(LogisticRegression)
     (False, None)
-    >>> is_clusterer(LinearRegression)
-    (False, None)
-    >>> from sklearn.cluster import KMeans
-    >>> is_clusterer(KMeans)
-    (True, (MatrixContinuous(), DiscreteVector()))
 
     """
     if not _is_word_tokenizer(cls, verbose=verbose):
@@ -223,12 +223,12 @@ def is_sent_tokenizer(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.feature_extraction.text import CountVectorizer
-    >>> is_transformer(CountVectorizer)
-    (True, (List(Word()), MatrixContinuousSparse()))
-    >>> from sklearn.decomposition.pca import PCA
-    >>> is_transformer(PCA)
-    (True, (MatrixContinuousDense(), MatrixContinuousDense()))
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.tokenize import PunktSentenceTokenizer
+    >>> is_sent_tokenizer(PunktSentenceTokenizer)
+    (True, (List(Document()), List(List(Word())))
+    >>> is_sent_tokenizer(LogisticRegression)
+    (False, None)
 
     """
     if not _is_sent_tokenizer(cls, verbose=verbose):
@@ -262,10 +262,11 @@ def is_clusterer(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_classifier(LogisticRegression)
-    (True, (MatrixContinuous(), CategoricalVector()))
-    >>> is_classifier(LinearRegression)
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.cluster import GAAClusterer
+    >>> is_clusterer(GAAClusterer)
+    (True, (MatrixContinuousDense(), CategoricalVector()))
+    >>> is_clusterer(LogisticRegression)
     (False, None)
 
     """
@@ -299,127 +300,18 @@ def is_clusterer(cls, verbose=False):
 def is_classifier(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk classifier.
     If True, returns the valid (input, output) types.
-
-    Examples:
-
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_regressor(LogisticRegression)
-    (False, None)
-    >>> is_regressor(LinearRegression)
-    (True, (MatrixContinuous(), ContinuousVector()))
-
     """
     if not _is_algorithm(cls, verbose=verbose):
         return False, None
 
     inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
-        try:
-            X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[kb.ContinuousVector()]
-
-            clf = cls()
-            clf.fit(X, y)
-            y = clf.predict(X)
-
-            assert is_continuous(y)
-            inputs.append(input_type)
-        except Exception as e:
-            if verbose:
-                warnings.warn(str(e))
-
+    #TODO: Fix somehow compatibility with nltk classifiers
+    
     inputs = combine_types(*inputs)
 
     if inputs:
         return True, (inputs, kb.ContinuousVector())
-    else:
-        return False, None
-
-def is_word_embbeder(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn clustering algorithm.
-    If True, returns the valid (input, output) types.
-
-    Examples:
-
-    >>> from sklearn.linear_model import LogisticRegression, LinearRegression
-    >>> is_clusterer(LogisticRegression)
-    (False, None)
-    >>> is_clusterer(LinearRegression)
-    (False, None)
-    >>> from sklearn.cluster import KMeans
-    >>> is_clusterer(KMeans)
-    (True, (MatrixContinuous(), DiscreteVector()))
-
-    """
-    if not _is_algorithm(cls, verbose=verbose):
-        return False, None
-
-    inputs = []
-
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
-        try:
-            X = DATA_TYPE_EXAMPLES[input_type]
-
-            clf = cls()
-            y = clf.fit_predict(X)
-
-            assert is_discrete(y)
-            inputs.append(input_type)
-        except Exception as e:
-            if verbose:
-                warnings.warn(str(e))
-
-    inputs = combine_types(*inputs)
-
-    if inputs:
-        return True, (inputs, kb.DiscreteVector())
-    else:
-        return False, None
-
-def is_doc_embbeder(cls, verbose=False):
-    """Determine if `cls` corresponds to something that resembles an sklearn general transformer.
-    If True, returns the valid (input, output) types.
-
-    Examples:
-
-    >>> from sklearn.feature_extraction.text import CountVectorizer
-    >>> is_transformer(CountVectorizer)
-    (True, (List(Word()), MatrixContinuousSparse()))
-    >>> from sklearn.decomposition.pca import PCA
-    >>> is_transformer(PCA)
-    (True, (MatrixContinuousDense(), MatrixContinuousDense()))
-
-    """
-    if not _is_algorithm(cls, verbose=verbose):
-        return False, None
-
-    allowed_inputs = set()
-    allowed_outputs = set()
-
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-            try:
-                X = DATA_TYPE_EXAMPLES[input_type]
-
-                clf = cls()
-                X = clf.fit_transform(X)
-
-                assert is_data_type(X, output_type)
-
-                allowed_inputs.add(input_type)
-                allowed_outputs.add(output_type)
-            except Exception as e:
-                if verbose:
-                    warnings.warn(str(e))
-
-    if len(allowed_outputs) != 1:
-        return False, None
-
-    inputs = combine_types(*allowed_inputs)
-
-    if allowed_inputs:
-        return True, (inputs, list(allowed_outputs)[0])
     else:
         return False, None
 
@@ -434,8 +326,8 @@ IO_TYPE_HANDLER = [
     is_sent_tokenizer,
     is_clusterer,
     is_classifier,
-    is_word_embbeder,
-    is_doc_embbeder
+    # is_word_embbeder,
+    # is_doc_embbeder
 ]
 
 def get_input_output(cls, verbose=False):
