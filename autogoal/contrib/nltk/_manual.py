@@ -62,7 +62,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         return [self.infer_vector(x) for x in X]
 
     def run(self, input: List(Document())) -> MatrixContinuousDense():
-       """This methods recive a document list and transform this into a dense continuous matrix. 
+       """This methods receive a document list and transform this into a dense continuous matrix. 
        """
        return SklearnTransformer.run(self, input)
     
@@ -112,7 +112,7 @@ class StopwordRemover(SklearnTransformer):
         return [[word for word in document if word not in self.words] for document in X]
     
     def run(self, input: List(List(Word))) -> List(List(Word)):
-       """This methods recive a word list list and transform this into a word list list without stopwords. 
+       """This methods receive a word list list and transform this into a word list list without stopwords. 
        """
        return SklearnTransformer.run(self, input)
         
@@ -146,6 +146,6 @@ class TextLowerer(SklearnTransformer):
         return [str.lower(x) for x in X]
     
     def run(self, input: List(Document())) -> List(Document()):
-       """This methods recive a document list and transform this into a document list with lowered case. 
+       """This methods receive a document list and transform this into a document list with lowered case. 
        """
        return SklearnTransformer.run(self, input)

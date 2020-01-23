@@ -36,11 +36,12 @@ languages_re = re.compile("|".join(languages))
 
 class NltkTokenizer(SklearnWrapper):
     def _train(self, input):
-        return [self.tokenize(document) for document in X]
+        X, y = input
+        return [self.tokenize(document) for document in X], y
 
     def _eval(self, input):
-        X, _ = input
-        return X, [self.tokenize(document) for document in X]
+        X, y = input
+        return [self.tokenize(document) for document in X], y
     
     @abc.abstractmethod
     def tokenize(self, X, y=None):
@@ -48,11 +49,12 @@ class NltkTokenizer(SklearnWrapper):
 
 class NltkStemmer(SklearnWrapper):
     def _train(self, input):
-        return [[self.stem(word) for word in document] for document in X]
+        X, y = input
+        return [[self.stem(word) for word in document] for document in X], y
 
     def _eval(self, input):
-        X, _ = input
-        return X, [[self.stem(word) for word in document] for document in X]
+        X, y = input
+        return [[self.stem(word) for word in document] for document in X], y
     
     @abc.abstractmethod
     def stem(self, X, y=None):
@@ -60,11 +62,12 @@ class NltkStemmer(SklearnWrapper):
     
 class NltkLemmatizer(SklearnWrapper):
     def _train(self, input):
-        return [[self.lemmatize(word) for word in document] for document in X]
+        X, y = input
+        return [[self.lemmatize(word) for word in document] for document in X], y
 
     def _eval(self, input):
-        X, _ = input
-        return X, [[self.lemmatize(word) for word in document] for document in X]
+        X, y = input
+        return [[self.lemmatize(word) for word in document] for document in X], y
     
     @abc.abstractmethod
     def lemmatize(self, X, y=None):
@@ -74,7 +77,7 @@ class NltkClusterer(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self.cluster(X)
-        return [self.classify(x) for x in X]
+        return X, y
     
     def _eval(self, input):
         X, y = input
@@ -92,7 +95,7 @@ class NltkClassifier(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self.train(X) #TODO: fix train incompability for nltk classifiers
-        return [self.classify(x) for x in X]
+        return X, y
     
     def _eval(self, input):
         X, y = input
