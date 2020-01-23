@@ -73,7 +73,8 @@ class NltkLemmatizer(SklearnWrapper):
 class NltkClusterer(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        return self.cluster(X)
+        self.cluster(X)
+        return [self.classify(x) for x in X]
     
     def _eval(self, input):
         X, y = input
@@ -87,8 +88,26 @@ class NltkClusterer(SklearnWrapper):
     def classify(self, X, y=None):
         pass
 
-base_classes = {"classifier":"SklearnWrapper",
-                "clusterer":"SklearnWrapper",
+class NltkClassifier(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        self.train(X) #TODO: fix train incompability for nltk classifiers
+        return [self.classify(x) for x in X]
+    
+    def _eval(self, input):
+        X, y = input
+        return X, [self.classify(x) for x in X]
+    
+    @abc.abstractmethod
+    def cluster(self, X, y=None):
+        pass
+    
+    @abc.abstractmethod
+    def classify(self, X, y=None):
+        pass    
+
+base_classes = {"classifier":"NltkClassifier",
+                "clusterer":"NltkClusterer",
                 "sent_tokenizer":"NltkTokenizer",
                 "word_tokenizer":"NltkTokenizer",
                 "lemmatizer":"NltkLemmatizer",

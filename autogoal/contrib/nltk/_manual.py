@@ -1,9 +1,10 @@
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
-from autogoal.kb._data import *
+from autogoal.contrib.sklearn._builder import SklearnWrapper, SklearnTransformer
+from autogoal.kb import *
 from numpy import inf, nan
 
 from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
-class Doc2Vec(_Doc2Vec):
+class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
         dm: Discrete(min=0, max=2),
@@ -40,13 +41,6 @@ class Doc2Vec(_Doc2Vec):
 
     def fit(
         self, 
-        X, 
-        y=None
-    ):
-        pass    
-
-    def fit(
-        self, 
         X,
         y
     ):
@@ -67,13 +61,13 @@ class Doc2Vec(_Doc2Vec):
     ):
         return [self.infer_vector(x) for x in X]
 
-    #def run(self, input: Document(domain='general')) -> List(Sentence()):
-    #    """This methods recive a document and transform this in a list of sentences. 
-    #    """
-    #    return self.tokenize(input)
+    def run(self, input: List(Document())) -> MatrixContinuousDense():
+       """This methods recive a document list and transform this into a dense continuous matrix. 
+       """
+       return SklearnTransformer.run(self, input)
     
 from nltk.corpus import stopwords
-class StopwordRemover():
+class StopwordRemover(SklearnTransformer):
     def __init__(
         self,
         language:Categorical('danish',\
@@ -116,8 +110,13 @@ class StopwordRemover():
     ):
         #Considering data as list of tokenized documents
         return [[word for word in document if word not in self.words] for document in X]
+    
+    def run(self, input: List(List(Word))) -> List(List(Word)):
+       """This methods recive a word list list and transform this into a word list list without stopwords. 
+       """
+       return SklearnTransformer.run(self, input)
         
-class TextLowerer():
+class TextLowerer(SklearnTransformer):
     def __init__(
         self
     ):
@@ -145,3 +144,8 @@ class TextLowerer():
     ):
         #Considering data as list of raw documents
         return [str.lower(x) for x in X]
+    
+    def run(self, input: List(Document())) -> List(Document()):
+       """This methods recive a document list and transform this into a document list with lowered case. 
+       """
+       return SklearnTransformer.run(self, input)
