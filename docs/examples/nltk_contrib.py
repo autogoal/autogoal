@@ -1,4 +1,4 @@
-from autogoal.contrib.nltk import SklearnNLPClassifier
+from autogoal.contrib.nltk import SklearnNLPClassifier, find_classes
 from autogoal.grammar import generate_cfg
 from autogoal.search import RandomSearch, EnlightenLogger, PESearch
 from nltk.corpus import movie_reviews

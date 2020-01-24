@@ -4,7 +4,7 @@
 
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.kb._data import *
-from _builder import NltkTokenizer, NltkStemmer, NltkLemmatizer, NltkClusterer
+from ._builder import NltkTokenizer, NltkStemmer, NltkLemmatizer, NltkClusterer
 from numpy import inf, nan
 
 from nltk.stem.cistem import Cistem as _Cistem

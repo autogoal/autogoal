@@ -1,5 +1,6 @@
 import warnings
-
+import inspect
+import re
 import numpy as np
 import scipy.sparse as sp
 
@@ -428,3 +429,43 @@ DATA_RESOLVERS = {
     kb.List(kb.List(kb.Stem())): is_word_list_list,
     kb.List(kb.List(kb.Word())): is_word_list_list,
 }
+
+def find_classes(include=".*", exclude=None):
+    """
+    Returns the list of all `nltk` wrappers in `autogoal`.
+
+    You can pass filters to include or exclude specific classes.
+    The filters are regular expressions that are matched against
+    the names of the classes. Only classes that pass the `include` filter
+    and not the `exclude` filter will be returned.
+    By default all classes are returned.
+
+    ##### Parameters
+
+    - `include`: regular expression to match for including classes. Defaults to `".*"`, i.e., all classes.
+    - `exclude`: regular expression to match for excluding classes. Defaults to `None`.
+
+    ##### Examples
+
+    ```python
+    >>> from pprint import pprint
+    >>> pprint(find_classes(include='.*Classifier', exclude='.*Tree.*'))
+    [<class 'autogoal.contrib.sklearn._generated.KNeighborsClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.PassiveAggressiveClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.RidgeClassifier'>,
+     <class 'autogoal.contrib.sklearn._generated.SGDClassifier'>]
+
+    ```
+    """
+    import autogoal.contrib.nltk._generated as module
+    from autogoal.contrib.nltk._builder import NltkClassifier, NltkClusterer, NltkLemmatizer, NltkStemmer, NltkTokenizer
+
+    return [
+        c for n, c in inspect.getmembers(
+            module,
+            lambda c: inspect.isclass(c)
+            and issubclass(c, (NltkClusterer, NltkClassifier, NltkLemmatizer, NltkStemmer, NltkTokenizer))
+            and re.match(include, c.__name__)
+            and (exclude is None or not re.match(exclude, c.__name__)),
+        )
+    ]

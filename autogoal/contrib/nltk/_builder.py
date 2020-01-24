@@ -15,7 +15,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from _utils import _is_algorithm, get_input_output, is_algorithm
+from ._utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = ["arabic",\
              "danish",\

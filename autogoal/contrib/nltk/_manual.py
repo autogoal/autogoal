@@ -111,7 +111,7 @@ class StopwordRemover(SklearnTransformer):
         #Considering data as list of tokenized documents
         return [[word for word in document if word not in self.words] for document in X]
     
-    def run(self, input: List(List(Word))) -> List(List(Word)):
+    def run(self, input: List(List(Word()))) -> List(List(Word())):
        """This methods receive a word list list and transform this into a word list list without stopwords. 
        """
        return SklearnTransformer.run(self, input)

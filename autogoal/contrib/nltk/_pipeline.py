@@ -9,13 +9,8 @@ from autogoal.contrib.sklearn._pipeline import Noop, SklearnClassifier
 
 RawNormalizer = Union("RawNormalizer", mnlp.TextLowerer, Noop)
 
-Tokenization = Union("Tokenization", gnlp.BlanklineTokenizer,\
-                                     gnlp.LineTokenizer,\
-                                     gnlp.MWETokenizer,\
-                                     gnlp.SExprTokenizer,\
+Tokenization = Union("Tokenization", gnlp.MWETokenizer,\
                                      gnlp.SpaceTokenizer,\
-                                     gnlp.TabTokenizer,\
-                                     gnlp.TextTilingTokenizer,\
                                      gnlp.ToktokTokenizer,\
                                      gnlp.TreebankWordTokenizer,\
                                      gnlp.TweetTokenizer,\
