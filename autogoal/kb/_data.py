@@ -309,4 +309,6 @@ __all__ = [
     "Tuple",
     "Vector",
     "Word",
+    "Entity",
+    "Summary",
 ]

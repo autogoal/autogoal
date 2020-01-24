@@ -14,6 +14,7 @@ import sklearn.feature_extraction
 import sklearn.impute
 import sklearn.naive_bayes
 
+from numpy import nan, inf
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 
@@ -404,26 +405,36 @@ def _get_integer_values(arg, value, cls):
         return None
 
     # binary search for minimum value
-    current_value = min_value
-    min_value = value
+    left = min_value
+    right = value
 
-    while current_value < value - 1:
-        if _try(cls, arg, current_value):
-            min_value = current_value
+    while left < right:
+        current_value = int((left + right) / 2)
+        if current_value in [left, right]:
             break
+        
+        if _try(cls, arg, current_value):
+            right = current_value
         else:
-            current_value = int((current_value + value) / 2)
+            left = current_value
+
+    min_value = right
 
     # binary search for maximum value
-    current_value = max_value
-    max_value = value
+    left = value
+    right = max_value
 
-    while current_value > value + 1:
-        if _try(cls, arg, current_value):
-            max_value = current_value
+    while left < right:
+        current_value = int((left + right) / 2)
+        if current_value in [left, right]:
             break
+
+        if _try(cls, arg, current_value):
+            left = current_value            
         else:
-            current_value = int((current_value + value) / 2)
+            right = current_value
+
+    max_value = left
 
     if min_value < max_value:
         return Discrete(min=min_value, max=max_value)
@@ -432,9 +443,12 @@ def _get_integer_values(arg, value, cls):
 
 
 def _get_float_values(arg, value, cls):
+    if value in [inf, nan]:
+        return None
+
     if value > 0:
-        min_value = 0
-        max_value = 2 * value
+        min_value = -10 * value
+        max_value = 10 * value
     elif value == 0:
         min_value = -1
         max_value = 1
@@ -442,28 +456,32 @@ def _get_float_values(arg, value, cls):
         return None
 
     # binary search for minimum value
-    current_value = min_value
-    min_value = value
+    left = min_value
+    right = value
 
-    while abs(current_value - value) > 1e-3:
+    while abs(left - right) > 1e-2:
+        current_value = round((left + right) / 2, 3)
         if _try(cls, arg, current_value):
-            min_value = current_value
-            break
+            right = current_value
         else:
-            current_value = (current_value + value) / 2
+            left = current_value
+
+    min_value = right
 
     # binary search for maximum value
-    current_value = max_value
-    max_value = value
+    left = value
+    right = max_value
 
-    while abs(current_value - value) > 1e-3:
+    while abs(left - right) > 1e-2:
+        current_value = round((left + right) / 2, 3)
         if _try(cls, arg, current_value):
-            max_value = current_value
-            break
+            left = current_value            
         else:
-            current_value = (current_value + value) / 2
+            right = current_value
 
-    if min_value <= max_value - 1.0:
+    max_value = left
+
+    if max_value - min_value >= 2 * value:
         return Continuous(min=min_value, max=max_value)
 
     return None

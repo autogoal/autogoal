@@ -32,8 +32,37 @@ def nice_repr(cls):
     ...
     >>> x = MyType(42, b='hello', c='world')
     >>> x
-    MyType(a=42, b='hello')
+    MyType(a=42, b="hello")
 
+    ```
+
+    It works nicely with nested objects, if all of them are `@nice_repr` decorated.
+
+    ```python
+    >>> @nice_repr
+    ... class A:
+    ...     def __init__(self, inner):
+    ...         self.inner = inner
+    >>> @nice_repr
+    ... class B:
+    ...     def __init__(self, value):
+    ...         self.value = value
+    >>> A([B(i) for i in range(10)])
+    A(
+        inner=[
+            B(value=0),
+            B(value=1),
+            B(value=2),
+            B(value=3),
+            B(value=4),
+            B(value=5),
+            B(value=6),
+            B(value=7),
+            B(value=8),
+            B(value=9),
+        ]
+    )
+    
     ```
     """
     init_signature = inspect.signature(cls.__init__)
@@ -42,7 +71,7 @@ def nice_repr(cls):
     def repr_method(self):
         parameter_names = [name for name in init_signature.parameters if name not in exclude_param_names]
         parameter_values = [getattr(self, param, None) for param in parameter_names]
-        args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value)
+        args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value is not None)
         fr = f"{cls.__name__}({args})"
 
         try:
