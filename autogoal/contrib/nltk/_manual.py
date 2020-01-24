@@ -4,6 +4,7 @@ from numpy import inf, nan
 
 import nltk
 nltk.download('wordnet')
+from nltk.corpus import wordnet
 
 
 from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
