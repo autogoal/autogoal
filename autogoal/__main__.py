@@ -1,5 +1,16 @@
 import fire
 
+from pathlib import Path
+
+
+def demo():
+    try:
+        from streamlit.bootstrap import run
+        run(Path(__file__).parent / "demo.py", "", "")
+    except ImportError:
+        print("(!) Too run the demo you need streamlit installed.")
+        print("(!) Fix it by running `pip install streamlit`.")
+
 
 def main():
     from autogoal.datasets import pack, unpack, download
@@ -7,9 +18,13 @@ def main():
     fire.Fire(dict(
         pack=pack,
         unpack=unpack,
-        download=download
+        download=download,
+        demo=demo,
     ), name='autogoal')
 
 
 if __name__ == "__main__":
     main()
+
+
+
