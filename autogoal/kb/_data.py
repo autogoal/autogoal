@@ -311,4 +311,5 @@ __all__ = [
     "Word",
     "Entity",
     "Summary",
+    "Synset",
 ]

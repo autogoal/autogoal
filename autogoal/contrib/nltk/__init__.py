@@ -29,17 +29,19 @@ def find_classes(include=".*", exclude=None):
 
     ```
     """
-    import autogoal.contrib.nltk._generated as module
-    # from autogoal.contrib.nltk._builder import SklearnEstimator, SklearnTransformer
+    import autogoal.contrib.nltk._generated as generated
+    import autogoal.contrib.nltk._manual as manual
+
+    def is_nltk_class(c):
+        return (
+            inspect.isclass(c)
+            and c.__module__.startswith("autogoal.contrib.nltk._")
+            and re.match(include, c.__name__)
+            and (exclude is None or not re.match(exclude, c.__name__))
+        )
 
     return [
         c
-        for n, c in inspect.getmembers(
-            module,
-            lambda c: inspect.isclass(c)
-            and c.__module__ == 'autogoal.contrib.nltk._generated'
-            # and issubclass(c, (SklearnEstimator, SklearnTransformer))
-            and re.match(include, c.__name__)
-            and (exclude is None or not re.match(exclude, c.__name__)),
-        )
+        for n, c in inspect.getmembers(generated, is_nltk_class)
+        + inspect.getmembers(manual, is_nltk_class)
     ]
