@@ -38,6 +38,7 @@ def find_classes(include=".*", exclude=None):
             and c.__module__.startswith("autogoal.contrib.nltk._")
             and re.match(include, c.__name__)
             and (exclude is None or not re.match(exclude, c.__name__))
+            and hasattr(c, 'run')
         )
 
     return [

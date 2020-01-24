@@ -5,9 +5,10 @@
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.kb._data import *
 from numpy import inf, nan
-
+from autogoal.utils import nice_repr
 from nltk.classify.naivebayes import NaiveBayesClassifier as _NaiveBayesClassifier
 
+@nice_repr
 class NaiveBayesClassifier(_NaiveBayesClassifier):
     def __init__(
         self,
@@ -36,6 +37,7 @@ class NaiveBayesClassifier(_NaiveBayesClassifier):
 
 from nltk.classify.positivenaivebayes import PositiveNaiveBayesClassifier as _PositiveNaiveBayesClassifier
 
+@nice_repr
 class PositiveNaiveBayesClassifier(_PositiveNaiveBayesClassifier):
     def __init__(
         self,
@@ -64,6 +66,7 @@ class PositiveNaiveBayesClassifier(_PositiveNaiveBayesClassifier):
 
 from nltk.classify.weka import WekaClassifier as _WekaClassifier
 
+@nice_repr
 class WekaClassifier(_WekaClassifier):
     def __init__(
         self,
@@ -92,6 +95,7 @@ class WekaClassifier(_WekaClassifier):
 
 from nltk.parse.corenlp import CoreNLPDependencyParser as _CoreNLPDependencyParser
 
+@nice_repr
 class CoreNLPDependencyParser(_CoreNLPDependencyParser):
     def __init__(
         self,
@@ -132,6 +136,7 @@ class CoreNLPDependencyParser(_CoreNLPDependencyParser):
 
 from nltk.parse.corenlp import CoreNLPParser as _CoreNLPParser
 
+@nice_repr
 class CoreNLPParser(_CoreNLPParser):
     def __init__(
         self,
@@ -172,6 +177,7 @@ class CoreNLPParser(_CoreNLPParser):
 
 from nltk.stem.cistem import Cistem as _Cistem
 
+@nice_repr
 class Cistem(_Cistem):
     def __init__(
         self,
@@ -218,6 +224,7 @@ class Cistem(_Cistem):
 
 from nltk.stem.isri import ISRIStemmer as _ISRIStemmer
 
+@nice_repr
 class ISRIStemmer(_ISRIStemmer):
     def __init__(
         self,
@@ -264,6 +271,7 @@ class ISRIStemmer(_ISRIStemmer):
 
 from nltk.stem.lancaster import LancasterStemmer as _LancasterStemmer
 
+@nice_repr
 class LancasterStemmer(_LancasterStemmer):
     def __init__(
         self,
@@ -310,6 +318,7 @@ class LancasterStemmer(_LancasterStemmer):
 
 from nltk.stem.porter import PorterStemmer as _PorterStemmer
 
+@nice_repr
 class PorterStemmer(_PorterStemmer):
     def __init__(
         self,
@@ -356,6 +365,7 @@ class PorterStemmer(_PorterStemmer):
 
 from nltk.stem.rslp import RSLPStemmer as _RSLPStemmer
 
+@nice_repr
 class RSLPStemmer(_RSLPStemmer):
     def __init__(
         self,
@@ -402,6 +412,7 @@ class RSLPStemmer(_RSLPStemmer):
 
 from nltk.stem.snowball import SnowballStemmer as _SnowballStemmer
 
+@nice_repr
 class SnowballStemmer(_SnowballStemmer):
     def __init__(
         self,
@@ -448,6 +459,7 @@ class SnowballStemmer(_SnowballStemmer):
 
 from nltk.stem.wordnet import WordNetLemmatizer as _WordNetLemmatizer
 
+@nice_repr
 class WordNetLemmatizer(_WordNetLemmatizer):
     def __init__(
         self,
@@ -494,6 +506,7 @@ class WordNetLemmatizer(_WordNetLemmatizer):
 
 from nltk.tokenize.casual import TweetTokenizer as _TweetTokenizer
 
+@nice_repr
 class TweetTokenizer(_TweetTokenizer):
     def __init__(
         self,
@@ -540,6 +553,7 @@ class TweetTokenizer(_TweetTokenizer):
 
 from nltk.tokenize.mwe import MWETokenizer as _MWETokenizer
 
+@nice_repr
 class MWETokenizer(_MWETokenizer):
     def __init__(
         self,
@@ -580,6 +594,7 @@ class MWETokenizer(_MWETokenizer):
 
 from nltk.tokenize.punkt import PunktSentenceTokenizer as _PunktSentenceTokenizer
 
+@nice_repr
 class PunktSentenceTokenizer(_PunktSentenceTokenizer):
     def __init__(
         self,
@@ -620,6 +635,7 @@ class PunktSentenceTokenizer(_PunktSentenceTokenizer):
 
 from nltk.tokenize.regexp import BlanklineTokenizer as _BlanklineTokenizer
 
+@nice_repr
 class BlanklineTokenizer(_BlanklineTokenizer):
     def __init__(
         self,
@@ -660,6 +676,7 @@ class BlanklineTokenizer(_BlanklineTokenizer):
 
 from nltk.tokenize.regexp import WhitespaceTokenizer as _WhitespaceTokenizer
 
+@nice_repr
 class WhitespaceTokenizer(_WhitespaceTokenizer):
     def __init__(
         self,
@@ -700,6 +717,7 @@ class WhitespaceTokenizer(_WhitespaceTokenizer):
 
 from nltk.tokenize.regexp import WordPunctTokenizer as _WordPunctTokenizer
 
+@nice_repr
 class WordPunctTokenizer(_WordPunctTokenizer):
     def __init__(
         self,
@@ -740,6 +758,7 @@ class WordPunctTokenizer(_WordPunctTokenizer):
 
 from nltk.tokenize.sexpr import SExprTokenizer as _SExprTokenizer
 
+@nice_repr
 class SExprTokenizer(_SExprTokenizer):
     def __init__(
         self,
@@ -780,6 +799,7 @@ class SExprTokenizer(_SExprTokenizer):
 
 from nltk.tokenize.simple import LineTokenizer as _LineTokenizer
 
+@nice_repr
 class LineTokenizer(_LineTokenizer):
     def __init__(
         self,
@@ -820,6 +840,7 @@ class LineTokenizer(_LineTokenizer):
 
 from nltk.tokenize.simple import SpaceTokenizer as _SpaceTokenizer
 
+@nice_repr
 class SpaceTokenizer(_SpaceTokenizer):
     def __init__(
         self,
@@ -860,6 +881,7 @@ class SpaceTokenizer(_SpaceTokenizer):
 
 from nltk.tokenize.simple import TabTokenizer as _TabTokenizer
 
+@nice_repr
 class TabTokenizer(_TabTokenizer):
     def __init__(
         self,
@@ -900,15 +922,16 @@ class TabTokenizer(_TabTokenizer):
 
 from nltk.tokenize.sonority_sequencing import SyllableTokenizer as _SyllableTokenizer
 
+@nice_repr
 class SyllableTokenizer(_SyllableTokenizer):
     def __init__(
         self,
-        sonority_hierarchy: Boolean()
+        # sonority_hierarchy: Boolean()
     ):
-        self.sonority_hierarchy=sonority_hierarchy
+        # self.sonority_hierarchy=sonority_hierarchy
 
         super().__init__(
-            sonority_hierarchy=sonority_hierarchy
+            # sonority_hierarchy=sonority_hierarchy
         )
 
     def fit_transform(
@@ -940,6 +963,7 @@ class SyllableTokenizer(_SyllableTokenizer):
 
 from nltk.tokenize.stanford_segmenter import StanfordSegmenter as _StanfordSegmenter
 
+@nice_repr
 class StanfordSegmenter(_StanfordSegmenter):
     def __init__(
         self,
@@ -980,6 +1004,7 @@ class StanfordSegmenter(_StanfordSegmenter):
 
 from nltk.tokenize.texttiling import TextTilingTokenizer as _TextTilingTokenizer
 
+@nice_repr
 class TextTilingTokenizer(_TextTilingTokenizer):
     def __init__(
         self,
@@ -1038,6 +1063,7 @@ class TextTilingTokenizer(_TextTilingTokenizer):
 
 from nltk.tokenize.toktok import ToktokTokenizer as _ToktokTokenizer
 
+@nice_repr
 class ToktokTokenizer(_ToktokTokenizer):
     def __init__(
         self,
@@ -1078,6 +1104,7 @@ class ToktokTokenizer(_ToktokTokenizer):
 
 from nltk.tokenize.treebank import TreebankWordTokenizer as _TreebankWordTokenizer
 
+@nice_repr
 class TreebankWordTokenizer(_TreebankWordTokenizer):
     def __init__(
         self,
@@ -1118,6 +1145,7 @@ class TreebankWordTokenizer(_TreebankWordTokenizer):
 
 from nltk.cluster.gaac import GAAClusterer as _GAAClusterer
 
+@nice_repr
 class GAAClusterer(_GAAClusterer):
     def __init__(
         self,
@@ -1166,6 +1194,7 @@ class GAAClusterer(_GAAClusterer):
     #    return self.tokenize(input)
 from nltk.cluster.util import VectorSpaceClusterer as _VectorSpaceClusterer
 
+@nice_repr
 class VectorSpaceClusterer(_VectorSpaceClusterer):
     def __init__(
         self,

@@ -9,6 +9,7 @@ import random
 class AutoClassifier:
     def __init__(
         self,
+        input=None,
         *,
         search_algorithm=RandomSearch,
         search_kwargs={},
@@ -53,7 +54,7 @@ class AutoClassifier:
         return (y_pred == y).astype(float).mean()
 
     def _start_type(self):
-        return MatrixContinuous()
+        return self.input or MatrixContinuous()
 
     def _make_fitness_fn(self, X, y):
         X = np.asarray(X)
@@ -83,8 +84,3 @@ class AutoClassifier:
 
     def predict(self, X):
         return self.best_pipeline_.run((X, [None] * len(X)))
-
-
-class AutoTextClassifier(AutoClassifier):
-    def _start_type(self):
-        return List(Word())

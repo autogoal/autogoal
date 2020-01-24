@@ -61,16 +61,20 @@ def find_classes(include=".*", exclude=None):
 
     ```
     """
-    import autogoal.contrib.sklearn._generated as module
+    import autogoal.contrib.sklearn._generated as generated
+    import autogoal.contrib.sklearn._manual as manual
     from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
+
+    def is_sklearn_class(c):
+        return (
+            inspect.isclass(c)
+            and issubclass(c, (SklearnEstimator, SklearnTransformer))
+            and re.match(include, c.__name__)
+            and (exclude is None or not re.match(exclude, c.__name__))
+        )
 
     return [
         c
-        for n, c in inspect.getmembers(
-            module,
-            lambda c: inspect.isclass(c)
-            and issubclass(c, (SklearnEstimator, SklearnTransformer))
-            and re.match(include, c.__name__)
-            and (exclude is None or not re.match(exclude, c.__name__)),
-        )
+        for n, c in inspect.getmembers(generated, is_sklearn_class)
+        + inspect.getmembers(manual, is_sklearn_class)
     ]
