@@ -168,3 +168,24 @@ class WordnetConcept():
             names_synsets.append(i.name())
 
         return names_synsets
+
+
+from nltk.corpus import sentiwordnet as swn
+
+class SentimentWord():
+    """Find a word in SentiWordnet and return a List of sentiment of the word.
+    """
+
+    def __init__(self):
+        pass
+
+    def run(self, input: Synset(domain='general', language='english'))-> Sentiment():
+        """Find a word in SentiWordnet and return a List of sentiment of the word.
+        """
+        swn_synset = swn.senti_synset(input)
+        
+        sentiment = {}
+        sentiments["positive"] = i.pos_score()
+        sentiments["negative"] = i.neg_score()
+
+        return sentiment
