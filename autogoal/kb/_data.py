@@ -251,6 +251,8 @@ class Entity(DataType):
 class Summary(Document):
     pass 
 
+class Synset(DataType):
+    pass 
 
 class List(DataType):
     def __init__(self, inner):

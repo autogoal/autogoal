@@ -2,6 +2,10 @@ from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.kb._data import *
 from numpy import inf, nan
 
+import nltk
+nltk.download('wordnet')
+
+
 from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
 class Doc2Vec(_Doc2Vec):
     def __init__(
@@ -145,3 +149,21 @@ class TextLowerer():
     ):
         #Considering data as list of raw documents
         return [str.lower(x) for x in X]
+
+
+class WordnetConcept():
+    """Find a word in Wordnet and return a List of Synset de Wordnet
+    """
+
+    def __init__(self):
+        pass
+
+    def run(self, input: Word(domain='general', language='english'))-> List(Synset()):
+        """Find a word in Wordnet and return a List of Synset de Wordnet
+        """
+        synsets = wordnet.synsets(input)
+        names_synsets = []
+        for i in synsets:
+            names_synsets.append(i.name())
+
+        return names_synsets
