@@ -1,8 +1,10 @@
-from autogoal.ml import AutoTextClassifier
+from autogoal.ml import AutoClassifier
 from autogoal.datasets import haha
 from autogoal.search import Logger, PESearch, ConsoleLogger, ProgressLogger, MemoryLogger
+from autogoal.kb import List, Sentence
 
-classifier = AutoTextClassifier(
+classifier = AutoClassifier(
+    input=List(Sentence()),
     search_algorithm=PESearch,
     search_iterations=1000,
     search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),

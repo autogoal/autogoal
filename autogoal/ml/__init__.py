@@ -19,6 +19,7 @@ class AutoClassifier:
         validation_split=0.2,
         errors="warn",
     ):
+        self.input = input
         self.search_algorithm = search_algorithm
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
