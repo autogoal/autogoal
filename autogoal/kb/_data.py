@@ -259,6 +259,10 @@ class Summary(Document):
     pass 
 
 
+class Sentiment(DataType):
+    pass
+
+
 class Synset(DataType):
     pass 
 
@@ -322,4 +326,5 @@ __all__ = [
     "Summary",
     "Synset",
     "Text",
+    "Sentiment",
 ]

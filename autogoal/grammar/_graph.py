@@ -313,5 +313,7 @@ class GraphSpace(Grammar):
 
             next_node = sampler.choice(next_nodes, handle=last_node)
             path.append(next_node)
+        else:
+            raise ValueError("Reached maximum iterations")
 
         return [self.initializer(clss, sampler=sampler) for clss in path[1:-1]]
