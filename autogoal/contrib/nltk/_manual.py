@@ -1,4 +1,4 @@
-from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
+from autogoal.grammar import Continuous, Discrete, Categorical, Boolean, Synset
 from autogoal.kb._data import *
 from numpy import inf, nan
 
@@ -169,6 +169,18 @@ class WordnetConcept():
 
         return names_synsets
 
+
+class ConverSynset2Word():
+    """Recive a Synset of nltk and return de Lemma of this
+    """
+    
+    def __init__(self):
+        pass
+
+    def run(self, input: Synset(domain='general', language='english'))-> Word():
+        """Recive a Synset of nltk and return de Lemma of this
+        """
+        return Lemma(input)
 
 from nltk.corpus import sentiwordnet as swn
 
