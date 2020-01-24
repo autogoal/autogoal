@@ -22,8 +22,7 @@ def evaluate(expr):
         for i in range(1, 10):
             yield i
 
-        while True:
-            yield 0
+        raise ValueError("Too many values asked")
 
     return expr(stream())
 
