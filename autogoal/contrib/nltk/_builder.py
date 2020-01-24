@@ -15,7 +15,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import _is_algorithm, get_input_output, is_algorithm
+from _utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = ["arabic",\
              "danish",\
@@ -37,11 +37,11 @@ languages_re = re.compile("|".join(languages))
 class NltkTokenizer(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        return [self.tokenize(document) for document in X], y
+        return self.tokenize(X), y
 
     def _eval(self, input):
         X, y = input
-        return [self.tokenize(document) for document in X], y
+        return self.tokenize(X), y
     
     @abc.abstractmethod
     def tokenize(self, X, y=None):
@@ -50,11 +50,13 @@ class NltkTokenizer(SklearnWrapper):
 class NltkStemmer(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        return [[self.stem(word) for word in document] for document in X], y
+        #X is Word
+        return self.stem(X), y
 
     def _eval(self, input):
         X, y = input
-        return [[self.stem(word) for word in document] for document in X], y
+        #X is Word
+        return self.stem(X), y
     
     @abc.abstractmethod
     def stem(self, X, y=None):
@@ -63,11 +65,11 @@ class NltkStemmer(SklearnWrapper):
 class NltkLemmatizer(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        return [[self.lemmatize(word) for word in document] for document in X], y
+        return self.lemmatize(X), y
 
     def _eval(self, input):
         X, y = input
-        return [[self.lemmatize(word) for word in document] for document in X], y
+        return self.lemmatize(X), y
     
     @abc.abstractmethod
     def lemmatize(self, X, y=None):
@@ -121,8 +123,8 @@ base_classes = {"classifier":"NltkClassifier",
 GENERATION_RULES = dict(
     SnowballStemmer = dict(
         assume = True,
-        assume_input=List(List(Word())),
-        assume_output=List(List(Stem()))
+        assume_input=Word(),
+        assume_output=Stem()
     ),
 )
 

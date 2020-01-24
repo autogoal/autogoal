@@ -12,6 +12,10 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_string_list
 
 DATA_TYPE_EXAMPLES = {
+    kb.Stem():"ips",
+    kb.Word():"ipsum",
+    kb.Sentence():"It is the best of all movies.",
+    kb.Document():"It is the best of all movies. I actually love that action scene.",
     kb.MatrixContinuousDense(): np.random.rand(10, 10),
     kb.MatrixContinuousSparse(): sp.rand(10, 10),
     kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
@@ -71,12 +75,12 @@ def _is_lemmatizer(cls, verbose=False):
     return False
 
 def _is_word_tokenizer(cls, verbose=False):
-    if not _is_sent_tokenizer(cls) and (hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize")):
+    if (hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize")):
         return True
     return False
 
 def _is_sent_tokenizer(cls, verbose=False):
-    if ("sentence" in str.lower(cls.__name__) or hasattr(cls, "sent_tokenize")) and (hasattr(cls, "tokenize")):
+    if hasattr(cls, "sent_tokenize") or (hasattr(cls, "tokenize")):
         return True
     return False
 
@@ -119,15 +123,16 @@ def is_stemmer(cls, verbose=False):
         return False, None
 
     inputs = []
+    output = kb.Stem()
 
-    for input_type in [kb.List(kb.List(kb.Word()))]:
+    for input_type in [kb.Word()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
             stemmer = cls()
-            y = [[stemmer.stem(word) for word in document] for document in X]
+            y = stemmer.stem(X)
 
-            assert is_word_list_list(y)
+            assert DATA_RESOLVERS[output](y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -136,7 +141,7 @@ def is_stemmer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.List(kb.List(kb.Stem())))
+        return True, (inputs, output)
     else:
         return False, None
 
@@ -158,15 +163,16 @@ def is_lemmatizer(cls, verbose=False):
         return False, None
 
     inputs = []
-
-    for input_type in [kb.List(kb.List(kb.Word()))]:
+    output = kb.Stem()
+    
+    for input_type in [kb.Word()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
-            stemmer = cls()
-            y = [[stemmer.lemmatize(word) for word in document] for document in X]
+            lemmatizer = cls()
+            y = lemmatizer.lemmatize(X)
 
-            assert is_word_list_list(y)
+            assert DATA_RESOLVERS[output](y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -175,7 +181,7 @@ def is_lemmatizer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.List(kb.List(kb.Stem())))
+        return True, (inputs, output)
     else:
         return False, None
 
@@ -197,15 +203,16 @@ def is_word_tokenizer(cls, verbose=False):
         return False, None
 
     inputs = []
+    output = kb.List(kb.Word())
 
-    for input_type in [kb.List(kb.Document())]:
+    for input_type in [kb.Document()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
             tokenizer = cls()
-            y = [tokenizer.tokenize(x) for x in X]
+            y = tokenizer.tokenize(X)
 
-            assert is_word_list_list(y)
+            assert DATA_RESOLVERS[output](y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -214,7 +221,7 @@ def is_word_tokenizer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.List(kb.List(kb.Word())))
+        return True, (inputs, output)
     else:
         return False, None
 
@@ -236,15 +243,16 @@ def is_sent_tokenizer(cls, verbose=False):
         return False, None
 
     inputs = []
+    output = kb.List(kb.Sentence())
 
-    for input_type in [kb.List(kb.Document())]:
+    for input_type in [kb.Document()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
             tokenizer = cls()
-            y = [tokenizer.tokenize(x) for x in X]
+            y = tokenizer.tokenize(X)
 
-            assert is_text_list_list(y)
+            assert DATA_RESOLVERS[output](y)
             inputs.append(input_type)
         except Exception as e:
             if verbose:
@@ -253,7 +261,7 @@ def is_sent_tokenizer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.List(kb.List(kb.Word())))
+        return True, (inputs, output)
     else:
         return False, None
 
@@ -397,6 +405,44 @@ def is_word_list_list(obj):
     except:
         return False
 
+def is_word(obj):
+    """Determines if `obj` is a sequence of sequence of strings.
+
+    Examples:
+
+    >>> is_word('hello'])
+    True
+    >>> is_word(np.random.rand(10))
+    False
+
+    """
+    try:        
+        return isinstance(obj, str) and len(obj.split()) == 1
+    except:
+        return False
+
+def is_sentence(obj):
+    """Determines if `obj` is a sentence strings.
+
+    Examples:
+
+    >>> is_word('hello'])
+    True
+    >>> is_word(np.random.rand(10))
+    False
+
+    """
+    try:        
+        return isinstance(obj, str) and len(obj.split()) > 1
+    except:
+        return False
+
+def is_sentence_list(obj):
+    try:
+        return all([is_sentence(x) for x in obj])
+    except:
+        return False
+
 def is_text_list_list(obj):
     """Determines if `obj` is a sequence of sequence of strings.
 
@@ -421,11 +467,16 @@ def is_text_list_list(obj):
 
     
 DATA_RESOLVERS = {
+    kb.Stem():is_word,
+    kb.Word():is_word,
+    kb.Sentence():is_sentence,
+    kb.Document():is_sentence,
     kb.MatrixContinuousDense(): is_matrix_continuous_dense,
     kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
     kb.CategoricalVector(): is_categorical,
     kb.ContinuousVector(): is_continuous,
     kb.List(kb.Word()): is_word_list,
+    kb.List(kb.Sentence()): is_sentence_list,
     kb.List(kb.List(kb.Stem())): is_word_list_list,
     kb.List(kb.List(kb.Word())): is_word_list_list,
 }

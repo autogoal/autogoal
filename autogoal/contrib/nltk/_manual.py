@@ -67,7 +67,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
        return SklearnTransformer.run(self, input)
     
 from nltk.corpus import stopwords
-class StopwordRemover(SklearnTransformer):
+class StopwordRemover(SklearnWrapper):
     def __init__(
         self,
         language:Categorical('danish',\
@@ -109,43 +109,51 @@ class StopwordRemover(SklearnTransformer):
         y=None  
     ):
         #Considering data as list of tokenized documents
-        return [[word for word in document if word not in self.words] for document in X]
+        return [word for word in X if word not in self.words]
     
-    def run(self, input: List(List(Word()))) -> List(List(Word())):
+    def _train(self, input):
+        X, y = input
+        return [word for word in X if word not in self.words], y
+
+    def _eval(self, input):
+        X, y = input
+        return [word for word in X if word not in self.words], y
+    
+    def run(self, input: List(Word())) -> List(Word()):
        """This methods receive a word list list and transform this into a word list list without stopwords. 
        """
        return SklearnTransformer.run(self, input)
         
-class TextLowerer(SklearnTransformer):
-    def __init__(
-        self
-    ):
-        pass
+# class TextLowerer(SklearnTransformer):
+#     def __init__(
+#         self
+#     ):
+#         pass
     
-    def fit(
-        self, 
-        X, 
-        y=None
-    ):
-        pass
+#     def fit(
+#         self, 
+#         X, 
+#         y=None
+#     ):
+#         pass
     
-    def fit_transform(
-        self, 
-        X, 
-        y=None
-    ):
-        self.fit(X, y=None)
-        return self.transform(X)
+#     def fit_transform(
+#         self, 
+#         X, 
+#         y=None
+#     ):
+#         self.fit(X, y=None)
+#         return self.transform(X)
 
-    def transform(
-        self,
-        X,
-        y=None  
-    ):
-        #Considering data as list of raw documents
-        return [str.lower(x) for x in X]
+#     def transform(
+#         self,
+#         X,
+#         y=None  
+#     ):
+#         #Considering data as list of raw documents
+#         return [str.lower(x) for x in X]
     
-    def run(self, input: List(Document())) -> List(Document()):
-       """This methods receive a document list and transform this into a document list with lowered case. 
-       """
-       return SklearnTransformer.run(self, input)
+#     def run(self, input: Word()) -> Word():
+#        """This methods receive a document list and transform this into a document list with lowered case. 
+#        """
+#        return SklearnTransformer.run(self, input)
