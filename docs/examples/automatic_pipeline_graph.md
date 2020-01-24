@@ -43,6 +43,7 @@ builder = build_pipelines(
 )
 
 pipeline = builder.sample()
+print(pipeline)
 print(pipeline.run((True, 3.5)))
 ```
 

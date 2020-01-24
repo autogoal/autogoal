@@ -1,5 +1,5 @@
 from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word, Matrix
+from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -9,6 +9,7 @@ import random
 class AutoClassifier:
     def __init__(
         self,
+        input=None,
         *,
         search_algorithm=RandomSearch,
         search_kwargs={},
@@ -18,6 +19,7 @@ class AutoClassifier:
         validation_split=0.2,
         errors="warn",
     ):
+        self.input = input
         self.search_algorithm = search_algorithm
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
@@ -26,7 +28,7 @@ class AutoClassifier:
         self.validation_split = validation_split
         self.errors = errors
 
-    def fit(self, X, y):
+    def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
             input=self._start_type(),
             output=CategoricalVector(),
@@ -42,14 +44,18 @@ class AutoClassifier:
             **self.search_kwargs,
         )
 
-        self.best_pipeline_, self.best_score_ = search.run(self.search_iterations)
+        self.best_pipeline_, self.best_score_ = search.run(self.search_iterations, **kwargs)
 
         self.best_pipeline_.send("train")
         self.best_pipeline_.run((X, y))
         self.best_pipeline_.send("eval")
 
+    def score(self, X, y):
+        _, y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
+        return (y_pred == y).astype(float).mean()
+
     def _start_type(self):
-        return Matrix()
+        return self.input or MatrixContinuous()
 
     def _make_fitness_fn(self, X, y):
         X = np.asarray(X)
@@ -79,8 +85,3 @@ class AutoClassifier:
 
     def predict(self, X):
         return self.best_pipeline_.run((X, [None] * len(X)))
-
-
-class AutoTextClassifier(AutoClassifier):
-    def _start_type(self):
-        return List(Word())

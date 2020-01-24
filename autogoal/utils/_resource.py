@@ -65,7 +65,7 @@ class ResourceManager:
             resource.setrlimit(resource.RLIMIT_CPU, (self.time_limit, hard))
 
     def _unrestrict_memory(self):
-        self._restrict_memory(self.original_limit)
+        self._restrict(self.original_limit)
 
     def _run_for(self, function, *args, **kwargs):
         def signal_handler(*args):
@@ -102,25 +102,22 @@ class ResourceManager:
         Executes a given function with restricted amount of
         CPU time and RAM memory usage.
         """
-        try:
-            manager = multiprocessing.Manager()
-            result_bucket = manager.dict()
+        manager = multiprocessing.Manager()
+        result_bucket = manager.dict()
+        
+        rprocess = multiprocessing.Process(target=self._restricted_function,
+                                            args=[result_bucket, function, args, kwargs])
 
-            rprocess = multiprocessing.Process(target=self._restricted_function,
-                                               args=[result_bucket, function, args, kwargs])
-
-            rprocess.start()
-            # print("started process:", rprocess.pid)
-            rprocess.join()
-            # print("ended process:", rprocess.pid)
-            result = result_bucket["result"]
-            if isinstance(result, Exception): #Exception ocurred
-                raise result
-            return result
-
-        except Exception as e:
-            raise e
-
+        rprocess.start()
+        # print("started process:", rprocess.pid)
+        rprocess.join()
+        # print("ended process:", rprocess.pid)
+        result = result_bucket["result"]
+        if isinstance(result, Exception): #Exception ocurred
+            raise result
+        return result
+        
+        
 
 def alarm_handler(*args):
     raise TimeoutError("process %d got to time limit" %os.getpid())

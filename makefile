@@ -9,8 +9,8 @@ test-fast:
 notebook:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose up
 
-.PHONY: docs-serve
-docs-serve:
+.PHONY: docs
+docs:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && mkdocs serve
 
 .PHONY: docs-deploy
@@ -48,6 +48,10 @@ docker-build:
 .PHONY: docker-push
 docker-push:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose push;)
+
+.PHONY: docker-pull
+docker-pull:
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose pull;)
 
 # Below are the commands that will be run INSIDE the development environment, i.e., inside Docker or Travis
 # These commands are NOT supposed to be run by the developer directly, and will fail to do so.

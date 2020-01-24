@@ -9,7 +9,7 @@ from ._cfg import (
     Union,
     Symbol,
     CfgInitializer,
+    Empty,
     Symbol,
-    Empty
 )
 from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace

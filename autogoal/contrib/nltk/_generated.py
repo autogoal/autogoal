@@ -5,6 +5,93 @@
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.kb._data import *
 from numpy import inf, nan
+from autogoal.utils import nice_repr
+from nltk.classify.naivebayes import NaiveBayesClassifier as _NaiveBayesClassifier
+
+@nice_repr
+class NaiveBayesClassifier(_NaiveBayesClassifier):
+    def __init__(
+        self,
+
+    ):
+
+
+        super().__init__(
+
+        )
+
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass    
+
+from nltk.classify.positivenaivebayes import PositiveNaiveBayesClassifier as _PositiveNaiveBayesClassifier
+
+@nice_repr
+class PositiveNaiveBayesClassifier(_PositiveNaiveBayesClassifier):
+    def __init__(
+        self,
+
+    ):
+
+
+        super().__init__(
+
+        )
+
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass    
+
+from nltk.classify.weka import WekaClassifier as _WekaClassifier
+
+@nice_repr
+class WekaClassifier(_WekaClassifier):
+    def __init__(
+        self,
+
+    ):
+
+
+        super().__init__(
+
+        )
+
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass    
 
 from nltk.stem.cistem import Cistem as _Cistem
 
@@ -22,6 +109,11 @@ class Cistem(_Cistem, NltkStemmer):
     def run(self, input: Word()) -> Stem():
        return NltkStemmer.run(self, input)
 
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
+
 from nltk.stem.isri import ISRIStemmer as _ISRIStemmer
 
 class ISRIStemmer(_ISRIStemmer, NltkStemmer):
@@ -37,6 +129,11 @@ class ISRIStemmer(_ISRIStemmer, NltkStemmer):
 
     def run(self, input: Word()) -> Stem():
        return NltkStemmer.run(self, input)
+
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
 
 from nltk.stem.lancaster import LancasterStemmer as _LancasterStemmer
 
@@ -54,6 +151,11 @@ class LancasterStemmer(_LancasterStemmer, NltkStemmer):
     def run(self, input: Word()) -> Stem():
        return NltkStemmer.run(self, input)
 
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
+
 from nltk.stem.porter import PorterStemmer as _PorterStemmer
 
 class PorterStemmer(_PorterStemmer, NltkStemmer):
@@ -70,6 +172,11 @@ class PorterStemmer(_PorterStemmer, NltkStemmer):
     def run(self, input: Word()) -> Stem():
        return NltkStemmer.run(self, input)
 
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
+
 from nltk.stem.rslp import RSLPStemmer as _RSLPStemmer
 
 class RSLPStemmer(_RSLPStemmer, NltkStemmer):
@@ -85,6 +192,11 @@ class RSLPStemmer(_RSLPStemmer, NltkStemmer):
 
     def run(self, input: Word()) -> Stem():
        return NltkStemmer.run(self, input)
+
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
 
 from nltk.stem.snowball import SnowballStemmer as _SnowballStemmer
 
@@ -118,6 +230,58 @@ class WordNetLemmatizer(_WordNetLemmatizer, NltkLemmatizer):
     def run(self, input: Word()) -> Stem():
        return NltkLemmatizer.run(self, input)
 
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.stem(input)
+
+from nltk.stem.wordnet import WordNetLemmatizer as _WordNetLemmatizer
+
+@nice_repr
+class WordNetLemmatizer(_WordNetLemmatizer):
+    def __init__(
+        self,
+
+    ):
+
+
+        super().__init__(
+
+        )
+
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass    
+
+    def dlemmatize(
+        self,
+        document
+    ):
+        return [self.lemmatize(word) for word in document]
+
+    def transform(
+        self, 
+        X,
+        y=None
+    ):
+        return [self.dlemmatize(x) for x in X]
+
+    def run(self, input: Word(domain='general', language='english')) -> Stem():
+        """This methods recive a word and transform this in a stem. 
+        """
+        return self.lemmatize(input)
+
 from nltk.tokenize.casual import TweetTokenizer as _TweetTokenizer
 
 class TweetTokenizer(_TweetTokenizer, NltkTokenizer):
@@ -137,6 +301,11 @@ class TweetTokenizer(_TweetTokenizer, NltkTokenizer):
 
     def run(self, input: Document()) -> List(Word()):
        return NltkTokenizer.run(self, input)
+
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
 
 from nltk.tokenize.mwe import MWETokenizer as _MWETokenizer
 
@@ -170,6 +339,52 @@ class PunktSentenceTokenizer(_PunktSentenceTokenizer, NltkTokenizer):
     def run(self, input: Document()) -> List(Sentence()):
        return NltkTokenizer.run(self, input)
 
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
+
+from nltk.tokenize.punkt import PunktSentenceTokenizer as _PunktSentenceTokenizer
+
+@nice_repr
+class PunktSentenceTokenizer(_PunktSentenceTokenizer):
+    def __init__(
+        self,
+        verbose: Boolean()
+    ):
+        self.verbose=verbose
+
+        super().__init__(
+            verbose=verbose
+        )
+
+    def fit_transform(
+        self, 
+        X, 
+        y=None
+    ):
+        self.fit(X, y=None)
+        return self.transform(X)
+
+    def fit(
+        self, 
+        X, 
+        y=None
+    ):
+        pass    
+
+    def transform(
+        self, 
+        X,
+        y=None
+    ):
+        return [self.tokenize(x) for x in X]
+
+    def run(self, input: Document(domain='general')) -> List(Sentence()):
+        """This methods recive a document and transform this in a list of sentences. 
+        """
+        return self.tokenize(input)
+
 from nltk.tokenize.regexp import BlanklineTokenizer as _BlanklineTokenizer
 
 class BlanklineTokenizer(_BlanklineTokenizer, NltkTokenizer):
@@ -185,6 +400,11 @@ class BlanklineTokenizer(_BlanklineTokenizer, NltkTokenizer):
 
     def run(self, input: Document()) -> List(Sentence()):
        return NltkTokenizer.run(self, input)
+
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
 
 from nltk.tokenize.regexp import WhitespaceTokenizer as _WhitespaceTokenizer
 
@@ -202,6 +422,11 @@ class WhitespaceTokenizer(_WhitespaceTokenizer, NltkTokenizer):
     def run(self, input: Document()) -> List(Word()):
        return NltkTokenizer.run(self, input)
 
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
+
 from nltk.tokenize.regexp import WordPunctTokenizer as _WordPunctTokenizer
 
 class WordPunctTokenizer(_WordPunctTokenizer, NltkTokenizer):
@@ -217,6 +442,11 @@ class WordPunctTokenizer(_WordPunctTokenizer, NltkTokenizer):
 
     def run(self, input: Document()) -> List(Word()):
        return NltkTokenizer.run(self, input)
+
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
 
 from nltk.tokenize.sexpr import SExprTokenizer as _SExprTokenizer
 
@@ -234,6 +464,11 @@ class SExprTokenizer(_SExprTokenizer, NltkTokenizer):
     def run(self, input: Document()) -> List(Sentence()):
        return NltkTokenizer.run(self, input)
 
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
+
 from nltk.tokenize.simple import LineTokenizer as _LineTokenizer
 
 class LineTokenizer(_LineTokenizer, NltkTokenizer):
@@ -250,6 +485,11 @@ class LineTokenizer(_LineTokenizer, NltkTokenizer):
     def run(self, input: Document()) -> List(Sentence()):
        return NltkTokenizer.run(self, input)
 
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
+
 from nltk.tokenize.simple import SpaceTokenizer as _SpaceTokenizer
 
 class SpaceTokenizer(_SpaceTokenizer, NltkTokenizer):
@@ -265,6 +505,11 @@ class SpaceTokenizer(_SpaceTokenizer, NltkTokenizer):
 
     def run(self, input: Document()) -> List(Word()):
        return NltkTokenizer.run(self, input)
+
+    def run(self, input: Sentence(domain='general')) -> List(Word()):
+        """This methods recive a sentece and transform this in a list of tokens (words). 
+        """
+        return self.tokenize(input)
 
 from nltk.tokenize.simple import TabTokenizer as _TabTokenizer
 

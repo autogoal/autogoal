@@ -28,13 +28,16 @@ class Interface:
         compatible = []
 
         for _, clss in grammar.namespace.items():
-            if issubclass(clss, Interface):
-                continue
+            try:
+                if issubclass(clss, Interface):
+                    continue
 
-            type_methods = _get_annotations(clss)
+                type_methods = _get_annotations(clss)
 
-            if _compatible_annotations(own_methods, type_methods):
-                compatible.append(clss)
+                if _compatible_annotations(own_methods, type_methods):
+                    compatible.append(clss)
+            except TypeError:
+                pass
 
         if not compatible:
             raise ValueError(
@@ -184,7 +187,11 @@ class DataType:
         return issubclass(self.__class__, other.__class__)
 
 
-class Word(DataType):
+class Text(DataType):
+    pass
+
+
+class Word(Text):
     pass
 
 
@@ -192,11 +199,11 @@ class Stem(DataType):
     pass
 
 
-class Sentence(DataType):
+class Sentence(Text):
     pass
 
 
-class Document(DataType):
+class Document(Text):
     pass
 
 
@@ -220,15 +227,15 @@ class SparseMatrix(Matrix):
     pass
 
 
-class ContinuousVector(DataType):
+class ContinuousVector(Vector):
     pass
 
 
-class DiscreteVector(DataType):
+class DiscreteVector(Vector):
     pass
 
 
-class CategoricalVector(DataType):
+class CategoricalVector(Vector):
     pass
 
 
@@ -244,13 +251,29 @@ class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
     pass
 
 
+class Entity(DataType):
+    pass
+
+
+class Summary(Document):
+    pass 
+
+
+class Sentiment(DataType):
+    pass
+
+
+class Synset(DataType):
+    pass 
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner
-        super().__init__(**inner.tags)
+        # super().__init__(**inner.tags)
 
     def __conforms__(self, other):
-        return isinstance(other, List) and conforms(self.inner, other._inner)
+        return isinstance(other, List) and conforms(self.inner, other.inner)
 
     def __repr__(self):
         return "List(%r)" % self.inner
@@ -299,4 +322,9 @@ __all__ = [
     "Tuple",
     "Vector",
     "Word",
+    "Entity",
+    "Summary",
+    "Synset",
+    "Text",
+    "Sentiment",
 ]

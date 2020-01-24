@@ -31,9 +31,9 @@ from sklearn.cluster._birch import Birch as _Birch
 class Birch(_Birch, SklearnEstimator):
     def __init__(
         self,
-        threshold: Continuous(min=1e-06, max=1),
-        branching_factor: Discrete(min=25, max=100),
-        n_clusters: Discrete(min=1, max=6),
+        threshold: Continuous(min=-4.995, max=4.991),
+        branching_factor: Discrete(min=2, max=99),
+        n_clusters: Discrete(min=1, max=5),
         compute_labels: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -71,10 +71,8 @@ from sklearn.cluster._k_means import KMeans as _KMeans
 class KMeans(_KMeans, SklearnEstimator):
     def __init__(
         self,
-        n_clusters: Discrete(min=4, max=16),
+        n_clusters: Discrete(min=1, max=15),
         init: Categorical('random'),
-        n_init: Discrete(min=5, max=20),
-        tol: Continuous(min=1e-06, max=1),
         precompute_distances: Categorical('auto')
     ):
         SklearnEstimator.__init__(self)
@@ -82,8 +80,6 @@ class KMeans(_KMeans, SklearnEstimator):
             self,
             n_clusters=n_clusters,
             init=init,
-            n_init=n_init,
-            tol=tol,
             precompute_distances=precompute_distances
         )
 
@@ -95,25 +91,21 @@ from sklearn.cluster._k_means import MiniBatchKMeans as _MiniBatchKMeans
 class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
     def __init__(
         self,
-        n_clusters: Discrete(min=4, max=16),
+        n_clusters: Discrete(min=1, max=15),
         init: Categorical('random'),
-        batch_size: Discrete(min=50, max=200),
         compute_labels: Boolean(),
-        tol: Continuous(min=-1, max=1),
-        max_no_improvement: Discrete(min=5, max=20),
-        n_init: Discrete(min=1, max=6),
-        reassignment_ratio: Continuous(min=0.0001, max=1)
+        tol: Continuous(min=-0.992, max=0.992),
+        max_no_improvement: Discrete(min=1, max=19),
+        reassignment_ratio: Continuous(min=-0.093, max=0.094)
     ):
         SklearnEstimator.__init__(self)
         _MiniBatchKMeans.__init__(
             self,
             n_clusters=n_clusters,
             init=init,
-            batch_size=batch_size,
             compute_labels=compute_labels,
             tol=tol,
             max_no_improvement=max_no_improvement,
-            n_init=n_init,
             reassignment_ratio=reassignment_ratio
         )
 
@@ -126,92 +118,26 @@ class MeanShift(_MeanShift, SklearnEstimator):
     def __init__(
         self,
         bin_seeding: Boolean(),
-        min_bin_freq: Discrete(min=0, max=2),
         cluster_all: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _MeanShift.__init__(
             self,
             bin_seeding=bin_seeding,
-            min_bin_freq=min_bin_freq,
             cluster_all=cluster_all
         )
 
     def run(self, input: MatrixContinuousDense()) -> CategoricalVector():
        return SklearnEstimator.run(self, input)
 
-from sklearn.decomposition._dict_learning import DictionaryLearning as _DictionaryLearning
-
-class DictionaryLearning(_DictionaryLearning, SklearnTransformer):
-    def __init__(
-        self,
-        alpha: Discrete(min=0, max=2),
-        tol: Continuous(min=1e-10, max=1),
-        fit_algorithm: Categorical('cd', 'lars'),
-        transform_algorithm: Categorical('lars', 'lasso_cd', 'lasso_lars', 'omp', 'threshold'),
-        split_sign: Boolean(),
-        positive_code: Boolean(),
-        positive_dict: Boolean(),
-        transform_max_iter: Discrete(min=500, max=2000)
-    ):
-        SklearnTransformer.__init__(self)
-        _DictionaryLearning.__init__(
-            self,
-            alpha=alpha,
-            tol=tol,
-            fit_algorithm=fit_algorithm,
-            transform_algorithm=transform_algorithm,
-            split_sign=split_sign,
-            positive_code=positive_code,
-            positive_dict=positive_dict,
-            transform_max_iter=transform_max_iter
-        )
-
-    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
-       return SklearnTransformer.run(self, input)
-
-from sklearn.decomposition._dict_learning import MiniBatchDictionaryLearning as _MiniBatchDictionaryLearning
-
-class MiniBatchDictionaryLearning(_MiniBatchDictionaryLearning, SklearnTransformer):
-    def __init__(
-        self,
-        alpha: Discrete(min=0, max=2),
-        n_iter: Discrete(min=500, max=2000),
-        fit_algorithm: Categorical('cd', 'lars'),
-        batch_size: Discrete(min=1, max=6),
-        shuffle: Boolean(),
-        transform_algorithm: Categorical('lars', 'lasso_cd', 'lasso_lars', 'omp', 'threshold'),
-        split_sign: Boolean(),
-        positive_code: Boolean(),
-        positive_dict: Boolean(),
-        transform_max_iter: Discrete(min=500, max=2000)
-    ):
-        SklearnTransformer.__init__(self)
-        _MiniBatchDictionaryLearning.__init__(
-            self,
-            alpha=alpha,
-            n_iter=n_iter,
-            fit_algorithm=fit_algorithm,
-            batch_size=batch_size,
-            shuffle=shuffle,
-            transform_algorithm=transform_algorithm,
-            split_sign=split_sign,
-            positive_code=positive_code,
-            positive_dict=positive_dict,
-            transform_max_iter=transform_max_iter
-        )
-
-    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
-       return SklearnTransformer.run(self, input)
-
 from sklearn.decomposition._factor_analysis import FactorAnalysis as _FactorAnalysis
 
 class FactorAnalysis(_FactorAnalysis, SklearnTransformer):
     def __init__(
         self,
-        tol: Continuous(min=0.0001, max=1),
+        tol: Continuous(min=-0.093, max=0.094),
         svd_method: Categorical('lapack', 'randomized'),
-        iterated_power: Discrete(min=1, max=6)
+        iterated_power: Discrete(min=1, max=5)
     ):
         SklearnTransformer.__init__(self)
         _FactorAnalysis.__init__(
@@ -229,14 +155,16 @@ from sklearn.decomposition._fastica import FastICA as _FastICA
 class FastICA(_FastICA, SklearnTransformer):
     def __init__(
         self,
+        algorithm: Categorical('deflation', 'parallel'),
         whiten: Boolean(),
-        tol: Continuous(min=1e-06, max=1)
+        fun: Categorical('cube', 'exp', 'logcosh')
     ):
         SklearnTransformer.__init__(self)
         _FastICA.__init__(
             self,
+            algorithm=algorithm,
             whiten=whiten,
-            tol=tol
+            fun=fun
         )
 
     def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
@@ -263,19 +191,17 @@ from sklearn.decomposition._kernel_pca import KernelPCA as _KernelPCA
 class KernelPCA(_KernelPCA, SklearnTransformer):
     def __init__(
         self,
-        degree: Discrete(min=1, max=6),
-        coef0: Discrete(min=0, max=2),
-        alpha: Continuous(min=1e-06, max=1),
+        degree: Discrete(min=1, max=5),
+        alpha: Continuous(min=-9.995, max=9.991),
         fit_inverse_transform: Boolean(),
         eigen_solver: Categorical('arpack', 'auto', 'dense'),
-        tol: Discrete(min=-100, max=100),
+        tol: Discrete(min=-99, max=99),
         remove_zero_eig: Boolean()
     ):
         SklearnTransformer.__init__(self)
         _KernelPCA.__init__(
             self,
             degree=degree,
-            coef0=coef0,
             alpha=alpha,
             fit_inverse_transform=fit_inverse_transform,
             eigen_solver=eigen_solver,
@@ -317,28 +243,12 @@ from sklearn.decomposition._online_lda import LatentDirichletAllocation as _Late
 class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
     def __init__(
         self,
-        n_components: Discrete(min=5, max=20),
-        learning_method: Categorical('batch', 'online'),
-        learning_decay: Continuous(min=1e-06, max=1),
-        learning_offset: Continuous(min=5.0, max=20.0),
-        batch_size: Discrete(min=64, max=256),
-        total_samples: Continuous(min=500000.0, max=2000000.0),
-        perp_tol: Continuous(min=0.001, max=1),
-        mean_change_tol: Continuous(min=1e-05, max=1),
-        max_doc_update_iter: Discrete(min=50, max=200)
+
     ):
         SklearnTransformer.__init__(self)
         _LatentDirichletAllocation.__init__(
             self,
-            n_components=n_components,
-            learning_method=learning_method,
-            learning_decay=learning_decay,
-            learning_offset=learning_offset,
-            batch_size=batch_size,
-            total_samples=total_samples,
-            perp_tol=perp_tol,
-            mean_change_tol=mean_change_tol,
-            max_doc_update_iter=max_doc_update_iter
+
         )
 
     def run(self, input: MatrixContinuous()) -> MatrixContinuousDense():
@@ -351,7 +261,7 @@ class PCA(_PCA, SklearnTransformer):
         self,
         whiten: Boolean(),
         svd_solver: Categorical('arpack', 'auto', 'full', 'randomized'),
-        tol: Continuous(min=-1, max=1),
+        tol: Continuous(min=-0.992, max=0.992),
         iterated_power: Categorical('auto', 'randomized')
     ):
         SklearnTransformer.__init__(self)
@@ -371,17 +281,15 @@ from sklearn.decomposition._sparse_pca import MiniBatchSparsePCA as _MiniBatchSp
 class MiniBatchSparsePCA(_MiniBatchSparsePCA, SklearnTransformer):
     def __init__(
         self,
-        alpha: Discrete(min=0, max=2),
-        ridge_alpha: Continuous(min=0.0001, max=1),
-        n_iter: Discrete(min=50, max=200),
-        batch_size: Discrete(min=1, max=6),
+        ridge_alpha: Continuous(min=-0.093, max=0.094),
+        n_iter: Discrete(min=1, max=199),
+        batch_size: Discrete(min=1, max=5),
         shuffle: Boolean(),
         method: Categorical('cd', 'lars')
     ):
         SklearnTransformer.__init__(self)
         _MiniBatchSparsePCA.__init__(
             self,
-            alpha=alpha,
             ridge_alpha=ridge_alpha,
             n_iter=n_iter,
             batch_size=batch_size,
@@ -397,17 +305,13 @@ from sklearn.decomposition._sparse_pca import SparsePCA as _SparsePCA
 class SparsePCA(_SparsePCA, SklearnTransformer):
     def __init__(
         self,
-        alpha: Discrete(min=0, max=2),
-        ridge_alpha: Continuous(min=0.0001, max=1),
-        tol: Continuous(min=1e-10, max=1),
+        ridge_alpha: Continuous(min=-0.093, max=0.094),
         method: Categorical('cd', 'lars')
     ):
         SklearnTransformer.__init__(self)
         _SparsePCA.__init__(
             self,
-            alpha=alpha,
             ridge_alpha=ridge_alpha,
-            tol=tol,
             method=method
         )
 
@@ -419,9 +323,9 @@ from sklearn.decomposition._truncated_svd import TruncatedSVD as _TruncatedSVD
 class TruncatedSVD(_TruncatedSVD, SklearnTransformer):
     def __init__(
         self,
-        n_components: Discrete(min=1, max=4),
-        n_iter: Discrete(min=2, max=10),
-        tol: Continuous(min=-1, max=1)
+        n_components: Discrete(min=1, max=3),
+        n_iter: Discrete(min=1, max=9),
+        tol: Continuous(min=-0.992, max=0.992)
     ):
         SklearnTransformer.__init__(self)
         _TruncatedSVD.__init__(
@@ -440,20 +344,16 @@ class CountVectorizer(_CountVectorizer, SklearnTransformer):
     def __init__(
         self,
         lowercase: Boolean(),
-        max_df: Continuous(min=1e-06, max=1),
-        min_df: Discrete(min=0, max=2),
         binary: Boolean()
     ):
         SklearnTransformer.__init__(self)
         _CountVectorizer.__init__(
             self,
             lowercase=lowercase,
-            max_df=max_df,
-            min_df=min_df,
             binary=binary
         )
 
-    def run(self, input: List(Word())) -> MatrixContinuousSparse():
+    def run(self, input: List(Sentence())) -> MatrixContinuousSparse():
        return SklearnTransformer.run(self, input)
 
 from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectorizer
@@ -461,12 +361,8 @@ from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectori
 class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
     def __init__(
         self,
-        input: Categorical('content', 'file', 'filename', 'read'),
-        decode_error: Categorical('ignore', 'replace', 'strict'),
         lowercase: Boolean(),
-        token_pattern: Categorical('word'),
-        analyzer: Categorical('char', 'char_wb', 'word'),
-        n_features: Discrete(min=524288, max=2097152),
+        n_features: Discrete(min=1, max=2097151),
         binary: Boolean(),
         norm: Categorical('l1'),
         alternate_sign: Boolean()
@@ -474,18 +370,14 @@ class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
         SklearnTransformer.__init__(self)
         _HashingVectorizer.__init__(
             self,
-            input=input,
-            decode_error=decode_error,
             lowercase=lowercase,
-            token_pattern=token_pattern,
-            analyzer=analyzer,
             n_features=n_features,
             binary=binary,
             norm=norm,
             alternate_sign=alternate_sign
         )
 
-    def run(self, input: List(Word())) -> MatrixContinuousSparse():
+    def run(self, input: List(Sentence())) -> MatrixContinuousSparse():
        return SklearnTransformer.run(self, input)
 
 from sklearn.feature_extraction.text import TfidfTransformer as _TfidfTransformer
@@ -516,8 +408,6 @@ class TfidfVectorizer(_TfidfVectorizer, SklearnTransformer):
     def __init__(
         self,
         lowercase: Boolean(),
-        max_df: Continuous(min=1e-06, max=1),
-        min_df: Discrete(min=0, max=2),
         binary: Boolean(),
         use_idf: Boolean(),
         smooth_idf: Boolean(),
@@ -527,15 +417,13 @@ class TfidfVectorizer(_TfidfVectorizer, SklearnTransformer):
         _TfidfVectorizer.__init__(
             self,
             lowercase=lowercase,
-            max_df=max_df,
-            min_df=min_df,
             binary=binary,
             use_idf=use_idf,
             smooth_idf=smooth_idf,
             sublinear_tf=sublinear_tf
         )
 
-    def run(self, input: List(Word())) -> MatrixContinuousSparse():
+    def run(self, input: List(Sentence())) -> MatrixContinuousSparse():
        return SklearnTransformer.run(self, input)
 
 from sklearn.impute._knn import KNNImputer as _KNNImputer
@@ -543,8 +431,7 @@ from sklearn.impute._knn import KNNImputer as _KNNImputer
 class KNNImputer(_KNNImputer, SklearnTransformer):
     def __init__(
         self,
-        missing_values: Continuous(min=nan, max=nan),
-        n_neighbors: Discrete(min=2, max=10),
+        n_neighbors: Discrete(min=1, max=9),
         weights: Categorical('distance', 'uniform'),
         metric: Categorical('nan_euclidean'),
         add_indicator: Boolean()
@@ -552,7 +439,6 @@ class KNNImputer(_KNNImputer, SklearnTransformer):
         SklearnTransformer.__init__(self)
         _KNNImputer.__init__(
             self,
-            missing_values=missing_values,
             n_neighbors=n_neighbors,
             weights=weights,
             metric=metric,
@@ -585,14 +471,10 @@ from sklearn.linear_model._bayes import ARDRegression as _ARDRegression
 class ARDRegression(_ARDRegression, SklearnEstimator):
     def __init__(
         self,
-        n_iter: Discrete(min=150, max=600),
-        tol: Continuous(min=1e-05, max=1),
-        alpha_1: Continuous(min=1e-08, max=1),
-        alpha_2: Continuous(min=1e-08, max=1),
-        lambda_1: Continuous(min=1e-08, max=1),
-        lambda_2: Continuous(min=1e-08, max=1),
+        n_iter: Discrete(min=1, max=599),
+        tol: Continuous(min=-0.005, max=0.001),
         compute_score: Boolean(),
-        threshold_lambda: Continuous(min=5000.0, max=20000.0),
+        threshold_lambda: Continuous(min=-99999.993, max=99999.995),
         fit_intercept: Boolean(),
         normalize: Boolean()
     ):
@@ -601,10 +483,6 @@ class ARDRegression(_ARDRegression, SklearnEstimator):
             self,
             n_iter=n_iter,
             tol=tol,
-            alpha_1=alpha_1,
-            alpha_2=alpha_2,
-            lambda_1=lambda_1,
-            lambda_2=lambda_2,
             compute_score=compute_score,
             threshold_lambda=threshold_lambda,
             fit_intercept=fit_intercept,
@@ -619,12 +497,8 @@ from sklearn.linear_model._bayes import BayesianRidge as _BayesianRidge
 class BayesianRidge(_BayesianRidge, SklearnEstimator):
     def __init__(
         self,
-        n_iter: Discrete(min=150, max=600),
-        tol: Continuous(min=1e-05, max=1),
-        alpha_1: Continuous(min=1e-08, max=1),
-        alpha_2: Continuous(min=1e-08, max=1),
-        lambda_1: Continuous(min=1e-08, max=1),
-        lambda_2: Continuous(min=1e-08, max=1),
+        n_iter: Discrete(min=1, max=599),
+        tol: Continuous(min=-0.005, max=0.001),
         compute_score: Boolean(),
         fit_intercept: Boolean(),
         normalize: Boolean()
@@ -634,10 +508,6 @@ class BayesianRidge(_BayesianRidge, SklearnEstimator):
             self,
             n_iter=n_iter,
             tol=tol,
-            alpha_1=alpha_1,
-            alpha_2=alpha_2,
-            lambda_1=lambda_1,
-            lambda_2=lambda_2,
             compute_score=compute_score,
             fit_intercept=fit_intercept,
             normalize=normalize
@@ -651,12 +521,11 @@ from sklearn.linear_model._coordinate_descent import ElasticNet as _ElasticNet
 class ElasticNet(_ElasticNet, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
-        l1_ratio: Continuous(min=1e-06, max=1),
+        alpha: Continuous(min=-9.995, max=9.991),
+        l1_ratio: Continuous(min=-4.995, max=4.991),
         fit_intercept: Boolean(),
         normalize: Boolean(),
         precompute: Boolean(),
-        tol: Continuous(min=1e-06, max=1),
         positive: Boolean(),
         selection: Categorical('cyclic', 'random')
     ):
@@ -668,7 +537,6 @@ class ElasticNet(_ElasticNet, SklearnEstimator):
             fit_intercept=fit_intercept,
             normalize=normalize,
             precompute=precompute,
-            tol=tol,
             positive=positive,
             selection=selection
         )
@@ -681,11 +549,10 @@ from sklearn.linear_model._coordinate_descent import Lasso as _Lasso
 class Lasso(_Lasso, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
+        alpha: Continuous(min=-9.995, max=9.991),
         fit_intercept: Boolean(),
         normalize: Boolean(),
         precompute: Boolean(),
-        tol: Continuous(min=1e-06, max=1),
         positive: Boolean(),
         selection: Categorical('cyclic', 'random')
     ):
@@ -696,7 +563,6 @@ class Lasso(_Lasso, SklearnEstimator):
             fit_intercept=fit_intercept,
             normalize=normalize,
             precompute=precompute,
-            tol=tol,
             positive=positive,
             selection=selection
         )
@@ -709,18 +575,14 @@ from sklearn.linear_model._huber import HuberRegressor as _HuberRegressor
 class HuberRegressor(_HuberRegressor, SklearnEstimator):
     def __init__(
         self,
-        epsilon: Continuous(min=0.675, max=2.7),
-        alpha: Continuous(min=1e-06, max=1),
-        fit_intercept: Boolean(),
-        tol: Continuous(min=1.0000000000000001e-07, max=1)
+        epsilon: Continuous(min=1.002, max=13.494),
+        fit_intercept: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _HuberRegressor.__init__(
             self,
             epsilon=epsilon,
-            alpha=alpha,
-            fit_intercept=fit_intercept,
-            tol=tol
+            fit_intercept=fit_intercept
         )
 
     def run(self, input: MatrixContinuous()) -> ContinuousVector():
@@ -734,7 +596,7 @@ class Lars(_Lars, SklearnEstimator):
         fit_intercept: Boolean(),
         normalize: Boolean(),
         precompute: Categorical('auto'),
-        n_nonzero_coefs: Discrete(min=250, max=1000),
+        n_nonzero_coefs: Discrete(min=1, max=999),
         fit_path: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -755,7 +617,7 @@ from sklearn.linear_model._least_angle import LassoLars as _LassoLars
 class LassoLars(_LassoLars, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
+        alpha: Continuous(min=0.0, max=9.991),
         fit_intercept: Boolean(),
         normalize: Boolean(),
         precompute: Categorical('auto'),
@@ -807,10 +669,8 @@ class LogisticRegression(_LogisticRegression, SklearnEstimator):
         self,
         penalty: Categorical('l2', 'none'),
         dual: Boolean(),
-        tol: Continuous(min=1e-06, max=1),
-        C: Continuous(min=1e-06, max=1),
+        C: Continuous(min=0.005, max=9.991),
         fit_intercept: Boolean(),
-        intercept_scaling: Discrete(min=0, max=2),
         solver: Categorical('lbfgs', 'liblinear', 'sag', 'saga'),
         multi_class: Categorical('auto', 'multinomial', 'ovr')
     ):
@@ -819,10 +679,8 @@ class LogisticRegression(_LogisticRegression, SklearnEstimator):
             self,
             penalty=penalty,
             dual=dual,
-            tol=tol,
             C=C,
             fit_intercept=fit_intercept,
-            intercept_scaling=intercept_scaling,
             solver=solver,
             multi_class=multi_class
         )
@@ -855,12 +713,12 @@ from sklearn.linear_model._passive_aggressive import PassiveAggressiveClassifier
 class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator):
     def __init__(
         self,
-        C: Continuous(min=1e-06, max=1),
+        C: Continuous(min=-9.995, max=9.991),
         fit_intercept: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
+        tol: Continuous(min=-0.005, max=0.001),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.001, max=1),
-        n_iter_no_change: Discrete(min=2, max=10),
+        validation_fraction: Continuous(min=0.041, max=0.993),
+        n_iter_no_change: Discrete(min=1, max=9),
         shuffle: Boolean(),
         average: Boolean()
     ):
@@ -885,14 +743,14 @@ from sklearn.linear_model._passive_aggressive import PassiveAggressiveRegressor 
 class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
     def __init__(
         self,
-        C: Continuous(min=1e-06, max=1),
+        C: Continuous(min=-9.995, max=9.991),
         fit_intercept: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
+        tol: Continuous(min=-0.005, max=0.001),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.001, max=1),
-        n_iter_no_change: Discrete(min=2, max=10),
+        validation_fraction: Continuous(min=0.006, max=0.993),
+        n_iter_no_change: Discrete(min=1, max=9),
         shuffle: Boolean(),
-        epsilon: Continuous(min=0.001, max=1),
+        epsilon: Continuous(min=-0.992, max=0.993),
         average: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -917,19 +775,17 @@ from sklearn.linear_model._perceptron import Perceptron as _Perceptron
 class Perceptron(_Perceptron, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
         fit_intercept: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
+        tol: Continuous(min=-0.005, max=0.001),
         shuffle: Boolean(),
-        eta0: Continuous(min=1e-06, max=1),
+        eta0: Continuous(min=0.005, max=9.991),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.001, max=1),
-        n_iter_no_change: Discrete(min=2, max=10)
+        validation_fraction: Continuous(min=0.006, max=0.993),
+        n_iter_no_change: Discrete(min=1, max=9)
     ):
         SklearnEstimator.__init__(self)
         _Perceptron.__init__(
             self,
-            alpha=alpha,
             fit_intercept=fit_intercept,
             tol=tol,
             shuffle=shuffle,
@@ -947,11 +803,11 @@ from sklearn.linear_model._ridge import Ridge as _Ridge
 class Ridge(_Ridge, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
+        alpha: Continuous(min=-9.995, max=9.991),
         fit_intercept: Boolean(),
         normalize: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
-        solver: Categorical('auto', 'cholesky', 'lsqr', 'saga', 'sparse_cg', 'svd')
+        tol: Continuous(min=-0.005, max=0.001),
+        solver: Categorical('auto', 'cholesky', 'lsqr', 'sag', 'saga', 'sparse_cg', 'svd')
     ):
         SklearnEstimator.__init__(self)
         _Ridge.__init__(
@@ -971,11 +827,11 @@ from sklearn.linear_model._ridge import RidgeClassifier as _RidgeClassifier
 class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
+        alpha: Continuous(min=-9.995, max=9.991),
         fit_intercept: Boolean(),
         normalize: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
-        solver: Categorical('auto', 'cholesky', 'lsqr', 'saga', 'sparse_cg', 'svd')
+        tol: Continuous(min=-0.005, max=0.001),
+        solver: Categorical('auto', 'cholesky', 'lsqr', 'sag', 'saga', 'sparse_cg', 'svd')
     ):
         SklearnEstimator.__init__(self)
         _RidgeClassifier.__init__(
@@ -1000,15 +856,15 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
         alpha: Continuous(min=1e-06, max=1),
         l1_ratio: Continuous(min=1e-06, max=1),
         fit_intercept: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
+        tol: Continuous(min=-0.005, max=0.001),
         shuffle: Boolean(),
-        epsilon: Continuous(min=0.001, max=1),
+        epsilon: Continuous(min=-0.992, max=0.993),
         learning_rate: Categorical('optimal'),
-        eta0: Continuous(min=-1, max=1),
-        power_t: Continuous(min=1e-06, max=1),
+        eta0: Continuous(min=-0.992, max=0.992),
+        power_t: Continuous(min=-4.995, max=4.991),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.001, max=1),
-        n_iter_no_change: Discrete(min=2, max=10),
+        validation_fraction: Continuous(min=0.006, max=0.993),
+        n_iter_no_change: Discrete(min=1, max=9),
         average: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -1016,7 +872,6 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
             self,
             loss=loss,
             penalty=penalty,
-            alpha=alpha,
             l1_ratio=l1_ratio,
             fit_intercept=fit_intercept,
             tol=tol,
@@ -1044,15 +899,15 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
         alpha: Continuous(min=1e-06, max=1),
         l1_ratio: Continuous(min=1e-06, max=1),
         fit_intercept: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
+        tol: Continuous(min=-0.005, max=0.001),
         shuffle: Boolean(),
-        epsilon: Continuous(min=0.001, max=1),
+        epsilon: Continuous(min=-0.992, max=0.993),
         learning_rate: Categorical('adaptive', 'constant', 'invscaling', 'optimal'),
-        eta0: Continuous(min=0.0001, max=1),
-        power_t: Continuous(min=1e-06, max=1),
+        eta0: Continuous(min=0.003, max=0.094),
+        power_t: Continuous(min=-2.494, max=2.491),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.001, max=1),
-        n_iter_no_change: Discrete(min=2, max=10),
+        validation_fraction: Continuous(min=0.006, max=0.993),
+        n_iter_no_change: Discrete(min=1, max=9),
         average: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -1060,7 +915,6 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
             self,
             loss=loss,
             penalty=penalty,
-            alpha=alpha,
             l1_ratio=l1_ratio,
             fit_intercept=fit_intercept,
             tol=tol,
@@ -1084,14 +938,12 @@ class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def __init__(
         self,
         fit_intercept: Boolean(),
-        max_subpopulation: Continuous(min=5000.0, max=20000.0),
-        tol: Continuous(min=1e-05, max=1)
+        tol: Continuous(min=-0.005, max=0.001)
     ):
         SklearnEstimator.__init__(self)
         _TheilSenRegressor.__init__(
             self,
             fit_intercept=fit_intercept,
-            max_subpopulation=max_subpopulation,
             tol=tol
         )
 
@@ -1103,13 +955,13 @@ from sklearn.manifold._isomap import Isomap as _Isomap
 class Isomap(_Isomap, SklearnTransformer):
     def __init__(
         self,
-        n_neighbors: Discrete(min=2, max=10),
-        n_components: Discrete(min=1, max=4),
+        n_neighbors: Discrete(min=1, max=9),
+        n_components: Discrete(min=1, max=3),
         eigen_solver: Categorical('arpack', 'auto', 'dense'),
-        tol: Discrete(min=-100, max=100),
+        tol: Discrete(min=-99, max=99),
         path_method: Categorical('auto'),
         neighbors_algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        p: Discrete(min=1, max=4)
+        p: Discrete(min=1, max=3)
     ):
         SklearnTransformer.__init__(self)
         _Isomap.__init__(
@@ -1131,14 +983,11 @@ from sklearn.manifold._locally_linear import LocallyLinearEmbedding as _LocallyL
 class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
     def __init__(
         self,
-        n_neighbors: Discrete(min=2, max=10),
-        n_components: Discrete(min=1, max=4),
-        reg: Continuous(min=1e-05, max=1),
+        n_neighbors: Discrete(min=1, max=9),
+        n_components: Discrete(min=1, max=3),
+        reg: Continuous(min=-0.005, max=0.001),
         eigen_solver: Categorical('arpack', 'auto', 'dense'),
-        tol: Continuous(min=1e-08, max=1),
         method: Categorical('ltsa', 'modified', 'standard'),
-        hessian_tol: Continuous(min=1e-06, max=1),
-        modified_tol: Continuous(min=1e-14, max=1),
         neighbors_algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree')
     ):
         SklearnTransformer.__init__(self)
@@ -1148,10 +997,7 @@ class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
             n_components=n_components,
             reg=reg,
             eigen_solver=eigen_solver,
-            tol=tol,
             method=method,
-            hessian_tol=hessian_tol,
-            modified_tol=modified_tol,
             neighbors_algorithm=neighbors_algorithm
         )
 
@@ -1163,8 +1009,8 @@ from sklearn.naive_bayes import BernoulliNB as _BernoulliNB
 class BernoulliNB(_BernoulliNB, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
-        binarize: Continuous(min=-1, max=1),
+        alpha: Continuous(min=0.0, max=9.991),
+        binarize: Continuous(min=-0.992, max=0.992),
         fit_prior: Boolean()
     ):
         SklearnEstimator.__init__(self)
@@ -1183,13 +1029,11 @@ from sklearn.naive_bayes import CategoricalNB as _CategoricalNB
 class CategoricalNB(_CategoricalNB, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
         fit_prior: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _CategoricalNB.__init__(
             self,
-            alpha=alpha,
             fit_prior=fit_prior
         )
 
@@ -1201,14 +1045,12 @@ from sklearn.naive_bayes import ComplementNB as _ComplementNB
 class ComplementNB(_ComplementNB, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
         fit_prior: Boolean(),
         norm: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _ComplementNB.__init__(
             self,
-            alpha=alpha,
             fit_prior=fit_prior,
             norm=norm
         )
@@ -1221,12 +1063,12 @@ from sklearn.naive_bayes import GaussianNB as _GaussianNB
 class GaussianNB(_GaussianNB, SklearnEstimator):
     def __init__(
         self,
-        var_smoothing: Continuous(min=1.0000000000000001e-11, max=1)
+
     ):
         SklearnEstimator.__init__(self)
         _GaussianNB.__init__(
             self,
-            var_smoothing=var_smoothing
+
         )
 
     def run(self, input: MatrixContinuousDense()) -> CategoricalVector():
@@ -1237,13 +1079,11 @@ from sklearn.naive_bayes import MultinomialNB as _MultinomialNB
 class MultinomialNB(_MultinomialNB, SklearnEstimator):
     def __init__(
         self,
-        alpha: Continuous(min=1e-06, max=1),
         fit_prior: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _MultinomialNB.__init__(
             self,
-            alpha=alpha,
             fit_prior=fit_prior
         )
 
@@ -1255,11 +1095,11 @@ from sklearn.neighbors._classification import KNeighborsClassifier as _KNeighbor
 class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: Discrete(min=2, max=10),
+        n_neighbors: Discrete(min=1, max=9),
         weights: Categorical('distance', 'uniform'),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4),
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3),
         metric: Categorical('minkowski')
     ):
         SklearnEstimator.__init__(self)
@@ -1282,10 +1122,10 @@ class KNeighborsTransformer(_KNeighborsTransformer, SklearnTransformer):
     def __init__(
         self,
         mode: Categorical('connectivity', 'distance'),
-        n_neighbors: Discrete(min=2, max=10),
+        n_neighbors: Discrete(min=1, max=9),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4)
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3)
     ):
         SklearnTransformer.__init__(self)
         _KNeighborsTransformer.__init__(
@@ -1306,10 +1146,10 @@ class RadiusNeighborsTransformer(_RadiusNeighborsTransformer, SklearnTransformer
     def __init__(
         self,
         mode: Categorical('connectivity', 'distance'),
-        radius: Continuous(min=1e-06, max=1),
+        radius: Continuous(min=-9.995, max=9.991),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4)
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3)
     ):
         SklearnTransformer.__init__(self)
         _RadiusNeighborsTransformer.__init__(
@@ -1329,10 +1169,10 @@ from sklearn.neighbors._lof import LocalOutlierFactor as _LocalOutlierFactor
 class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: Discrete(min=10, max=40),
+        n_neighbors: Discrete(min=1, max=39),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4),
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3),
         contamination: Categorical('auto'),
         novelty: Boolean()
     ):
@@ -1371,11 +1211,11 @@ from sklearn.neighbors._regression import KNeighborsRegressor as _KNeighborsRegr
 class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: Discrete(min=2, max=10),
+        n_neighbors: Discrete(min=1, max=9),
         weights: Categorical('distance', 'uniform'),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4),
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3),
         metric: Categorical('minkowski')
     ):
         SklearnEstimator.__init__(self)
@@ -1397,11 +1237,11 @@ from sklearn.neighbors._regression import RadiusNeighborsRegressor as _RadiusNei
 class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
-        radius: Continuous(min=1e-06, max=1),
+        radius: Continuous(min=-9.995, max=9.991),
         weights: Categorical('distance', 'uniform'),
         algorithm: Categorical('auto', 'ball_tree', 'brute', 'kd_tree'),
-        leaf_size: Discrete(min=15, max=60),
-        p: Discrete(min=1, max=4)
+        leaf_size: Discrete(min=1, max=59),
+        p: Discrete(min=1, max=3)
     ):
         SklearnEstimator.__init__(self)
         _RadiusNeighborsRegressor.__init__(
@@ -1505,7 +1345,7 @@ from sklearn.preprocessing._discretization import KBinsDiscretizer as _KBinsDisc
 class KBinsDiscretizer(_KBinsDiscretizer, SklearnTransformer):
     def __init__(
         self,
-        n_bins: Discrete(min=2, max=10),
+        n_bins: Discrete(min=2, max=9),
         encode: Categorical('onehot', 'ordinal'),
         strategy: Categorical('kmeans', 'quantile', 'uniform')
     ):
@@ -1569,7 +1409,7 @@ class LabelBinarizer(_LabelBinarizer, SklearnTransformer):
             sparse_output=sparse_output
         )
 
-    def run(self, input: List(Word())) -> MatrixContinuousDense():
+    def run(self, input: List(Sentence())) -> MatrixContinuousDense():
        return SklearnTransformer.run(self, input)
 
 from sklearn.svm._classes import LinearSVC as _LinearSVC
@@ -1580,11 +1420,9 @@ class LinearSVC(_LinearSVC, SklearnEstimator):
         penalty: Categorical('l2'),
         loss: Categorical('hinge', 'squared_hinge'),
         dual: Boolean(),
-        tol: Continuous(min=1e-06, max=1),
-        C: Continuous(min=1e-06, max=1),
+        C: Continuous(min=0.005, max=9.991),
         multi_class: Categorical('crammer_singer', 'ovr'),
-        fit_intercept: Boolean(),
-        intercept_scaling: Discrete(min=0, max=2)
+        fit_intercept: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _LinearSVC.__init__(
@@ -1592,11 +1430,9 @@ class LinearSVC(_LinearSVC, SklearnEstimator):
             penalty=penalty,
             loss=loss,
             dual=dual,
-            tol=tol,
             C=C,
             multi_class=multi_class,
-            fit_intercept=fit_intercept,
-            intercept_scaling=intercept_scaling
+            fit_intercept=fit_intercept
         )
 
     def run(self, input: MatrixContinuous()) -> CategoricalVector():
@@ -1607,19 +1443,17 @@ from sklearn.svm._classes import LinearSVR as _LinearSVR
 class LinearSVR(_LinearSVR, SklearnEstimator):
     def __init__(
         self,
-        epsilon: Continuous(min=-1, max=1),
-        tol: Continuous(min=1e-06, max=1),
-        C: Continuous(min=1e-06, max=1),
+        epsilon: Continuous(min=0.0, max=0.992),
+        C: Continuous(min=0.005, max=9.991),
         loss: Categorical('epsilon_insensitive', 'squared_epsilon_insensitive'),
         fit_intercept: Boolean(),
-        intercept_scaling: Continuous(min=1e-06, max=1),
+        intercept_scaling: Continuous(min=0.005, max=9.991),
         dual: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _LinearSVR.__init__(
             self,
             epsilon=epsilon,
-            tol=tol,
             C=C,
             loss=loss,
             fit_intercept=fit_intercept,
@@ -1635,29 +1469,25 @@ from sklearn.svm._classes import NuSVC as _NuSVC
 class NuSVC(_NuSVC, SklearnEstimator):
     def __init__(
         self,
-        nu: Continuous(min=1e-06, max=1),
         kernel: Categorical('linear', 'poly', 'rbf', 'sigmoid'),
-        degree: Discrete(min=1, max=6),
+        degree: Discrete(min=1, max=5),
         gamma: Categorical('auto', 'scale'),
-        coef0: Continuous(min=-1, max=1),
+        coef0: Continuous(min=-0.992, max=0.992),
         shrinking: Boolean(),
         probability: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
-        cache_size: Discrete(min=100, max=400),
+        cache_size: Discrete(min=1, max=399),
         decision_function_shape: Categorical('ovo', 'ovr'),
         break_ties: Boolean()
     ):
         SklearnEstimator.__init__(self)
         _NuSVC.__init__(
             self,
-            nu=nu,
             kernel=kernel,
             degree=degree,
             gamma=gamma,
             coef0=coef0,
             shrinking=shrinking,
             probability=probability,
-            tol=tol,
             cache_size=cache_size,
             decision_function_shape=decision_function_shape,
             break_ties=break_ties
@@ -1671,27 +1501,23 @@ from sklearn.svm._classes import NuSVR as _NuSVR
 class NuSVR(_NuSVR, SklearnEstimator):
     def __init__(
         self,
-        nu: Continuous(min=1e-06, max=1),
-        C: Continuous(min=1e-06, max=1),
+        C: Continuous(min=0.005, max=9.991),
         kernel: Categorical('linear', 'poly', 'rbf', 'sigmoid'),
-        degree: Discrete(min=1, max=6),
+        degree: Discrete(min=1, max=5),
         gamma: Categorical('auto', 'scale'),
-        coef0: Continuous(min=-1, max=1),
+        coef0: Continuous(min=-0.992, max=0.992),
         shrinking: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
-        cache_size: Discrete(min=100, max=400)
+        cache_size: Discrete(min=1, max=399)
     ):
         SklearnEstimator.__init__(self)
         _NuSVR.__init__(
             self,
-            nu=nu,
             C=C,
             kernel=kernel,
             degree=degree,
             gamma=gamma,
             coef0=coef0,
             shrinking=shrinking,
-            tol=tol,
             cache_size=cache_size
         )
 
@@ -1704,13 +1530,11 @@ class OneClassSVM(_OneClassSVM, SklearnEstimator):
     def __init__(
         self,
         kernel: Categorical('linear', 'poly', 'rbf', 'sigmoid'),
-        degree: Discrete(min=1, max=6),
+        degree: Discrete(min=1, max=5),
         gamma: Categorical('auto', 'scale'),
-        coef0: Continuous(min=-1, max=1),
-        tol: Continuous(min=1e-05, max=1),
-        nu: Continuous(min=1e-06, max=1),
+        coef0: Continuous(min=-0.992, max=0.992),
         shrinking: Boolean(),
-        cache_size: Discrete(min=100, max=400)
+        cache_size: Discrete(min=1, max=399)
     ):
         SklearnEstimator.__init__(self)
         _OneClassSVM.__init__(
@@ -1719,8 +1543,6 @@ class OneClassSVM(_OneClassSVM, SklearnEstimator):
             degree=degree,
             gamma=gamma,
             coef0=coef0,
-            tol=tol,
-            nu=nu,
             shrinking=shrinking,
             cache_size=cache_size
         )
@@ -1733,14 +1555,13 @@ from sklearn.svm._classes import SVC as _SVC
 class SVC(_SVC, SklearnEstimator):
     def __init__(
         self,
-        C: Continuous(min=1e-06, max=1),
-        degree: Discrete(min=1, max=6),
+        C: Continuous(min=0.005, max=9.991),
+        degree: Discrete(min=1, max=5),
         gamma: Categorical('auto', 'scale'),
-        coef0: Continuous(min=-1, max=1),
+        coef0: Continuous(min=-0.992, max=0.992),
         shrinking: Boolean(),
         probability: Boolean(),
-        tol: Continuous(min=1e-05, max=1),
-        cache_size: Discrete(min=100, max=400),
+        cache_size: Discrete(min=1, max=399),
         decision_function_shape: Categorical('ovo', 'ovr'),
         break_ties: Boolean()
     ):
@@ -1753,7 +1574,6 @@ class SVC(_SVC, SklearnEstimator):
             coef0=coef0,
             shrinking=shrinking,
             probability=probability,
-            tol=tol,
             cache_size=cache_size,
             decision_function_shape=decision_function_shape,
             break_ties=break_ties
@@ -1768,14 +1588,13 @@ class SVR(_SVR, SklearnEstimator):
     def __init__(
         self,
         kernel: Categorical('linear', 'poly', 'rbf', 'sigmoid'),
-        degree: Discrete(min=1, max=6),
+        degree: Discrete(min=1, max=5),
         gamma: Categorical('auto', 'scale'),
-        coef0: Continuous(min=-1, max=1),
-        tol: Continuous(min=1e-05, max=1),
-        C: Continuous(min=1e-06, max=1),
-        epsilon: Continuous(min=0.001, max=1),
+        coef0: Continuous(min=-0.992, max=0.992),
+        C: Continuous(min=0.005, max=9.991),
+        epsilon: Continuous(min=0.006, max=0.993),
         shrinking: Boolean(),
-        cache_size: Discrete(min=100, max=400)
+        cache_size: Discrete(min=1, max=399)
     ):
         SklearnEstimator.__init__(self)
         _SVR.__init__(
@@ -1784,7 +1603,6 @@ class SVR(_SVR, SklearnEstimator):
             degree=degree,
             gamma=gamma,
             coef0=coef0,
-            tol=tol,
             C=C,
             epsilon=epsilon,
             shrinking=shrinking,
@@ -1799,17 +1617,15 @@ from sklearn.tree._classes import DecisionTreeClassifier as _DecisionTreeClassif
 class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: Discrete(min=1, max=4),
-        min_samples_leaf: Discrete(min=0, max=2),
-        min_weight_fraction_leaf: Continuous(min=-1, max=1),
-        min_impurity_decrease: Continuous(min=-1, max=1),
-        ccp_alpha: Continuous(min=-1, max=1)
+        min_samples_split: Discrete(min=2, max=3),
+        min_weight_fraction_leaf: Continuous(min=0.0, max=0.5),
+        min_impurity_decrease: Continuous(min=0.0, max=0.992),
+        ccp_alpha: Continuous(min=0.0, max=0.992)
     ):
         SklearnEstimator.__init__(self)
         _DecisionTreeClassifier.__init__(
             self,
             min_samples_split=min_samples_split,
-            min_samples_leaf=min_samples_leaf,
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha
@@ -1823,17 +1639,15 @@ from sklearn.tree._classes import DecisionTreeRegressor as _DecisionTreeRegresso
 class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: Discrete(min=1, max=4),
-        min_samples_leaf: Discrete(min=0, max=2),
-        min_weight_fraction_leaf: Continuous(min=-1, max=1),
-        min_impurity_decrease: Continuous(min=-1, max=1),
-        ccp_alpha: Continuous(min=-1, max=1)
+        min_samples_split: Discrete(min=2, max=3),
+        min_weight_fraction_leaf: Continuous(min=0.0, max=0.5),
+        min_impurity_decrease: Continuous(min=0.0, max=0.992),
+        ccp_alpha: Continuous(min=0.0, max=0.992)
     ):
         SklearnEstimator.__init__(self)
         _DecisionTreeRegressor.__init__(
             self,
             min_samples_split=min_samples_split,
-            min_samples_leaf=min_samples_leaf,
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha
@@ -1847,17 +1661,15 @@ from sklearn.tree._classes import ExtraTreeClassifier as _ExtraTreeClassifier
 class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: Discrete(min=1, max=4),
-        min_samples_leaf: Discrete(min=0, max=2),
-        min_weight_fraction_leaf: Continuous(min=-1, max=1),
-        min_impurity_decrease: Continuous(min=-1, max=1),
-        ccp_alpha: Continuous(min=-1, max=1)
+        min_samples_split: Discrete(min=2, max=3),
+        min_weight_fraction_leaf: Continuous(min=0.0, max=0.5),
+        min_impurity_decrease: Continuous(min=0.0, max=0.992),
+        ccp_alpha: Continuous(min=0.0, max=0.992)
     ):
         SklearnEstimator.__init__(self)
         _ExtraTreeClassifier.__init__(
             self,
             min_samples_split=min_samples_split,
-            min_samples_leaf=min_samples_leaf,
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha
@@ -1871,17 +1683,15 @@ from sklearn.tree._classes import ExtraTreeRegressor as _ExtraTreeRegressor
 class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: Discrete(min=1, max=4),
-        min_samples_leaf: Discrete(min=0, max=2),
-        min_weight_fraction_leaf: Continuous(min=-1, max=1),
-        min_impurity_decrease: Continuous(min=-1, max=1),
-        ccp_alpha: Continuous(min=-1, max=1)
+        min_samples_split: Discrete(min=2, max=3),
+        min_weight_fraction_leaf: Continuous(min=0.0, max=0.5),
+        min_impurity_decrease: Continuous(min=0.0, max=0.992),
+        ccp_alpha: Continuous(min=0.0, max=0.992)
     ):
         SklearnEstimator.__init__(self)
         _ExtraTreeRegressor.__init__(
             self,
             min_samples_split=min_samples_split,
-            min_samples_leaf=min_samples_leaf,
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha

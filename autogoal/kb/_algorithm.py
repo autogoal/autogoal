@@ -95,6 +95,14 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     return PipelineBuilder(G, registry)
 
 
+# @nice_repr
+class PipelineError(Exception):
+    def __init__(self, step, inner):
+        super().__init__(step, inner)
+        self.step = step
+        self.inner = inner
+
+
 @nice_repr
 class Pipeline:
     def __init__(self, steps):
@@ -111,7 +119,10 @@ class Pipeline:
 
     def run(self, x):
         for step in self.steps:
-            x = step.run(x)
+            try:
+                x = step.run(x)
+            except Exception as e:
+                raise PipelineError(step=step.__class__.__name__, inner=e)
 
         return x
 

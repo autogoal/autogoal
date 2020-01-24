@@ -171,7 +171,7 @@ DATA_RESOLVERS = {
     kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
     kb.CategoricalVector(): is_categorical,
     kb.ContinuousVector(): is_continuous,
-    kb.List(kb.Word()): is_string_list,
+    kb.List(kb.Sentence()): is_string_list,
 }
 
 
@@ -181,7 +181,7 @@ DATA_TYPE_EXAMPLES = {
     kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
     kb.ContinuousVector(): np.random.rand(10),
     kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
-    kb.List(kb.Word()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
+    kb.List(kb.Sentence()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
 
@@ -333,7 +333,7 @@ def is_transformer(cls, verbose=False):
 
     >>> from sklearn.feature_extraction.text import CountVectorizer
     >>> is_transformer(CountVectorizer)
-    (True, (List(Word()), MatrixContinuousSparse()))
+    (True, (List(Sentence()), MatrixContinuousSparse()))
     >>> from sklearn.decomposition.pca import PCA
     >>> is_transformer(PCA)
     (True, (MatrixContinuousDense(), MatrixContinuousDense()))
@@ -345,8 +345,8 @@ def is_transformer(cls, verbose=False):
     allowed_inputs = set()
     allowed_outputs = set()
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
+        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
             try:
                 X = DATA_TYPE_EXAMPLES[input_type]
 
