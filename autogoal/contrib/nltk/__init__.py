@@ -1,4 +1,4 @@
-from ._pipeline import SklearnNLPClassifier
+# from ._pipeline import SklearnNLPClassifier
 
 import inspect
 import re

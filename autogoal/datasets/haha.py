@@ -69,9 +69,9 @@ def load(target='is_humor'):
     """
 
     train_df, test_df = load_raw()
-    X_train = list(train_df['text'])
-    y_train = list(train_df[target])
-    X_test = list(test_df['text'])
-    y_test = list(test_df[target])
+    X_train = list(train_df['text'])[:100]
+    y_train = list(train_df[target])[:100]
+    X_test = list(test_df['text'])[:100]
+    y_test = list(test_df[target])[:100]
 
     return (X_train, X_test, y_train, y_test)

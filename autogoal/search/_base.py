@@ -65,6 +65,11 @@ class SearchAlgorithm:
 
                     try:
                         solution = self._generator_fn(self._build_sampler())
+                    except Exception as e:
+                        logger.error("Error while generating solution: %s" %e, solution)
+                        continue
+                    
+                    try:
                         logger.sample_solution(solution)
                         fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
                     except Exception as e:
@@ -200,7 +205,11 @@ class MemoryLogger(Logger):
         self.generation_best_fn[-1] = new_fn
 
     def finish_generation(self, fns):
-        self.generation_mean_fn.append(statistics.mean(fns))
+        try:
+            mean = statistics.mean(fns)
+        except:
+            mean = 0
+        self.generation_mean_fn.append(0)
         self.generation_best_fn.append(self.generation_best_fn[-1])
 
 

@@ -56,7 +56,8 @@ class ModelSampler(Sampler):
             return super().discrete(min, max, handle)
 
         params = self._get_model_params(handle, MeanDevParam(mean=(min + max) / 2, dev=(max - min)))
-        value = self._clamp(int(self.rand.gauss(params.mean, params.stdev)), min, max)
+        value = self._clamp(int(self.rand.gauss(params.mean, params.dev)), min, max)
+            
         return self._register_update(handle, value)
 
     def continuous(self, min=0, max=1, handle=None):

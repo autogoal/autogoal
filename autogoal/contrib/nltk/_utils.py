@@ -205,7 +205,7 @@ def is_word_tokenizer(cls, verbose=False):
     inputs = []
     output = kb.List(kb.Word())
 
-    for input_type in [kb.Document()]:
+    for input_type in [kb.Sentence()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 

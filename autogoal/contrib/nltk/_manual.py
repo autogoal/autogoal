@@ -1,5 +1,6 @@
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper, SklearnTransformer
+from autogoal.contrib.nltk._builder import NltkTokenizer
 from autogoal.kb import *
 from numpy import inf, nan
 
@@ -30,13 +31,13 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
             epochs=epochs,
             window=window
         )
-
+ 
     def fit_transform(
         self, 
         X, 
         y=None
     ):
-        self.fit(X, y=None)
+        self.fit(X, y)
         return self.transform(X)
 
     def fit(
@@ -87,73 +88,20 @@ class StopwordRemover(SklearnWrapper):
     ):
         self.language = language
         self.words = stopwords.words(language)
+        SklearnWrapper.__init__(self)
         
-    def fit(
-        self, 
-        X, 
-        y=None
-    ):
-        pass
-    
-    def fit_transform(
-        self, 
-        X, 
-        y=None
-    ):
-        self.fit(X, y=None)
-        return self.transform(X)
-
-    def transform(
-        self,
-        X,
-        y=None  
-    ):
-        #Considering data as list of tokenized documents
-        return [word for word in X if word not in self.words]
-    
     def _train(self, input):
-        X, y = input
-        return [word for word in X if word not in self.words], y
+        return [word for word in input if word not in self.words]
 
     def _eval(self, input):
-        X, y = input
-        return [word for word in X if word not in self.words], y
+        return [word for word in input if word not in self.words]
     
     def run(self, input: List(Word())) -> List(Word()):
        """This methods receive a word list list and transform this into a word list list without stopwords. 
        """
        return SklearnTransformer.run(self, input)
+   
+    def __str__(self):
+        name = StopwordRemover.__name__
+        return f"{name}({self.language})"
         
-# class TextLowerer(SklearnTransformer):
-#     def __init__(
-#         self
-#     ):
-#         pass
-    
-#     def fit(
-#         self, 
-#         X, 
-#         y=None
-#     ):
-#         pass
-    
-#     def fit_transform(
-#         self, 
-#         X, 
-#         y=None
-#     ):
-#         self.fit(X, y=None)
-#         return self.transform(X)
-
-#     def transform(
-#         self,
-#         X,
-#         y=None  
-#     ):
-#         #Considering data as list of raw documents
-#         return [str.lower(x) for x in X]
-    
-#     def run(self, input: Word()) -> Word():
-#        """This methods receive a document list and transform this into a document list with lowered case. 
-#        """
-#        return SklearnTransformer.run(self, input)

@@ -9,13 +9,14 @@ import numpy as np
 import warnings
 import abc
 import importlib
+import enlighten
 
 
 from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from _utils import _is_algorithm, get_input_output, is_algorithm
+from ._utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = [
     "arabic",
@@ -39,13 +40,11 @@ languages_re = re.compile("|".join(languages))
 
 class NltkTokenizer(SklearnWrapper):
     def _train(self, input):
-        X, y = input
-        return self.tokenize(X), y
+        return self.tokenize(input)
 
 
     def _eval(self, input):
-        X, y = input
-        return self.tokenize(X), y
+        return self.tokenize(input)
     
     @abc.abstractmethod
     def tokenize(self, X, y=None):
@@ -53,14 +52,12 @@ class NltkTokenizer(SklearnWrapper):
 
 class NltkStemmer(SklearnWrapper):
     def _train(self, input):
-        X, y = input
-        #X is Word
-        return self.stem(X), y
+        #input is Word
+        return self.stem(input)
 
     def _eval(self, input):
-        X, y = input
-        #X is Word
-        return self.stem(X), y
+        #input is Word
+        return self.stem(input)
     
     @abc.abstractmethod
     def stem(self, X, y=None):
@@ -68,12 +65,10 @@ class NltkStemmer(SklearnWrapper):
     
 class NltkLemmatizer(SklearnWrapper):
     def _train(self, input):
-        X, y = input
-        return self.lemmatize(X), y
+        return self.lemmatize(input)
 
     def _eval(self, input):
-        X, y = input
-        return self.lemmatize(X), y
+        return self.lemmatize(input)
     
     @abc.abstractmethod
     def lemmatize(self, X, y=None):
@@ -148,6 +143,7 @@ def build_nltk_wrappers():
             ## DO NOT MODIFY THIS FILE MANUALLY
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
+            from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkClusterer
             from autogoal.kb._data import *
             from numpy import inf, nan
             """
