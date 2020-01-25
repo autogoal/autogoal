@@ -85,6 +85,9 @@ class SklearnTransformer(SklearnWrapper):
         pass
 
 
+from autogoal import kb
+
+
 GENERATION_RULES = dict(
     LatentDirichletAllocation=dict(ignore_params=set(["evaluate_every"])),
     RadiusNeighborsClassifier=dict(ignore=True,),
@@ -92,7 +95,10 @@ GENERATION_RULES = dict(
     RadiusNeighborsTransformer=dict(ignore_params=set(["metric"])),
     LocalOutlierFactor=dict(ignore_params=set(["metric"])),
     RadiusNeighborsRegressor=dict(ignore_params=set(["metric"])),
-    LabelBinarizer=dict(ignore_params=set(["neg_label", "pos_label"])),
+    LabelBinarizer=dict(
+        ignore_params=set(["neg_label", "pos_label"]),
+        input_annotation=kb.List(kb.Category()),
+    ),
     HashingVectorizer=dict(
         ignore_params=set(["token_pattern", "analyzer", "input", "decode_error"])
     ),
@@ -102,6 +108,8 @@ GENERATION_RULES = dict(
     MiniBatchKMeans=dict(ignore_params=set(["batch_size", "n_init"])),
     DictionaryLearning=dict(ignore=True),
     MiniBatchDictionaryLearning=dict(ignore=True),
+    LassoLars=dict(ignore_args=["alpha"]),
+    TheilSenRegressor=dict(ignore_args=["max_subpopulation"]),
 )
 
 
@@ -136,15 +144,12 @@ def build_sklearn_wrappers():
 
 
 def _write_class(cls, fp):
-    rules = GENERATION_RULES.get(cls.__name__)
+    rules = GENERATION_RULES.get(cls.__name__, {})
 
-    if rules:
-        if rules.get("ignore"):
-            return
+    if rules.get("ignore"):
+        return
 
-        ignore_args = rules.get("ignore_params", [])
-    else:
-        ignore_args = []
+    ignore_args = rules.get("ignore_params", [])
 
     print("Generating class: %r" % cls)
 
@@ -155,6 +160,8 @@ def _write_class(cls, fp):
 
     args = _get_args_values(cls, args)
     inputs, outputs = get_input_output(cls)
+    inputs = rules.get("input_annotation", inputs)
+    outputs = rules.get("output_annotation", outputs)
 
     if not inputs:
         warnings.warn("Cannot find correct types for %r" % cls)
@@ -165,6 +172,7 @@ def _write_class(cls, fp):
     # self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
+
     base_class = (
         "SklearnEstimator" if is_algorithm(cls) == "estimator" else "SklearnTransformer"
     )
@@ -412,7 +420,7 @@ def _get_integer_values(arg, value, cls):
         current_value = int((left + right) / 2)
         if current_value in [left, right]:
             break
-        
+
         if _try(cls, arg, current_value):
             right = current_value
         else:
@@ -430,7 +438,7 @@ def _get_integer_values(arg, value, cls):
             break
 
         if _try(cls, arg, current_value):
-            left = current_value            
+            left = current_value
         else:
             right = current_value
 
@@ -475,7 +483,7 @@ def _get_float_values(arg, value, cls):
     while abs(left - right) > 1e-2:
         current_value = round((left + right) / 2, 3)
         if _try(cls, arg, current_value):
-            left = current_value            
+            left = current_value
         else:
             right = current_value
 

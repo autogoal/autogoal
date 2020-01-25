@@ -717,7 +717,7 @@ class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator
         fit_intercept: Boolean(),
         tol: Continuous(min=-0.005, max=0.001),
         early_stopping: Boolean(),
-        validation_fraction: Continuous(min=0.041, max=0.993),
+        validation_fraction: Continuous(min=0.006, max=0.993),
         n_iter_no_change: Discrete(min=1, max=9),
         shuffle: Boolean(),
         average: Boolean()
@@ -938,13 +938,13 @@ class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def __init__(
         self,
         fit_intercept: Boolean(),
-        tol: Continuous(min=-0.005, max=0.001)
+        max_subpopulation: Continuous(min=1.0, max=55000.0)
     ):
         SklearnEstimator.__init__(self)
         _TheilSenRegressor.__init__(
             self,
             fit_intercept=fit_intercept,
-            tol=tol
+            max_subpopulation=max_subpopulation
         )
 
     def run(self, input: MatrixContinuousDense()) -> ContinuousVector():
@@ -1409,7 +1409,7 @@ class LabelBinarizer(_LabelBinarizer, SklearnTransformer):
             sparse_output=sparse_output
         )
 
-    def run(self, input: List(Sentence())) -> MatrixContinuousDense():
+    def run(self, input: List(Category())) -> MatrixContinuousDense():
        return SklearnTransformer.run(self, input)
 
 from sklearn.svm._classes import LinearSVC as _LinearSVC
