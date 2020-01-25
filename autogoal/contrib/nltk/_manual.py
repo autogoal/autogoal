@@ -5,7 +5,6 @@ from autogoal.kb import *
 from numpy import inf, nan
 
 import nltk
-nltk.download("wordnet")
 from nltk.corpus import wordnet
 
 
