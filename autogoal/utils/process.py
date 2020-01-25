@@ -37,7 +37,7 @@ class RestrictedWorker():
         except MemoryError:
             result_bucket["result"] = Exception("Memory error")
         except Exception as e:
-            result_bucket["result"] = e
+            result_bucket["result"] = Exception(str(e))
     
     def run_restricted(self, *args, **kwargs):
         """
