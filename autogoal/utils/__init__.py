@@ -61,17 +61,18 @@ def nice_repr(cls):
             B(value=9),
         ]
     )
-    
+
     ```
     """
-    init_signature = inspect.signature(cls.__init__)
-    exclude_param_names = set(['self'])
 
     def repr_method(self):
+        init_signature = inspect.signature(self.__class__.__init__)
+        exclude_param_names = set(['self'])
+
         parameter_names = [name for name in init_signature.parameters if name not in exclude_param_names]
         parameter_values = [getattr(self, param, None) for param in parameter_names]
         args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value is not None)
-        fr = f"{cls.__name__}({args})"
+        fr = f"{self.__class__.__name__}({args})"
 
         try:
             import black

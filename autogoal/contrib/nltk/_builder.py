@@ -16,7 +16,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import _is_algorithm, get_input_output, is_algorithm
+from ._utils import _is_algorithm, get_input_output
 
 languages = [
     "arabic",
@@ -45,7 +45,7 @@ class NltkTokenizer(SklearnWrapper):
 
     def _eval(self, input):
         return self.tokenize(input)
-    
+
     @abc.abstractmethod
     def tokenize(self, X, y=None):
         pass
@@ -58,18 +58,18 @@ class NltkStemmer(SklearnWrapper):
     def _eval(self, input):
         #input is Word
         return self.stem(input)
-    
+
     @abc.abstractmethod
     def stem(self, X, y=None):
         pass
-    
+
 class NltkLemmatizer(SklearnWrapper):
     def _train(self, input):
         return self.lemmatize(input)
 
     def _eval(self, input):
         return self.lemmatize(input)
-    
+
     @abc.abstractmethod
     def lemmatize(self, X, y=None):
         pass
@@ -79,15 +79,15 @@ class NltkClusterer(SklearnWrapper):
         X, y = input
         self.cluster(X)
         return X, y
-    
+
     def _eval(self, input):
         X, y = input
         return X, [self.classify(x) for x in X]
-    
+
     @abc.abstractmethod
     def cluster(self, X, y=None):
         pass
-    
+
     @abc.abstractmethod
     def classify(self, X, y=None):
         pass
@@ -97,18 +97,18 @@ class NltkClassifier(SklearnWrapper):
         X, y = input
         self.train(X) #TODO: fix train incompability for nltk classifiers
         return X, y
-    
+
     def _eval(self, input):
         X, y = input
         return X, [self.classify(x) for x in X]
-    
+
     @abc.abstractmethod
     def cluster(self, X, y=None):
         pass
-    
+
     @abc.abstractmethod
     def classify(self, X, y=None):
-        pass    
+        pass
 
 base_classes = {"classifier":"NltkClassifier",
                 "clusterer":"NltkClusterer",
@@ -166,28 +166,28 @@ def _write_class(cls, fp):
 
     rules = GENERATION_RULES.get(cls.__name__)
     assumed = False
-    
+
     if rules:
         if rules.get("assume"):
             assumed = True
             inputs = rules.get("assume_input")
             outputs = rules.get("assume_output")
-            
+
     if not assumed:
         inputs, outputs = get_input_output(cls)
-    
+
     if not inputs:
         warnings.warn("Cannot find correct types for %r" % cls)
         return
-    
+
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
     base_class = base_classes[is_algorithm(cls)] #set correct base class
-    
+
     print(cls)
-    
+
     fp.write(textwrap.dedent(
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
@@ -207,7 +207,7 @@ def _write_class(cls, fp):
                return {base_class}.run(self, input)
         """
     ))
-     
+
     fp.flush()
 
 def _walk(module, name="nltk"):
@@ -296,7 +296,7 @@ def _find_parameter_values(parameter, cls):
 def _find_language_values(cls):
     global languages_re
     documentation = cls.__doc__
-    
+
     return set(languages_re.findall(str.lower(documentation)))
 
 
@@ -315,7 +315,7 @@ def _get_args(cls):
 
     args_map = {k: v for k, v in zip(args, specs)}
 
-    
+
 
     drop_args = [
         "url",

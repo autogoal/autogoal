@@ -15,12 +15,14 @@ import sklearn.impute
 import sklearn.naive_bayes
 
 from numpy import nan, inf
+from autogoal.utils import nice_repr
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 
 import abc
 
 
+@nice_repr
 class SklearnWrapper(metaclass=abc.ABCMeta):
     def __init__(self):
         self._mode = "train"
