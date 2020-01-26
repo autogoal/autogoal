@@ -1,3 +1,4 @@
+import abc
 import datetime
 import inspect
 import re
@@ -5,6 +6,7 @@ import textwrap
 import warnings
 from pathlib import Path
 
+import black
 import enlighten
 import numpy as np
 import sklearn
@@ -13,13 +15,13 @@ import sklearn.cross_decomposition
 import sklearn.feature_extraction
 import sklearn.impute
 import sklearn.naive_bayes
+from numpy import inf, nan
+from sklearn.datasets import make_classification
 
-from numpy import nan, inf
-from autogoal.utils import nice_repr
+from autogoal import kb
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
-
-import abc
+from autogoal.utils import nice_repr
 
 
 @nice_repr
@@ -87,7 +89,6 @@ class SklearnTransformer(SklearnWrapper):
         pass
 
 
-from autogoal import kb
 
 
 GENERATION_RULES = dict(
@@ -110,18 +111,20 @@ GENERATION_RULES = dict(
     MiniBatchKMeans=dict(ignore_params=set(["batch_size", "n_init"])),
     DictionaryLearning=dict(ignore=True),
     MiniBatchDictionaryLearning=dict(ignore=True),
-    LassoLars=dict(ignore_args=["alpha"]),
-    TheilSenRegressor=dict(ignore_args=["max_subpopulation"]),
+    LassoLars=dict(ignore_params=["alpha"]),
+    TheilSenRegressor=dict(ignore_params=["max_subpopulation"]),
 )
 
 
 def build_sklearn_wrappers():
     imports = _walk(sklearn)
 
-    # manager = enlighten.get_manager()
-    # counter = manager.counter(total=len(imports), unit="classes")
+    manager = enlighten.get_manager()
+    counter = manager.counter(total=len(imports), unit="classes")
 
-    with open(Path(__file__).parent / "_generated.py", "w") as fp:
+    path = Path(__file__).parent / "_generated.py"
+
+    with open(path, "w") as fp:
         fp.write(
             textwrap.dedent(
                 f"""
@@ -138,11 +141,13 @@ def build_sklearn_wrappers():
         )
 
         for cls in imports:
-            # counter.update()
+            counter.update()
             _write_class(cls, fp)
 
-    # counter.close()
-    # manager.stop()
+    black.reformat_one(path, True, black.WriteBack.YES, black.FileMode(), black.Report())
+
+    counter.close()
+    manager.stop()
 
 
 def _write_class(cls, fp):
@@ -319,7 +324,6 @@ def _find_parameter_values(parameter, cls):
     return None
 
 
-from sklearn.datasets import make_classification
 
 X, y = make_classification()
 
