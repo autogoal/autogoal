@@ -28,24 +28,23 @@ class Interface:
         compatible = []
 
         for _, clss in grammar.namespace.items():
-            try:
-                if issubclass(clss, Interface):
-                    continue
+            if not inspect.isclass(clss):
+                continue
 
-                type_methods = _get_annotations(clss)
+            if issubclass(clss, Interface):
+                continue
 
-                if _compatible_annotations(own_methods, type_methods):
-                    compatible.append(clss)
-            except TypeError:
-                pass
+            type_methods = _get_annotations(clss)
+
+            if _compatible_annotations(own_methods, type_methods):
+                compatible.append(clss)
 
         if not compatible:
             raise ValueError(
                 "Cannot find compatible implementations for interface %r" % cls
             )
 
-        grammar = Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
-        return grammar
+        return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
 def conforms(type1, type2):
@@ -256,7 +255,7 @@ class Entity(DataType):
 
 
 class Summary(Document):
-    pass 
+    pass
 
 
 class Sentiment(DataType):
@@ -264,7 +263,7 @@ class Sentiment(DataType):
 
 
 class Synset(DataType):
-    pass 
+    pass
 
 
 class List(DataType):
