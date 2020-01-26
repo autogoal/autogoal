@@ -26,12 +26,18 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         alpha: Continuous(min=0.001, max=0.075),
         epochs: Discrete(min=2, max=10),
         window: Discrete(min=2, max=10),
+        inner_tokenizer: algorithm(Sentence(), List(Word())),
+        inner_stemmer: algorithm(Word(), Stem()),
+        inner_stopwords: algorithm(List(Word()), List(Word())),
+        lowercase: Boolean(),
+        stopwords_remove:Boolean(),
     ):
-
-        # self.dm=dm
-        # self.dbow_words=dbow_words
-        # self.dm_concat=dm_concat
-        # self.dm_tag_count=dm_tag_count
+        
+        self.inner_tokenizer = inner_tokenizer
+        self.inner_stemmer = inner_stemmer
+        self.inner_stopwords = inner_stopwords
+        self.lowercase = lowercase
+        self.stopwords_remove = stopwords_remove
 
         super().__init__(
             dm=dm,
@@ -43,6 +49,12 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
             window=window,
         )
 
+    def tokenize(self, sentence):
+        sentence = sentence.lower() if self.lowercase else sentence
+        tokens = self.inner_tokenizer.run(sentence)
+        tokens = self.inner_stopwords.run(sentence) if self.stopwords_remove else tokens
+        return [self.inner_stemmer.run(token) for token in tokens]
+
     def fit_transform(self, X, y=None):
         self.fit(X, y)
         return self.transform(X)
@@ -53,7 +65,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
 
-        tagged_data = [_TaggedDocument(X[i], str(i)) for i in range(len(X))]
+        tagged_data = [_TaggedDocument(self.tokenize(X[i]), str(i)) for i in range(len(X))]
 
         self.build_vocab(tagged_data)
         return self.train(
