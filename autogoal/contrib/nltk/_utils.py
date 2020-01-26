@@ -30,25 +30,25 @@ DATA_TYPE_EXAMPLES = {
 def is_algorithm(cls, verbose=False):
     if _is_classifier(cls):
         return "classifier"
-    
+
     if _is_clusterer(cls):
         return "clusterer"
-    
+
     if _is_sent_tokenizer(cls):
         return "sent_tokenizer"
-    
+
     if _is_word_tokenizer(cls):
         return "word_tokenizer"
-    
+
     if _is_lemmatizer(cls):
         return "lemmatizer"
-    
+
     if _is_stemmer(cls):
         return "stemmer"
-    
+
     if _is_word_embbeder(cls):
         return "word_embbeder"
-    
+
     if _is_doc_embbeder(cls):
         return "doc_embbeder"
 
@@ -114,7 +114,7 @@ def is_stemmer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.stem import Cistem
     >>> is_stemmer(Cistem)
-    (True, (List(List(Word())), List(List(Stem())))
+    (True, (Word(), Stem()))
     >>> is_stemmer(LogisticRegression)
     (False, None)
 
@@ -154,7 +154,7 @@ def is_lemmatizer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.stem import WordNetLemmatizer
     >>> is_lemmatizer(WordNetLemmatizer)
-    (True, (List(List(Word())), List(List(Stem())))
+    (True, (Word(), Stem()))
     >>> is_lemmatizer(LogisticRegression)
     (False, None)
 
@@ -164,7 +164,6 @@ def is_lemmatizer(cls, verbose=False):
 
     inputs = []
     output = kb.Stem()
-    
     for input_type in [kb.Word()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
@@ -192,9 +191,9 @@ def is_word_tokenizer(cls, verbose=False):
     Examples:
 
     >>> from sklearn.linear_model import LogisticRegression
-    >>> from nltk.tokenize import PunktWordTokenizer
-    >>> is_word_tokenizer(PunktWordTokenizer)
-    (True, (List(Document()), List(List(Word())))
+    >>> from nltk.tokenize import TweetTokenizer
+    >>> is_word_tokenizer(TweetTokenizer)
+    (True, (Sentence(), List(Word())))
     >>> is_word_tokenizer(LogisticRegression)
     (False, None)
 
@@ -234,7 +233,7 @@ def is_sent_tokenizer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.tokenize import PunktSentenceTokenizer
     >>> is_sent_tokenizer(PunktSentenceTokenizer)
-    (True, (List(Document()), List(List(Word())))
+    (True, (Document(), List(Sentence())))
     >>> is_sent_tokenizer(LogisticRegression)
     (False, None)
 
@@ -316,7 +315,6 @@ def is_classifier(cls, verbose=False):
     inputs = []
 
     #TODO: Fix somehow compatibility with nltk classifiers
-    
     inputs = combine_types(*inputs)
 
     if inputs:
@@ -363,20 +361,18 @@ def is_word_list(obj):
 
     Examples:
 
-    >>> is_string_list_list([['hello', world'], ['another'], ['sentence']])
+    >>> is_word_list(['hello', 'world'])
     True
-    >>> is_string_list_list(np.random.rand(10))
+    >>> is_word_list(np.random.rand(10))
     False
 
     """
     try:
         oset = set()
-        
         for word in obj:
             if len(word.split()) > 1:
                 return False
             oset.add(word)
-                
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
@@ -386,21 +382,19 @@ def is_word_list_list(obj):
 
     Examples:
 
-    >>> is_string_list_list([['hello', world'], ['another'], ['sentence']])
+    >>> is_word_list_list([['hello'], ['another'], ['word']])
     True
-    >>> is_string_list_list(np.random.rand(10))
+    >>> is_word_list_list(np.random.rand(10))
     False
 
     """
     try:
         oset = set()
-        
         for sent in obj:
             for word in sent:
                 if len(word.split()) > 1:
                     return False
                 oset.add(word)
-                
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
@@ -410,13 +404,13 @@ def is_word(obj):
 
     Examples:
 
-    >>> is_word('hello'])
+    >>> is_word('hello')
     True
     >>> is_word(np.random.rand(10))
     False
 
     """
-    try:        
+    try:
         return isinstance(obj, str) and len(obj.split()) == 1
     except:
         return False
@@ -426,13 +420,13 @@ def is_sentence(obj):
 
     Examples:
 
-    >>> is_word('hello'])
+    >>> is_sentence('hello world')
     True
     >>> is_word(np.random.rand(10))
     False
 
     """
-    try:        
+    try:
         return isinstance(obj, str) and len(obj.split()) > 1
     except:
         return False
@@ -448,24 +442,23 @@ def is_text_list_list(obj):
 
     Examples:
 
-    >>> is_string_list_list([['hello', world'], ['another'], ['sentence']])
+    >>> is_text_list_list([['hello', 'world'], ['another'], ['sentence']])
     True
-    >>> is_string_list_list(np.random.rand(10))
+    >>> is_text_list_list(np.random.rand(10))
     False
 
     """
     try:
         oset = set()
-        
+
         for sent in obj:
             for text in sent:
                 oset.add(text)
-                
+
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
 
-    
 DATA_RESOLVERS = {
     kb.Stem():is_word,
     kb.Word():is_word,
@@ -480,43 +473,3 @@ DATA_RESOLVERS = {
     kb.List(kb.List(kb.Stem())): is_word_list_list,
     kb.List(kb.List(kb.Word())): is_word_list_list,
 }
-
-def find_classes(include=".*", exclude=None):
-    """
-    Returns the list of all `nltk` wrappers in `autogoal`.
-
-    You can pass filters to include or exclude specific classes.
-    The filters are regular expressions that are matched against
-    the names of the classes. Only classes that pass the `include` filter
-    and not the `exclude` filter will be returned.
-    By default all classes are returned.
-
-    ##### Parameters
-
-    - `include`: regular expression to match for including classes. Defaults to `".*"`, i.e., all classes.
-    - `exclude`: regular expression to match for excluding classes. Defaults to `None`.
-
-    ##### Examples
-
-    ```python
-    >>> from pprint import pprint
-    >>> pprint(find_classes(include='.*Classifier', exclude='.*Tree.*'))
-    [<class 'autogoal.contrib.sklearn._generated.KNeighborsClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.PassiveAggressiveClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.RidgeClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.SGDClassifier'>]
-
-    ```
-    """
-    import autogoal.contrib.nltk._generated as module
-    from autogoal.contrib.nltk._builder import NltkClassifier, NltkClusterer, NltkLemmatizer, NltkStemmer, NltkTokenizer
-
-    return [
-        c for n, c in inspect.getmembers(
-            module,
-            lambda c: inspect.isclass(c)
-            and issubclass(c, (NltkClusterer, NltkClassifier, NltkLemmatizer, NltkStemmer, NltkTokenizer))
-            and re.match(include, c.__name__)
-            and (exclude is None or not re.match(exclude, c.__name__)),
-        )
-    ]
