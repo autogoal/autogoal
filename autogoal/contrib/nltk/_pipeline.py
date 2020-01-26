@@ -9,13 +9,8 @@
 
 # RawNormalizer = Union("RawNormalizer", mnlp.TextLowerer, Noop)
 
-# Tokenization = Union("Tokenization", gnlp.BlanklineTokenizer,\
-#                                      gnlp.LineTokenizer,\
-#                                      gnlp.MWETokenizer,\
-#                                      gnlp.SExprTokenizer,\
+# Tokenization = Union("Tokenization", gnlp.MWETokenizer,\
 #                                      gnlp.SpaceTokenizer,\
-#                                      gnlp.TabTokenizer,\
-#                                      gnlp.TextTilingTokenizer,\
 #                                      gnlp.ToktokTokenizer,\
 #                                      gnlp.TreebankWordTokenizer,\
 #                                      gnlp.TweetTokenizer,\
@@ -60,7 +55,7 @@
 #             ('normalizer', self.normalizing),
 #             ('vectorizer', self.vectorization),
 #         ])
-
+ 
 # class SklearnNLPClassifier(_Pipeline):
 #     def __init__(
 #         self,

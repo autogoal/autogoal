@@ -1,17 +1,19 @@
-from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
-from autogoal.kb._data import *
+import nltk
+from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
+from nltk.corpus import sentiwordnet as swn
+from nltk.corpus import stopwords, wordnet
 from numpy import inf, nan
 
-import nltk
+from autogoal.contrib.nltk._builder import NltkTokenizer
+from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
+from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
+from autogoal.kb import *
+from autogoal.kb._data import *
 
 nltk.download("wordnet")
-from nltk.corpus import wordnet
 
 
-from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
-
-
-class Doc2Vec(_Doc2Vec):
+class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
         dm: Discrete(min=0, max=2),
@@ -39,11 +41,8 @@ class Doc2Vec(_Doc2Vec):
         )
 
     def fit_transform(self, X, y=None):
-        self.fit(X, y=None)
+        self.fit(X, y)
         return self.transform(X)
-
-    def fit(self, X, y=None):
-        pass
 
     def fit(self, X, y):
         # Data must be turned to tagged data as TaggedDocument(List(Token), Tag)
@@ -61,13 +60,10 @@ class Doc2Vec(_Doc2Vec):
     def transform(self, X, y=None):
         return [self.infer_vector(x) for x in X]
 
-    # def run(self, input: Document(domain='general')) -> List(Sentence()):
-    #    """This methods recive a document and transform this in a list of sentences.
-    #    """
-    #    return self.tokenize(input)
-
-
-from nltk.corpus import stopwords
+    def run(self, input: List(Document())) -> MatrixContinuousDense():
+        """This methods receive a document list and transform this into a dense continuous matrix.
+       """
+        return SklearnTransformer.run(self, input)
 
 
 class StopwordRemover:
@@ -92,17 +88,22 @@ class StopwordRemover:
     ):
         self.language = language
         self.words = stopwords.words(language)
+        SklearnWrapper.__init__(self)
 
-    def fit(self, X, y=None):
-        pass
+    def _train(self, input):
+        return [word for word in input if word not in self.words]
 
-    def fit_transform(self, X, y=None):
-        self.fit(X, y=None)
-        return self.transform(X)
+    def _eval(self, input):
+        return [word for word in input if word not in self.words]
 
-    def transform(self, X, y=None):
-        # Considering data as list of tokenized documents
-        return [[word for word in document if word not in self.words] for document in X]
+    def run(self, input: List(Word())) -> List(Word()):
+        """This methods receive a word list list and transform this into a word list list without stopwords.
+       """
+        return SklearnTransformer.run(self, input)
+
+    def __str__(self):
+        name = StopwordRemover.__name__
+        return f"{name}({self.language})"
 
 
 class TextLowerer:
@@ -150,9 +151,6 @@ class ConvertSynset2Word:
         """Recive a Synset of nltk and return de Lemma of this
         """
         return Lemma(input)
-
-
-from nltk.corpus import sentiwordnet as swn
 
 
 class SentimentWord:
