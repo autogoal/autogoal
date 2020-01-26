@@ -13,11 +13,19 @@ def _make_params_func(fn: Callable):
 
     func_name = f"{fn.__name__}_params"
     args_names = signature.parameters.keys()
+
+    def annotation_repr(ann):
+        if inspect.isclass(ann) or inspect.isfunction(ann):
+            return ann.__name__
+
+        return repr(ann)
+
     args_line = ",\n            ".join(f"{k}={k}" for k in args_names)
+    params_line = ", ".join(f"{arg.name}:{annotation_repr(arg.annotation)}" for arg in signature.parameters.values())
 
     func_code = textwrap.dedent(
         f"""
-    def {func_name}{signature}:
+    def {func_name}({params_line}):
         return dict(
             {args_line}
         )
