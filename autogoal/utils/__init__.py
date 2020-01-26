@@ -1,5 +1,6 @@
 from ._resource import ResourceManager
 from .process import  RestrictedWorker
+from ._cache import CacheManager
 
 import inspect
 
