@@ -6,3 +6,6 @@ a set of functions, or any combination thereof, that work together to solve a sp
 With AutoGOAL you can define a pipeline in many different ways, such that certain parts of it are configurable or
 tunable, and then use search algorithms to find the best way to tune or configure it for a given problem.
 """
+
+
+from autogoal.utils._helpers import optimize

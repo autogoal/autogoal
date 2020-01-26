@@ -3,6 +3,7 @@ import warnings
 import time
 import datetime
 import statistics
+import math
 
 from autogoal.utils import ResourceManager, RestrictedWorker
 
@@ -34,7 +35,7 @@ class SearchAlgorithm:
     def _identity(self, x):
         return x
 
-    def run(self, evaluations, logger=None):
+    def run(self, evaluations=None, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
 
         Returns:
@@ -42,6 +43,9 @@ class SearchAlgorithm:
         """
         if logger is None:
             logger = Logger()
+
+        if evaluations is None:
+            evaluations = math.inf
 
         if isinstance(logger, list):
             logger = MultiLogger(*logger)
