@@ -16,7 +16,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import _is_algorithm, get_input_output
+from ._utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = [
     "arabic",
@@ -145,6 +145,7 @@ def build_nltk_wrappers():
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
             from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkClusterer
             from autogoal.kb._data import *
+            from autogoal.utils import nice_repr
             from numpy import inf, nan
             """
             )
@@ -192,6 +193,7 @@ def _write_class(cls, fp):
         f"""
         from {cls.__module__} import {cls.__name__} as _{cls.__name__}
 
+        @nice_repr
         class {cls.__name__}(_{cls.__name__}, {base_class}):
             def __init__(
                 self,

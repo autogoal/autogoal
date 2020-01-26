@@ -9,10 +9,13 @@ from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.kb import *
 from autogoal.kb._data import *
+from autogoal.utils import nice_repr
+
 
 nltk.download("wordnet")
 
 
+@nice_repr
 class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
@@ -66,6 +69,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         return SklearnTransformer.run(self, input)
 
 
+@nice_repr
 class StopwordRemover:
     def __init__(
         self,
@@ -106,6 +110,7 @@ class StopwordRemover:
         return f"{name}({self.language})"
 
 
+@nice_repr
 class TextLowerer:
     def __init__(self):
         pass
@@ -122,6 +127,7 @@ class TextLowerer:
         return [str.lower(x) for x in X]
 
 
+@nice_repr
 class WordnetConcept:
     """Find a word in Wordnet and return a List of Synset de Wordnet
     """
@@ -140,6 +146,7 @@ class WordnetConcept:
         return names_synsets
 
 
+@nice_repr
 class ConvertSynset2Word:
     """Recive a Synset of nltk and return de Lemma of this
     """
@@ -153,6 +160,7 @@ class ConvertSynset2Word:
         return Lemma(input)
 
 
+@nice_repr
 class SentimentWord:
     """Find a word in SentiWordnet and return a List of sentiment of the word.
     """
