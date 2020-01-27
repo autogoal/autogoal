@@ -54,7 +54,7 @@ class Word2VecEmbeddingSpanish:
             with path.open("wb") as fp:
                 fp.write(stream.content)
 
-        return KeyedVectors.load(path, mmap="r")
+        return KeyedVectors.load(str(path), mmap="r")
 
     @property
     def model(self) -> KeyedVectors:
