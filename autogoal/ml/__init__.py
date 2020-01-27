@@ -4,6 +4,7 @@ from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixCo
 from autogoal.contrib import find_classes
 import numpy as np
 import random
+import statistics
 
 
 class AutoClassifier:
@@ -18,6 +19,8 @@ class AutoClassifier:
         exclude_filter=None,
         validation_split=0.2,
         errors="warn",
+        cross_validation="median",
+        cross_validation_steps=3,
     ):
         self.input = input
         self.search_algorithm = search_algorithm
@@ -27,6 +30,8 @@ class AutoClassifier:
         self.exclude_filter = exclude_filter
         self.validation_split = validation_split
         self.errors = errors
+        self.cross_validation = cross_validation
+        self.cross_validation_steps = cross_validation_steps
 
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
@@ -61,25 +66,30 @@ class AutoClassifier:
         X = np.asarray(X)
         y = np.asarray(y)
 
-        indices = np.arange(0, len(X))
-        np.random.shuffle(indices)
-        split_index = int(self.validation_split * len(indices))
-        train_indices = indices[:split_index]
-        test_indices = indices[split_index:]
-
-        X_train, y_train, X_test, y_test = (
-            X[train_indices],
-            y[train_indices],
-            X[test_indices],
-            y[test_indices],
-        )
-
         def fitness_fn(pipeline):
-            pipeline.send("train")
-            pipeline.run((X_train, y_train))
-            pipeline.send("eval")
-            y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
-            return (y_pred == y_test).astype(float).mean()
+            scores = []
+
+            for _ in range(self.cross_validation_steps):
+                indices = np.arange(0, len(X))
+                np.random.shuffle(indices)
+                split_index = int(self.validation_split * len(indices))
+                train_indices = indices[:split_index]
+                test_indices = indices[split_index:]
+
+                X_train, y_train, X_test, y_test = (
+                    X[train_indices],
+                    y[train_indices],
+                    X[test_indices],
+                    y[test_indices],
+                )
+
+                pipeline.send("train")
+                pipeline.run((X_train, y_train))
+                pipeline.send("eval")
+                y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
+                scores.append((y_pred == y_test).astype(float).mean())
+
+            return getattr(statistics, self.cross_validation)(scores)
 
         return fitness_fn
 
