@@ -74,7 +74,7 @@ class SearchAlgorithm:
                     except Exception as e:
                         logger.error("Error while generating solution: %s" %e, solution)
                         continue
-                    
+
                     try:
                         logger.sample_solution(solution)
                         fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
@@ -111,7 +111,7 @@ class SearchAlgorithm:
                     break
 
             return best_solution, best_fn
-        
+
         except KeyboardInterrupt:
             logger.end(best_solution, best_fn)
 
@@ -191,11 +191,14 @@ class ProgressLogger(Logger):
     def begin(self, evaluations):
         self.manager = enlighten.get_manager()
         self.total_counter = self.manager.counter(
-            total=evaluations, unit="runs", leave=False
+            total=evaluations, unit="runs", leave=False, desc="Best: 0.000"
         )
 
     def sample_solution(self, solution):
         self.total_counter.update()
+
+    def update_best(self, new_best, new_fn, *args):
+        self.total_counter.desc = "Best: %.3f" % new_fn
 
     def end(self, *args):
         self.total_counter.close()

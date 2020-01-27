@@ -21,23 +21,26 @@ def algorithm(input_type, output_type):
 
 class Interface:
     @classmethod
+    def is_compatible(cls, other_cls):
+        own_methods = _get_annotations(cls, ignore=["generate_cfg", "is_compatible"])
+
+        if not inspect.isclass(other_cls):
+            return False
+
+        if issubclass(other_cls, Interface):
+            return False
+
+        type_methods = _get_annotations(other_cls)
+        return _compatible_annotations(own_methods, type_methods)
+
+    @classmethod
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
-
-        own_methods = _get_annotations(cls, ignore=["generate_cfg"])
         compatible = []
 
-        for _, clss in grammar.namespace.items():
-            if not inspect.isclass(clss):
-                continue
-
-            if issubclass(clss, Interface):
-                continue
-
-            type_methods = _get_annotations(clss)
-
-            if _compatible_annotations(own_methods, type_methods):
-                compatible.append(clss)
+        for _, other_cls in grammar.namespace.items():
+            if cls.is_compatible(other_cls):
+                compatible.append(other_cls)
 
         if not compatible:
             raise ValueError(
@@ -82,7 +85,7 @@ def _compatible_annotations(
 
             ann_im = param_im.annotation
 
-            if not conforms(ann_im, ann_if):
+            if not conforms(ann_if, ann_im):
                 return False
 
         return_if = mif.return_annotation
@@ -92,7 +95,7 @@ def _compatible_annotations(
 
         return_im = mim.return_annotation
 
-        if not conforms(return_if, return_im):
+        if not conforms(return_im, return_if):
             return False
 
     return True
@@ -148,7 +151,7 @@ def build_composite_list(input_type, output_type, depth=1):
             if d == 0:
                 return self.inner.run(xs)
 
-            return [wrap_run(x, d-1) for x in xs]            
+            return [wrap_run(x, d-1) for x in xs]
 
         return wrap_run(input, depth)
 
@@ -402,29 +405,30 @@ class Tuple(DataType):
         return True
 
 
-__all__ = [
-    "algorithm",
-    "CategoricalVector",
-    "Category",
-    "ContinuousVector",
-    "DataType",
-    "DenseMatrix",
-    "DiscreteVector",
-    "Document",
-    "List",
-    "Matrix",
-    "MatrixContinuous",
-    "MatrixContinuousDense",
-    "MatrixContinuousSparse",
-    "Sentence",
-    "SparseMatrix",
-    "Stem",
-    "Tuple",
-    "Vector",
-    "Word",
-    "Entity",
-    "Summary",
-    "Synset",
-    "Text",
-    "Sentiment",
-]
+# __all__ = [
+#     "algorithm",
+#     "CategoricalVector",
+#     "Category",
+#     "ContinuousVector",
+#     "DataType",
+#     "DenseMatrix",
+#     "DiscreteVector",
+#     "Document",
+#     "List",
+#     "Matrix",
+#     "MatrixContinuous",
+#     "MatrixContinuousDense",
+#     "MatrixContinuousSparse",
+#     "Sentence",
+#     "SparseMatrix",
+#     "Stem",
+#     "Tuple",
+#     "Vector",
+#     "Word",
+#     "Entity",
+#     "Summary",
+#     "Synset",
+#     "Text",
+#     "Sentiment",
+#     "conforms",
+# ]

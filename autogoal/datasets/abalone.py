@@ -15,15 +15,16 @@ def load(representation='numeric'):
     (4177, 6047)
     >>> len(y)
     4177
+
     ```
     """
-    
+
     try:
         download("abalone")
     except:
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
-    
+
     path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/abalone"
     f = open(os.path.join(path, "abalone.data"), "r")
 

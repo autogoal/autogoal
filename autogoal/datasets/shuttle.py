@@ -12,9 +12,10 @@ def load():
     ```python
     >>> X_train, X_valid, y_train, y_valid = load()
     >>> X_train.shape, X_valid.shape
-    (43500, 9) (14500, 9)
+    ((43500, 9), (14500, 9))
     >>> len(y_train), len(y_valid)
-    43500 14500
+    (43500, 14500)
+
     ```
     """
 
