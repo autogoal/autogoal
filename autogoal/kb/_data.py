@@ -155,10 +155,14 @@ def build_composite_list(input_type, output_type, depth=1):
     def repr_method(self):
         return f"{name}(inner={repr(self.inner)})"
 
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
     def body(ns):
         ns['__init__'] = init_method
         ns['run'] = run_method
         ns['__repr__'] = repr_method
+        ns['__getattr__'] = getattr_method
 
     return types.new_class(
         name=name,
@@ -169,7 +173,7 @@ def build_composite_list(input_type, output_type, depth=1):
 
 def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
     """
-    Dynamically generate a class `CompositeAlgorithmXXX` that wraps
+    Dynamically generate a class `CompositeAlgorithm` that wraps
     another algorithm to receive a Tuple but pass only one of the
     parameters to the internal algorithm.
     """
