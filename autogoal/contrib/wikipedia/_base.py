@@ -26,7 +26,7 @@ class WikipediaContainsWord:
     def __init__(self):
         pass
 
-    def run(self, input: Entity(domain='general', language='english'))-> bool:
+    def run(self, input: Word(domain='general', language='english'))-> bool:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         return bool(wikipedia.search(input))
@@ -55,7 +55,7 @@ class WikipediaContainsWordSpanish:
     def __init__(self):
         wikipedia.set_lang("es")
 
-    def run(self, input: Entity(domain='general', language='english'))-> bool:
+    def run(self, input: Word(domain='general', language='english'))-> bool:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         return bool(wikipedia.search(input))
