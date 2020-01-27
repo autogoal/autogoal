@@ -186,6 +186,60 @@ class DataType:
         return issubclass(self.__class__, other.__class__)
 
 
+def infer_type(obj):
+    """Attempts to automatically infer the most precise semantic type for `obj`.
+
+    ##### Parameters
+
+    * `obj`: Object to detect its semantic type.
+
+    ##### Raises
+
+    * `TypeError`: if no valid semantic type was found that matched `obj`.
+
+    ##### Examples
+
+    ```python
+    >>> infer_type("hello")
+    Word()
+    >>> infer_type("hello world")
+    Sentence()
+    >>> infer_type("Hello Word. It is raining.")
+    Document()
+    >>> import numpy as np
+    >>> infer_type(np.asarray([[0,1],
+    ...                        [1,0]]))
+    MatrixContinuousDense()
+    >>> infer_type(np.asarray(['blue', 'red']))
+    CategoricalVector()
+
+    ```
+    """
+    if isinstance(obj, str):
+        if " " not in obj:
+            return Word()
+
+        if "." not in obj:
+            return Sentence()
+
+        return Document()
+
+    if isinstance(obj, list):
+        internal_types = set([infer_type(x) for x in obj])
+
+        for test_type in [Document(), Sentence(), Word()]:
+            if test_type in internal_types:
+                return List(test_type)
+
+    if hasattr(obj, 'shape'):
+        if len(obj.shape) == 1:
+            return CategoricalVector()
+        if len(obj.shape) == 2:
+            return MatrixContinuousDense()
+
+    raise TypeError("Cannot infer type for %r" % obj)
+
+
 class Text(DataType):
     pass
 

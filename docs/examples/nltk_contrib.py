@@ -1,4 +1,4 @@
-from autogoal.kb import List, Sentence, MatrixContinuousSparse
+from autogoal.kb import List, Sentence, MatrixContinuousSparse, MatrixContinuous
 from autogoal.contrib.nltk import find_classes
 from autogoal.contrib.sklearn._manual import CountVectorizerNoTokenize
 from autogoal.kb import build_pipelines
@@ -10,7 +10,7 @@ for cls in find_classes():
 
 pipelines = build_pipelines(
     input=List(Sentence()),
-    output=MatrixContinuousSparse(),
+    output=MatrixContinuous(),
     registry=find_classes() + [CountVectorizerNoTokenize],
 )
 

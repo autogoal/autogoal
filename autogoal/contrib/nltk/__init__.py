@@ -37,10 +37,13 @@ def find_classes(include=".*", exclude=None):
     def is_nltk_class(c):
         return (
             inspect.isclass(c)
-            and c.__module__.startswith("autogoal.contrib.nltk._")
+            and (
+                c.__module__.startswith("autogoal.contrib.nltk._generated")
+                or c.__module__.startswith("autogoal.contrib.nltk._manual")
+            )
             and re.match(include, c.__name__)
             and (exclude is None or not re.match(exclude, c.__name__))
-            and hasattr(c, 'run')
+            and hasattr(c, "run")
         )
 
     return [

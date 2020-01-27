@@ -9,10 +9,13 @@ from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.kb import *
 from autogoal.kb._data import *
+from autogoal.utils import nice_repr
+
 
 nltk.download("wordnet")
 
 
+@nice_repr
 class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
@@ -23,12 +26,18 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         alpha: Continuous(min=0.001, max=0.075),
         epochs: Discrete(min=2, max=10),
         window: Discrete(min=2, max=10),
+        inner_tokenizer: algorithm(Sentence(), List(Word())),
+        inner_stemmer: algorithm(Word(), Stem()),
+        inner_stopwords: algorithm(List(Word()), List(Word())),
+        lowercase: Boolean(),
+        stopwords_remove:Boolean(),
     ):
 
-        # self.dm=dm
-        # self.dbow_words=dbow_words
-        # self.dm_concat=dm_concat
-        # self.dm_tag_count=dm_tag_count
+        self.inner_tokenizer = inner_tokenizer
+        self.inner_stemmer = inner_stemmer
+        self.inner_stopwords = inner_stopwords
+        self.lowercase = lowercase
+        self.stopwords_remove = stopwords_remove
 
         super().__init__(
             dm=dm,
@@ -40,6 +49,12 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
             window=window,
         )
 
+    def tokenize(self, sentence):
+        sentence = sentence.lower() if self.lowercase else sentence
+        tokens = self.inner_tokenizer.run(sentence)
+        tokens = self.inner_stopwords.run(sentence) if self.stopwords_remove else tokens
+        return [self.inner_stemmer.run(token) for token in tokens]
+
     def fit_transform(self, X, y=None):
         self.fit(X, y)
         return self.transform(X)
@@ -50,7 +65,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
 
-        tagged_data = [_TaggedDocument(X[i], str(i)) for i in range(len(X))]
+        tagged_data = [_TaggedDocument(self.tokenize(X[i]), str(i)) for i in range(len(X))]
 
         self.build_vocab(tagged_data)
         return self.train(
@@ -60,12 +75,13 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def transform(self, X, y=None):
         return [self.infer_vector(x) for x in X]
 
-    def run(self, input: List(Document())) -> MatrixContinuousDense():
+    def run(self, input: List(Sentence())) -> MatrixContinuousDense():
         """This methods receive a document list and transform this into a dense continuous matrix.
        """
         return SklearnTransformer.run(self, input)
 
 
+@nice_repr
 class StopwordRemover:
     def __init__(
         self,
@@ -106,6 +122,7 @@ class StopwordRemover:
         return f"{name}({self.language})"
 
 
+@nice_repr
 class TextLowerer:
     def __init__(self):
         pass
@@ -122,6 +139,7 @@ class TextLowerer:
         return [str.lower(x) for x in X]
 
 
+@nice_repr
 class WordnetConcept:
     """Find a word in Wordnet and return a List of Synset de Wordnet
     """
@@ -140,6 +158,7 @@ class WordnetConcept:
         return names_synsets
 
 
+@nice_repr
 class ConvertSynset2Word:
     """Recive a Synset of nltk and return de Lemma of this
     """
@@ -153,6 +172,7 @@ class ConvertSynset2Word:
         return Lemma(input)
 
 
+@nice_repr
 class SentimentWord:
     """Find a word in SentiWordnet and return a List of sentiment of the word.
     """
