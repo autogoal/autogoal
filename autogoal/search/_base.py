@@ -218,7 +218,7 @@ class MemoryLogger(Logger):
             mean = statistics.mean(fns)
         except:
             mean = 0
-        self.generation_mean_fn.append(0)
+        self.generation_mean_fn.append(mean)
         self.generation_best_fn.append(self.generation_best_fn[-1])
 
 
