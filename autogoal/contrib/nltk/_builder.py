@@ -16,7 +16,6 @@ import enlighten
 from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
-from autogoal.contrib.sklearn._builder import SklearnWrapper
 from ._utils import _is_algorithm, get_input_output, is_algorithm
 
 languages = [
@@ -40,85 +39,34 @@ languages = [
 languages_re = re.compile("|".join(languages))
 
 
-class NltkTokenizer(SklearnWrapper):
-    def _train(self, input):
-        return self.tokenize(input)
-
-    def _eval(self, input):
+class NltkTokenizer:
+    def run(self, input):
         return self.tokenize(input)
 
     @abc.abstractmethod
-    def tokenize(self, X, y=None):
+    def tokenize(self, X):
         pass
 
 
-class NltkStemmer(SklearnWrapper):
-    def _train(self, input):
-        # input is Word
-        return self.stem(input)
-
-    def _eval(self, input):
-        # input is Word
+class NltkStemmer:
+    def run(self, input):
         return self.stem(input)
 
     @abc.abstractmethod
-    def stem(self, X, y=None):
+    def stem(self, X):
         pass
 
 
-class NltkLemmatizer(SklearnWrapper):
-    def _train(self, input):
-        return self.lemmatize(input)
-
-    def _eval(self, input):
+class NltkLemmatizer:
+    def run(self, input):
         return self.lemmatize(input)
 
     @abc.abstractmethod
-    def lemmatize(self, X, y=None):
-        pass
-
-
-class NltkClusterer(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.cluster(X)
-        return X, y
-
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass
-
-
-class NltkClassifier(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.train(X)  # TODO: fix train incompability for nltk classifiers
-        return X, y
-
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-
-    @abc.abstractmethod
-    def classify(self, X, y=None):
+    def lemmatize(self, X):
         pass
 
 
 base_classes = {
-    "classifier": "NltkClassifier",
-    "clusterer": "NltkClusterer",
     "sent_tokenizer": "NltkTokenizer",
     "word_tokenizer": "NltkTokenizer",
     "lemmatizer": "NltkLemmatizer",

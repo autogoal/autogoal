@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from autogoal.grammar import GraphSpace, Graph, CfgInitializer
 from autogoal.utils import nice_repr
-from autogoal.kb._data import conforms, build_composite, Tuple
+from autogoal.kb._data import conforms, build_composite_tuple, Tuple, build_composite_list, List
 
 
 def build_pipelines(input, output, registry) -> 'PipelineBuilder':
@@ -46,10 +46,47 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 output_tuple_type = Tuple(*output_tuple)
 
                 # dynamic class representing the wrapper algorithm
-                other_wrapper = build_composite(index, output_type, output_tuple_type)
+                other_wrapper = build_composite_tuple(index, output_type, output_tuple_type)
                 open_nodes.append(other_wrapper)
 
                 G.add_edge(node, other_wrapper)
+
+    list_pairs = set()
+
+    def connect_list_wrappers(node, output_type):
+        def connect(internal_output, depth):       
+            for other_clss in registry:
+                if other_clss == node:
+                    continue
+
+                annotations = _get_annotations(other_clss)
+
+                if annotations in list_pairs:
+                    continue
+
+                other_input = annotations.input
+                other_output = annotations.output
+
+                if other_input == other_output:
+                    continue
+
+                if not conforms(internal_output, other_input):
+                    continue
+
+                other_wrapper = build_composite_list(other_input, other_output, depth)
+                list_pairs.add(annotations)
+
+                print(other_wrapper)
+
+                open_nodes.append(other_wrapper)
+                G.add_edge(node, other_wrapper)
+
+        depth = 0
+
+        while isinstance(output_type, List):
+            depth += 1
+            output_type = output_type.inner
+            connect(output_type, depth)
 
     # Enqueue open nodes
     for clss in registry:
@@ -58,6 +95,7 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
             G.add_edge(GraphSpace.Start, clss)
 
     connect_tuple_wrappers(GraphSpace.Start, input)
+    connect_list_wrappers(GraphSpace.Start, input)
 
     if GraphSpace.Start not in G:
         raise ValueError("There are no classes compatible with input type.")
@@ -78,6 +116,7 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 G.add_edge(clss, other_clss)
 
         connect_tuple_wrappers(clss, output_type)
+        connect_list_wrappers(clss, output_type)
 
         if conforms(output_type, output):
             G.add_edge(clss, GraphSpace.End)

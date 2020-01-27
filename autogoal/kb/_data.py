@@ -128,7 +128,46 @@ def _get_annotations(clss, ignore=[]):
     return signatures
 
 
-def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
+def build_composite_list(input_type, output_type, depth=1):
+    def wrap(t, d):
+        if d == 0:
+            return t
+
+        return List(wrap(t, d-1))
+
+    input_wrapper = wrap(input_type, depth)
+    output_wrapper = wrap(output_type, depth)
+
+    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
+
+    def init_method(self, inner: algorithm(input_type, output_type)):
+        self.inner = inner
+
+    def run_method(self, input: input_wrapper) -> output_wrapper:
+        def wrap_run(xs, d):
+            if d == 0:
+                return self.inner.run(xs)
+
+            return [wrap_run(x, d-1) for x in xs]            
+
+        return wrap_run(input, depth)
+
+    def repr_method(self):
+        return f"{name}(inner={repr(self.inner)})"
+
+    def body(ns):
+        ns['__init__'] = init_method
+        ns['run'] = run_method
+        ns['__repr__'] = repr_method
+
+    return types.new_class(
+        name=name,
+        bases=(),
+        exec_body=body
+    )
+
+
+def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
     """
     Dynamically generate a class `CompositeAlgorithmXXX` that wraps
     another algorithm to receive a Tuple but pass only one of the

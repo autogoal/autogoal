@@ -113,6 +113,7 @@ GENERATION_RULES = dict(
     MiniBatchDictionaryLearning=dict(ignore=True),
     LassoLars=dict(ignore_params=["alpha"]),
     TheilSenRegressor=dict(ignore_params=["max_subpopulation"]),
+    TSNE=dict(ignore=True, ignore_params=["perplexity"]),
 )
 
 

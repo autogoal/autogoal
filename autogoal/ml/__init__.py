@@ -1,5 +1,5 @@
 from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous
+from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous, Tuple
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -30,7 +30,7 @@ class AutoClassifier:
 
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
-            input=self._start_type(),
+            input=Tuple(self._start_type(), CategoricalVector()),
             output=CategoricalVector(),
             registry=find_classes(
                 include=self.include_filter, exclude=self.exclude_filter

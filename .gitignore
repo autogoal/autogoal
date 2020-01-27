@@ -141,3 +141,4 @@ dmypy.json
 .ipynb_checkpoints
 PGE-*.json
 *.log
+*.kv

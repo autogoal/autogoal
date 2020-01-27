@@ -32,7 +32,8 @@ def find_classes(include=".*", exclude=None):
     ```python
     >>> from pprint import pprint
     >>> pprint(find_classes())
-    [<class 'autogoal.contrib.gensim._base.Word2VecEmbedding'>]
+    [<class 'autogoal.contrib.gensim._base.Word2VecEmbedding'>,
+     <class 'autogoal.contrib.gensim._base.Word2VecEmbeddingSpanish'>]
 
     ```
     """

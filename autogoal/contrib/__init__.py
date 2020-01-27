@@ -37,8 +37,8 @@ def find_classes(include=".*", exclude=None):
         )
         pass
 
-    from autogoal.contrib._wrappers import AggregateMerger, SentenceVectorizer, DocumentVectorizer
+    from autogoal.contrib._wrappers import MatrixBuilder, VectorAggregator
 
-    result.extend([AggregateMerger, SentenceVectorizer, DocumentVectorizer])
+    result.extend([MatrixBuilder, VectorAggregator])
 
     return result
