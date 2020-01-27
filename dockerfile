@@ -18,6 +18,7 @@ ENV XDG_CACHE_HOME="/opt/dev/cache"
 
 # Use system's Python for installing dev tools
 RUN make dev-install
+RUN python -c 'import nltk; nltk.download("all");'
 
 COPY . /code
 
