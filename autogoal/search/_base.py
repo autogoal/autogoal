@@ -5,7 +5,7 @@ import datetime
 import statistics
 import math
 
-from autogoal.utils import ResourceManager, RestrictedWorker
+from autogoal.utils import ResourceManager, RestrictedWorker, Min, Gb
 
 
 class SearchAlgorithm:
@@ -17,8 +17,8 @@ class SearchAlgorithm:
         maximize=True,
         errors="raise",
         early_stop=None,
-        evaluation_timeout: int = 300,
-        memory_limit: int = 4 * 1024 ** 3,
+        evaluation_timeout: int = 5 * Min,
+        memory_limit: int = 4 * Gb,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")

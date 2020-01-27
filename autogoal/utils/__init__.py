@@ -1,7 +1,4 @@
-from ._resource import ResourceManager
-from .process import  RestrictedWorker
-from ._cache import CacheManager
-
+import enum
 import inspect
 
 
@@ -111,3 +108,17 @@ def nice_repr(cls):
 
     cls.__repr__ = repr_method
     return cls
+
+
+Kb = 1024
+Mb = 1024 * Kb
+Gb = 1024 * Mb
+
+Sec = 1
+Min = 60 * Sec
+Hour = 60 * Min
+
+
+from ._resource import ResourceManager
+from ._process import  RestrictedWorker
+from ._cache import CacheManager
