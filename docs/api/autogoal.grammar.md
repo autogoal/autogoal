@@ -13,7 +13,7 @@
 
 ### `Boolean`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L319)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L335)
 > `Boolean(self, *args, **kwargs)`
 
 
@@ -22,7 +22,7 @@
 
 ### `Categorical`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L304)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L320)
 > `Categorical(self, *options)`
 
 
@@ -31,7 +31,7 @@
 
 ### `CfgInitializer`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L355)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L371)
 > `CfgInitializer(self, registry=None)`
 
 
@@ -40,14 +40,14 @@
 
 ### `ContextFreeGrammar`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L146)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L152)
 > `ContextFreeGrammar(self, start, namespace=None)`
 
 Represents a CFG grammar.
 
 ### `Continuous`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L293)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L309)
 > `Continuous(self, min, max)`
 
 
@@ -56,7 +56,7 @@ Represents a CFG grammar.
 
 ### `Discrete`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L278)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L294)
 > `Discrete(self, min, max)`
 
 
@@ -137,7 +137,7 @@ Represents a CFG grammar.
 
 ### `Union`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L328)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L344)
 > `Union(self, name, *clss)`
 
 
@@ -149,7 +149,7 @@ Represents a CFG grammar.
 
 ### `generate_cfg`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L193)
+> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/grammar/_cfg.py#L199)
 > `generate_cfg(cls, registry=None)`
 
 
@@ -159,6 +159,10 @@ from an annotated callable (class or function).
 ##### Parameters
 
 * `cls`: class or function with annotated arguments.
+
+##### Returns
+
+* `ContextFreeGrammar`: the generated grammar.
 
 ##### Examples
 

@@ -5,27 +5,27 @@ import numpy as np
 from scipy import sparse as sp
 from autogoal.datasets import datapath, download
 
-def load_corpus():
+def load():
     """
     Loads train and valid datasets from [DOROTHEA uci dataset](https://archive.ics.uci.edu/ml/datasets/dorothea).
 
     ##### Examples
 
     ```python
-    >>> X_train, X_valid, y_train, y_valid = load_corpus()
+    >>> X_train, X_valid, y_train, y_valid = load()
     >>> X_train.shape, X_valid.shape
     (800, 100000) (350, 100000)
     >>> len(y_train), len(y_valid)
     800 350
     ```
     """
-    
+
     try:
         download("dorothea")
     except:
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
-    
+
     path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/dorothea"
     train_data = open(os.path.join(path, "dorothea_train.data"), "r")
     train_labels = open(os.path.join(path, "dorothea_train.labels"), "r")

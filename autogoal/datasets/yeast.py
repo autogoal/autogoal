@@ -3,27 +3,27 @@ import os
 from autogoal.datasets import datapath, download
 from sklearn.feature_extraction import DictVectorizer
 
-def load_corpus():
+def load():
     """
     Loads corpora from [Yeast uci dataset](https://archive.ics.uci.edu/ml/datasets/Yeast).
 
     ##### Examples
 
     ```python
-    >>> X, y = load_corpus()
+    >>> X, y = load()
     >>> X.shape
     (1484, 8)
     >>> len(y)
     1484
     ```
     """
-    
+
     try:
         download("yeast")
     except:
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
-    
+
     path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/yeast"
     f = open(os.path.join(path, "yeast.data"), "r")
 

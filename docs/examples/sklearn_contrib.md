@@ -1,7 +1,7 @@
 ```python
 from autogoal.contrib.sklearn import SklearnClassifier
 from autogoal.grammar import  generate_cfg
-from autogoal.search import RandomSearch, EnlightenLogger
+from autogoal.search import RandomSearch, ProgressLogger
 
 from sklearn.datasets import make_classification
 
@@ -17,6 +17,6 @@ def fitness(pipeline):
 
 
 search = RandomSearch(g, fitness, random_state=0, errors='warn')
-search.run(1000, logger=EnlightenLogger())
+search.run(1000, logger=ProgressLogger())
 ```
 
