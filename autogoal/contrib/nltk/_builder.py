@@ -38,78 +38,6 @@ languages = [
 
 languages_re = re.compile("|".join(languages))
 
-class NltkTokenizer(SklearnWrapper):
-    def _train(self, input):
-        return self.tokenize(input)
-
-
-    def _eval(self, input):
-        return self.tokenize(input)
-    
-    @abc.abstractmethod
-    def tokenize(self, X, y=None):
-        pass
-
-class NltkStemmer(SklearnWrapper):
-    def _train(self, input):
-        #input is Word
-        return self.stem(input)
-
-    def _eval(self, input):
-        #input is Word
-        return self.stem(input)
-    
-    @abc.abstractmethod
-    def stem(self, X, y=None):
-        pass
-    
-class NltkLemmatizer(SklearnWrapper):
-    def _train(self, input):
-        return self.lemmatize(input)
-
-    def _eval(self, input):
-        return self.lemmatize(input)
-    
-    @abc.abstractmethod
-    def lemmatize(self, X, y=None):
-        pass
-
-class NltkClusterer(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.cluster(X)
-        return X, y
-    
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-    
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-    
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass
-
-class NltkClassifier(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.train(X) #TODO: fix train incompability for nltk classifiers
-        return X, y
-    
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-    
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-    
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass    
-
 base_classes = {"classifier":"NltkClassifier",
                 "clusterer":"NltkClusterer",
                 "sent_tokenizer":"NltkTokenizer",
@@ -365,7 +293,7 @@ def _get_args(cls):
 
     args_map = {k: v for k, v in zip(args, specs)}
 
-    
+
 
     drop_args = [
         "url",
