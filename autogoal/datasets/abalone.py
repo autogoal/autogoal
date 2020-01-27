@@ -3,14 +3,14 @@ import os
 from sklearn.feature_extraction import DictVectorizer
 from autogoal.datasets import datapath, download
 
-def load_corpus(representation='numeric'):
+def load(representation='numeric'):
     """
     Loads corpora from [ABALONE uci dataset](https://archive.ics.uci.edu/ml/datasets/Abalone).
 
     ##### Examples
 
     ```python
-    >>> X, y = load_corpus()
+    >>> X, y = load()
     >>> X.shape
     (4177, 6047)
     >>> len(y)
