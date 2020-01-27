@@ -189,10 +189,14 @@ def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
     def repr_method(self):
         return f"{name}(inner={repr(self.inner)})"
 
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
     def body(ns):
         ns['__init__'] = init_method
         ns['run'] = run_method
         ns['__repr__'] = repr_method
+        ns['__getattr__'] = getattr_method
 
     return types.new_class(
         name=name,

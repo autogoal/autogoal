@@ -24,6 +24,8 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     open_nodes = []
     closed_nodes = set()
 
+    list_tuples = set()
+
     def connect_tuple_wrappers(node, output_type):
         if not isinstance(output_type, Tuple):
             return
@@ -46,7 +48,13 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 output_tuple_type = Tuple(*output_tuple)
 
                 # dynamic class representing the wrapper algorithm
+                if (index, output_type, output_tuple_type) in list_tuples:
+                    continue
+
                 other_wrapper = build_composite_tuple(index, output_type, output_tuple_type)
+                list_tuples.add((index, output_type, output_tuple_type))
+                print(other_wrapper)
+
                 open_nodes.append(other_wrapper)
 
                 G.add_edge(node, other_wrapper)
@@ -149,10 +157,15 @@ class Pipeline:
 
     def send(self, msg: str, *args, **kwargs):
         found = False
+
         for step in self.steps:
             if hasattr(step, msg):
                 getattr(step, msg)(*args, **kwargs)
                 found = True
+            elif hasattr(step, "send"):
+                step.send(msg, *args, **kwargs)
+                found = True
+        
         if not found:
             warnings.warn(f'No step answered message {msg}.')
 

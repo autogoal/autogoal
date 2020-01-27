@@ -51,7 +51,7 @@ class AutoClassifier:
         self.best_pipeline_.send("eval")
 
     def score(self, X, y):
-        _, y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
+        y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
         return (y_pred == y).astype(float).mean()
 
     def _start_type(self):
@@ -78,7 +78,7 @@ class AutoClassifier:
             pipeline.send("train")
             pipeline.run((X_train, y_train))
             pipeline.send("eval")
-            _, y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
+            y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
             return (y_pred == y_test).astype(float).mean()
 
         return fitness_fn

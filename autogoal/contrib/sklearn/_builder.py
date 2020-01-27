@@ -56,11 +56,11 @@ class SklearnEstimator(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self.fit(X, y)
-        return X, y
+        return y
 
     def _eval(self, input):
         X, _ = input
-        return X, self.predict(X)
+        return self.predict(X)
 
     @abc.abstractmethod
     def fit(self, X, y):
@@ -73,12 +73,12 @@ class SklearnEstimator(SklearnWrapper):
 
 class SklearnTransformer(SklearnWrapper):
     def _train(self, input):
-        X, y = input
-        return self.fit_transform(X), y
+        X = input
+        return self.fit_transform(X)
 
     def _eval(self, input):
-        X, y = input
-        return self.transform(X), y
+        X = input
+        return self.transform(X)
 
     @abc.abstractmethod
     def fit_transform(self, X, y=None):
@@ -87,8 +87,6 @@ class SklearnTransformer(SklearnWrapper):
     @abc.abstractmethod
     def transform(self, X, y=None):
         pass
-
-
 
 
 GENERATION_RULES = dict(
