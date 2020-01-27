@@ -3,11 +3,23 @@ from autogoal.datasets import haha
 from autogoal.search import Logger, PESearch, ConsoleLogger, ProgressLogger, MemoryLogger
 from autogoal.kb import List, Sentence, Tuple, CategoricalVector
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--iterations", type=int, default=1000)
+parser.add_argument("--timeout", type=int, default=60)
+parser.add_argument("--memory", type=int, default=1)
+parser.add_argument("--popsize", type=int, default=10)
+
+args = parser.parse_args()
+
+print(args)
+
 classifier = AutoClassifier(
     input=List(Sentence()),
     search_algorithm=PESearch,
-    search_iterations=1000,
-    search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
+    search_iterations=args.iterations,
+    search_kwargs=dict(pop_size=args.popsize, evaluation_timeout=args.timeout, memory_limit=args.memory * 1024 ** 3),
 )
 
 class ErrorLogger(Logger):
@@ -20,17 +32,6 @@ class ErrorLogger(Logger):
 memory_logger = MemoryLogger()
 
 X_train, X_test, y_train, y_test = haha.load()
-
-
-# TESTING
-# from autogoal.contrib.nltk._generated import SpaceTokenizer
-# from autogoal.kb._data import build_composite_list, Word
-
-# ListClass = build_composite_list(Sentence(), List(Word()))
-# algorithm = ListClass(SpaceTokenizer())
-
-# algorithm.run(X_train)
-# ---
 
 classifier.fit(X_train, y_train, logger=[ErrorLogger(), ConsoleLogger(), ProgressLogger(), memory_logger])
 score = classifier.score(X_test, y_test)
