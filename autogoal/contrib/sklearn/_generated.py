@@ -51,6 +51,28 @@ class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
         return SklearnTransformer.run(self, input)
 
 
+from sklearn.cluster._agglomerative import FeatureAgglomeration as _FeatureAgglomeration
+
+class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
+    def __init__(
+        self,
+        n_clusters: Discrete(min=1, max=3),
+        affinity: Categorical('euclidean'),
+        compute_full_tree: Categorical('auto'),
+        linkage: Categorical('average', 'complete', 'single', 'ward')
+    ):
+        SklearnTransformer.__init__(self)
+        _FeatureAgglomeration.__init__(
+            self,
+            n_clusters=n_clusters,
+            affinity=affinity,
+            compute_full_tree=compute_full_tree,
+            linkage=linkage
+        )
+
+    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
+       return SklearnTransformer.run(self, input)
+
 from sklearn.cluster._birch import Birch as _Birch
 
 
@@ -75,25 +97,7 @@ class Birch(_Birch, SklearnEstimator):
         return SklearnEstimator.run(self, input)
 
 
-from sklearn.cluster._hierarchical import FeatureAgglomeration as _FeatureAgglomeration
-
-class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
-    def __init__(
-        self,
-        n_clusters: Discrete(min=1, max=4),
-        compute_full_tree: Categorical('auto')
-    ):
-        SklearnTransformer.__init__(self)
-        _FeatureAgglomeration.__init__(
-            self,
-            n_clusters=n_clusters,
-            compute_full_tree=compute_full_tree
-        )
-
-    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
-       return SklearnTransformer.run(self, input)
-
-from sklearn.cluster._k_means import KMeans as _KMeans
+from sklearn.cluster._kmeans import KMeans as _KMeans
 
 
 class KMeans(_KMeans, SklearnEstimator):
@@ -115,7 +119,7 @@ class KMeans(_KMeans, SklearnEstimator):
         return SklearnEstimator.run(self, input)
 
 
-from sklearn.cluster._k_means import MiniBatchKMeans as _MiniBatchKMeans
+from sklearn.cluster._kmeans import MiniBatchKMeans as _MiniBatchKMeans
 
 
 class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
@@ -245,8 +249,7 @@ class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
         return SklearnTransformer.run(self, input)
 
 
-from sklearn.decomposition._online_lda import LatentDirichletAllocation as _LatentDirichletAllocation
-
+from sklearn.decomposition._nmf import NMF as _NMF
 
 class NMF(_NMF, SklearnTransformer):
     def __init__(
@@ -735,7 +738,7 @@ from sklearn.linear_model._passive_aggressive import (
 class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator):
     def __init__(
         self,
-        C: Continuous(min=-9.995, max=9.991),
+        C: Continuous(min=-9.973, max=9.991),
         fit_intercept: Boolean(),
         tol: Continuous(min=-0.005, max=0.001),
         early_stopping: Boolean(),

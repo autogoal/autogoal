@@ -32,7 +32,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         lowercase: Boolean(),
         stopwords_remove:Boolean(),
     ):
-        
+
         self.inner_tokenizer = inner_tokenizer
         self.inner_stemmer = inner_stemmer
         self.inner_stopwords = inner_stopwords
