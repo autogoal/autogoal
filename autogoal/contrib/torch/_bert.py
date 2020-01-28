@@ -21,8 +21,11 @@ class BertEmbedding:
     """
 
     def __init__(self):#, length: Discrete(16, 512)):
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        print("Using device: %s" % self.device)
+
         self.model = CacheManager.instance().get(
-            "bert-model", lambda: BertModel.from_pretrained("bert-base-uncased")
+            "bert-model", lambda: BertModel.from_pretrained("bert-base-uncased").to(self.device)
         )
         self.tokenizer = CacheManager.instance().get(
             "bert-tokenizer", lambda: BertTokenizer.from_pretrained("bert-base-uncased")
@@ -30,11 +33,12 @@ class BertEmbedding:
         # self.length = length
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
+
         print("Tokenizing...", end="", flush=True)
         tokens = [self.tokenizer.encode(x, max_length=32, pad_to_max_length=True) for x in input]
         print("done")
 
-        ids = torch.tensor(tokens)
+        ids = torch.tensor(tokens).to(self.device)
 
         with torch.no_grad():
             print("Embedding...", end="", flush=True)
