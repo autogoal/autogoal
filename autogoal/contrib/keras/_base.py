@@ -23,15 +23,14 @@ class KerasNeuralNetwork:
         self._mode = "train"
 
     def eval(self):
-        self._model = "eval"
+        self._mode = "eval"
 
     def run(self, input):
+        X, y = input
         if self._mode == "train":
-            X, y = input
             self.fit(X, y)
             return y
         if self._mode == "eval":
-            X, _ = input
             return self.predict(X)
 
         assert False, "Invalid mode %s" % self._mode
@@ -51,7 +50,7 @@ class KerasNeuralNetwork:
 
         return self._model
 
-    def sample(self, sampler: Sampler = None, max_iterations=None):
+    def sample(self, sampler: Sampler = None, max_iterations=100):
         if sampler is None:
             sampler = Sampler()
 
@@ -101,7 +100,8 @@ class KerasNeuralNetwork:
 
 class KerasClassifier(KerasNeuralNetwork):
     def __init__(self, classes=2, *args, **kwargs):
-        self._classes = classes
+        self._num_classes = classes
+        self._classes = None
         super().__init__(*args, **kwargs)
 
     def _build_output(self, outputs):
@@ -113,16 +113,28 @@ class KerasClassifier(KerasNeuralNetwork):
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = "categorical_crossentropy"
 
-        return Dense(units=self._classes, activation="softmax")(outputs)
+        return Dense(units=self._num_classes, activation="softmax")(outputs)
 
     def fit(self, X, y):
         self._classes = {k: v for k, v in zip(set(y), range(len(y)))}
+
+        if len(self._classes) != self._num_classes:
+            raise ValueError(
+                "Expected %i different classes but got: %r"
+                % (self._num_classes, list(self._classes))
+            )
+
         self._inverse_classes = {v: k for k, v in self._classes.items()}
         y = [self._classes[yi] for yi in y]
         y = to_categorical(y)
         return super(KerasClassifier, self).fit(X, y)
 
     def predict(self, X):
+        if self._classes is None:
+            raise TypeError(
+                "You must call `fit` before `predict` to learn class mappings."
+            )
+
         predictions = super(KerasClassifier, self).predict(X)
         predictions = predictions.argmax(axis=-1)
         return [self._inverse_classes[yi] for yi in predictions]

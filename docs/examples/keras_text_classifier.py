@@ -13,5 +13,5 @@ classifier = AutoClassifier(
 )
 
 
-Xtrain, Xtest, ytrain, ytest = haha.load()
+Xtrain, Xtest, ytrain, ytest = haha.load(max_examples=10)
 classifier.fit(Xtrain, ytrain, logger=[ConsoleLogger(), ProgressLogger()])
