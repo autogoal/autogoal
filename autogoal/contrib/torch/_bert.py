@@ -20,18 +20,18 @@ class BertEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self, length: Discrete(16, 512)):
+    def __init__(self):#, length: Discrete(16, 512)):
         self.model = CacheManager.instance().get(
             "bert-model", lambda: BertModel.from_pretrained("bert-base-uncased")
         )
         self.tokenizer = CacheManager.instance().get(
             "bert-tokenizer", lambda: BertTokenizer.from_pretrained("bert-base-uncased")
         )
-        self.length = length
+        # self.length = length
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
         print("Tokenizing...", end="", flush=True)
-        tokens = [self.tokenizer.encode(x, max_length=self.length, pad_to_max_length=True) for x in input]
+        tokens = [self.tokenizer.encode(x, max_length=32, pad_to_max_length=True) for x in input]
         print("done")
 
         ids = torch.tensor(tokens)
