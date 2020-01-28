@@ -1,9 +1,11 @@
-from autogoal.grammar import Sampler, GraphGrammar, Graph
-from keras.layers import concatenate, Input, Dense
+from typing import Optional
+
+from autogoal.contrib.keras._grammars import sequence_classifier_grammar
+from autogoal.grammar import Graph, GraphGrammar, Sampler
+from autogoal.kb import CategoricalVector, Tensor3, Tuple
+from keras.layers import Dense, Input, concatenate
 from keras.models import Model
 from keras.utils import to_categorical
-
-from typing import Optional
 
 
 class KerasNeuralNetwork:
@@ -15,6 +17,24 @@ class KerasNeuralNetwork:
         self._epochs = epochs
         self._compile_kwargs = compile_kwargs
         self._model: Optional[Model] = None
+        self._mode = "train"
+
+    def train(self):
+        self._mode = "train"
+
+    def eval(self):
+        self._model = "eval"
+
+    def run(self, input):
+        if self._mode == "train":
+            X, y = input
+            self.fit(X, y)
+            return y
+        if self._mode == "eval":
+            X, _ = input
+            return self.predict(X)
+
+        assert False, "Invalid mode %s" % self._mode
 
     def __repr__(self):
         return (
@@ -29,11 +49,11 @@ class KerasNeuralNetwork:
 
         return self._model
 
-    def sample(self, sampler: Sampler = None):
+    def sample(self, sampler: Sampler = None, max_iterations=None):
         if sampler is None:
             sampler = Sampler()
 
-        graph = self.grammar.sample(sampler=sampler)
+        graph = self.grammar.sample(sampler=sampler, max_iterations=max_iterations)
         self._build_nn(graph)
 
     def _build_nn(self, graph: Graph):
@@ -106,14 +126,14 @@ class KerasClassifier(KerasNeuralNetwork):
         return [self._inverse_classes[yi] for yi in predictions]
 
 
-from autogoal.contrib.keras._grammars import sequence_classifier_grammar
-
-
 class KerasSequenceClassifier(KerasClassifier):
-    def __init__(self, tokens, embedding_size, *args, **kwargs):
+    def __init__(self, embedding_size=768, *args, **kwargs):
         super().__init__(
             grammar=sequence_classifier_grammar(),
-            input_shape=(tokens, embedding_size),
+            input_shape=(None, embedding_size),
             *args,
             **kwargs
         )
+
+    def run(self, input: Tuple(Tensor3(), CategoricalVector())) -> CategoricalVector():
+        return super().run(input)
