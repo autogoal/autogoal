@@ -2,6 +2,7 @@ from autogoal.ml import AutoClassifier
 from autogoal.datasets import haha
 from autogoal.search import Logger, PESearch, ConsoleLogger, ProgressLogger, MemoryLogger
 from autogoal.kb import List, Sentence, Tuple, CategoricalVector
+from autogoal.contrib import find_classes
 
 import argparse
 
@@ -14,6 +15,9 @@ parser.add_argument("--popsize", type=int, default=10)
 args = parser.parse_args()
 
 print(args)
+
+for cls in find_classes():
+    print("Using: %s" % cls.__name__)
 
 classifier = AutoClassifier(
     input=List(Sentence()),
