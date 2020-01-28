@@ -28,11 +28,11 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
         types_queue.append(input)
 
     types_seen = set()
-    
+
     while types_queue:
         output_type = types_queue.pop(0)
 
-        def build(internal_output, depth):       
+        def build(internal_output, depth):
             if internal_output in types_seen:
                 return
 
@@ -55,7 +55,6 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 list_pairs.add(annotations)
                 registry.append(other_wrapper)
                 types_queue.append(_get_annotations(other_wrapper).output)
-                print(other_wrapper)
 
         depth = 0
 
@@ -95,7 +94,6 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 other_wrapper = build_composite_tuple(index, output_type, output_tuple_type)
                 list_tuples.add((index, output_type, output_tuple_type))
                 registry.append(other_wrapper)
-                print(other_wrapper)
 
                 open_nodes.append(other_wrapper)
                 G.add_edge(node, other_wrapper)
@@ -172,7 +170,7 @@ class Pipeline:
             elif hasattr(step, "send"):
                 step.send(msg, *args, **kwargs)
                 found = True
-        
+
         if not found:
             warnings.warn(f'No step answered message {msg}.')
 

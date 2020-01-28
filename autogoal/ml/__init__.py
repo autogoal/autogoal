@@ -1,5 +1,12 @@
-from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous, Tuple
+from autogoal.search import RandomSearch, PESearch
+from autogoal.kb import (
+    build_pipelines,
+    CategoricalVector,
+    List,
+    Word,
+    MatrixContinuous,
+    Tuple,
+)
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -12,7 +19,7 @@ class AutoClassifier:
         self,
         input=None,
         *,
-        search_algorithm=RandomSearch,
+        search_algorithm=PESearch,
         search_kwargs={},
         search_iterations=100,
         include_filter=".*",
@@ -21,6 +28,7 @@ class AutoClassifier:
         errors="warn",
         cross_validation="median",
         cross_validation_steps=3,
+        registry=None,
     ):
         self.input = input
         self.search_algorithm = search_algorithm
@@ -32,14 +40,17 @@ class AutoClassifier:
         self.errors = errors
         self.cross_validation = cross_validation
         self.cross_validation_steps = cross_validation_steps
+        self.registry = registry
 
     def fit(self, X, y, **kwargs):
+        registry = self.registry or find_classes(
+            include=self.include_filter, exclude=self.exclude_filter
+        )
+
         self.pipeline_builder_ = build_pipelines(
             input=Tuple(self._start_type(), CategoricalVector()),
             output=CategoricalVector(),
-            registry=find_classes(
-                include=self.include_filter, exclude=self.exclude_filter
-            ),
+            registry=registry,
         )
 
         search = self.search_algorithm(
@@ -49,7 +60,9 @@ class AutoClassifier:
             **self.search_kwargs,
         )
 
-        self.best_pipeline_, self.best_score_ = search.run(self.search_iterations, **kwargs)
+        self.best_pipeline_, self.best_score_ = search.run(
+            self.search_iterations, **kwargs
+        )
 
         self.best_pipeline_.send("train")
         self.best_pipeline_.run((X, y))

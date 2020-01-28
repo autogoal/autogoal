@@ -4,9 +4,10 @@ import numpy as np
 
 from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, List
 from autogoal.grammar import Discrete
-from autogoal.utils import CacheManager
+from autogoal.utils import CacheManager, nice_repr
 
 
+@nice_repr
 class BertEmbedding:
     """
     Transforms a sentence into a list of vector embeddings using a Bert pretrained English model.
