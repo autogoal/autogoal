@@ -37,9 +37,11 @@ class KerasNeuralNetwork:
         assert False, "Invalid mode %s" % self._mode
 
     def __repr__(self):
+        parameters = self._model.count_params() if self._model else None
+
         return (
-            "KerasNeuralNetwork(grammar=(...), input_shape=%r, epochs=%r, compile_kwargs=%r)"
-            % (self._input_shape, self._epochs, self._compile_kwargs)
+            "KerasNeuralNetwork(parameters=%i, input_shape=%r, epochs=%r, compile_kwargs=%r)"
+            % (parameters, self._input_shape, self._epochs, self._compile_kwargs)
         )
 
     @property

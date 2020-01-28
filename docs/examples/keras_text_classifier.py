@@ -14,24 +14,4 @@ classifier = AutoClassifier(
 
 
 Xtrain, Xtest, ytrain, ytest = haha.load()
-
 classifier.fit(Xtrain, ytrain, logger=[ConsoleLogger(), ProgressLogger()])
-
-# bert = BertEmbedding(32)
-# x = bert.run(
-#     [
-#         "this is an english sentence for bert",
-#         "another sentence",
-#         "a longer sentence that some words will be removed for sure, not really, but now it is",
-#     ]
-# )
-
-# print(x.shape)
-
-# classifier = KerasSequenceClassifier(None, 768)
-
-# # for i in range(10):
-# classifier.sample()
-# classifier.model.summary()
-
-# classifier.fit(x, np.asarray([True, False, True]))
