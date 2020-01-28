@@ -370,6 +370,10 @@ class Synset(DataType):
     pass
 
 
+class Tensor3(DataType):
+    pass
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner

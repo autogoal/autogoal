@@ -42,7 +42,7 @@ class Graph(nx.DiGraph):
         for node, in_nodes in self.build_order():
             in_values = [previous_values[n] for n in in_nodes]
             value = function(node, in_nodes, in_values)
-            
+
             if not list(self.neighbors(node)):
                 final_values.append(value)
 
@@ -224,6 +224,20 @@ class Block(GraphPattern):
         for item in items:
             self._add_in_nodes(graph, in_nodes, item)
             self._add_out_nodes(graph, out_nodes, item)
+
+
+class Epsilon(GraphPattern):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
+        for u in in_nodes:
+            for v in out_nodes:
+                graph.add_edge(u, v)
 
 
 class GraphGrammar(Grammar):

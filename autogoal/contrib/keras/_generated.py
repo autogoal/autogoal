@@ -2,7 +2,7 @@ from keras.layers import Conv1D as _Conv1D
 from keras.layers import Dense as _Dense
 from keras.layers import Embedding as _Embedding
 from keras.layers import LSTM as _LSTM
-from keras.layers import Reshape, MaxPool1D, Flatten
+from keras.layers import Reshape, MaxPool1D, Flatten, Bidirectional
 
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 
@@ -42,6 +42,52 @@ class Seq2VecLSTM(_LSTM):
             dropout=dropout,
             recurrent_dropout=recurrent_dropout,
             return_sequences=False,
+        )
+
+
+class Seq2SeqBiLSTM(Bidirectional):
+    def __init__(
+        self,
+        merge_mode: Categorical("sum", "mul", "concat", "ave"),
+        units: Discrete(32, 1024),
+        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
+        dropout: Continuous(0, 0.5),
+        recurrent_dropout: Continuous(0, 0.5),
+    ):
+        super().__init__(
+            layer=_LSTM(
+                units=units,
+                activation=activation,
+                recurrent_activation=recurrent_activation,
+                dropout=dropout,
+                recurrent_dropout=recurrent_dropout,
+                return_sequences=True,
+            ),
+            merge_mode=merge_mode,
+        )
+
+
+class Seq2VecBiLSTM(Bidirectional):
+    def __init__(
+        self,
+        merge_mode: Categorical("sum", "mul", "concat", "ave"),
+        units: Discrete(32, 1024),
+        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
+        dropout: Continuous(0, 0.5),
+        recurrent_dropout: Continuous(0, 0.5),
+    ):
+        super().__init__(
+            layer=_LSTM(
+                units=units,
+                activation=activation,
+                recurrent_activation=recurrent_activation,
+                dropout=dropout,
+                recurrent_dropout=recurrent_dropout,
+                return_sequences=False,
+            ),
+            merge_mode=merge_mode,
         )
 
 

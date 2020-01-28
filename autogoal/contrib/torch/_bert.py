@@ -1,7 +1,8 @@
 from transformers import BertModel, BertTokenizer
 import torch
+import numpy as np
 
-from autogoal.kb import Sentence, MatrixContinuousDense
+from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, List
 from autogoal.grammar import Discrete
 from autogoal.utils import CacheManager
 
@@ -18,7 +19,7 @@ class BertEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self, length: Discrete(16, 256)):
+    def __init__(self, length: Discrete(16, 512)):
         self.model = CacheManager.instance().get(
             "bert-model", lambda: BertModel.from_pretrained("bert-base-uncased")
         )
@@ -27,12 +28,11 @@ class BertEmbedding:
         )
         self.length = length
 
-    def run(self, input: Sentence(language="english")) -> MatrixContinuousDense():
-        tokens = self.tokenizer.encode(input)
-        ids = torch.tensor([tokens])
+    def run(self, input: List(Sentence(language="english"))) -> Tensor3():
+        tokens = [self.tokenizer.encode(x, max_length=self.length, pad_to_max_length=True) for x in input]
+        ids = torch.tensor(tokens)
 
         with torch.no_grad():
             output = self.model(ids)[0].numpy()
 
-        output = output.reshape((len(tokens), -1))
         return output
