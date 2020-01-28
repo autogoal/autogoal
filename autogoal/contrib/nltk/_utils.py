@@ -164,7 +164,6 @@ def is_lemmatizer(cls, verbose=False):
 
     inputs = []
     output = kb.Stem()
-
     for input_type in [kb.Word()]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
@@ -316,7 +315,6 @@ def is_classifier(cls, verbose=False):
     inputs = []
 
     #TODO: Fix somehow compatibility with nltk classifiers
-
     inputs = combine_types(*inputs)
 
     if inputs:
@@ -371,12 +369,10 @@ def is_word_list(obj):
     """
     try:
         oset = set()
-
         for word in obj:
             if len(word.split()) > 1:
                 return False
             oset.add(word)
-
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
@@ -394,13 +390,11 @@ def is_word_list_list(obj):
     """
     try:
         oset = set()
-
         for sent in obj:
             for word in sent:
                 if len(word.split()) > 1:
                     return False
                 oset.add(word)
-
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
@@ -464,7 +458,6 @@ def is_text_list_list(obj):
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
-
 
 DATA_RESOLVERS = {
     kb.Stem():is_word,

@@ -496,7 +496,7 @@ of `1000` different random pipelines.
 
 ```python
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
-best, score = random_search.run(100)
+best, score = random_search.run(1000)
 ```
 
 !!! note

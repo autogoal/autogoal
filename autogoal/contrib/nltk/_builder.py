@@ -38,6 +38,23 @@ languages = [
 
 languages_re = re.compile("|".join(languages))
 
+base_classes = {"classifier":"NltkClassifier",
+                "clusterer":"NltkClusterer",
+                "sent_tokenizer":"NltkTokenizer",
+                "word_tokenizer":"NltkTokenizer",
+                "lemmatizer":"NltkLemmatizer",
+                "stemmer":"NltkStemmer",
+                "word_embbeder":"SklearnWrapper",
+                "doc_embbeder":"SklearnWrapper"}
+
+GENERATION_RULES = dict(
+    SnowballStemmer = dict(
+        assume = True,
+        assume_input=Word(),
+        assume_output=Stem()
+    ),
+)
+
 
 class NltkTokenizer:
     def run(self, input):
@@ -116,7 +133,6 @@ def build_nltk_wrappers():
     counter.close()
     manager.stop()
 
-
 def _write_class(cls, fp):
     try:
         args = _get_args(cls)
@@ -126,7 +142,6 @@ def _write_class(cls, fp):
 
     rules = GENERATION_RULES.get(cls.__name__)
     assumed = False
-
     if rules:
         if rules.get("assume"):
             assumed = True
@@ -260,7 +275,6 @@ def _find_parameter_values(parameter, cls):
 def _find_language_values(cls):
     global languages_re
     documentation = cls.__doc__
-
     return set(languages_re.findall(str.lower(documentation)))
 
 
@@ -278,6 +292,8 @@ def _get_args(cls):
     args = args[-len(specs) :]
 
     args_map = {k: v for k, v in zip(args, specs)}
+
+
 
     drop_args = [
         "url",

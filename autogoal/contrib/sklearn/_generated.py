@@ -53,6 +53,28 @@ class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
         return SklearnTransformer.run(self, input)
 
 
+from sklearn.cluster._agglomerative import FeatureAgglomeration as _FeatureAgglomeration
+
+class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
+    def __init__(
+        self,
+        n_clusters: Discrete(min=1, max=3),
+        affinity: Categorical('euclidean'),
+        compute_full_tree: Categorical('auto'),
+        linkage: Categorical('average', 'complete', 'single', 'ward')
+    ):
+        SklearnTransformer.__init__(self)
+        _FeatureAgglomeration.__init__(
+            self,
+            n_clusters=n_clusters,
+            affinity=affinity,
+            compute_full_tree=compute_full_tree,
+            linkage=linkage
+        )
+
+    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
+       return SklearnTransformer.run(self, input)
+
 from sklearn.cluster._birch import Birch as _Birch
 
 
@@ -221,7 +243,6 @@ class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
 
 
 from sklearn.decomposition._nmf import NMF as _NMF
-
 
 class NMF(_NMF, SklearnTransformer):
     def __init__(
@@ -732,7 +753,7 @@ from sklearn.linear_model._passive_aggressive import (
 class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator):
     def __init__(
         self,
-        C: Continuous(min=-9.995, max=9.991),
+        C: Continuous(min=-9.973, max=9.991),
         fit_intercept: Boolean(),
         tol: Continuous(min=-0.005, max=0.001),
         early_stopping: Boolean(),
