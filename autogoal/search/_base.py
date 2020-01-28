@@ -34,6 +34,11 @@ class SearchAlgorithm:
         self._memory_limit = memory_limit
         self._early_stop = early_stop
 
+        if self._evaluation_timeout > 0 or self._memory_limit > 0:
+            self._fitness_fn = RestrictedWorker(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            )
+
     def _identity(self, x):
         return x
 
@@ -72,12 +77,14 @@ class SearchAlgorithm:
                     try:
                         solution = self._generator_fn(self._build_sampler())
                     except Exception as e:
-                        logger.error("Error while generating solution: %s" %e, solution)
+                        logger.error(
+                            "Error while generating solution: %s" % e, solution
+                        )
                         continue
 
                     try:
                         logger.sample_solution(solution)
-                        fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
+                        fn = self._fitness_fn(solution)
                     except Exception as e:
                         fn = 0
                         logger.error(e, solution)
