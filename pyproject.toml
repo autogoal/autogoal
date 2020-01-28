@@ -40,7 +40,6 @@ mkdocs-material = "^4.6.0"
 mkautodoc = "^0.1.0"
 wikipedia = "^1.4.0"
 transformers = "^2.3.0"
-dask = "^2.10.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

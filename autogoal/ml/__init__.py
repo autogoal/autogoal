@@ -76,14 +76,16 @@ class AutoClassifier:
         return self.input or MatrixContinuous()
 
     def _make_fitness_fn(self, X, y):
-        X = np.asarray(X)
+        if isinstance(X, list):
+            X = np.asarray(X)
+
         y = np.asarray(y)
 
         def fitness_fn(pipeline):
             scores = []
 
             for _ in range(self.cross_validation_steps):
-                indices = np.arange(0, len(X))
+                indices = np.arange(0, X.shape[0])
                 np.random.shuffle(indices)
                 split_index = int(self.validation_split * len(indices))
                 train_indices = indices[:split_index]

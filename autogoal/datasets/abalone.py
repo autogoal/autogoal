@@ -75,6 +75,6 @@ def _load_numeric(X, y):
 
 
 def _load_onehot(X, y):
-    vec = DictVectorizer(sparse=False)
+    vec = DictVectorizer(sparse=True)
 
     return vec.fit_transform(X), y
