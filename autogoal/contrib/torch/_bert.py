@@ -30,14 +30,14 @@ class BertEmbedding:
         self.length = length
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
-        print("Tokenizing...", end="")
+        print("Tokenizing...", end="", flush=True)
         tokens = [self.tokenizer.encode(x, max_length=self.length, pad_to_max_length=True) for x in input]
         print("done")
 
         ids = torch.tensor(tokens)
 
         with torch.no_grad():
-            print("Embedding...", end="")
+            print("Embedding...", end="", flush=True)
             output = self.model(ids)[0].numpy()
             print("done")
 
