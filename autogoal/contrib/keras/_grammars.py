@@ -26,25 +26,4 @@ def sequence_classifier_grammar():
     grammar.add("Layer", Path(Dense, "Layer"))
     grammar.add("Layer", Epsilon())
 
-    # # productions for Preprocessing
-    # grammar.add("PreprocessingModule", Path(Dense, Reshape2D))
-
-    # # productions for Reduction
-    # grammar.add("ReductionModule", "ConvModule")
-    # grammar.add("ReductionModule", "DenseModule")
-    # grammar.add("ConvModule", Path(Conv1D, MaxPool1D, "ConvModule"))
-    # grammar.add("ConvModule", Path(Conv1D, MaxPool1D))
-
-    # # productions for Features
-    # grammar.add("FeaturesModule", Path(Flatten, "DenseModule"))
-    # # TODO: Attention
-
-    # # productions for Classification
-    # grammar.add("ClassificationModule", "DenseModule")
-
-    # # productions to expand Dense layers
-    # grammar.add("DenseModule", Path(Dense, "DenseModule"))
-    # grammar.add("DenseModule", Block(Dense, "DenseModule"))
-    # grammar.add("DenseModule", Dense)
-
     return grammar
