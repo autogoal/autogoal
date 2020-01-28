@@ -37,13 +37,18 @@ class Graph(nx.DiGraph):
         Returns the last of the values computed.
         """
         previous_values = {}
+        final_values = []
 
         for node, in_nodes in self.build_order():
             in_values = [previous_values[n] for n in in_nodes]
             value = function(node, in_nodes, in_values)
+            
+            if not list(self.neighbors(node)):
+                final_values.append(value)
+
             previous_values[node] = value
 
-        return value
+        return final_values
 
     def contains_any(self, *items):
         return any((node in items) for node in self)
@@ -75,6 +80,7 @@ def _get_generated_class(name):
     return clss
 
 
+@nice_repr
 class Production:
     def __init__(self, pattern, replacement, *, initializer=None):
         if not isinstance(pattern, Graph):
@@ -87,7 +93,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.initializer = initializer or default_initializer
+        self._initializer = initializer or default_initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -122,10 +128,13 @@ class Production:
 
         graph.remove_node(node)
         self.replacement.build(
-            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self.initializer
+            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self._initializer
         )
 
         return graph
+
+    def __repr__(self):
+        return "Production(Pa)"
 
 
 class GraphPattern:
@@ -273,6 +282,9 @@ class GraphGrammar(Grammar):
             max_iterations -= 1
 
         return symbol
+
+    def __repr__(self):
+        return repr(self._productions)
 
 
 @nice_repr

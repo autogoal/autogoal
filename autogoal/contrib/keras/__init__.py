@@ -8,4 +8,5 @@ except:
     raise
 
 
-from ._base import KerasNeuralNetwork, KerasClassifier
+from ._base import KerasNeuralNetwork, KerasClassifier, KerasSequenceClassifier
+from ._grammars import sequence_classifier_grammar

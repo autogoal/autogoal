@@ -1,5 +1,5 @@
 from autogoal.grammar import Sampler, GraphGrammar, Graph
-from keras.layers import concatenate, Input
+from keras.layers import concatenate, Input, Dense
 from keras.models import Model
 from keras.utils import to_categorical
 
@@ -8,11 +8,7 @@ from typing import Optional
 
 class KerasNeuralNetwork:
     def __init__(
-        self,
-        grammar: GraphGrammar,
-        input_shape=None,
-        epochs=10,
-        **compile_kwargs
+        self, grammar: GraphGrammar, input_shape=None, epochs=10, **compile_kwargs
     ):
         self.grammar = grammar
         self._input_shape = input_shape
@@ -22,7 +18,7 @@ class KerasNeuralNetwork:
 
     def __repr__(self):
         return (
-            "KerasNeuralNetwork(grammar=<...>, input_shape=%r, epochs=%r, compile_kwargs=%r)"
+            "KerasNeuralNetwork(grammar=(...), input_shape=%r, epochs=%r, compile_kwargs=%r)"
             % (self._input_shape, self._epochs, self._compile_kwargs)
         )
 
@@ -57,6 +53,9 @@ class KerasNeuralNetwork:
         output_y = graph.apply(build_model)
         final_ouput = self._build_output(output_y)
 
+        if "optimizer" not in self._compile_kwargs:
+            self._compile_kwargs["optimizer"] = "adam"
+
         self._model = Model(inputs=input_x, outputs=final_ouput)
         self._model.compile(**self._compile_kwargs)
 
@@ -79,9 +78,24 @@ class KerasNeuralNetwork:
 
 
 class KerasClassifier(KerasNeuralNetwork):
+    def __init__(self, classes=2, *args, **kwargs):
+        self._classes = classes
+        super().__init__(*args, **kwargs)
+
+    def _build_output(self, outputs):
+        if len(outputs) > 1:
+            outputs = concatenate(outputs)
+        else:
+            outputs = outputs[0]
+
+        if "loss" not in self._compile_kwargs:
+            self._compile_kwargs["loss"] = "categorical_crossentropy"
+
+        return Dense(units=self._classes, activation="softmax")(outputs)
+
     def fit(self, X, y):
         self._classes = {k: v for k, v in zip(set(y), range(len(y)))}
-        self._inverse_classes = {v:k for k,v in self._classes.items()}
+        self._inverse_classes = {v: k for k, v in self._classes.items()}
         y = [self._classes[yi] for yi in y]
         y = to_categorical(y)
         return super(KerasClassifier, self).fit(X, y)
@@ -90,3 +104,16 @@ class KerasClassifier(KerasNeuralNetwork):
         predictions = super(KerasClassifier, self).predict(X)
         predictions = predictions.argmax(axis=-1)
         return [self._inverse_classes[yi] for yi in predictions]
+
+
+from autogoal.contrib.keras._grammars import sequence_classifier_grammar
+
+
+class KerasSequenceClassifier(KerasClassifier):
+    def __init__(self, tokens, embedding_size, *args, **kwargs):
+        super().__init__(
+            grammar=sequence_classifier_grammar(),
+            input_shape=(tokens, embedding_size),
+            *args,
+            **kwargs
+        )
