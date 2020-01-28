@@ -142,3 +142,4 @@ dmypy.json
 PGE-*.json
 *.log
 *.kv
+dask-worker-space/*

@@ -23,6 +23,21 @@ from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.utils import nice_repr
 
+from joblib import parallel_backend
+
+
+try:
+    import dask
+    from dask.distributed import Client
+
+    DASK_CLIENT = Client(processes=False)
+    PARALLEL_BACKEND = 'dask'
+except ImportError:
+    PARALLEL_BACKEND = 'loky'
+
+
+print("Using backend: %s" % PARALLEL_BACKEND)
+
 
 @nice_repr
 class SklearnWrapper(metaclass=abc.ABCMeta):
@@ -55,12 +70,17 @@ class SklearnWrapper(metaclass=abc.ABCMeta):
 class SklearnEstimator(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        self.fit(X, y)
+
+        with parallel_backend(PARALLEL_BACKEND):
+            self.fit(X, y)
+
         return y
 
     def _eval(self, input):
         X, _ = input
-        return self.predict(X)
+
+        with parallel_backend(PARALLEL_BACKEND):
+            return self.predict(X)
 
     @abc.abstractmethod
     def fit(self, X, y):
@@ -74,11 +94,15 @@ class SklearnEstimator(SklearnWrapper):
 class SklearnTransformer(SklearnWrapper):
     def _train(self, input):
         X = input
-        return self.fit_transform(X)
+
+        with parallel_backend(PARALLEL_BACKEND):
+            return self.fit_transform(X)
 
     def _eval(self, input):
         X = input
-        return self.transform(X)
+
+        with parallel_backend(PARALLEL_BACKEND):
+            return self.transform(X)
 
     @abc.abstractmethod
     def fit_transform(self, X, y=None):
