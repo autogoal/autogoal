@@ -70,6 +70,16 @@ def load(target='is_humor', max_examples=None):
     3.25
 
     ```
+
+    Loading a subset of the dataset:
+
+    ```python
+    >>> Xtrain, Xtest, ytrain, ytest = load(max_examples=100)
+    >>> len(Xtrain), len(Xtest), len(ytrain), len(ytest)
+    (100, 100, 100, 100)
+
+    ```
+
     """
 
     train_df, test_df = load_raw(max_examples)

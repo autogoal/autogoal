@@ -56,6 +56,7 @@ class KerasNeuralNetwork:
 
         graph = self.grammar.sample(sampler=sampler, max_iterations=max_iterations)
         self._build_nn(graph)
+        return self
 
     def _build_nn(self, graph: Graph):
         input_x = self._build_input()

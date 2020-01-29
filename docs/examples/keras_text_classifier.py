@@ -9,9 +9,17 @@ from autogoal.search import ConsoleLogger, ProgressLogger
 classifier = AutoClassifier(
     input=List(Sentence()),
     registry=[KerasSequenceClassifier, BertEmbedding],
+    # search_kwargs=dict(memory_limit=4 * 1024 ** 3, evaluation_timeout=60),
     search_kwargs=dict(memory_limit=0, evaluation_timeout=0),
 )
 
 
-Xtrain, Xtest, ytrain, ytest = haha.load(max_examples=10)
+Xtrain, Xtest, ytrain, ytest = haha.load(max_examples=1000)
+
+# embedding = BertEmbedding()
+# tokens = embedding.run(Xtrain)
+
+# classifier = KerasSequenceClassifier().sample()
+# classifier.run((tokens, ytrain))
+
 classifier.fit(Xtrain, ytrain, logger=[ConsoleLogger(), ProgressLogger()])

@@ -87,12 +87,15 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         msoft, mhard = resource.getrlimit(resource.RLIMIT_AS)
         used_memory = self.get_used_memory()
 
-        if self.memory and self.memory > (used_memory + 50 * Mb):
+        if self.memory is None:
+            return
+
+        if self.memory > (used_memory + 50 * Mb):
             # memory may be restricted
             print("Restricting memory to %s" % self.memory, flush=True)
             resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
         else:
-            print("Cannot restrict memory to %s < %i" % (self.memory, used_memory))
+            raise ValueError("Cannot restrict memory to %s < %i" % (self.memory, used_memory + 50 * Mb))
 
     def run_restricted(self, *args, **kwargs):
         """
@@ -112,6 +115,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         if rprocess.exitcode == 0:
             result = result_bucket["result"]
         else:
+            rprocess.terminate()
             raise TimeoutError()
 
         if isinstance(result, Exception):  # Exception ocurred

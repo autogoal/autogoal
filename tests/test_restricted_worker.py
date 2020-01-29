@@ -41,3 +41,12 @@ def test_restrict_memory():
 
     with pytest.raises(MemoryError):
         fn(0, 10 ** 8)
+
+
+def test_restrict_memory_fails():
+    fn = RestrictedWorkerByJoin(func, timeout=None, memory=10 ** 3)
+
+    with pytest.raises(ValueError) as e:
+        fn(0, 10 ** 8)
+
+    assert isinstance(e.value, ValueError)

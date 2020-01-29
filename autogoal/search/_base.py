@@ -7,7 +7,7 @@ import math
 import traceback
 import sys
 
-from autogoal.utils import ResourceManager, RestrictedWorker, Min, Gb
+from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
 
 
 class SearchAlgorithm:
@@ -35,7 +35,7 @@ class SearchAlgorithm:
         self._early_stop = early_stop
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
-            self._fitness_fn = RestrictedWorker(
+            self._fitness_fn = RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 

@@ -6,6 +6,7 @@ class CacheManager:
 
     def get(self, name: str, func):
         if name not in self.cache:
+            print("Creating cached object '%s'" % name)
             self.cache[name] = func()
 
         return self.cache[name]
