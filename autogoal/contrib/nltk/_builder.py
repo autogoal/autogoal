@@ -136,13 +136,11 @@ class NltkClassifier(SklearnWrapper):
 class NltkTagger(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        # y expected to be a list of list of tagged words
         self._instance = self.tagger(train=y)
         return self._instance.tag_sents(X), y
     
     def _eval(self, input):
         X, y = input
-        # X expected to be a list of tokenized sentences
         return self._instance.tag_sents(X), y
     
 class NltkTrainedTagger(SklearnWrapper):
@@ -179,6 +177,7 @@ def build_nltk_wrappers():
     imports = _walk(nltk)
     imports += _walk(nltk.cluster)
     imports += _walk(gensim.models)
+    imports += _walk(nltk.chunk.named_entity)
     imports += _walk(nltk.tag)
 
     manager = enlighten.get_manager()

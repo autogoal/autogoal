@@ -14,10 +14,10 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
 DATA_TYPE_EXAMPLES = {
     kb.Tuple(kb.Word(), kb.Word()):("lorem", "ipsum"), # (str, str) Tagged token
     kb.List(kb.Tuple(kb.Word(), kb.Word())):[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
-    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):[("lorem", "ipsum")] * 10, # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
+    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
     kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()):(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
     kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())):[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
-    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):[(("lorem", "ipsum"),"ipsum")] * 10, # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
+    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
     kb.Stem():"ips",
     kb.Word():"ipsum",
     kb.Sentence():"It is the best of all movies.",
@@ -65,7 +65,6 @@ def is_algorithm(cls, verbose=False):
     if _is_tagger(cls):
         return "tagger"
     
-
     return False
 
 def _is_algorithm(cls, verbose = False):
@@ -128,6 +127,12 @@ def _is_trained_tagger(cls, verbose = False):
     if hasattr(cls, "train") and _is_tagger(cls, verbose):
         return True
     return False
+
+def _is_chunker(cls, verbose = False):
+    if hasattr(cls, "parse"):
+        return True
+    return False
+    
 
 def is_stemmer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk stemmer.
@@ -387,7 +392,14 @@ def is_tagger(cls, verbose=False):
     if inputs:
         return True, (inputs, output)
     else:
-        return is_pretrained_tagger(cls, verbose)
+        is_ptt = is_pretrained_tagger(cls, verbose)
+        is_ckr = is_chunker(cls, verbose)
+        
+        if is_ptt[0]:
+            return is_ptt
+        if is_ckr[0]:
+            return is_ckr
+        return False, None
 
 def is_chunker(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk chunker.
@@ -395,11 +407,11 @@ def is_chunker(cls, verbose=False):
 
     Examples:
 
-    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.chunk.named_entity import NEChunkParserTagger
     >>> from nltk.tokenize import PunktSentenceTokenizer
-    >>> is_sent_tokenizer(PunktSentenceTokenizer)
-    (True, (Document(), List(Sentence())))
-    >>> is_sent_tokenizer(LogisticRegression)
+    >>> is_chunker(NEChunkParserTagger)
+    (True, (List(List(Tuple(Word(), Word()))), List(List(Tuple(Tuple(Word(), Word()), Word())))))
+    >>> is_chunker(PunktSentenceTokenizer)
     (False, None)
 
     """
@@ -407,16 +419,16 @@ def is_chunker(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))
+    output = kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())))
 
-    for input_type in [kb.List(kb.List(kb.Word()))]:
+    for input_type in [kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
-            X_train = [[(word,word) for word in sentence] for sentence in X]
+            X_train = [[((word, postag), postag) for word, postag in sentence] for sentence in X]
             
-            tagger = cls(train=X_train)
-            y = tagger.tag_sents(X)
+            chunker = cls(train=X_train)
+            y = chunker.tag_sents(X)
 
             assert DATA_RESOLVERS[output](y)
             inputs.append(input_type)
@@ -656,7 +668,6 @@ def is_tagged_sentence_list(obj):
         return isinstance(obj, list) and all(is_tag_list(x) for x in obj)
     except:
         return False
-
 
 
 def is_chunk(obj):
