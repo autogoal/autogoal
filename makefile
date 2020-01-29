@@ -1,5 +1,6 @@
 BASE_VERSION := 3.6
 ALL_VERSIONS := 3.6
+ENVIRONMENT := cpu
 
 .PHONY: test-fast
 test-fast:
