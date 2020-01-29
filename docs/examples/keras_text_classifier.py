@@ -14,7 +14,7 @@ classifier = AutoClassifier(
 )
 
 
-Xtrain, Xtest, ytrain, ytest = haha.load(max_examples=1000)
+Xtrain, Xtest, ytrain, ytest = haha.load(max_examples=10)
 
 # embedding = BertEmbedding()
 # tokens = embedding.run(Xtrain)

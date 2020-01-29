@@ -26,7 +26,7 @@ class SearchAlgorithm:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
 
         self._generator_fn = generator_fn or self._build_sampler()
-        self._fitness_fn = fitness_fn or self._identity
+        self._fitness_fn = fitness_fn or (lambda x: x)
         self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
@@ -38,9 +38,6 @@ class SearchAlgorithm:
             self._fitness_fn = RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
-
-    def _identity(self, x):
-        return x
 
     def run(self, evaluations=None, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.

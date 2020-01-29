@@ -20,22 +20,30 @@ class BertEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self):#, length: Discrete(16, 512)):
-        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    def __init__(self):  # , length: Discrete(16, 512)):
+        self.device = (
+            torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        )
         print("Using device: %s" % self.device)
-
-        self.model = CacheManager.instance().get(
-            "bert-model", lambda: BertModel.from_pretrained("bert-base-uncased").to(self.device)
-        )
-        self.tokenizer = CacheManager.instance().get(
-            "bert-tokenizer", lambda: BertTokenizer.from_pretrained("bert-base-uncased")
-        )
-        # self.length = length
+        self.model = None
+        self.tokenizer = None
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
+        if self.model is None:
+            self.model = CacheManager.instance().get(
+                "bert-model",
+                lambda: BertModel.from_pretrained("bert-base-uncased").to(self.device),
+            )
+            self.tokenizer = CacheManager.instance().get(
+                "bert-tokenizer",
+                lambda: BertTokenizer.from_pretrained("bert-base-uncased"),
+            )
 
         print("Tokenizing...", end="", flush=True)
-        tokens = [self.tokenizer.encode(x, max_length=32, pad_to_max_length=True) for x in input]
+        tokens = [
+            self.tokenizer.encode(x, max_length=32, pad_to_max_length=True)
+            for x in input
+        ]
         print("done")
 
         ids = torch.tensor(tokens).to(self.device)

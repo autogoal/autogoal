@@ -35,7 +35,7 @@ class ErrorLogger(Logger):
 
 memory_logger = MemoryLogger()
 
-X_train, X_test, y_train, y_test = haha.load()
+X_train, X_test, y_train, y_test = haha.load(max_examples=100)
 
 classifier.fit(X_train, y_train, logger=[ErrorLogger(), ConsoleLogger(), ProgressLogger(), memory_logger])
 score = classifier.score(X_test, y_test)
