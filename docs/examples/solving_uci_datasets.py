@@ -75,7 +75,6 @@ else:
 # paramenters we received from the command line.
 
 classifier = AutoClassifier(
-    input=MatrixContinuousDense(),
     search_algorithm=PESearch,
     search_iterations=args.iterations,
     search_kwargs=dict(

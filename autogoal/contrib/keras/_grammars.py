@@ -2,15 +2,22 @@ from autogoal.contrib.keras._generated import *
 from autogoal.grammar import GraphGrammar, Path, Block, CfgInitializer, Epsilon
 
 
-def sequence_classifier_grammar():
-    grammar = GraphGrammar(
-        start=Path(
-            "PreprocessingModule",
-            "ReductionModule",
-            "FeaturesModule",
-        ),
-        initializer=CfgInitializer(),
-    )
+def build_grammar(preprocessing=False, reduction=False, features=False):
+    modules = []
+
+    if preprocessing:
+        modules.append("PreprocessingModule")
+
+    if reduction:
+        modules.append("ReductionModule")
+
+    if features:
+        modules.append("FeaturesModule")
+
+    if not modules:
+        raise ValueError("At least one module must be activated.")
+
+    grammar = GraphGrammar(start=Path(*modules), initializer=CfgInitializer())
 
     grammar.add("PreprocessingModule", Path("Recurrent", "PreprocessingModule"))
     grammar.add("PreprocessingModule", Epsilon())

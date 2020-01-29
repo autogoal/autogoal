@@ -9,8 +9,8 @@ except:
 
 
 from ._base import KerasNeuralNetwork, KerasClassifier, KerasSequenceClassifier
-from ._grammars import sequence_classifier_grammar
+from ._grammars import build_grammar
 
 
 def find_classes(self, include=None, exclude=None):
-    return [KerasSequenceClassifier]
+    return [KerasSequenceClassifier, KerasClassifier]

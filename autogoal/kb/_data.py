@@ -4,6 +4,9 @@ import inspect
 from typing import Mapping
 from autogoal.grammar import Symbol, Union, Empty
 
+from scipy.sparse.base import spmatrix
+from numpy import ndarray
+
 
 def algorithm(input_type, output_type):
     def run_method(self, input: input_type) -> output_type:
@@ -262,6 +265,9 @@ def infer_type(obj):
     MatrixContinuousDense()
     >>> infer_type(np.asarray(['blue', 'red']))
     CategoricalVector()
+    >>> import scipy.sparse as sp
+    >>> infer_type(sp.coo_matrix((10,10)))
+    MatrixContinuousSparse()
 
     ```
     """
@@ -283,9 +289,13 @@ def infer_type(obj):
 
     if hasattr(obj, 'shape'):
         if len(obj.shape) == 1:
-            return CategoricalVector()
+            if isinstance(obj, ndarray):
+                return CategoricalVector()
         if len(obj.shape) == 2:
-            return MatrixContinuousDense()
+            if isinstance(obj, spmatrix):
+                return MatrixContinuousSparse()
+            if isinstance(obj, ndarray):
+                return MatrixContinuousDense()
 
     raise TypeError("Cannot infer type for %r" % obj)
 

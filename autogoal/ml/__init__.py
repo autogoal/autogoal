@@ -6,6 +6,7 @@ from autogoal.kb import (
     Word,
     MatrixContinuous,
     Tuple,
+    infer_type
 )
 
 from autogoal.contrib import find_classes
@@ -48,7 +49,7 @@ class AutoClassifier:
         )
 
         self.pipeline_builder_ = build_pipelines(
-            input=Tuple(self._start_type(), CategoricalVector()),
+            input=Tuple(self._start_type(X), CategoricalVector()),
             output=CategoricalVector(),
             registry=registry,
         )
@@ -72,8 +73,8 @@ class AutoClassifier:
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
         return (y_pred == y).astype(float).mean()
 
-    def _start_type(self):
-        return self.input or MatrixContinuous()
+    def _start_type(self, X):
+        return self.input or infer_type(X)
 
     def _make_fitness_fn(self, X, y):
         if isinstance(X, list):
