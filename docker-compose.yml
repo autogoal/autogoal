@@ -17,19 +17,19 @@ services:
     command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
     network_mode: host
 
-  autogoal-tester-gpu:
-    container_name: autogoal-dev-${PYTHON_VERSION}-gpu
-    image: apiad/autogoal-dev:${PYTHON_VERSION}-gpu
-    build:
-      dockerfile: gpu.dockerfile
-      context: "."
-      args:
-        PYTHON_VERSION: ${PYTHON_VERSION}
-    volumes:
-      - "./:/code"
-      - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
-      - "~/nltk_data:/root/nltk_data"
-      - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
-    command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
-    network_mode: host
-    runtime: nvidia
+  # autogoal-tester-gpu:
+  #   container_name: autogoal-dev-${PYTHON_VERSION}-gpu
+  #   image: apiad/autogoal-dev:${PYTHON_VERSION}-gpu
+  #   build:
+  #     dockerfile: gpu.dockerfile
+  #     context: "."
+  #     args:
+  #       PYTHON_VERSION: ${PYTHON_VERSION}
+  #   volumes:
+  #     - "./:/code"
+  #     - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
+  #     - "~/nltk_data:/root/nltk_data"
+  #     - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
+  #   command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
+  #   network_mode: host
+    # runtime: nvidia
