@@ -17,7 +17,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import _is_algorithm, get_input_output, is_algorithm
+from _utils import _is_algorithm, get_input_output, is_algorithm, _is_tagger, is_pretrained_tagger
 
 languages = [
     "arabic",
@@ -39,77 +39,6 @@ languages = [
 
 languages_re = re.compile("|".join(languages))
 
-class NltkTokenizer(SklearnWrapper):
-    def _train(self, input):
-        return self.tokenize(input)
-
-
-    def _eval(self, input):
-        return self.tokenize(input)
-    
-    @abc.abstractmethod
-    def tokenize(self, X, y=None):
-        pass
-
-class NltkStemmer(SklearnWrapper):
-    def _train(self, input):
-        #input is Word
-        return self.stem(input)
-
-    def _eval(self, input):
-        #input is Word
-        return self.stem(input)
-    
-    @abc.abstractmethod
-    def stem(self, X, y=None):
-        pass
-    
-class NltkLemmatizer(SklearnWrapper):
-    def _train(self, input):
-        return self.lemmatize(input)
-
-    def _eval(self, input):
-        return self.lemmatize(input)
-    
-    @abc.abstractmethod
-    def lemmatize(self, X, y=None):
-        pass
-
-class NltkClusterer(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.cluster(X)
-        return X, y
-    
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-    
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-    
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass
-
-class NltkClassifier(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.train(X) #TODO: fix train incompability for nltk classifiers
-        return X, y
-    
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-    
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-    
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass    
 
 base_classes = {"classifier":"NltkClassifier",
                 "clusterer":"NltkClusterer",
@@ -204,6 +133,29 @@ class NltkClassifier(SklearnWrapper):
     def classify(self, X, y=None):
         pass
 
+class NltkTagger(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        # y expected to be a list of list of tagged words
+        self._instance = self.tagger(train=y)
+        return self._instance.tag_sents(X), y
+    
+    def _eval(self, input):
+        X, y = input
+        # X expected to be a list of tokenized sentences
+        return self._instance.tag_sents(X), y
+    
+class NltkTrainedTagger(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        # X expected to be a tokenized sentence
+        return self.tag(X), y
+    
+    def _eval(self, input):
+        X, y = input
+        # X expected to be a tokenized sentence
+        return self.tag(X), y
+    
 
 base_classes = {
     "classifier": "NltkClassifier",
@@ -214,6 +166,8 @@ base_classes = {
     "stemmer": "NltkStemmer",
     "word_embbeder": "SklearnWrapper",
     "doc_embbeder": "SklearnWrapper",
+    "tagger": "NltkTagger",
+    "trained_tagger": "NltkTrainedTagger",
 }
 
 GENERATION_RULES = dict(
@@ -225,6 +179,7 @@ def build_nltk_wrappers():
     imports = _walk(nltk)
     imports += _walk(nltk.cluster)
     imports += _walk(gensim.models)
+    imports += _walk(nltk.tag)
 
     manager = enlighten.get_manager()
     counter = manager.counter(total=len(imports), unit="classes")
@@ -238,7 +193,7 @@ def build_nltk_wrappers():
             ## DO NOT MODIFY THIS FILE MANUALLY
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
-            from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkClusterer
+            from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkClusterer, NltkTagger, NltkTrainedTagger
             from autogoal.kb._data import *
             from autogoal.utils import nice_repr
             from numpy import inf, nan
@@ -282,11 +237,61 @@ def _write_class(cls, fp):
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
+    values_str = f",".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
     base_class = base_classes[is_algorithm(cls)]  # set correct base class
 
     print(cls)
 
+    if _is_tagger(cls) and not is_pretrained_tagger(cls)[0]:
+        fp.write(
+            textwrap.dedent(
+                f"""
+            from {cls.__module__} import {cls.__name__} as _{cls.__name__}
+
+            @nice_repr
+            class {cls.__name__}({base_class}):
+                def __init__(
+                    self,
+                    {args_str}
+                ):
+                    self.tagger = _{cls.__name__}
+                    self.values = dict({values_str})
+                    
+                    {base_class}.__init__(self)
+
+                def run(self, input: {input_str}) -> {output_str}:
+                    return {base_class}.run(self, input)
+            """
+            )
+        )
+    else:
+        fp.write(
+            textwrap.dedent(
+                f"""
+            from {cls.__module__} import {cls.__name__} as _{cls.__name__}
+
+            @nice_repr
+            class {cls.__name__}(_{cls.__name__}, {base_class}):
+                def __init__(
+                    self,
+                    {args_str}
+                ):
+                    {base_class}.__init__(self)
+                    _{cls.__name__}.__init__(
+                        self,
+                        {init_str}
+                    )
+
+                def run(self, input: {input_str}) -> {output_str}:
+                    return {base_class}.run(self, input)
+            """
+            )
+        )
+
+    fp.flush()
+
+def _write_tagger(cls, fp, args_str, init_str, input_str, output_str):
     fp.write(
         textwrap.dedent(
             f"""
@@ -298,9 +303,10 @@ def _write_class(cls, fp):
                 self,
                 {args_str}
             ):
+                self.tagger = _{cls.__name__}
                 {base_class}.__init__(self)
                 _{cls.__name__}.__init__(
-                    self,
+                    self
                     {init_str}
                 )
 
@@ -311,7 +317,6 @@ def _write_class(cls, fp):
     )
 
     fp.flush()
-
 
 def _walk(module, name="nltk"):
     imports = []
@@ -430,6 +435,8 @@ def _get_args(cls):
         "copy",
         "eps",
         "ignore_stopwords",
+        "verbose",
+        "load"
     ]
 
     for arg in drop_args:
@@ -450,6 +457,10 @@ def _get_args(cls):
             if values:
                 result[arg] = Categorical(*values)
                 continue
+            
+        if str.lower(arg) == "train" and _is_tagger(cls):
+            continue
+        
         raise Exception("No values found for positional argument %s " % (arg))
     return result
 

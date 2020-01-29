@@ -106,7 +106,7 @@ def get_tagged_tokens(text, tags):
     tags.sort(key=lambda x: x[1])
     offset = 0
     tagged_tokens = []
-    opened_tokens = []
+    opened_tokens = []    
     
     current_tag = ""
     current_tag_end = 0
@@ -126,9 +126,8 @@ def get_tagged_tokens(text, tags):
             tokens = token.split()
             if len(tokens) > 1:
                 opened_tokens.append((tokens[0], tag))
-                for tok in tokens[1:-1]:
+                for tok in tokens[1:]:
                     opened_tokens.append((tok, "I-" + current_tag))
-                opened_tokens.append((tokens[-1], "O-" + current_tag))
             else:
                 opened_tokens.append((token, tag))
                     

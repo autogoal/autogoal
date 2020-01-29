@@ -12,6 +12,12 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_string_list
 
 DATA_TYPE_EXAMPLES = {
+    kb.Tuple(kb.Word(), kb.Word()):("lorem", "ipsum"), # (str, str) Tagged token
+    kb.List(kb.Tuple(kb.Word(), kb.Word())):[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
+    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):[("lorem", "ipsum")] * 10, # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
+    kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()):(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
+    kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())):[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
+    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):[(("lorem", "ipsum"),"ipsum")] * 10, # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
     kb.Stem():"ips",
     kb.Word():"ipsum",
     kb.Sentence():"It is the best of all movies.",
@@ -21,6 +27,7 @@ DATA_TYPE_EXAMPLES = {
     kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
     kb.ContinuousVector(): np.random.rand(10),
     kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
+    kb.List(kb.Word()):["ipsu", "lorem"],
     kb.List(kb.Document()): ["abc ipsu lorem say hello", "ipsum lorem", "abc"] * 2,
     kb.List(kb.List(kb.Stem())): [["abc", "ipsu", "lorem"] * 10],
     kb.List(kb.List(kb.Word())): [["abc", "ipsu", "lorem"] * 10],
@@ -51,6 +58,13 @@ def is_algorithm(cls, verbose=False):
 
     if _is_doc_embbeder(cls):
         return "doc_embbeder"
+    
+    if is_pretrained_tagger(cls)[0]:
+        return "trained_tagger"
+    
+    if _is_tagger(cls):
+        return "tagger"
+    
 
     return False
 
@@ -62,7 +76,8 @@ def _is_algorithm(cls, verbose = False):
             _is_clusterer(cls, verbose) or\
             _is_classifier(cls, verbose) or\
             _is_word_embbeder(cls, verbose) or\
-            _is_doc_embbeder(cls, verbose)
+            _is_doc_embbeder(cls, verbose) or\
+            _is_tagger(cls, verbose)
 
 def _is_stemmer(cls, verbose=False):
     if hasattr(cls, "stem"):
@@ -104,6 +119,15 @@ def _is_doc_embbeder(cls, verbose = False):
         return True
     return False
 
+def _is_tagger(cls, verbose = False):
+    if hasattr(cls, "tag"):
+        return True
+    return False
+
+def _is_trained_tagger(cls, verbose = False):
+    if hasattr(cls, "train") and _is_tagger(cls, verbose):
+        return True
+    return False
 
 def is_stemmer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk stemmer.
@@ -322,7 +346,132 @@ def is_classifier(cls, verbose=False):
     else:
         return False, None
 
+def is_tagger(cls, verbose=False):
+    """Determine if `cls` corresponds to something that resembles an nltk pos tagger.
+    If True, returns the valid (input, output) types.
 
+    Examples:
+
+    >>> from nltk.tag import AffixTagger
+    >>> from nltk.tokenize import PunktSentenceTokenizer
+    >>> is_tagger(AffixTagger)
+    (True, (List(List(Word())), List(List(Tuple(Word(), Word())))))
+    >>> is_tagger(LogisticRegression)
+    (False, None)
+
+    """
+    if not _is_tagger(cls, verbose=verbose):
+        return False, None
+
+    inputs = []
+    output = kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))
+
+    for input_type in [kb.List(kb.List(kb.Word()))]:
+        try:
+            X = DATA_TYPE_EXAMPLES[input_type]
+
+            X_train = [[(word,word) for word in sentence] for sentence in X]
+            
+            tagger = cls(train=X_train)
+            # tagger = cls()
+            y = tagger.tag_sents(X)
+
+            assert DATA_RESOLVERS[output](y)
+            inputs.append(input_type)
+        except Exception as e:
+            if verbose:
+                warnings.warn(str(e))
+
+    inputs = combine_types(*inputs)
+
+    if inputs:
+        return True, (inputs, output)
+    else:
+        return is_pretrained_tagger(cls, verbose)
+
+def is_chunker(cls, verbose=False):
+    """Determine if `cls` corresponds to something that resembles an nltk chunker.
+    If True, returns the valid (input, output) types.
+
+    Examples:
+
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nltk.tokenize import PunktSentenceTokenizer
+    >>> is_sent_tokenizer(PunktSentenceTokenizer)
+    (True, (Document(), List(Sentence())))
+    >>> is_sent_tokenizer(LogisticRegression)
+    (False, None)
+
+    """
+    if not _is_tagger(cls, verbose=verbose):
+        return False, None
+
+    inputs = []
+    output = kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))
+
+    for input_type in [kb.List(kb.List(kb.Word()))]:
+        try:
+            X = DATA_TYPE_EXAMPLES[input_type]
+
+            X_train = [[(word,word) for word in sentence] for sentence in X]
+            
+            tagger = cls(train=X_train)
+            y = tagger.tag_sents(X)
+
+            assert DATA_RESOLVERS[output](y)
+            inputs.append(input_type)
+        except Exception as e:
+            if verbose:
+                warnings.warn(str(e))
+
+    inputs = combine_types(*inputs)
+
+    if inputs:
+        return True, (inputs, output)
+    else:
+        return False, None
+
+def is_pretrained_tagger(cls, verbose=False):
+    """Determine if `cls` corresponds to something that resembles an nltk sentence tokenizer.
+    If True, returns the valid (input, output) types.
+
+    Examples:
+
+    >>> from nltk.tag import AffixTagger
+    >>> from nltk.tag.perceptron import PerceptronTagger
+    >>> is_pretrained_tagger(PerceptronTagger)
+    (True, (List(Word()), List(Tuple(Word(), Word()))))
+    >>> is_pretrained_tagger(AffixTagger)
+    (False, None)
+
+    """
+    if not _is_tagger(cls, verbose=verbose):
+        return False, None
+
+    inputs = []
+    output = kb.List(kb.Tuple(kb.Word(), kb.Word()))
+
+    for input_type in [kb.List(kb.Word())]:
+        try:
+            X = DATA_TYPE_EXAMPLES[input_type]
+            
+            tagger = cls()
+            
+            y = tagger.tag(X)
+
+            assert DATA_RESOLVERS[output](y)
+            inputs.append(input_type)
+        except Exception as e:
+            if verbose:
+                warnings.warn(str(e))
+
+    inputs = combine_types(*inputs)
+
+    if inputs:
+        return True, (inputs, output)
+    else:
+        return False, None
+    
 def is_data_type(X, data_type):
     return DATA_RESOLVERS[data_type](X)
 
@@ -333,6 +482,7 @@ IO_TYPE_HANDLER = [
     is_sent_tokenizer,
     is_clusterer,
     is_classifier,
+    is_tagger,
     # is_word_embbeder,
     # is_doc_embbeder
 ]
@@ -459,7 +609,112 @@ def is_text_list_list(obj):
     except:
         return False
 
+def is_tag(obj):
+    """Determines if `obj` is a tuple of two strings.
+
+    Examples:
+
+    >>> is_tag(('hello', 'yes'))
+    True
+    >>> is_tag(('hi', 22))
+    False
+
+    """
+    try:
+        return isinstance(obj, tuple) and len(obj) == 2 and all((isinstance(x, str) or x == None) for x in obj)
+    except:
+        return False
+    
+def is_tag_list(obj):
+    """Determines if `obj` is a list of tuple of two strings.
+
+    Examples:
+
+    >>> is_tag_list([('hello', 'yes'), ('how', 'is')])
+    True
+    >>> is_tag_list(('hello', 'yes'))
+    False
+
+    """
+    try:
+        return isinstance(obj, list) and all(is_tag(x) for x in obj)
+    except:
+        return False
+
+def is_tagged_sentence_list(obj):
+    """Determines if `obj` is a list(list(tuple(str, str)))
+
+    Examples:
+
+    >>> is_tagged_sentence_list([[('hello', 'yes'), ('how', 'is')]])
+    True
+    >>> is_tagged_sentence_list([('hello', 'yes')])
+    False
+
+    """
+    try:
+        return isinstance(obj, list) and all(is_tag_list(x) for x in obj)
+    except:
+        return False
+
+
+
+def is_chunk(obj):
+    """Determines if `obj` is a tuple(tuple(str, str), str).
+
+    Examples:
+
+    >>> is_chunk((('hello', 'yes'),'how'))
+    True
+    >>> is_chunk(('hello', 'yes'))
+    False
+
+    """
+    try:
+        return isinstance(obj, tuple) and len(obj) == 2 and is_tag(obj[0]) and isinstance(obj[1], str)
+    except:
+        return False
+
+def is_chunk_list(obj):
+    """Determines if `obj` is a list(tuple(tuple(str, str), str)).
+
+    Examples:
+
+    >>> is_chunk_list([(('hello', 'yes'),'how'), (('are', 'you'), 'today')])
+    True
+    >>> is_chunk_list([('hello', 'yes'), ('how', 'are')])
+    False
+
+    """
+    try:
+        return isinstance(obj, list) and all(is_chunk(x) for x in obj)
+    except:
+        return False
+
+def is_chunked_sentence_list(obj):
+    """Determines if `obj` is a list(list(tuple(tuple(str, str), str))).
+
+    Examples:
+
+    >>> is_chunked_sentence_list([[(('hello', 'yes'),'how'), (('are', 'you'), 'today')]])
+    True
+    >>> is_chunked_sentence_list([('hello', 'yes'), ('how', 'are')])
+    False
+
+    """
+    try:
+        return isinstance(obj, list) and all(is_chunk_list(x) for x in obj)
+    except:
+        return False
+
+
 DATA_RESOLVERS = {
+    kb.Tuple(kb.Word(), kb.Word()):is_tag,
+    kb.List(kb.Tuple(kb.Word(), kb.Word())):is_tag_list,
+    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):is_tagged_sentence_list,
+    kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word):is_chunk,
+    kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())):is_chunk_list,
+    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):is_chunked_sentence_list,
     kb.Stem():is_word,
     kb.Word():is_word,
     kb.Sentence():is_sentence,
