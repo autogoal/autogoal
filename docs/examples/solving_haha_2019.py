@@ -11,6 +11,7 @@ parser.add_argument("--iterations", type=int, default=1000)
 parser.add_argument("--timeout", type=int, default=60)
 parser.add_argument("--memory", type=int, default=1)
 parser.add_argument("--popsize", type=int, default=10)
+parser.add_argument("--examples", type=int, default=None)
 
 args = parser.parse_args()
 
@@ -35,7 +36,7 @@ class ErrorLogger(Logger):
 
 memory_logger = MemoryLogger()
 
-X_train, X_test, y_train, y_test = haha.load(max_examples=100)
+X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)
 
 classifier.fit(X_train, y_train, logger=[ErrorLogger(), ConsoleLogger(), ProgressLogger(), memory_logger])
 score = classifier.score(X_test, y_test)
