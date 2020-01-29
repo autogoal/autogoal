@@ -120,5 +120,5 @@ Hour = 60 * Min
 
 
 from ._resource import ResourceManager
-from ._process import  RestrictedWorker
+from ._process import  RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager

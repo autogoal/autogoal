@@ -38,10 +38,8 @@ class RestrictedWorker:
             self._restrict()
             result = self.function(*args, **kwargs)
             result_bucket["result"] = result
-        except MemoryError:
-            result_bucket["result"] = Exception("Memory error")
         except Exception as e:
-            result_bucket["result"] = Exception(str(e))
+            result_bucket["result"] = e
 
     def run_restricted(self, *args, **kwargs):
         """
@@ -56,14 +54,12 @@ class RestrictedWorker:
         )
 
         rprocess.start()
-        # print("started process:", rprocess.pid)
         rprocess.join()
-        # print("ended process:", rprocess.pid)
         result = result_bucket["result"]
+
         if isinstance(result, Exception):  # Exception ocurred
-            # print("exception ocurred %s:" %result)
             raise result
-        # print("result:%g" %result)
+
         return result
 
     def get_used_memory(self):
@@ -79,3 +75,46 @@ class RestrictedWorker:
 
 def alarm_handler(*args):
     raise TimeoutError("process %d got to time limit" % os.getpid())
+
+
+class RestrictedWorkerByJoin(RestrictedWorker):
+    def __init__(self, function, timeout: int, memory: int):
+        self.function = function
+        self.timeout = timeout
+        self.memory = memory
+
+    def _restrict(self):
+        msoft, mhard = resource.getrlimit(resource.RLIMIT_AS)
+        used_memory = self.get_used_memory()
+
+        if self.memory and self.memory > (used_memory + 50 * Mb):
+            # memory may be restricted
+            print("Restricting memory to %s" % self.memory, flush=True)
+            resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
+        else:
+            print("Cannot restrict memory to %s < %i" % (self.memory, used_memory))
+
+    def run_restricted(self, *args, **kwargs):
+        """
+        Executes a given function with restricted amount of
+        CPU time and RAM memory usage
+        """
+        manager = multiprocessing.Manager()
+        result_bucket = manager.dict()
+
+        rprocess = multiprocessing.Process(
+            target=self._restricted_function, args=[result_bucket, args, kwargs]
+        )
+
+        rprocess.start()
+        rprocess.join(self.timeout)
+
+        if rprocess.exitcode == 0:
+            result = result_bucket["result"]
+        else:
+            raise TimeoutError()
+
+        if isinstance(result, Exception):  # Exception ocurred
+            raise result
+
+        return result
