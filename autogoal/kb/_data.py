@@ -379,6 +379,12 @@ class Sentiment(DataType):
 class Synset(DataType):
     pass
 
+class Postag(DataType):
+    pass
+
+class Chunktag(DataType):
+    pass
+
 
 class Tensor3(DataType):
     pass

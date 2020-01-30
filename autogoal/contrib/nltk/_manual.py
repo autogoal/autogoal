@@ -202,7 +202,7 @@ class NEChunkParserTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Tuple(Word(), Word())))) -> List(List(Tuple(Tuple(Word(), Word()), Word()))):
+    def run(self, input: List(List(Postag()))) -> List(List(Chunktag())):
         return NltkTagger.run(self, input)
 
 
@@ -210,8 +210,8 @@ class NEChunkParserTagger(NltkTagger):
 class GlobalChunker(SklearnWrapper):
     def __init__(
         self,
-        inner_trained_pos_tagger: algorithm(List(Word()), List(Tuple(Word(), Word()))),
-        inner_chunker: algorithm(List(List(Tuple(Word(), Word()))), List(List(Tuple(Tuple(Word(), Word()), Word()))))
+        inner_trained_pos_tagger: algorithm(List(Word()), List(Postag())),
+        inner_chunker: algorithm(List(List(Postag())), List(List(Chunktag())))
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
@@ -247,5 +247,5 @@ class GlobalChunker(SklearnWrapper):
         pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
         return self.inner_chunker.run((pos_tagged_sents_X, y))
     
-    def run(self, input: List(List(List(Word())))) -> List(List(List(Tuple(Tuple(Word(), Word()), Word())))):
+    def run(self, input: List(List(List(Word())))) -> List(List(List(Chunktag()))):
         return SklearnWrapper.run(self, input)

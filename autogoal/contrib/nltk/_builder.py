@@ -75,6 +75,16 @@ class NltkLemmatizer:
     def lemmatize(self, X):
         pass
 
+class NltkClusterer(SklearnWrapper):
+    def _train(self, input):
+        X, y = input
+        self.cluster(X)
+        return [self.classify(x) for x in X]
+    
+    def _eval(self, input):
+        X, y = input
+        return X, [self.classify(x) for x in X]
+    
 
 class NltkTagger(SklearnWrapper):
     def _train(self, input):
