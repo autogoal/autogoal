@@ -110,8 +110,8 @@ class AutoChunker:
 
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
-            input=self._start_type(),
-            output=List(List(Tuple(Tuple(Word(), Word()), Word()))),
+            input=self._start_type(), 
+            output=List(List(List(Tuple(Tuple(Word(), Word()), Word())))), # output: Tagged Documents
             registry=find_classes(
                 include=self.include_filter, exclude=self.exclude_filter
             ),
@@ -135,9 +135,10 @@ class AutoChunker:
         return (y_pred == y).astype(float).mean()
 
     def _start_type(self):
-        return self.input or MatrixContinuous()
+        return self.input
 
     def _make_fitness_fn(self, X, y):
+        #TODO: Integrate fitness function for meddocan
         X = np.asarray(X)
         y = np.asarray(y)
 

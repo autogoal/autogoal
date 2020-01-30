@@ -4,7 +4,7 @@ from nltk.corpus import sentiwordnet as swn
 from nltk.corpus import stopwords, wordnet
 from numpy import inf, nan
 
-from autogoal.contrib.nltk._builder import NltkTokenizer
+from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.kb import *
@@ -191,6 +191,9 @@ class SentimentWord:
 
         return sentiment
 
+
+from nltk.chunk.named_entity import NEChunkParserTagger as _NEChunkParserTagger
+
 @nice_repr
 class NEChunkParserTagger(NltkTagger):
     def __init__(self,):
@@ -201,9 +204,6 @@ class NEChunkParserTagger(NltkTagger):
 
     def run(self, input: List(List(Tuple(Word(), Word())))) -> List(List(Tuple(Tuple(Word(), Word()), Word()))):
         return NltkTagger.run(self, input)
-
-
-from nltk.tag.perceptron import PerceptronTagger as _PerceptronTagger
 
 
 @nice_repr
@@ -218,33 +218,34 @@ class GlobalChunker(SklearnWrapper):
         
         SklearnWrapper.__init__(self)
         
-    def exec(self, input):
-        X, y = input
-        # y expected to be a chunked documents list to train from
-        # with no pos tag
-        
-        raw_sentences_X = [sentence for document in X for sentence in document]
-        raw_sentences_y = [[word for word,_ in sentence] for document in y for sentence in document]
-        
-        tagged_sentences = [sentence for document in y for sentence in document]
-        pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
-        pos_tagged_sents_y = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_y]
-        
-        for i in range(len(tagged_sentences)):
-            for j in range(len(tagged_sentences[i])):
-                word, tag = tagged_sentences[i][j]
-                _, postag = pos_tagged_sents_y[i][j]
-                tagged_sentences[i][j] = ((word, postag), tag)
-        
-        # raw_sentences must be a list of tokenized sentences 
-        # tagged_sentences must be a list of tagged sentences in the form list(((str,str), str))
-        return self.inner_chunker.run((pos_tagged_sents_X, tagged_sentences))
-        
     def _train(self, input):
-        return self.exec(input)
+        X, y = input
+        raw_sentences_X = [sentence for document in X for sentence in document]
+        pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
+        
+        tagged_sentences = []
+        for i in range(len(y)):
+            for j in range(len(y[i])):
+                sentence = []
+                tags = []
+                for itoken in range(len(y[i][j])):
+                    y_sent = y[i][j]
+                    word, tag = y_sent[itoken]
+                    sentence.append(word)
+                    tags.append(tag)
+                    
+                postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
+                tagged_sentence = [ ((sentence[k], postag_sentence[k][1]), tags[k]) for k in range(len(sentence))]
+                if tagged_sentence:
+                    tagged_sentences.append(tagged_sentence)
+                
+        return self.inner_chunker.run((pos_tagged_sents_X, tagged_sentences))
     
     def _eval(self, input):
-        return self.exec(input)
+        X, y = input
+        raw_sentences_X = [sentence for document in X for sentence in document]
+        pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
+        return self.inner_chunker.run((pos_tagged_sents_X, y))
     
-    def run(self, input: List(List(List(Word())))) -> List(List(List(Tuple(Word(), Word())))):
+    def run(self, input: List(List(List(Word())))) -> List(List(List(Tuple(Tuple(Word(), Word()), Word())))):
         return SklearnWrapper.run(self, input)
