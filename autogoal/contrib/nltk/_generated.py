@@ -6,7 +6,6 @@ from autogoal.contrib.nltk._builder import (
     NltkStemmer,
     NltkTokenizer,
     NltkLemmatizer,
-    NltkClusterer,
     NltkTagger,
     NltkTrainedTagger,
 )
@@ -395,19 +394,6 @@ class TreebankWordTokenizer(_TreebankWordTokenizer, NltkTokenizer):
 
     def run(self, input: Sentence()) -> List(Word()):
         return NltkTokenizer.run(self, input)
-
-
-from nltk.cluster.gaac import GAAClusterer as _GAAClusterer
-
-
-@nice_repr
-class GAAClusterer(_GAAClusterer, NltkClusterer):
-    def __init__(self, num_clusters: Discrete(min=0, max=2), normalise: Boolean()):
-        NltkClusterer.__init__(self)
-        _GAAClusterer.__init__(self, num_clusters=num_clusters, normalise=normalise)
-
-    def run(self, input: MatrixContinuousDense()) -> CategoricalVector():
-        return NltkClusterer.run(self, input)
 
 
 from nltk.tag.perceptron import PerceptronTagger as _PerceptronTagger
