@@ -71,10 +71,10 @@ class SearchAlgorithm:
                 logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
-                no_improvement += 1
                 fns = []
 
                 for _ in range(self._pop_size):
+                    no_improvement += 1
                     solution = None
 
                     try:
@@ -112,22 +112,22 @@ class SearchAlgorithm:
                     evaluations -= 1
 
                     if evaluations <= 0:
+                        print("(!) Stopping since all evaluations are done." % (spent_time))
                         stop = True
                         break
 
                     spent_time = time.time() - start_time
-                    print("Timeout:", self._search_timeout, spent_time)
 
                     if (
                         self._search_timeout
                         and spent_time > self._search_timeout
                     ):
-                        print("(!) Stopping since time spent is %.2f" % (spent_time))
+                        print("(!) Stopping since time spent is %.2f." % (spent_time))
                         stop = True
                         break
 
                     if self._early_stop and no_improvement > self._early_stop:
-                        print("(!) Stopping since no improvement for %i" % no_improvement)
+                        print("(!) Stopping since no improvement for %i evaluations." % no_improvement)
                         stop = True
                         break
 

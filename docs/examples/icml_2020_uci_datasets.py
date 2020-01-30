@@ -50,6 +50,7 @@ parser.add_argument("--memory", type=int, default=1)
 parser.add_argument("--popsize", type=int, default=10)
 parser.add_argument("--epochs", type=int, default=1)
 parser.add_argument("--global-timeout", type=int, default=60 * 60)
+parser.add_argument("--early-stop", type=int, default=100)
 
 # The most important argument is this one, which selects the dataset.
 
@@ -94,6 +95,7 @@ for epoch in range(args.epochs):
                 pop_size=10,
                 evaluation_timeout=args.timeout,
                 memory_limit=args.memory * 1024 ** 3,
+                early_stop=args.early_stop,
                 search_timeout=args.global_timeout,
             ),
         )
@@ -127,6 +129,7 @@ for epoch in range(args.epochs):
                             pop_size=10,
                             evaluation_timeout=args.timeout,
                             memory_limit=args.memory * 1024 ** 3,
+                            early_stop=args.early_stop,
                             search_timeout=args.global_timeout,
                         ),
                     )
