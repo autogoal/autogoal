@@ -3,6 +3,7 @@ from keras.layers import Dense as _Dense
 from keras.layers import Embedding as _Embedding
 from keras.layers import LSTM as _LSTM
 from keras.layers import Reshape, MaxPool1D, Flatten, Bidirectional
+from keras.layers import TimeDistributed as _TimeDistributed
 
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 
@@ -109,3 +110,8 @@ class Dense(_Dense):
 class Conv1D(_Conv1D):
     def __init__(self, filters: Discrete(5, 20), kernel_size: Categorical(3, 5, 7)):
         super().__init__(filters=filters, kernel_size=kernel_size, padding="causal")
+
+
+class TimeDistributed(_TimeDistributed):
+    def __init__(self, layer:Dense):
+        super().__init__(layer)

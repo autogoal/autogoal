@@ -2,8 +2,8 @@ from typing import Optional
 
 from autogoal.contrib.keras._grammars import build_grammar
 from autogoal.grammar import Graph, GraphGrammar, Sampler
-from autogoal.kb import CategoricalVector, Tensor3, Tuple, MatrixContinuousDense
-from keras.layers import Dense, Input, concatenate
+from autogoal.kb import CategoricalVector, Tensor3, Tuple, MatrixContinuousDense, List
+from keras.layers import Dense, Input, concatenate, TimeDistributed
 from keras.models import Model
 from keras.utils import to_categorical
 from keras.callbacks import EarlyStopping
@@ -112,7 +112,7 @@ class KerasClassifier(KerasNeuralNetwork):
     def _build_input(self, X):
         return Input(shape=(X.shape[1],))
 
-    def _build_output(self, outputs, y):
+    def _build_output_layer(self, y):
         self._num_classes = y.shape[1]
 
         if len(outputs) > 1:
@@ -123,7 +123,10 @@ class KerasClassifier(KerasNeuralNetwork):
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = "categorical_crossentropy"
 
-        return Dense(units=self._num_classes, activation="softmax")(outputs)
+        return Dense(units=self._num_classes, activation="softmax")
+
+    def _build_output(self, outputs, y):
+        return self._build_output_layer(y)(outputs)
 
     def fit(self, X, y):
         self._classes = {k: v for k, v in zip(set(y), range(len(y)))}
@@ -156,4 +159,18 @@ class KerasSequenceClassifier(KerasClassifier):
         return Input(shape=(None, X.shape[2]))
 
     def run(self, input: Tuple(Tensor3(), CategoricalVector())) -> CategoricalVector():
+        return super().run(input)
+
+
+class KerasSequenceTagger(KerasClassifier):
+    def _build_grammar(self):
+        return build_grammar(preprocessing=True, features_time_distributed=True)
+
+    def _build_input(self, X):
+        return Input(shape=(None, X.shape[2]))
+
+    def _build_output(self, outputs, y):
+        return TimeDistributed(super()._build_output_layer(y))(outputs)
+
+    def run(self, input: Tuple(Tensor3(), List(CategoricalVector()))) -> List(CategoricalVector()):
         return super().run(input)
