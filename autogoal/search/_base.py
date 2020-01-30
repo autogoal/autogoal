@@ -74,7 +74,6 @@ class SearchAlgorithm:
                 fns = []
 
                 for _ in range(self._pop_size):
-                    no_improvement += 1
                     solution = None
 
                     try:
@@ -108,6 +107,8 @@ class SearchAlgorithm:
                         best_solution = solution
                         best_fn = fn
                         no_improvement = 0
+                    else:
+                        no_improvement += 1
 
                     evaluations -= 1
 

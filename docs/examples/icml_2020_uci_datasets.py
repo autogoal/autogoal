@@ -87,7 +87,6 @@ for epoch in range(args.epochs):
         # paramenters we received from the command line.
 
         classifier = AutoClassifier(
-            random_state=42,
             input=MatrixContinuousDense(),
             search_algorithm=PESearch,
             search_iterations=args.iterations,
