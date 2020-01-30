@@ -69,3 +69,17 @@
 #             ('text_preprocesser', self.text_preprocessing),
 #             ('classifier', self.classification)
 #         ])
+
+# from _generated import PerceptronTagger, NEChunkParserTagger
+# from _manual import GlobalChunker
+
+# gc = GlobalChunker(PerceptronTagger(), NEChunkParserTagger())
+
+# X = [[["Fernando", "Ruiz", "es", "un", "buen", "muchacho"]]]
+
+# y = [[[("Erne", "B-NAME"), ("Estevanell", "I-NAME"), ("es","O"), ("el","O"), ("mejor","O")],
+#      [("Jorgito", "B-NAME"), ("Estevanell", "I-NAME"), ("es","O"), ("muy","O"), ("bueno","O")],
+#      [("el","O"), ("mecanico","O"), ("se","O"), ("llama","O"), ("Facundo", "B-NAME")],
+#      [("Panfilo", "B-NAME"), ("es","O"), ("gracioso","O")]]]
+
+# print(gc.run((X, y))[0])

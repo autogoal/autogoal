@@ -17,7 +17,7 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from _utils import _is_algorithm, get_input_output, is_algorithm, _is_tagger, is_pretrained_tagger
+from ._utils import _is_algorithm, get_input_output, is_algorithm, _is_tagger, is_pretrained_tagger
 
 languages = [
     "arabic",
@@ -69,7 +69,6 @@ class NltkTokenizer(SklearnWrapper):
     def tokenize(self, X, y=None):
         pass
 
-
 class NltkStemmer(SklearnWrapper):
     def _train(self, input):
         # input is Word
@@ -83,7 +82,6 @@ class NltkStemmer(SklearnWrapper):
     def stem(self, X, y=None):
         pass
 
-
 class NltkLemmatizer(SklearnWrapper):
     def _train(self, input):
         return self.lemmatize(input)
@@ -94,7 +92,6 @@ class NltkLemmatizer(SklearnWrapper):
     @abc.abstractmethod
     def lemmatize(self, X, y=None):
         pass
-
 
 class NltkClusterer(SklearnWrapper):
     def _train(self, input):
@@ -113,7 +110,6 @@ class NltkClusterer(SklearnWrapper):
     @abc.abstractmethod
     def classify(self, X, y=None):
         pass
-
 
 class NltkClassifier(SklearnWrapper):
     def _train(self, input):
@@ -177,7 +173,7 @@ def build_nltk_wrappers():
     imports = _walk(nltk)
     imports += _walk(nltk.cluster)
     imports += _walk(gensim.models)
-    imports += _walk(nltk.chunk.named_entity)
+    # imports += _walk(nltk.chunk.named_entity)
     imports += _walk(nltk.tag)
 
     manager = enlighten.get_manager()
