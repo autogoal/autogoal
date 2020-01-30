@@ -51,6 +51,7 @@ parser.add_argument("--popsize", type=int, default=10)
 parser.add_argument("--epochs", type=int, default=1)
 parser.add_argument("--global-timeout", type=int, default=60 * 60)
 parser.add_argument("--early-stop", type=int, default=100)
+parser.add_argument("--token", default=None)
 
 # The most important argument is this one, which selects the dataset.
 
@@ -102,9 +103,15 @@ for epoch in range(args.epochs):
         # And run it.
 
         logger = MemoryLogger()
-        classifier.fit(
-            X_train, y_train, logger=[ProgressLogger(), ConsoleLogger(), logger]
-        )
+        loggers = [ProgressLogger(), ConsoleLogger(), logger]
+
+        if args.token:
+            from autogoal.contrib.telegram import TelegramBotLogger
+
+            telegram = TelegramBotLogger(token=args.token, name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`")
+            loggers.append(telegram)
+
+        classifier.fit(X_train, y_train, logger=loggers)
         score = classifier.score(X_test, y_test)
 
         # Let's see how it went.
