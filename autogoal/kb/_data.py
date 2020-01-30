@@ -139,12 +139,12 @@ def build_composite_list(input_type, output_type, depth=1):
         if d == 0:
             return t
 
-        return List(wrap(t, d-1))
+        return List(wrap(t, d - 1))
 
     input_wrapper = wrap(input_type, depth)
     output_wrapper = wrap(output_type, depth)
 
-    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
+    name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
 
     def init_method(self, inner: algorithm(input_type, output_type)):
         self.inner = inner
@@ -154,7 +154,7 @@ def build_composite_list(input_type, output_type, depth=1):
             if d == 0:
                 return self.inner.run(xs)
 
-            return [wrap_run(x, d-1) for x in xs]
+            return [wrap_run(x, d - 1) for x in xs]
 
         return wrap_run(input, depth)
 
@@ -165,19 +165,15 @@ def build_composite_list(input_type, output_type, depth=1):
         return getattr(self.inner, attr)
 
     def body(ns):
-        ns['__init__'] = init_method
-        ns['run'] = run_method
-        ns['__repr__'] = repr_method
-        ns['__getattr__'] = getattr_method
+        ns["__init__"] = init_method
+        ns["run"] = run_method
+        ns["__repr__"] = repr_method
+        ns["__getattr__"] = getattr_method
 
-    return types.new_class(
-        name=name,
-        bases=(),
-        exec_body=body
-    )
+    return types.new_class(name=name, bases=(), exec_body=body)
 
 
-def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
+def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     """
     Dynamically generate a class `CompositeAlgorithm` that wraps
     another algorithm to receive a Tuple but pass only one of the
@@ -186,7 +182,7 @@ def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
 
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
-    name = 'CompositeAlgorithm[%s, %s]' % (input_type, output_type)
+    name = "TupleAlgorithm"  # [%s, %s]' % (input_type, output_type)
 
     def init_method(self, inner: algorithm(internal_input, internal_output)):
         self.inner = inner
@@ -203,16 +199,12 @@ def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
         return getattr(self.inner, attr)
 
     def body(ns):
-        ns['__init__'] = init_method
-        ns['run'] = run_method
-        ns['__repr__'] = repr_method
-        ns['__getattr__'] = getattr_method
+        ns["__init__"] = init_method
+        ns["run"] = run_method
+        ns["__repr__"] = repr_method
+        ns["__getattr__"] = getattr_method
 
-    return types.new_class(
-        name=name,
-        bases=(),
-        exec_body=body
-    )
+    return types.new_class(name=name, bases=(), exec_body=body)
 
 
 class DataType:
@@ -287,7 +279,7 @@ def infer_type(obj):
             if test_type in internal_types:
                 return List(test_type)
 
-    if hasattr(obj, 'shape'):
+    if hasattr(obj, "shape"):
         if len(obj.shape) == 1:
             if isinstance(obj, ndarray):
                 return CategoricalVector()
@@ -379,8 +371,10 @@ class Sentiment(DataType):
 class Synset(DataType):
     pass
 
+
 class Postag(DataType):
     pass
+
 
 class Chunktag(DataType):
     pass
