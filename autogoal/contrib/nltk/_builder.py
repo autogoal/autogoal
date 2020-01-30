@@ -94,7 +94,7 @@ class NltkTagger(SklearnWrapper):
 
     def _eval(self, input):
         X, y = input
-        return self._instance.tag_sents(X), y
+        return [self._instance.tag_sents(x) for x in X], y
 
 
 class NltkTrainedTagger(SklearnWrapper):

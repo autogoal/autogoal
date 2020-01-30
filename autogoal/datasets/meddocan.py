@@ -192,3 +192,17 @@ def compare_tags(tag_list, other_tag_list):
                 return False
     
     return True
+
+def basic_fn(X, y):
+    correct = 0
+    total = 0
+    for i in range(len(y)):
+        for j in range(len(y[i])):
+            for k in range(len(y[i][j])):
+                total+=1
+                
+                _, tag = y[i][j][k]
+                _, predicted_tag = X[i][j][k]
+                correct+=1 if tag == predicted_tag else 0
+                
+    return correct/total
