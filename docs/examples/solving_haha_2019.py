@@ -21,7 +21,6 @@ for cls in find_classes():
     print("Using: %s" % cls.__name__)
 
 classifier = AutoClassifier(
-    input=List(Sentence()),
     search_algorithm=PESearch,
     search_iterations=args.iterations,
     search_kwargs=dict(pop_size=args.popsize, evaluation_timeout=args.timeout, memory_limit=args.memory * 1024 ** 3),

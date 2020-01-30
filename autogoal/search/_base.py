@@ -18,7 +18,7 @@ class SearchAlgorithm:
         pop_size=1,
         maximize=True,
         errors="raise",
-        early_stop=None,
+        early_stop=0.1,
         evaluation_timeout: int = 5 * Min,
         memory_limit: int = 4 * Gb,
     ):
@@ -54,6 +54,11 @@ class SearchAlgorithm:
         if isinstance(logger, list):
             logger = MultiLogger(*logger)
 
+        if isinstance(self._early_stop, float):
+            early_stop = int(self._early_stop * evaluations)
+        else:
+            early_stop = self._early_stop
+
         best_solution = None
         best_fn = None
         no_improvement = 0
@@ -65,11 +70,11 @@ class SearchAlgorithm:
                 logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
-                no_improvement += 1
                 fns = []
 
                 for _ in range(self._pop_size):
                     solution = None
+                    no_improvement += 1
 
                     try:
                         solution = self._generator_fn(self._build_sampler())
@@ -111,7 +116,7 @@ class SearchAlgorithm:
                 logger.finish_generation(fns)
                 self._finish_generation(fns)
 
-                if self._early_stop and no_improvement > self._early_stop:
+                if early_stop and no_improvement > early_stop:
                     break
 
             return best_solution, best_fn
