@@ -135,7 +135,7 @@ def build_nltk_wrappers():
             ## DO NOT MODIFY THIS FILE MANUALLY
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
-            from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkClusterer, NltkTagger, NltkTrainedTagger
+            from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkTagger, NltkTrainedTagger
             from autogoal.kb._data import *
             from autogoal.utils import nice_repr
             from numpy import inf, nan
@@ -181,7 +181,11 @@ def _write_class(cls, fp):
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
     values_str = f",".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
-    base_class = base_classes[is_algorithm(cls)]  # set correct base class
+    base_class = base_classes.get(is_algorithm(cls), None)  # set correct base class
+
+    if not base_class:
+        warnings.warn("Error to generate wrapper for %s" % cls.__name__)
+        return
 
     print(cls)
 
