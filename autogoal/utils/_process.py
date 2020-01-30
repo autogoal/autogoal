@@ -70,8 +70,7 @@ class RestrictedWorker:
         return process.memory_info().rss
 
     def __call__(self, *args, **kwargs):
-        # return self.run_restricted(*args, **kwargs)
-        return self.function(*args, **kwargs)
+        return self.run_restricted(*args, **kwargs)
 
 
 def alarm_handler(*args):
