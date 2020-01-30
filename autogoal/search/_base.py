@@ -18,7 +18,7 @@ class SearchAlgorithm:
         pop_size=1,
         maximize=True,
         errors="raise",
-        early_stop=0.1,
+        early_stop=None,
         evaluation_timeout: int = 5 * Min,
         memory_limit: int = 4 * Gb,
         search_timeout: int = 60 * 60,
