@@ -41,7 +41,7 @@ def load_corpus():
     for file in os.scandir(train_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, ibo_corpora = get_tagged_tokens(text, phi)
+            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
                 X_train.append(text)
                 y_train.append(ibo_corpora)
@@ -49,7 +49,7 @@ def load_corpus():
     for file in os.scandir(dev_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, ibo_corpora = get_tagged_tokens(text, phi)
+            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
                 X_train.append(text)
                 y_train.append(ibo_corpora)
@@ -57,7 +57,7 @@ def load_corpus():
     for file in os.scandir(test_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, ibo_corpora = get_tagged_tokens(text, phi)
+            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
                 X_test.append(text)
                 y_test.append(ibo_corpora)
@@ -106,7 +106,6 @@ def get_tagged_tokens(text, tags):
     tags.sort(key=lambda x: x[1])
     offset = 0
     tagged_tokens = []
-    opened_tokens = []    
     
     current_tag = ""
     current_tag_end = 0
@@ -119,26 +118,31 @@ def get_tagged_tokens(text, tags):
     itag = 0
     next_tag_init = tags[itag][1]
     
+    sentences = [[]]
+    
     for char in text:
         if processing_token and current_tag_end == offset:
             tagged_tokens.append((current_tag, current_tag_init, offset, token))
             
             tokens = token.split()
             if len(tokens) > 1:
-                opened_tokens.append((tokens[0], tag))
+                sentences[-1].append((tokens[0], tag))
                 for tok in tokens[1:]:
-                    opened_tokens.append((tok, "I-" + current_tag))
+                    sentences[-1].append((tok, "I-" + current_tag))
             else:
-                opened_tokens.append((token, tag))
+                sentences[-1].append((token, tag))
                     
             
             token = ""
             current_tag = ""
             processing_token = False
         
-        if not processing_token and char in ["\n"," ", ",", ".", ";", ":"]:
+        if not processing_token and char in ["\n"," ", ",", ".", ";", ":", "!", "?"]:
             if token:
-                opened_tokens.append((token, tag))
+                sentences[-1].append((token, tag))
+            
+            if char in ["\n", ".", "!"," ?"] and len(sentences[-1]) > 1:
+                sentences.append([])
                 
             token = ""
             offset += 1
@@ -161,18 +165,8 @@ def get_tagged_tokens(text, tags):
         token += char
         offset += 1
     
-    # if postag:
-    #     all_tokens = [x[0] for x in opened_tokens]
-    #     sentences = sent_tokenize(text, language="spanish")
-    #     tokenized_sentences = [a.tokenize(sentence) for sentence in sentences]
-    #     postag_tokens = []
-    #     for sent in tokenized_sentences:
-    #         postag_tokens += pos_tag(sent)
-        
-    #     if not len(all_tokens) == len(postag_tokens):
-    #         print("error while making pos tags")
-        
-    return tagged_tokens, opened_tokens
+    raw_sentences = [[word for word,_ in sentence] for sentence in sentences]
+    return tagged_tokens, raw_sentences, sentences
 
 def compare_tags(tag_list, other_tag_list):
     """
