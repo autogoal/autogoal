@@ -40,15 +40,6 @@ languages = [
 languages_re = re.compile("|".join(languages))
 
 
-base_classes = {"classifier":"NltkClassifier",
-                "clusterer":"NltkClusterer",
-                "sent_tokenizer":"NltkTokenizer",
-                "word_tokenizer":"NltkTokenizer",
-                "lemmatizer":"NltkLemmatizer",
-                "stemmer":"NltkStemmer",
-                "word_embbeder":"SklearnWrapper",
-                "doc_embbeder":"SklearnWrapper"}
-
 GENERATION_RULES = dict(
     SnowballStemmer = dict(
         assume = True,
@@ -58,102 +49,67 @@ GENERATION_RULES = dict(
 )
 
 
-class NltkTokenizer(SklearnWrapper):
-    def _train(self, input):
-        return self.tokenize(input)
-
-    def _eval(self, input):
+class NltkTokenizer:
+    def run(self, input):
         return self.tokenize(input)
 
     @abc.abstractmethod
-    def tokenize(self, X, y=None):
+    def tokenize(self, X):
         pass
 
-class NltkStemmer(SklearnWrapper):
-    def _train(self, input):
-        # input is Word
-        return self.stem(input)
 
-    def _eval(self, input):
-        # input is Word
+class NltkStemmer:
+    def run(self, input):
         return self.stem(input)
 
     @abc.abstractmethod
-    def stem(self, X, y=None):
+    def stem(self, X):
         pass
 
-class NltkLemmatizer(SklearnWrapper):
-    def _train(self, input):
-        return self.lemmatize(input)
 
-    def _eval(self, input):
+class NltkLemmatizer:
+    def run(self, input):
         return self.lemmatize(input)
 
     @abc.abstractmethod
-    def lemmatize(self, X, y=None):
+    def lemmatize(self, X):
         pass
 
 class NltkClusterer(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self.cluster(X)
-        return X, y
-
+        return [self.classify(x) for x in X]
+    
     def _eval(self, input):
         X, y = input
         return X, [self.classify(x) for x in X]
-
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass
-
-class NltkClassifier(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-        self.train(X)  # TODO: fix train incompability for nltk classifiers
-        return X, y
-
-    def _eval(self, input):
-        X, y = input
-        return X, [self.classify(x) for x in X]
-
-    @abc.abstractmethod
-    def cluster(self, X, y=None):
-        pass
-
-    @abc.abstractmethod
-    def classify(self, X, y=None):
-        pass
+    
 
 class NltkTagger(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self._instance = self.tagger(train=y)
         return self._instance.tag_sents(X), y
-    
+
     def _eval(self, input):
         X, y = input
         return self._instance.tag_sents(X), y
-    
+
+
 class NltkTrainedTagger(SklearnWrapper):
     def _train(self, input):
         X, y = input
         # X expected to be a tokenized sentence
         return self.tag(X), y
-    
+
     def _eval(self, input):
         X, y = input
         # X expected to be a tokenized sentence
         return self.tag(X), y
-    
+
 
 base_classes = {
-    "classifier": "NltkClassifier",
-    "clusterer": "NltkClusterer",
     "sent_tokenizer": "NltkTokenizer",
     "word_tokenizer": "NltkTokenizer",
     "lemmatizer": "NltkLemmatizer",
@@ -163,6 +119,7 @@ base_classes = {
     "tagger": "NltkTagger",
     "trained_tagger": "NltkTrainedTagger",
 }
+
 
 GENERATION_RULES = dict(
     SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
@@ -252,7 +209,7 @@ def _write_class(cls, fp):
                 ):
                     self.tagger = _{cls.__name__}
                     self.values = dict({values_str})
-                    
+
                     {base_class}.__init__(self)
 
                 def run(self, input: {input_str}) -> {output_str}:
@@ -417,7 +374,7 @@ def _get_args(cls):
 
     args_map = {k: v for k, v in zip(args, specs)}
 
-    
+
 
     drop_args = [
         "url",
@@ -452,10 +409,10 @@ def _get_args(cls):
             if values:
                 result[arg] = Categorical(*values)
                 continue
-            
+
         if str.lower(arg) == "train" and _is_tagger(cls):
             continue
-        
+
         raise Exception("No values found for positional argument %s " % (arg))
     return result
 

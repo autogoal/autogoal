@@ -4,6 +4,9 @@ import inspect
 from typing import Mapping
 from autogoal.grammar import Symbol, Union, Empty
 
+from scipy.sparse.base import spmatrix
+from numpy import ndarray
+
 
 def algorithm(input_type, output_type):
     def run_method(self, input: input_type) -> output_type:
@@ -21,23 +24,26 @@ def algorithm(input_type, output_type):
 
 class Interface:
     @classmethod
+    def is_compatible(cls, other_cls):
+        own_methods = _get_annotations(cls, ignore=["generate_cfg", "is_compatible"])
+
+        if not inspect.isclass(other_cls):
+            return False
+
+        if issubclass(other_cls, Interface):
+            return False
+
+        type_methods = _get_annotations(other_cls)
+        return _compatible_annotations(own_methods, type_methods)
+
+    @classmethod
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
-
-        own_methods = _get_annotations(cls, ignore=["generate_cfg"])
         compatible = []
 
-        for _, clss in grammar.namespace.items():
-            if not inspect.isclass(clss):
-                continue
-
-            if issubclass(clss, Interface):
-                continue
-
-            type_methods = _get_annotations(clss)
-
-            if _compatible_annotations(own_methods, type_methods):
-                compatible.append(clss)
+        for _, other_cls in grammar.namespace.items():
+            if cls.is_compatible(other_cls):
+                compatible.append(other_cls)
 
         if not compatible:
             raise ValueError(
@@ -82,7 +88,7 @@ def _compatible_annotations(
 
             ann_im = param_im.annotation
 
-            if not conforms(ann_im, ann_if):
+            if not conforms(ann_if, ann_im):
                 return False
 
         return_if = mif.return_annotation
@@ -92,7 +98,7 @@ def _compatible_annotations(
 
         return_im = mim.return_annotation
 
-        if not conforms(return_if, return_im):
+        if not conforms(return_im, return_if):
             return False
 
     return True
@@ -128,9 +134,52 @@ def _get_annotations(clss, ignore=[]):
     return signatures
 
 
-def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
+def build_composite_list(input_type, output_type, depth=1):
+    def wrap(t, d):
+        if d == 0:
+            return t
+
+        return List(wrap(t, d-1))
+
+    input_wrapper = wrap(input_type, depth)
+    output_wrapper = wrap(output_type, depth)
+
+    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
+
+    def init_method(self, inner: algorithm(input_type, output_type)):
+        self.inner = inner
+
+    def run_method(self, input: input_wrapper) -> output_wrapper:
+        def wrap_run(xs, d):
+            if d == 0:
+                return self.inner.run(xs)
+
+            return [wrap_run(x, d-1) for x in xs]
+
+        return wrap_run(input, depth)
+
+    def repr_method(self):
+        return f"{name}(inner={repr(self.inner)})"
+
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
+    def body(ns):
+        ns['__init__'] = init_method
+        ns['run'] = run_method
+        ns['__repr__'] = repr_method
+        ns['__getattr__'] = getattr_method
+
+    return types.new_class(
+        name=name,
+        bases=(),
+        exec_body=body
+    )
+
+
+def build_composite_tuple(index, input_type: 'Tuple', output_type: 'Tuple'):
     """
-    Dynamically generate a class `CompositeAlgorithmXXX` that wraps
+    Dynamically generate a class `CompositeAlgorithm` that wraps
     another algorithm to receive a Tuple but pass only one of the
     parameters to the internal algorithm.
     """
@@ -150,10 +199,14 @@ def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
     def repr_method(self):
         return f"{name}(inner={repr(self.inner)})"
 
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
     def body(ns):
         ns['__init__'] = init_method
         ns['run'] = run_method
         ns['__repr__'] = repr_method
+        ns['__getattr__'] = getattr_method
 
     return types.new_class(
         name=name,
@@ -212,6 +265,9 @@ def infer_type(obj):
     MatrixContinuousDense()
     >>> infer_type(np.asarray(['blue', 'red']))
     CategoricalVector()
+    >>> import scipy.sparse as sp
+    >>> infer_type(sp.coo_matrix((10,10)))
+    MatrixContinuousSparse()
 
     ```
     """
@@ -233,9 +289,13 @@ def infer_type(obj):
 
     if hasattr(obj, 'shape'):
         if len(obj.shape) == 1:
-            return CategoricalVector()
+            if isinstance(obj, ndarray):
+                return CategoricalVector()
         if len(obj.shape) == 2:
-            return MatrixContinuousDense()
+            if isinstance(obj, spmatrix):
+                return MatrixContinuousSparse()
+            if isinstance(obj, ndarray):
+                return MatrixContinuousDense()
 
     raise TypeError("Cannot infer type for %r" % obj)
 
@@ -326,6 +386,10 @@ class Chunktag(DataType):
     pass
 
 
+class Tensor3(DataType):
+    pass
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner
@@ -360,31 +424,31 @@ class Tuple(DataType):
 
         return True
 
-__all__ = [
-    "algorithm",
-    "CategoricalVector",
-    "Category",
-    "ContinuousVector",
-    "DataType",
-    "DenseMatrix",
-    "DiscreteVector",
-    "Document",
-    "List",
-    "Matrix",
-    "MatrixContinuous",
-    "MatrixContinuousDense",
-    "MatrixContinuousSparse",
-    "Sentence",
-    "SparseMatrix",
-    "Stem",
-    "Tuple",
-    "Vector",
-    "Word",
-    "Entity",
-    "Summary",
-    "Synset",
-    "Text",
-    "Sentiment",
-    "Postag",
-    "Chunktag"
-]
+
+# __all__ = [
+#     "algorithm",
+#     "CategoricalVector",
+#     "Category",
+#     "ContinuousVector",
+#     "DataType",
+#     "DenseMatrix",
+#     "DiscreteVector",
+#     "Document",
+#     "List",
+#     "Matrix",
+#     "MatrixContinuous",
+#     "MatrixContinuousDense",
+#     "MatrixContinuousSparse",
+#     "Sentence",
+#     "SparseMatrix",
+#     "Stem",
+#     "Tuple",
+#     "Vector",
+#     "Word",
+#     "Entity",
+#     "Summary",
+#     "Synset",
+#     "Text",
+#     "Sentiment",
+#     "conforms",
+# ]

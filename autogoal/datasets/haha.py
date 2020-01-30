@@ -4,7 +4,7 @@ import pandas as pd
 from autogoal.datasets import datapath, download
 
 
-def load_raw():
+def load_raw(max_examples=None):
     """
     Loads the train and test datasets for the [HAHA 2019 corpus](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data)
     as Pandas dataframes.
@@ -30,10 +30,14 @@ def load_raw():
     train_df = pd.read_csv(datapath("haha_2019") / "haha_2019_train.csv")
     test_df = pd.read_csv(datapath("haha_2019") / "haha_2019_test_gold.csv")
 
+    if max_examples is not None:
+        train_df = train_df[:max_examples]
+        test_df = test_df[:max_examples]
+
     return train_df, test_df
 
 
-def load(target='is_humor'):
+def load(target='is_humor', max_examples=None):
     """
     Loads the train and test datasets for the [HAHA 2019 corpus](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data)
     as lists of texts and target values.
@@ -66,9 +70,19 @@ def load(target='is_humor'):
     3.25
 
     ```
+
+    Loading a subset of the dataset:
+
+    ```python
+    >>> Xtrain, Xtest, ytrain, ytest = load(max_examples=100)
+    >>> len(Xtrain), len(Xtest), len(ytrain), len(ytest)
+    (100, 100, 100, 100)
+
+    ```
+
     """
 
-    train_df, test_df = load_raw()
+    train_df, test_df = load_raw(max_examples)
     X_train = list(train_df['text'])
     y_train = list(train_df[target])
     X_test = list(test_df['text'])

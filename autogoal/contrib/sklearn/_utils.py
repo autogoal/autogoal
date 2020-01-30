@@ -209,7 +209,7 @@ def is_classifier(cls, verbose=False):
 
     >>> from sklearn.linear_model import LogisticRegression, LinearRegression
     >>> is_classifier(LogisticRegression)
-    (True, (MatrixContinuous(), CategoricalVector()))
+    (True, (Tuple(MatrixContinuous(), CategoricalVector()), CategoricalVector()))
     >>> is_classifier(LinearRegression)
     (False, None)
 
@@ -237,7 +237,7 @@ def is_classifier(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.CategoricalVector())
+        return True, (kb.Tuple(inputs, kb.CategoricalVector()), kb.CategoricalVector())
     else:
         return False, None
 
@@ -252,7 +252,7 @@ def is_regressor(cls, verbose=False):
     >>> is_regressor(LogisticRegression)
     (False, None)
     >>> is_regressor(LinearRegression)
-    (True, (MatrixContinuous(), ContinuousVector()))
+    (True, (Tuple(MatrixContinuous(), ContinuousVector()), ContinuousVector()))
 
     """
     if not is_algorithm(cls, verbose=verbose):
@@ -278,7 +278,7 @@ def is_regressor(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.ContinuousVector())
+        return True, (kb.Tuple(inputs, kb.ContinuousVector()), kb.ContinuousVector())
     else:
         return False, None
 

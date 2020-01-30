@@ -4,8 +4,10 @@ import time
 import datetime
 import statistics
 import math
+import traceback
+import sys
 
-from autogoal.utils import ResourceManager, RestrictedWorker
+from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
 
 
 class SearchAlgorithm:
@@ -17,23 +19,27 @@ class SearchAlgorithm:
         maximize=True,
         errors="raise",
         early_stop=None,
-        evaluation_timeout: int = 300,
-        memory_limit: int = 4 * 1024 ** 3,
+        evaluation_timeout: int = 5 * Min,
+        memory_limit: int = 4 * Gb,
+        search_timeout: int = 60 * 60,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
 
         self._generator_fn = generator_fn or self._build_sampler()
-        self._fitness_fn = fitness_fn or self._identity
+        self._fitness_fn = fitness_fn or (lambda x: x)
         self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
         self._early_stop = early_stop
+        self._search_timeout = search_timeout
 
-    def _identity(self, x):
-        return x
+        if self._evaluation_timeout > 0 or self._memory_limit > 0:
+            self._fitness_fn = RestrictedWorkerByJoin(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            )
 
     def run(self, evaluations=None, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
@@ -50,32 +56,43 @@ class SearchAlgorithm:
         if isinstance(logger, list):
             logger = MultiLogger(*logger)
 
+        if isinstance(self._early_stop, float):
+            early_stop = int(self._early_stop * evaluations)
+        else:
+            early_stop = self._early_stop
+
         best_solution = None
         best_fn = None
         no_improvement = 0
 
         logger.begin(evaluations)
 
+        start_time = time.time()
+
         try:
             while evaluations > 0:
+                stop = False
+
                 logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
-                no_improvement += 1
                 fns = []
 
                 for _ in range(self._pop_size):
                     solution = None
+                    no_improvement += 1
 
                     try:
                         solution = self._generator_fn(self._build_sampler())
                     except Exception as e:
-                        logger.error("Error while generating solution: %s" %e, solution)
+                        logger.error(
+                            "Error while generating solution: %s" % e, solution
+                        )
                         continue
-                    
+
                     try:
                         logger.sample_solution(solution)
-                        fn = RestrictedWorker(self._fitness_fn, self._evaluation_timeout, self._memory_limit)(solution)
+                        fn = self._fitness_fn(solution)
                     except Exception as e:
                         fn = 0
                         logger.error(e, solution)
@@ -96,22 +113,42 @@ class SearchAlgorithm:
                         best_solution = solution
                         best_fn = fn
                         no_improvement = 0
+                    else:
+                        no_improvement += 1
 
                     evaluations -= 1
 
                     if evaluations <= 0:
+                        print("(!) Stopping since all evaluations are done." % (spent_time))
+                        stop = True
+                        break
+
+                    spent_time = time.time() - start_time
+
+                    if (
+                        self._search_timeout
+                        and spent_time > self._search_timeout
+                    ):
+                        print("(!) Stopping since time spent is %.2f." % (spent_time))
+                        stop = True
+                        break
+
+                    if self._early_stop and no_improvement > self._early_stop:
+                        print("(!) Stopping since no improvement for %i evaluations." % no_improvement)
+                        stop = True
                         break
 
                 logger.finish_generation(fns)
                 self._finish_generation(fns)
 
-                if self._early_stop and no_improvement > self._early_stop:
+                if stop:
                     break
 
-            return best_solution, best_fn
-        
         except KeyboardInterrupt:
-            logger.end(best_solution, best_fn)
+            pass
+
+        logger.end(best_solution, best_fn)
+        return best_solution, best_fn
 
     def _build_sampler(self):
         raise NotImplementedError()
@@ -189,11 +226,14 @@ class ProgressLogger(Logger):
     def begin(self, evaluations):
         self.manager = enlighten.get_manager()
         self.total_counter = self.manager.counter(
-            total=evaluations, unit="runs", leave=False
+            total=evaluations, unit="runs", leave=False, desc="Best: 0.000"
         )
 
     def sample_solution(self, solution):
         self.total_counter.update()
+
+    def update_best(self, new_best, new_fn, *args):
+        self.total_counter.desc = "Best: %.3f" % new_fn
 
     def end(self, *args):
         self.total_counter.close()
@@ -213,7 +253,7 @@ class MemoryLogger(Logger):
             mean = statistics.mean(fns)
         except:
             mean = 0
-        self.generation_mean_fn.append(0)
+        self.generation_mean_fn.append(mean)
         self.generation_best_fn.append(self.generation_best_fn[-1])
 
 
