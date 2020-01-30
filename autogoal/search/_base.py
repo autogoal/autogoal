@@ -21,6 +21,7 @@ class SearchAlgorithm:
         early_stop=0.1,
         evaluation_timeout: int = 5 * Min,
         memory_limit: int = 4 * Gb,
+        search_timeout: int = 60 * 60,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
@@ -33,6 +34,7 @@ class SearchAlgorithm:
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
         self._early_stop = early_stop
+        self._search_timeout = search_timeout
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(
@@ -65,8 +67,12 @@ class SearchAlgorithm:
 
         logger.begin(evaluations)
 
+        start_time = time.time()
+
         try:
             while evaluations > 0:
+                stop = False
+
                 logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
@@ -107,22 +113,42 @@ class SearchAlgorithm:
                         best_solution = solution
                         best_fn = fn
                         no_improvement = 0
+                    else:
+                        no_improvement += 1
 
                     evaluations -= 1
 
                     if evaluations <= 0:
+                        print("(!) Stopping since all evaluations are done." % (spent_time))
+                        stop = True
+                        break
+
+                    spent_time = time.time() - start_time
+
+                    if (
+                        self._search_timeout
+                        and spent_time > self._search_timeout
+                    ):
+                        print("(!) Stopping since time spent is %.2f." % (spent_time))
+                        stop = True
+                        break
+
+                    if self._early_stop and no_improvement > self._early_stop:
+                        print("(!) Stopping since no improvement for %i evaluations." % no_improvement)
+                        stop = True
                         break
 
                 logger.finish_generation(fns)
                 self._finish_generation(fns)
 
-                if early_stop and no_improvement > early_stop:
+                if stop:
                     break
 
-            return best_solution, best_fn
-
         except KeyboardInterrupt:
-            logger.end(best_solution, best_fn)
+            pass
+
+        logger.end(best_solution, best_fn)
+        return best_solution, best_fn
 
     def _build_sampler(self):
         raise NotImplementedError()

@@ -5,6 +5,8 @@ from typing import Mapping, Optional, Dict, List, Sequence
 from autogoal.grammar import Sampler
 from ._base import SearchAlgorithm
 
+import random
+
 
 class ModelSampler(Sampler):
     def __init__(self, model: Dict = None, **kwargs):
@@ -250,15 +252,16 @@ class PESearch(SearchAlgorithm):
         self._selection = selection
         self._epsilon_greed = epsilon_greed
         self._model: Dict = {}
+        self._random_states = random.Random(random_state)
 
     def _start_generation(self):
         self._samplers = []
 
     def _build_sampler(self):
         if len(self._samplers) < self._epsilon_greed * self._pop_size:
-            sampler = ModelSampler()
+            sampler = ModelSampler(random_state=self._random_states.getrandbits(32))
         else:
-            sampler = ModelSampler(self._model)
+            sampler = ModelSampler(self._model, random_state=self._random_states.getrandbits(32))
 
         self._samplers.append(sampler)
         return sampler

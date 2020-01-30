@@ -20,6 +20,7 @@ class AutoClassifier:
         self,
         input=None,
         *,
+        random_state=None,
         search_algorithm=PESearch,
         search_kwargs={},
         search_iterations=100,
@@ -42,6 +43,10 @@ class AutoClassifier:
         self.cross_validation = cross_validation
         self.cross_validation_steps = cross_validation_steps
         self.registry = registry
+        self.random_state = random_state
+
+        if random_state:
+            np.random.seed(random_state)
 
     def fit(self, X, y, **kwargs):
         registry = self.registry or find_classes(
@@ -57,6 +62,7 @@ class AutoClassifier:
         search = self.search_algorithm(
             self.pipeline_builder_,
             self._make_fitness_fn(X, y),
+            random_state=self.random_state,
             errors=self.errors,
             **self.search_kwargs,
         )
