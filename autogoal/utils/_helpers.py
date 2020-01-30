@@ -20,25 +20,24 @@ def _make_params_func(fn: Callable):
 
         return repr(ann)
 
-    args_line = ",\n            ".join(f"{k}={k}" for k in args_names)
+    args_line = ",\n                ".join(f"{k}={k}" for k in args_names)
     params_line = ", ".join(f"{arg.name}:{annotation_repr(arg.annotation)}" for arg in signature.parameters.values())
 
     func_code = textwrap.dedent(
         f"""
-    def {func_name}({params_line}):
-        return dict(
-            {args_line}
-        )
-    """
+        def {func_name}({params_line}):
+            return dict(
+                {args_line}
+            )
+        """
     )
 
-    print(func_code)
     locals_dict = {}
     exec(func_code, fn.__globals__, locals_dict)
     return locals_dict[func_name]
 
 
-def optimize(fn, search_strategy=None, iterations=None, **kwargs):
+def optimize(fn, search_strategy=None, iterations=None, logger=None, **kwargs):
     if search_strategy is None:
         search_strategy = PESearch
 
@@ -51,6 +50,6 @@ def optimize(fn, search_strategy=None, iterations=None, **kwargs):
     grammar = generate_cfg(params_func)
 
     search = search_strategy(grammar, eval_func, **kwargs)
-    best, best_fn = search.run(iterations)
+    best, best_fn = search.run(iterations, logger=logger)
 
     return best, best_fn

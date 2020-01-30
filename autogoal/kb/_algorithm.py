@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from autogoal.grammar import GraphSpace, Graph, CfgInitializer
 from autogoal.utils import nice_repr
-from autogoal.kb._data import conforms, build_composite, Tuple
+from autogoal.kb._data import conforms, build_composite_tuple, Tuple, build_composite_list, List
 
 
 def build_pipelines(input, output, registry) -> 'PipelineBuilder':
@@ -19,10 +19,52 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     - `output`: type descriptor for the desired output.
     - `registry`: list of available classes to build the pipelines.
     """
-    G = Graph()
+    list_pairs = set()
+    types_queue = []
 
-    open_nodes = []
-    closed_nodes = set()
+    if isinstance(input, Tuple):
+        types_queue.extend(input.inner)
+    else:
+        types_queue.append(input)
+
+    types_seen = set()
+
+    while types_queue:
+        output_type = types_queue.pop(0)
+
+        def build(internal_output, depth):
+            if internal_output in types_seen:
+                return
+
+            for other_clss in registry:
+                annotations = _get_annotations(other_clss)
+
+                if annotations in list_pairs:
+                    continue
+
+                other_input = annotations.input
+                other_output = annotations.output
+
+                if other_input == other_output:
+                    continue
+
+                if not conforms(internal_output, other_input):
+                    continue
+
+                other_wrapper = build_composite_list(other_input, other_output, depth)
+                list_pairs.add(annotations)
+                registry.append(other_wrapper)
+                types_queue.append(_get_annotations(other_wrapper).output)
+
+        depth = 0
+
+        while isinstance(output_type, List):
+            depth += 1
+            output_type = output_type.inner
+            build(output_type, depth)
+            types_seen.add(output_type)
+
+    list_tuples = set()
 
     def connect_tuple_wrappers(node, output_type):
         if not isinstance(output_type, Tuple):
@@ -46,10 +88,20 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 output_tuple_type = Tuple(*output_tuple)
 
                 # dynamic class representing the wrapper algorithm
-                other_wrapper = build_composite(index, output_type, output_tuple_type)
-                open_nodes.append(other_wrapper)
+                if (index, output_type, output_tuple_type) in list_tuples:
+                    continue
 
+                other_wrapper = build_composite_tuple(index, output_type, output_tuple_type)
+                list_tuples.add((index, output_type, output_tuple_type))
+                registry.append(other_wrapper)
+
+                open_nodes.append(other_wrapper)
                 G.add_edge(node, other_wrapper)
+
+    G = Graph()
+
+    open_nodes = []
+    closed_nodes = set()
 
     # Enqueue open nodes
     for clss in registry:
@@ -110,10 +162,15 @@ class Pipeline:
 
     def send(self, msg: str, *args, **kwargs):
         found = False
+
         for step in self.steps:
             if hasattr(step, msg):
                 getattr(step, msg)(*args, **kwargs)
                 found = True
+            elif hasattr(step, "send"):
+                step.send(msg, *args, **kwargs)
+                found = True
+
         if not found:
             warnings.warn(f'No step answered message {msg}.')
 

@@ -1,9 +1,10 @@
 BASE_VERSION := 3.6
 ALL_VERSIONS := 3.6
+ENVIRONMENT := cpu
 
 .PHONY: test-fast
 test-fast:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester make dev-test-fast
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} make dev-test-fast
 
 .PHONY: notebook
 notebook:
@@ -11,23 +12,23 @@ notebook:
 
 .PHONY: docs
 docs:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && mkdocs serve
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} python /code/docs/make_docs.py && mkdocs serve
 
 .PHONY: docs-deploy
 docs-deploy:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester python /code/docs/make_docs.py && cp docs/index.md Readme.md && mkdocs gh-deploy
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} python /code/docs/make_docs.py && cp docs/index.md Readme.md && mkdocs gh-deploy
 
 .PHONY: shell
 shell:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester bash
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} bash
 
 .PHONY: lock
 lock:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester poetry lock
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} poetry lock
 
 .PHONY: build
 build:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester poetry build
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} poetry build
 
 .PHONY: clean
 clean:
@@ -35,11 +36,11 @@ clean:
 
 .PHONY: lint
 lint:
-	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester poetry run pylint autogoal
+	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} poetry run pylint autogoal
 
 .PHONY: test-full
 test-full:
-	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run autogoal-tester make dev-test-full;)
+	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} make dev-test-full;)
 
 .PHONY: docker-build
 docker-build:
@@ -66,10 +67,8 @@ dev-install: dev-ensure
 	pip install poetry
 	poetry config virtualenvs.create false
 	poetry install
-	pip install tensorflow==1.14
-	pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 
-#
+
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
 	# python -m mypy -p autogoal --ignore-missing-imports

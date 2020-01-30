@@ -3,27 +3,28 @@ import os
 from sklearn.feature_extraction import DictVectorizer
 from autogoal.datasets import datapath, download
 
-def load_corpus(representation='numeric'):
+def load(representation='numeric'):
     """
     Loads corpora from [ABALONE uci dataset](https://archive.ics.uci.edu/ml/datasets/Abalone).
 
     ##### Examples
 
     ```python
-    >>> X, y = load_corpus()
+    >>> X, y = load()
     >>> X.shape
     (4177, 6047)
     >>> len(y)
     4177
+
     ```
     """
-    
+
     try:
         download("abalone")
     except:
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
-    
+
     path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/abalone"
     f = open(os.path.join(path, "abalone.data"), "r")
 
@@ -74,6 +75,6 @@ def _load_numeric(X, y):
 
 
 def _load_onehot(X, y):
-    vec = DictVectorizer(sparse=False)
+    vec = DictVectorizer(sparse=True)
 
     return vec.fit_transform(X), y

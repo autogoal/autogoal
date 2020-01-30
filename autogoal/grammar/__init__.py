@@ -12,4 +12,4 @@ from ._cfg import (
     Empty,
     Symbol,
 )
-from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace
+from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace, Epsilon

@@ -147,7 +147,7 @@ class WordnetConcept:
     def __init__(self):
         pass
 
-    def run(self, input: Word(domain="general", language="english")) -> List(Synset()):
+    def run(self, input: Word(domain="general", language="english")) -> Synset():
         """Find a word in Wordnet and return a List of Synset de Wordnet
         """
         synsets = wordnet.synsets(input)

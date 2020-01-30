@@ -9,3 +9,7 @@ except:
 
 
 from ._bert import BertEmbedding
+
+
+def find_classes(self, include=None, exclude=None):
+    return [BertEmbedding]
