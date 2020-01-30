@@ -319,6 +319,12 @@ class Sentiment(DataType):
 class Synset(DataType):
     pass
 
+class Postag(DataType):
+    pass
+
+class Chunktag(DataType):
+    pass
+
 
 class List(DataType):
     def __init__(self, inner):
@@ -354,7 +360,6 @@ class Tuple(DataType):
 
         return True
 
-
 __all__ = [
     "algorithm",
     "CategoricalVector",
@@ -380,4 +385,6 @@ __all__ = [
     "Synset",
     "Text",
     "Sentiment",
+    "Postag",
+    "Chunktag"
 ]

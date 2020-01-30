@@ -12,12 +12,12 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_string_list
 
 DATA_TYPE_EXAMPLES = {
-    kb.Tuple(kb.Word(), kb.Word()):("lorem", "ipsum"), # (str, str) Tagged token
-    kb.List(kb.Tuple(kb.Word(), kb.Word())):[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
-    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
-    kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()):(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
-    kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())):[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
-    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
+    kb.Postag():("lorem", "ipsum"), # (str, str) Tagged token
+    kb.List(kb.Postag()):[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
+    kb.List(kb.List(kb.Postag())):[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
+    kb.Chunktag():(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
+    kb.List(kb.Chunktag()):[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
+    kb.List(kb.List(kb.Chunktag())):[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
     kb.Stem():"ips",
     kb.Word():"ipsum",
     kb.Sentence():"It is the best of all movies.",
@@ -360,7 +360,7 @@ def is_tagger(cls, verbose=False):
     >>> from nltk.tag import AffixTagger
     >>> from nltk.tokenize import PunktSentenceTokenizer
     >>> is_tagger(AffixTagger)
-    (True, (List(List(Word())), List(List(Tuple(Word(), Word())))))
+    (True, (List(List(Word())), List(List(Postag()))))
     >>> is_tagger(LogisticRegression)
     (False, None)
 
@@ -369,7 +369,7 @@ def is_tagger(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))
+    output = kb.List(kb.List(kb.Postag()))
 
     for input_type in [kb.List(kb.List(kb.Word()))]:
         try:
@@ -419,9 +419,9 @@ def is_chunker(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())))
+    output = kb.List(kb.List(kb.Chunktag()))
 
-    for input_type in [kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word())))]:
+    for input_type in [kb.List(kb.List(kb.Postag()))]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -461,7 +461,7 @@ def is_pretrained_tagger(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.Tuple(kb.Word(), kb.Word()))
+    output = kb.List(kb.Postag())
 
     for input_type in [kb.List(kb.Word())]:
         try:
@@ -720,12 +720,12 @@ def is_chunked_sentence_list(obj):
 
 
 DATA_RESOLVERS = {
-    kb.Tuple(kb.Word(), kb.Word()):is_tag,
-    kb.List(kb.Tuple(kb.Word(), kb.Word())):is_tag_list,
-    kb.List(kb.List(kb.Tuple(kb.Word(), kb.Word()))):is_tagged_sentence_list,
-    kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word):is_chunk,
-    kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word())):is_chunk_list,
-    kb.List(kb.List(kb.Tuple(kb.Tuple(kb.Word(), kb.Word()), kb.Word()))):is_chunked_sentence_list,
+    kb.Postag():is_tag,
+    kb.List(kb.Postag()):is_tag_list,
+    kb.List(kb.List(kb.Postag())):is_tagged_sentence_list,
+    kb.Chunktag:is_chunk,
+    kb.List(kb.Chunktag()):is_chunk_list,
+    kb.List(kb.List(kb.Chunktag())):is_chunked_sentence_list,
     kb.Stem():is_word,
     kb.Word():is_word,
     kb.Sentence():is_sentence,

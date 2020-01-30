@@ -1,5 +1,5 @@
 from autogoal.search import RandomSearch
-from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous, Tuple
+from autogoal.kb import build_pipelines, CategoricalVector, List, Word, MatrixContinuous, Tuple, Postag, Chunktag
 
 from autogoal.contrib import find_classes
 import numpy as np
@@ -111,7 +111,7 @@ class AutoChunker:
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
             input=self._start_type(), 
-            output=List(List(List(Tuple(Tuple(Word(), Word()), Word())))), # output: Tagged Documents
+            output=List(List(List(Chunktag()))), # output: Tagged Documents
             registry=find_classes(
                 include=self.include_filter, exclude=self.exclude_filter
             ),
@@ -135,7 +135,7 @@ class AutoChunker:
         return (y_pred == y).astype(float).mean()
 
     def _start_type(self):
-        return self.input
+        return self.input or List(Postag())
 
     def _make_fitness_fn(self, X, y):
         #TODO: Integrate fitness function for meddocan
