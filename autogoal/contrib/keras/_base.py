@@ -2,16 +2,28 @@ from typing import Optional
 
 from autogoal.contrib.keras._grammars import build_grammar
 from autogoal.grammar import Graph, GraphGrammar, Sampler
-from autogoal.kb import CategoricalVector, Tensor3, Tuple, MatrixContinuousDense, List, Postag
+from autogoal.kb import (
+    CategoricalVector,
+    Tensor3,
+    Tuple,
+    MatrixContinuousDense,
+    List,
+    Postag,
+)
 from keras.layers import Dense, Input, concatenate, TimeDistributed
 from keras.models import Model
 from keras.utils import to_categorical
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, TerminateOnNaN
 
 
 class KerasNeuralNetwork:
     def __init__(
-        self, grammar: GraphGrammar, epochs=10, early_stop=3, validation_split=0.1, **compile_kwargs
+        self,
+        grammar: GraphGrammar,
+        epochs=10,
+        early_stop=3,
+        validation_split=0.1,
+        **compile_kwargs,
     ):
         self.grammar = grammar
         self._epochs = epochs
@@ -99,7 +111,10 @@ class KerasNeuralNetwork:
             x=X,
             y=y,
             epochs=self._epochs,
-            callbacks=[EarlyStopping(patience=self._early_stop, restore_best_weights=True)],
+            callbacks=[
+                EarlyStopping(patience=self._early_stop, restore_best_weights=True),
+                TerminateOnNaN(),
+            ],
             validation_split=self._validation_split,
         )
 
@@ -198,7 +213,9 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def fit(self, X, y):
         distinct_classes = set(x for yi in y for x in yi)
-        self._classes = {k: v for k, v in zip(distinct_classes, range(len(distinct_classes)))}
+        self._classes = {
+            k: v for k, v in zip(distinct_classes, range(len(distinct_classes)))
+        }
         self._inverse_classes = {v: k for k, v in self._classes.items()}
 
         y = [[self._classes[x] for x in yi] for yi in y]
@@ -216,5 +233,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         predictions = predictions.argmax(axis=-1)
         return [[self._inverse_classes[x] for x in yi] for yi in predictions]
 
-    def run(self, input: Tuple(Tensor3(), List(List(Postag())))) -> List(List(Postag())):
+    def run(
+        self, input: Tuple(Tensor3(), List(List(Postag())))
+    ) -> List(List(Postag())):
         return super().run(input)

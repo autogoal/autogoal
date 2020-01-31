@@ -7,8 +7,8 @@ from autogoal.contrib.gensim._base import Word2VecEmbeddingSpanish
 from autogoal.contrib._wrappers import MatrixBuilder, TensorBuilder
 
 classifier = AutoClassifier(
-    input=List(List(List(Word()))), #input: Untagged tokenized documents
-    output=List(List(List(Postag()))),
+    input=List(List(Word())), #input: Untagged tokenized documents
+    output=List(List(Postag())),
     search_algorithm=PESearch,
     search_iterations=1000,
     search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
