@@ -34,6 +34,7 @@ for cls in find_classes():
 classifier = AutoClassifier(
     search_algorithm=PESearch,
     input=List(Sentence()),
+    output=CategoricalVector(),
     search_iterations=args.iterations,
     score_metric=f1_score,
     search_kwargs=dict(
