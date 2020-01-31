@@ -11,6 +11,8 @@ from autogoal.kb import (
     Chunktag
 )
 
+from autogoal.ml.metrics import accuracy
+
 from autogoal.contrib import find_classes
 import numpy as np
 import random
@@ -28,11 +30,12 @@ class AutoClassifier:
         search_iterations=100,
         include_filter=".*",
         exclude_filter=None,
-        validation_split=0.2,
+        validation_split=0.3,
         errors="warn",
         cross_validation="median",
         cross_validation_steps=3,
         registry=None,
+        score_metric=None,
     ):
         self.input = input
         self.search_algorithm = search_algorithm
@@ -46,6 +49,7 @@ class AutoClassifier:
         self.cross_validation_steps = cross_validation_steps
         self.registry = registry
         self.random_state = random_state
+        self.score_metric = score_metric or accuracy
 
         if random_state:
             np.random.seed(random_state)
@@ -79,7 +83,7 @@ class AutoClassifier:
 
     def score(self, X, y):
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
-        return (y_pred == y).astype(float).mean()
+        return self.score_metric(y, y_pred)
 
     def _start_type(self, X):
         return self.input or infer_type(X)
@@ -111,7 +115,7 @@ class AutoClassifier:
                 pipeline.run((X_train, y_train))
                 pipeline.send("eval")
                 y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
-                scores.append((y_pred == y_test).astype(float).mean())
+                scores.append(self.score_metric(y_test, y_pred))
 
             return getattr(statistics, self.cross_validation)(scores)
 
@@ -144,7 +148,7 @@ class AutoChunker:
 
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
-            input=self._start_type(), 
+            input=self._start_type(),
             output=List(List(List(Chunktag()))), # output: Tagged Documents
             registry=find_classes(
                 include=self.include_filter, exclude=self.exclude_filter

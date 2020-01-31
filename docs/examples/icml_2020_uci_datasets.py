@@ -81,7 +81,7 @@ for epoch in range(args.epochs):
             X_train, X_test, y_train, y_test = data
         else:
             X, y = data
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
         # Finally we can instantiate out `AutoClassifier` with all the custom
         # paramenters we received from the command line.

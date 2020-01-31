@@ -9,15 +9,17 @@ from autogoal.search import (
 )
 from autogoal.kb import List, Sentence, Tuple, CategoricalVector
 from autogoal.contrib import find_classes
+from sklearn.metrics import f1_score
 
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--iterations", type=int, default=1000)
-parser.add_argument("--timeout", type=int, default=60)
-parser.add_argument("--memory", type=int, default=1)
-parser.add_argument("--popsize", type=int, default=10)
-parser.add_argument("--global-timeout", type=int, default=60 * 60)
+parser.add_argument("--iterations", type=int, default=10000)
+parser.add_argument("--timeout", type=int, default=1800)
+parser.add_argument("--memory", type=int, default=20)
+parser.add_argument("--popsize", type=int, default=50)
+parser.add_argument("--selection", type=int, default=10)
+parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
 parser.add_argument("--token", default=None)
 
@@ -33,6 +35,7 @@ classifier = AutoClassifier(
     search_algorithm=PESearch,
     input=List(Sentence()),
     search_iterations=args.iterations,
+    score_metric=f1_score,
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
