@@ -144,7 +144,8 @@ def build_composite_list(input_type, output_type, depth=1):
     input_wrapper = wrap(input_type, depth)
     output_wrapper = wrap(output_type, depth)
 
-    name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
+    # name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
+    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
 
     def init_method(self, inner: algorithm(input_type, output_type)):
         self.inner = inner
@@ -182,7 +183,9 @@ def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
 
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
-    name = "TupleAlgorithm"  # [%s, %s]' % (input_type, output_type)
+
+    # name = "TupleAlgorithm"  # [%s, %s]' % (input_type, output_type)
+    name = "TupleAlgorithm[%s, %s]" % (input_type, output_type)
 
     def init_method(self, inner: algorithm(internal_input, internal_output)):
         self.inner = inner

@@ -23,7 +23,7 @@ class AutoClassifier:
     def __init__(
         self,
         input=None,
-        *,
+        output=None,
         random_state=None,
         search_algorithm=PESearch,
         search_kwargs={},
@@ -38,6 +38,7 @@ class AutoClassifier:
         score_metric=None,
     ):
         self.input = input
+        self.output = output,
         self.search_algorithm = search_algorithm
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
@@ -59,9 +60,11 @@ class AutoClassifier:
             include=self.include_filter, exclude=self.exclude_filter
         )
 
+        output_type = self._output_type(y)
+
         self.pipeline_builder_ = build_pipelines(
-            input=Tuple(self._start_type(X), CategoricalVector()),
-            output=CategoricalVector(),
+            input=Tuple(self._input_type(X), output_type),
+            output=output_type,
             registry=registry,
         )
 
@@ -85,8 +88,11 @@ class AutoClassifier:
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
         return self.score_metric(y, y_pred)
 
-    def _start_type(self, X):
+    def _input_type(self, X):
         return self.input or infer_type(X)
+
+    def _output_type(self, y):
+        return self.output or infer_type(y)
 
     def _make_fitness_fn(self, X, y):
         if isinstance(X, list):
@@ -172,7 +178,7 @@ class AutoChunker:
 
     def score(self, X, y):
         _, y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
-        return (y_pred == y).astype(float).mean()
+        return self.fitness_fn(y_pred, y)
 
     def _start_type(self):
         return self.input or List(Postag())

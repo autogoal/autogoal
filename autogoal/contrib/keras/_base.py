@@ -2,7 +2,7 @@ from typing import Optional
 
 from autogoal.contrib.keras._grammars import build_grammar
 from autogoal.grammar import Graph, GraphGrammar, Sampler
-from autogoal.kb import CategoricalVector, Tensor3, Tuple, MatrixContinuousDense, List
+from autogoal.kb import CategoricalVector, Tensor3, Tuple, MatrixContinuousDense, List, Postag
 from keras.layers import Dense, Input, concatenate, TimeDistributed
 from keras.models import Model
 from keras.utils import to_categorical
@@ -11,7 +11,7 @@ from keras.callbacks import EarlyStopping
 
 class KerasNeuralNetwork:
     def __init__(
-        self, grammar: GraphGrammar, epochs=10, validation_split=0.1, **compile_kwargs
+        self, grammar: GraphGrammar, epochs=10, early_stop=3, validation_split=0.1, **compile_kwargs
     ):
         self.grammar = grammar
         self._epochs = epochs
@@ -20,6 +20,7 @@ class KerasNeuralNetwork:
         self._mode = "train"
         self._graph = None
         self._validation_split = validation_split
+        self._early_stop = early_stop
 
     def train(self):
         self._mode = "train"
@@ -87,12 +88,18 @@ class KerasNeuralNetwork:
         return outputs
 
     def fit(self, X, y):
+        if self._graph is None:
+            raise TypeError("You must call `sample` to generate the internal model.")
+
         self._build_nn(self._graph, X, y)
+
+        self.model.summary()
+
         self.model.fit(
             x=X,
             y=y,
             epochs=self._epochs,
-            callbacks=[EarlyStopping()],
+            callbacks=[EarlyStopping(patience=self._early_stop, restore_best_weights=True)],
             validation_split=self._validation_split,
         )
 
@@ -162,7 +169,12 @@ class KerasSequenceClassifier(KerasClassifier):
         return super().run(input)
 
 
-class KerasSequenceTagger(KerasClassifier):
+class KerasSequenceTagger(KerasNeuralNetwork):
+    def __init__(self, **kwargs):
+        self._classes = None
+        self._num_classes = None
+        super().__init__(grammar=self._build_grammar(), **kwargs)
+
     def _build_grammar(self):
         return build_grammar(preprocessing=True, features_time_distributed=True)
 
@@ -170,12 +182,39 @@ class KerasSequenceTagger(KerasClassifier):
         return Input(shape=(None, X.shape[2]))
 
     def _build_output(self, outputs, y):
+        self._num_classes = y.shape[-1]
+
+        if "loss" not in self._compile_kwargs:
+            self._compile_kwargs["loss"] = "categorical_crossentropy"
+
+        dense = Dense(units=self._num_classes, activation="softmax")
+
         if len(outputs) > 1:
             outputs = concatenate(outputs)
         else:
             outputs = outputs[0]
 
-        return TimeDistributed(super()._build_output_layer(y))(outputs)
+        return TimeDistributed(dense)(outputs)
 
-    def run(self, input: Tuple(Tensor3(), List(CategoricalVector()))) -> List(CategoricalVector()):
+    def fit(self, X, y):
+        distinct_classes = set(x for yi in y for x in yi)
+        self._classes = {k: v for k, v in zip(distinct_classes, range(len(distinct_classes)))}
+        self._inverse_classes = {v: k for k, v in self._classes.items()}
+
+        y = [[self._classes[x] for x in yi] for yi in y]
+        y = to_categorical(y)
+
+        return super().fit(X, y)
+
+    def predict(self, X):
+        if self._classes is None:
+            raise TypeError(
+                "You must call `fit` before `predict` to learn class mappings."
+            )
+
+        predictions = super().predict(X)
+        predictions = predictions.argmax(axis=-1)
+        return [[self._inverse_classes[x] for x in yi] for yi in predictions]
+
+    def run(self, input: Tuple(Tensor3(), List(List(Postag())))) -> List(List(Postag())):
         return super().run(input)

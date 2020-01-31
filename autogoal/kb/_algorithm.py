@@ -134,6 +134,9 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
         if conforms(output_type, output):
             G.add_edge(clss, GraphSpace.End)
 
+    import pprint
+    pprint.pprint(registry)
+
     if GraphSpace.End not in G:
         raise ValueError("No pipelines can be constructed from input to output.")
 
