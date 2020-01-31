@@ -44,13 +44,14 @@ from autogoal.search import (
 # They should be pretty self-explanatory.
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--iterations", type=int, default=1000)
-parser.add_argument("--timeout", type=int, default=60)
-parser.add_argument("--memory", type=int, default=1)
-parser.add_argument("--popsize", type=int, default=10)
-parser.add_argument("--epochs", type=int, default=1)
+parser.add_argument("--iterations", type=int, default=10000)
+parser.add_argument("--timeout", type=int, default=300)
+parser.add_argument("--memory", type=int, default=10)
+parser.add_argument("--popsize", type=int, default=20)
+parser.add_argument("--selection", type=int, default=5)
+parser.add_argument("--epochs", type=int, default=20)
 parser.add_argument("--global-timeout", type=int, default=60 * 60)
-parser.add_argument("--early-stop", type=int, default=100)
+parser.add_argument("--early-stop", type=int, default=200)
 parser.add_argument("--token", default=None)
 
 # The most important argument is this one, which selects the dataset.
@@ -92,7 +93,8 @@ for epoch in range(args.epochs):
             search_algorithm=PESearch,
             search_iterations=args.iterations,
             search_kwargs=dict(
-                pop_size=10,
+                pop_size=args.popsize,
+                selection=args.selection,
                 evaluation_timeout=args.timeout,
                 memory_limit=args.memory * 1024 ** 3,
                 early_stop=args.early_stop,
@@ -108,7 +110,9 @@ for epoch in range(args.epochs):
         if args.token:
             from autogoal.contrib.telegram import TelegramBotLogger
 
-            telegram = TelegramBotLogger(token=args.token, name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`")
+            telegram = TelegramBotLogger(
+                token=args.token, name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`"
+            )
             loggers.append(telegram)
 
         classifier.fit(X_train, y_train, logger=loggers)
@@ -132,7 +136,8 @@ for epoch in range(args.epochs):
                         best_pipeline=repr(classifier.best_pipeline_),
                         search_iterations=args.iterations,
                         search_kwargs=dict(
-                            pop_size=10,
+                            pop_size=args.popsize,
+                            selection=args.selection,
                             evaluation_timeout=args.timeout,
                             memory_limit=args.memory * 1024 ** 3,
                             early_stop=args.early_stop,
