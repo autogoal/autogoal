@@ -38,7 +38,7 @@ class AutoClassifier:
         score_metric=None,
     ):
         self.input = input
-        self.output = output,
+        self.output = output
         self.search_algorithm = search_algorithm
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
