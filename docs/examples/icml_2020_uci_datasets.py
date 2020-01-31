@@ -62,10 +62,7 @@ parser.add_argument("--dataset", choices=valid_datasets + ["all"], default="all"
 
 args = parser.parse_args()
 
-# ## Loading the data
-
-# Here we dynamically load the corresponding dataset and,
-# if necesary, split it into training and testing sets.
+# ## Experimentation
 
 if args.dataset != "all":
     valid_datasets = [args.dataset]
@@ -77,13 +74,14 @@ for epoch in range(args.epochs):
         print("=============================================")
         data = getattr(datasets, dataset).load()
 
+        # Here we dynamically load the corresponding dataset and,
+        # if necesary, split it into training and testing sets.
+
         if len(data) == 4:
             X_train, X_test, y_train, y_test = data
         else:
             X, y = data
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
-
-        # ## Running the AutoML
 
         # Finally we can instantiate out `AutoClassifier` with all the custom
         # paramenters we received from the command line.
