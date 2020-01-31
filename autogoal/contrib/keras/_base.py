@@ -115,17 +115,17 @@ class KerasClassifier(KerasNeuralNetwork):
     def _build_output_layer(self, y):
         self._num_classes = y.shape[1]
 
-        if len(outputs) > 1:
-            outputs = concatenate(outputs)
-        else:
-            outputs = outputs[0]
-
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = "categorical_crossentropy"
 
         return Dense(units=self._num_classes, activation="softmax")
 
     def _build_output(self, outputs, y):
+        if len(outputs) > 1:
+            outputs = concatenate(outputs)
+        else:
+            outputs = outputs[0]
+
         return self._build_output_layer(y)(outputs)
 
     def fit(self, X, y):
@@ -170,6 +170,11 @@ class KerasSequenceTagger(KerasClassifier):
         return Input(shape=(None, X.shape[2]))
 
     def _build_output(self, outputs, y):
+        if len(outputs) > 1:
+            outputs = concatenate(outputs)
+        else:
+            outputs = outputs[0]
+
         return TimeDistributed(super()._build_output_layer(y))(outputs)
 
     def run(self, input: Tuple(Tensor3(), List(CategoricalVector()))) -> List(CategoricalVector()):
