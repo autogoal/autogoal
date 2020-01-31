@@ -8,6 +8,7 @@ classifier = AutoChunker(
     search_algorithm=PESearch,
     search_iterations=1000,
     search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
+    fitness_fn=meddocan.precision
 )
 
 class ErrorLogger(Logger):

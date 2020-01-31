@@ -90,11 +90,11 @@ class NltkTagger(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self._instance = self.tagger(train=y)
-        return self._instance.tag_sents(X), y
+        return X, y
 
     def _eval(self, input):
         X, y = input
-        return self._instance.tag_sents(X), y
+        return X, [self._instance.tag_sents(x) for x in X]
 
 
 class NltkTrainedTagger(SklearnWrapper):

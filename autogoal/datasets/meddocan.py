@@ -192,3 +192,81 @@ def compare_tags(tag_list, other_tag_list):
                 return False
     
     return True
+
+def get_qvals(predicted, y):
+    tp = 0
+    fp = 0
+    fn = 0
+    total_sentences = 0
+    for i in range(len(y)):
+        for j in range(len(y[i])):
+            for k in range(len(y[i][j])):
+                _, tag = y[i][j][k]
+                _, predicted_tag = predicted[i][j][k]
+                
+                if tag != "O":
+                    if tag == predicted_tag:
+                        tp+=1
+                    else:
+                        fn+=1
+                elif tag != predicted_tag:
+                    fp+=1
+            total_sentences+=1
+    
+    return tp, fp, fn, total_sentences
+
+def leak(predicted, y):
+    """
+    leak evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)  
+    """
+    tp, fp, fn, total_sentences = get_qvals(predicted, y)
+    try:      
+        return float(fn/total_sentences)
+    except ZeroDivisionError:
+        return 0.0
+    
+def precision(predicted, y):
+    """
+    precision evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)  
+    """
+    tp, fp, fn, total_sentences = get_qvals(predicted, y)
+    try:      
+        return tp / float(tp + fp)
+    except ZeroDivisionError:
+        return 0.0
+
+def recall(predicted, y):
+    """
+    recall evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)  
+    """
+    tp, fp, fn, total_sentences = get_qvals(predicted, y)
+    try:      
+        return tp / float(tp + fn)
+    except ZeroDivisionError:
+        return 0.0
+    
+def F1_beta(predicted, y, beta=1):
+    """
+    F1 evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)  
+    """
+    p = micro_precision(predicted, y)
+    r = micro_recall(predicted, y)
+    try:
+        return (1 + beta**2) * ((p * r) / (p + r))
+    except ZeroDivisionError:
+        return 0.0
+        pass
+
+def basic_fn(predicted, y):
+    correct = 0
+    total = 0
+    for i in range(len(y)):
+        for j in range(len(y[i])):
+            for k in range(len(y[i][j])):
+                total+=1
+                
+                _, tag = y[i][j][k]
+                _, predicted_tag = predicted[i][j][k]
+                correct+=1 if tag == predicted_tag else 0
+                
+    return correct/total

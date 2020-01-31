@@ -136,6 +136,7 @@ class AutoChunker:
         exclude_filter=None,
         validation_split=0.2,
         errors="warn",
+        fitness_fn=None,
     ):
         self.input = input
         self.search_algorithm = search_algorithm
@@ -145,6 +146,7 @@ class AutoChunker:
         self.exclude_filter = exclude_filter
         self.validation_split = validation_split
         self.errors = errors
+        self.fitness_fn = fitness_fn
 
     def fit(self, X, y, **kwargs):
         self.pipeline_builder_ = build_pipelines(
@@ -176,7 +178,6 @@ class AutoChunker:
         return self.input or List(Postag())
 
     def _make_fitness_fn(self, X, y):
-        #TODO: Integrate fitness function for meddocan
         X = np.asarray(X)
         y = np.asarray(y)
 
@@ -198,7 +199,7 @@ class AutoChunker:
             pipeline.run((X_train, y_train))
             pipeline.send("eval")
             _, y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
-            return (y_pred == y_test).astype(float).mean()
+            return self.fitness_fn(y_pred, y_test)
 
         return fitness_fn
 
