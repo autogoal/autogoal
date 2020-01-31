@@ -12,9 +12,9 @@ def load_corpus():
     ```python
     >>> X_train, X_valid, y_train, y_valid = load_corpus()
     >>> len(X_train), len(X_valid)
-    750 250
+    26336 8668
     >>> len(y_train), len(y_valid)
-    750 250
+    26336 8668
     ```
     """
 
@@ -43,24 +43,24 @@ def load_corpus():
             text, phi = parse_text_and_tags(file.path)
             bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
-                X_train.append(text)
-                y_train.append(ibo_corpora)
+                X_train.extend(text)
+                y_train.extend(ibo_corpora)
 
     for file in os.scandir(dev_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
             bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
-                X_train.append(text)
-                y_train.append(ibo_corpora)
+                X_train.extend(text)
+                y_train.extend(ibo_corpora)
 
     for file in os.scandir(test_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
             bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
             if compare_tags(bart_corpora, phi):
-                X_test.append(text)
-                y_test.append(ibo_corpora)
+                X_test.extend(text)
+                y_test.extend(ibo_corpora)
 
     return X_train, X_test, y_train, y_test
 
@@ -137,7 +137,7 @@ def get_tagged_tokens(text, tags):
             current_tag = ""
             processing_token = False
 
-        if not processing_token and char in ["\n"," ", ",", ".", ";", ":", "!", "?"]:
+        if not processing_token and char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
             if token:
                 sentences[-1].append((token, tag))
 
@@ -148,7 +148,15 @@ def get_tagged_tokens(text, tags):
             offset += 1
             continue
 
-        if offset == next_tag_init and not token:
+        if offset == next_tag_init:
+            if token:
+                if char in char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
+                    sentences[-1].append((token, tag))
+                else:
+                    token+=char
+                    sentences[-1].append((token, tag))
+                token = ""
+
             current_tag = tags[itag][0]
             current_tag_init = tags[itag][1]
             current_tag_end = tags[itag][2]
@@ -175,8 +183,8 @@ def compare_tags(tag_list, other_tag_list):
     (`tag_name`, `start_offset`, `end_offset`, `value`)
     """
     tags_amount = len(tag_list)
-    if tags_amount != tags_amount:
-        print("missmatch of amount of tags %d vs %d" %(tags_amount, tags_amount))
+    if tags_amount != len(other_tag_list):
+        print("missmatch of amount of tags %d vs %d" %(tags_amount, len(other_tag_list)))
         return False
 
     tag_list.sort(key = lambda x: x[1])
@@ -200,18 +208,17 @@ def get_qvals(y, predicted):
     total_sentences = 0
     for i in range(len(y)):
         for j in range(len(y[i])):
-            for k in range(len(y[i][j])):
-                _, tag = y[i][j][k]
-                _, predicted_tag = predicted[i][j][k]
+            _, tag = y[i][j]
+            _, predicted_tag = predicted[i][j]
 
-                if tag != "O":
-                    if tag == predicted_tag:
-                        tp+=1
-                    else:
-                        fn+=1
-                elif tag != predicted_tag:
-                    fp+=1
-            total_sentences+=1
+            if tag != "O":
+                if tag == predicted_tag:
+                    tp+=1
+                else:
+                    fn+=1
+            elif tag != predicted_tag:
+                fp+=1
+        total_sentences+=1
 
     return tp, fp, fn, total_sentences
 
@@ -249,8 +256,8 @@ def F1_beta(y, predicted, beta=1):
     """
     F1 evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)
     """
-    p = micro_precision(y, predicted)
-    r = micro_recall(y, predicted)
+    p = precision(predicted, y)
+    r = recall(predicted, y)
     try:
         return (1 + beta**2) * ((p * r) / (p + r))
     except ZeroDivisionError:
@@ -262,11 +269,10 @@ def basic_fn(y, predicted):
     total = 0
     for i in range(len(y)):
         for j in range(len(y[i])):
-            for k in range(len(y[i][j])):
-                total+=1
+            total+=1
 
-                _, tag = y[i][j][k]
-                _, predicted_tag = predicted[i][j][k]
-                correct+=1 if tag == predicted_tag else 0
+            _, tag = y[i][j]
+            _, predicted_tag = predicted[i][j]
+            correct+=1 if tag == predicted_tag else 0
 
     return correct/total
