@@ -20,7 +20,7 @@ from autogoal.datasets import abalone, cars, dorothea, gisette, shuttle, yeast
 
 # We will also import this annotation type.
 
-from autogoal.kb import MatrixContinuousDense
+from autogoal.kb import MatrixContinuousDense, CategoricalVector
 
 # This is the real deal, the class `AutoClassifier` does all the work.
 
@@ -88,6 +88,7 @@ for epoch in range(args.epochs):
 
         classifier = AutoML(
             input=MatrixContinuousDense(),
+            output=CategoricalVector(),
             search_algorithm=PESearch,
             search_iterations=args.iterations,
             search_kwargs=dict(
