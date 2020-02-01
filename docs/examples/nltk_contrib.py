@@ -1,8 +1,8 @@
 from autogoal.contrib.nltk._generated import AffixTagger
-from autogoal.datasets.meddocan import load_corpus
+from autogoal.datasets.meddocan import load
 
 
-X, _, y, _ = load_corpus()
+X, _, y, _ = load()
 
 # for sent in X:
 #     print(repr(sent))

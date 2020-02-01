@@ -9,17 +9,35 @@ from autogoal.search import (
 )
 from autogoal.kb import List, Sentence, Word, Postag
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--iterations", type=int, default=10000)
+parser.add_argument("--timeout", type=int, default=1800)
+parser.add_argument("--memory", type=int, default=20)
+parser.add_argument("--popsize", type=int, default=50)
+parser.add_argument("--selection", type=int, default=10)
+parser.add_argument("--global-timeout", type=int, default=None)
+parser.add_argument("--examples", type=int, default=None)
+parser.add_argument("--token", default=None)
+
+args = parser.parse_args()
+
+print(args)
 
 classifier = AutoML(
+    search_algorithm=PESearch,
     input=List(List(Word())),
     output=List(List(Postag())),
-    search_iterations=10000,
-    search_kwargs=dict(
-        pop_size=50, selection=20, evaluation_timeout=1800, memory_limit=10 * 1024 ** 3
-    ),
+    search_iterations=args.iterations,
     score_metric=meddocan.precision,
-    # errors="raise",
-    exclude_filter="(.*nltk.*|.*sklearn.*)",
+    cross_validation_steps=1,
+    search_kwargs=dict(
+        pop_size=args.popsize,
+        search_timeout=args.global_timeout,
+        evaluation_timeout=args.timeout,
+        memory_limit=args.memory * 1024 ** 3,
+    ),
 )
 
 
@@ -36,7 +54,7 @@ class CustomLogger(Logger):
 
 memory_logger = MemoryLogger()
 
-X_train, X_test, y_train, y_test = meddocan.load_corpus()
+X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
 
 classifier.fit(
     X_train,

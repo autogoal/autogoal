@@ -3,14 +3,14 @@ import os
 from autogoal.datasets import datapath, download
 from sklearn.feature_extraction import DictVectorizer
 
-def load_corpus():
+def load(max_examples=None):
     """
     Loads train and test datasets from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
 
     ##### Examples
 
     ```python
-    >>> X_train, X_valid, y_train, y_valid = load_corpus()
+    >>> X_train, X_valid, y_train, y_valid = load()
     >>> len(X_train), len(X_valid)
     26336 8668
     >>> len(y_train), len(y_valid)
@@ -61,6 +61,12 @@ def load_corpus():
             if compare_tags(bart_corpora, phi):
                 X_test.extend(text)
                 y_test.extend(ibo_corpora)
+
+    if max_examples is not None:
+        X_train = X_train[:max_examples]
+        X_test = X_test[:max_examples]
+        y_train = y_train[:max_examples]
+        y_test = y_test[:max_examples]
 
     return X_train, X_test, y_train, y_test
 
