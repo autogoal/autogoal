@@ -41,7 +41,7 @@ class RestrictedWorker:
             result_bucket["result"] = result
         except Exception as e:
             msg = "{}\n\nOriginal {}".format(e, traceback.format_exc())
-            result_bucket["result"] = type(e)(msg)
+            result_bucket["result"] = Exception(msg)
 
     def run_restricted(self, *args, **kwargs):
         """

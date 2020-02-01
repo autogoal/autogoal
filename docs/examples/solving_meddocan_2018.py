@@ -16,7 +16,7 @@ classifier = AutoML(
     search_iterations=10000,
     search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
     score_metric=meddocan.precision,
-    errors="raise",
+    # errors="raise",
     exclude_filter=".*Keras.*",
 )
 
