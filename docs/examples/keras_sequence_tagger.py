@@ -7,22 +7,20 @@ from autogoal.search import ConsoleLogger, ProgressLogger
 import numpy as np
 
 
-classifier = KerasSequenceTagger(epochs=100, early_stop=100).sample()
+classifier = KerasSequenceTagger(epochs=2, early_stop=100).sample()
 
 
-X = np.asarray(
-    [
-        [[1, 1, 1, 1], [0, 1, 0, 1], [2, 1, 3, 4]],
-        [[1, 0, 1, 1], [3, 1, 0, 1], [2, 1, 3, 4]],
-        [[1, 1, 1, 2], [4, 1, 0, 1], [2, 1, 3, 4]],
-    ]
-)
+X = [
+    np.asarray([[1, 1, 1, 1], [0, 1, 0, 1], [2, 1, 3, 4]]),
+    np.asarray([[1, 0, 1, 1], [3, 1, 0, 1], [2, 1, 3, 4], [0, 1, 3, 4], [2, 2, 1, 4]]),
+    np.asarray([[1, 1, 1, 2], [4, 1, 0, 1]]),
+]
 
-y = np.asarray([
+y = [
     ["A", "B", "C"],
-    ["B", "A", "A"],
-    ["C", "B", "C"],
-])
+    ["B", "A", "A", "B", "C"],
+    ["C", "B"],
+]
 
 
 classifier.fit(X, y)

@@ -144,3 +144,5 @@ PGE-*.json
 *.kv
 dask-worker-space/*
 .env
+*.zip
+*.npy

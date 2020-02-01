@@ -1,19 +1,21 @@
 from typing import Optional
 
+import numpy as np
+from keras.callbacks import EarlyStopping, TerminateOnNaN
+from keras.layers import Dense, Input, TimeDistributed, concatenate
+from keras.models import Model
+from keras.utils import to_categorical
+
 from autogoal.contrib.keras._grammars import build_grammar
 from autogoal.grammar import Graph, GraphGrammar, Sampler
 from autogoal.kb import (
     CategoricalVector,
+    List,
+    MatrixContinuousDense,
+    Postag,
     Tensor3,
     Tuple,
-    MatrixContinuousDense,
-    List,
-    Postag,
 )
-from keras.layers import Dense, Input, concatenate, TimeDistributed
-from keras.models import Model
-from keras.utils import to_categorical
-from keras.callbacks import EarlyStopping, TerminateOnNaN
 
 
 class KerasNeuralNetwork:
@@ -106,7 +108,9 @@ class KerasNeuralNetwork:
         self._build_nn(self._graph, X, y)
 
         self.model.summary()
+        self._fit_model(X, y)
 
+    def _fit_model(self, X, y):
         self.model.fit(
             x=X,
             y=y,
@@ -194,15 +198,13 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return build_grammar(preprocessing=True, features_time_distributed=True)
 
     def _build_input(self, X):
-        return Input(shape=(None, X.shape[2]))
+        return Input(shape=(None, X[0].shape[-1]))
 
     def _build_output(self, outputs, y):
-        self._num_classes = y.shape[-1]
-
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = "categorical_crossentropy"
 
-        dense = Dense(units=self._num_classes, activation="softmax")
+        dense = Dense(units=len(self._classes), activation="softmax")
 
         if len(outputs) > 1:
             outputs = concatenate(outputs)
@@ -219,9 +221,30 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         self._inverse_classes = {v: k for k, v in self._classes.items()}
 
         y = [[self._classes[x] for x in yi] for yi in y]
-        y = to_categorical(y)
-
         return super().fit(X, y)
+
+    def _fit_model(self, X, y):
+        def generate_batches():
+            while True:
+                for xi, yi in zip(X, y):
+                    xi, yi = np.expand_dims(xi, axis=0), to_categorical([yi], len(self._classes))
+
+                    if len(xi.shape) == 3 and len(yi.shape) == 3:
+                        yield xi, yi
+
+                    # assert len(xi.shape) == 3#, 'xi has shape %r' % xi.shape
+                    # assert len(yi.shape) == 3#, 'yi has shape %r' % yi.shape
+
+        self.model.fit_generator(
+            generate_batches(),
+            steps_per_epoch=len(X),
+            epochs=self._epochs,
+            callbacks=[
+                EarlyStopping(patience=self._early_stop, restore_best_weights=True),
+                TerminateOnNaN(),
+            ],
+            # validation_split=self._validation_split,
+        )
 
     def predict(self, X):
         if self._classes is None:
@@ -229,11 +252,14 @@ class KerasSequenceTagger(KerasNeuralNetwork):
                 "You must call `fit` before `predict` to learn class mappings."
             )
 
-        predictions = super().predict(X)
-        predictions = predictions.argmax(axis=-1)
-        return [[self._inverse_classes[x] for x in yi] for yi in predictions]
+        predictions = [self.model.predict(np.expand_dims(xi, axis=0)) for xi in X]
+        predictions = [pr.argmax(axis=-1) for pr in predictions]
+
+        print(predictions)
+
+        return [[self._inverse_classes[x] for x in yi[0]] for yi in predictions]
 
     def run(
-        self, input: Tuple(Tensor3(), List(List(Postag())))
+        self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))
     ) -> List(List(Postag())):
         return super().run(input)
