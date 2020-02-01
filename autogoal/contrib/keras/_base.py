@@ -255,8 +255,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         predictions = [self.model.predict(np.expand_dims(xi, axis=0)) for xi in X]
         predictions = [pr.argmax(axis=-1) for pr in predictions]
 
-        print(predictions)
-
         return [[self._inverse_classes[x] for x in yi[0]] for yi in predictions]
 
     def run(
