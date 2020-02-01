@@ -61,9 +61,9 @@ memory_logger = MemoryLogger()
 loggers = [ProgressLogger(), ConsoleLogger(), CustomLogger(), memory_logger]
 
 if args.token:
-    from autogoal.contrib.telegram import TelegramBotLogger
+    from autogoal.contrib.telegram import TelegramLogger
 
-    telegram = TelegramBotLogger(token=args.token, name=f"HAHA 2019")
+    telegram = TelegramLogger(token=args.token, name=f"HAHA 2019")
     loggers.append(telegram)
 
 X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)

@@ -53,6 +53,7 @@ parser.add_argument("--epochs", type=int, default=20)
 parser.add_argument("--global-timeout", type=int, default=60 * 60)
 parser.add_argument("--early-stop", type=int, default=200)
 parser.add_argument("--token", default=None)
+parser.add_argument("--channel", default=None)
 
 # The most important argument is this one, which selects the dataset.
 
@@ -107,10 +108,12 @@ for epoch in range(args.epochs):
         loggers = [ProgressLogger(), ConsoleLogger(), logger]
 
         if args.token:
-            from autogoal.contrib.telegram import TelegramBotLogger
+            from autogoal.contrib.telegram import TelegramLogger
 
-            telegram = TelegramBotLogger(
-                token=args.token, name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`"
+            telegram = TelegramLogger(
+                token=args.token,
+                name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`",
+                channel=args.channel,
             )
             loggers.append(telegram)
 
