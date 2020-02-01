@@ -24,7 +24,7 @@ from autogoal.kb import MatrixContinuousDense
 
 # This is the real deal, the class `AutoClassifier` does all the work.
 
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 
 # And from the `autogoal.search` module we will need a couple logging utilities
 # and the `PESearch` class.
@@ -86,7 +86,7 @@ for epoch in range(args.epochs):
         # Finally we can instantiate out `AutoClassifier` with all the custom
         # paramenters we received from the command line.
 
-        classifier = AutoClassifier(
+        classifier = AutoML(
             input=MatrixContinuousDense(),
             search_algorithm=PESearch,
             search_iterations=args.iterations,

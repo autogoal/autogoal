@@ -1,7 +1,7 @@
 from autogoal.contrib.keras import KerasSequenceTagger
 from autogoal.datasets import cars
 from autogoal.kb import CategoricalVector, Tensor3, List
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 from autogoal.search import ConsoleLogger, ProgressLogger
 
 import numpy as np

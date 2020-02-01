@@ -1,4 +1,4 @@
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
     Logger,
@@ -31,7 +31,7 @@ for cls in find_classes():
     print("Using: %s" % cls.__name__)
 
 
-classifier = AutoClassifier(
+classifier = AutoML(
     search_algorithm=PESearch,
     input=List(Sentence()),
     output=CategoricalVector(),

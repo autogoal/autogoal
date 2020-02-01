@@ -1,20 +1,25 @@
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 from autogoal.datasets import meddocan
-from autogoal.search import Logger, PESearch, ConsoleLogger, ProgressLogger, MemoryLogger
+from autogoal.search import (
+    Logger,
+    PESearch,
+    ConsoleLogger,
+    ProgressLogger,
+    MemoryLogger,
+)
 from autogoal.kb import List, Sentence, Word, Postag
-from autogoal.contrib.keras import KerasSequenceTagger
-from autogoal.contrib.gensim._base import Word2VecEmbeddingSpanish
-from autogoal.contrib._wrappers import MatrixBuilder, TensorBuilder
 
-classifier = AutoClassifier(
-    input=List(List(Word())), #input: Untagged tokenized documents
+
+classifier = AutoML(
+    input=List(List(Word())),
     output=List(List(Postag())),
-    search_algorithm=PESearch,
-    search_iterations=1000,
+    search_iterations=10000,
     search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
     score_metric=meddocan.precision,
-    registry=[Word2VecEmbeddingSpanish, KerasSequenceTagger, MatrixBuilder, TensorBuilder]
+    errors="raise",
+    exclude_filter=".*Keras.*",
 )
+
 
 class CustomLogger(Logger):
     def error(self, e: Exception, solution):
@@ -31,9 +36,11 @@ memory_logger = MemoryLogger()
 
 X_train, X_test, y_train, y_test = meddocan.load_corpus()
 
-classifier.fit(X_train, y_train, logger=[CustomLogger(), ConsoleLogger(), memory_logger])
+classifier.fit(
+    X_train, y_train, logger=[CustomLogger(), ConsoleLogger(), memory_logger]
+)
 score = classifier.score(X_test, y_test)
-print(score)
 
+print(score)
 print(memory_logger.generation_best_fn)
 print(memory_logger.generation_mean_fn)

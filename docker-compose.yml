@@ -3,7 +3,7 @@ version: "2.3"
 services:
   autogoal-tester-cpu:
     container_name: autogoal-dev-${PYTHON_VERSION}-cpu
-    image: apiad/autogoal-dev:${PYTHON_VERSION}-cpu
+    image: autogoal/autogoal-dev:${PYTHON_VERSION}-cpu
     build:
       dockerfile: cpu.dockerfile
       context: "."
@@ -19,7 +19,7 @@ services:
 
   # autogoal-tester-gpu:
   #   container_name: autogoal-dev-${PYTHON_VERSION}-gpu
-  #   image: apiad/autogoal-dev:${PYTHON_VERSION}-gpu
+  #   image: autogoal/autogoal-dev:${PYTHON_VERSION}-gpu
   #   build:
   #     dockerfile: gpu.dockerfile
   #     context: "."
@@ -32,4 +32,4 @@ services:
   #     - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
   #   command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
   #   network_mode: host
-    # runtime: nvidia
+  #   runtime: nvidia

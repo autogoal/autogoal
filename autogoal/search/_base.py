@@ -99,7 +99,7 @@ class SearchAlgorithm:
 
                         if self._errors == "raise":
                             logger.end(best_solution, best_fn)
-                            raise
+                            raise e from None
 
                     logger.eval_solution(solution, fn)
                     fns.append(fn)

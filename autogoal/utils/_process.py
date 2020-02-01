@@ -4,7 +4,8 @@ import resource
 import psutil
 import signal
 import os
-
+import sys
+import traceback
 
 from autogoal.utils import Mb
 
@@ -39,7 +40,8 @@ class RestrictedWorker:
             result = self.function(*args, **kwargs)
             result_bucket["result"] = result
         except Exception as e:
-            result_bucket["result"] = e
+            msg = "{}\n\nOriginal {}".format(e, traceback.format_exc())
+            result_bucket["result"] = type(e)(msg)
 
     def run_restricted(self, *args, **kwargs):
         """
@@ -84,7 +86,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         self.memory = memory
 
     def _restrict(self):
-        msoft, mhard = resource.getrlimit(resource.RLIMIT_AS)
+        _, mhard = resource.getrlimit(resource.RLIMIT_AS)
         used_memory = self.get_used_memory()
 
         if self.memory is None:
@@ -119,6 +121,6 @@ class RestrictedWorkerByJoin(RestrictedWorker):
             raise TimeoutError()
 
         if isinstance(result, Exception):  # Exception ocurred
-            raise result
+            raise result from None
 
         return result

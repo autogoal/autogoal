@@ -59,8 +59,12 @@ def find_classes(include=".*", exclude=None):
         )
         pass
 
-    from autogoal.contrib._wrappers import MatrixBuilder, VectorAggregator
+    from autogoal.contrib._wrappers import (
+        MatrixBuilder,
+        VectorAggregator,
+        TensorBuilder,
+    )
 
-    result.extend([MatrixBuilder, VectorAggregator])
+    result.extend([MatrixBuilder, VectorAggregator, TensorBuilder])
 
     return result

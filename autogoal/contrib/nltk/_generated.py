@@ -154,7 +154,7 @@ class AffixTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -169,7 +169,7 @@ class BigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -184,7 +184,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -199,7 +199,7 @@ class TrigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -214,7 +214,7 @@ class UnigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -427,7 +427,7 @@ class AffixTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -442,7 +442,7 @@ class BigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -457,7 +457,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -472,7 +472,7 @@ class TrigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 
@@ -487,7 +487,7 @@ class UnigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Word()))) -> List(List(Postag())):
+    def run(self, input: Tuple(List(List(Word())), List(List(Postag())))) -> List(List(Postag())):
         return NltkTagger.run(self, input)
 
 

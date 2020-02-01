@@ -32,7 +32,7 @@ class Demo:
         st.write("AutoGOAL is first and foremost a framework for Automatic Machine Learning.")
 
         with st.echo():
-            from autogoal.ml import AutoClassifier
+            from autogoal.ml import AutoML
 
     def run(self):
         main_section = st.sidebar.selectbox("Demo", list(self.main_sections))
