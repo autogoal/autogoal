@@ -32,6 +32,7 @@ classifier = AutoML(
     search_iterations=args.iterations,
     score_metric=meddocan.precision,
     cross_validation_steps=1,
+    exclude_filter=".*Word2Vec.*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
