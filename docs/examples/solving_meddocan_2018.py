@@ -19,7 +19,7 @@ classifier = AutoML(
     ),
     score_metric=meddocan.precision,
     # errors="raise",
-    # exclude_filter=".*Tagger.*",
+    exclude_filter="(.*nltk.*|.*sklearn.*)",
 )
 
 
