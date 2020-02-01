@@ -1,4 +1,5 @@
 import warnings
+import re
 
 
 def find_classes(include=".*", exclude=None):
@@ -67,4 +68,9 @@ def find_classes(include=".*", exclude=None):
 
     result.extend([MatrixBuilder, VectorAggregator, TensorBuilder])
 
-    return result
+    return [
+        cls
+        for cls in result
+        if re.match(include, cls.__name__)
+        and (exclude is None or not re.match(exclude, cls.__name__))
+    ]

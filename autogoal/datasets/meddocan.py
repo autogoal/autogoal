@@ -150,7 +150,7 @@ def get_tagged_tokens(text, tags):
 
         if offset == next_tag_init:
             if token:
-                if char in char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
+                if char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
                     sentences[-1].append((token, tag))
                 else:
                     token+=char
@@ -173,8 +173,9 @@ def get_tagged_tokens(text, tags):
         token += char
         offset += 1
 
-    raw_sentences = [[word for word,_ in sentence] for sentence in sentences]
-    return tagged_tokens, raw_sentences, sentences
+    raw_sentences = [[word for word,_ in sentence] for sentence in sentences if sentence]
+    raw_tags = [[tag for _, tag in sentence] for sentence in sentences if sentence]
+    return tagged_tokens, raw_sentences, raw_tags
 
 def compare_tags(tag_list, other_tag_list):
     """
@@ -183,6 +184,7 @@ def compare_tags(tag_list, other_tag_list):
     (`tag_name`, `start_offset`, `end_offset`, `value`)
     """
     tags_amount = len(tag_list)
+
     if tags_amount != len(other_tag_list):
         print("missmatch of amount of tags %d vs %d" %(tags_amount, len(other_tag_list)))
         return False
@@ -208,8 +210,8 @@ def get_qvals(y, predicted):
     total_sentences = 0
     for i in range(len(y)):
         for j in range(len(y[i])):
-            _, tag = y[i][j]
-            _, predicted_tag = predicted[i][j]
+            tag = y[i][j]
+            predicted_tag = predicted[i][j]
 
             if tag != "O":
                 if tag == predicted_tag:

@@ -14,10 +14,12 @@ classifier = AutoML(
     input=List(List(Word())),
     output=List(List(Postag())),
     search_iterations=10000,
-    search_kwargs=dict(pop_size=10, evaluation_timeout=60, memory_limit=1024 ** 3),
+    search_kwargs=dict(
+        pop_size=50, selection=20, evaluation_timeout=1800, memory_limit=10 * 1024 ** 3
+    ),
     score_metric=meddocan.precision,
     # errors="raise",
-    exclude_filter=".*Keras.*",
+    # exclude_filter=".*Tagger.*",
 )
 
 
@@ -25,7 +27,7 @@ class CustomLogger(Logger):
     def error(self, e: Exception, solution):
         if e and solution:
             with open("meddocan_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={repr(e)}\n\n")
+                fp.write(f"solution={repr(solution)}\nerror={e}\n\n")
 
     def update_best(self, new_best, new_fn, *args):
         with open("meddocan.log", "a") as fp:
@@ -37,7 +39,9 @@ memory_logger = MemoryLogger()
 X_train, X_test, y_train, y_test = meddocan.load_corpus()
 
 classifier.fit(
-    X_train, y_train, logger=[CustomLogger(), ConsoleLogger(), memory_logger]
+    X_train,
+    y_train,
+    logger=[CustomLogger(), ConsoleLogger(), ProgressLogger(), memory_logger],
 )
 score = classifier.score(X_test, y_test)
 

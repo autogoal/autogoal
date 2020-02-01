@@ -17,7 +17,13 @@ from pathlib import Path
 from autogoal.kb import *
 from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnWrapper
-from ._utils import _is_algorithm, get_input_output, is_algorithm, _is_tagger, is_pretrained_tagger
+from ._utils import (
+    _is_algorithm,
+    get_input_output,
+    is_algorithm,
+    _is_tagger,
+    is_pretrained_tagger,
+)
 
 languages = [
     "arabic",
@@ -41,11 +47,7 @@ languages_re = re.compile("|".join(languages))
 
 
 GENERATION_RULES = dict(
-    SnowballStemmer = dict(
-        assume = True,
-        assume_input=Word(),
-        assume_output=Stem()
-    ),
+    SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
 )
 
 
@@ -75,26 +77,30 @@ class NltkLemmatizer:
     def lemmatize(self, X):
         pass
 
+
 class NltkClusterer(SklearnWrapper):
     def _train(self, input):
         X, y = input
         self.cluster(X)
         return [self.classify(x) for x in X]
-    
+
     def _eval(self, input):
         X, y = input
         return X, [self.classify(x) for x in X]
-    
+
 
 class NltkTagger(SklearnWrapper):
     def _train(self, input):
         X, y = input
-        self._instance = self.tagger(train=y)
+        tagged_sentences = [list(zip(words, tags)) for words, tags in zip(X, y)]
+        self._instance = self.tagger(train=tagged_sentences)
         return X, y
 
     def _eval(self, input):
         X, y = input
-        return X, self._instance.tag_sents(X)
+        return [
+            [tag for _, tag in sentence] for sentence in self._instance.tag_sents(X)
+        ]
 
 
 class NltkTrainedTagger(SklearnWrapper):
@@ -137,6 +143,8 @@ def build_nltk_wrappers():
     counter = manager.counter(total=len(imports), unit="classes")
     path = Path(__file__).parent / "_generated.py"
 
+    imports = set(imports)
+
     with open(path, "w") as fp:
         fp.write(
             textwrap.dedent(
@@ -164,6 +172,7 @@ def build_nltk_wrappers():
     counter.close()
     manager.stop()
 
+
 def _write_class(cls, fp):
     try:
         args = _get_args(cls)
@@ -189,6 +198,7 @@ def _write_class(cls, fp):
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
+    self_str = f"\n{s * 5}".join(f"self.{key}={key}" for key in args)
     values_str = f",".join(f"{key}={key}" for key in args)
     input_str, output_str = repr(inputs), repr(outputs)
     base_class = base_classes.get(is_algorithm(cls), None)  # set correct base class
@@ -211,12 +221,13 @@ def _write_class(cls, fp):
                     self,
                     {args_str}
                 ):
+                    {self_str}
                     self.tagger = _{cls.__name__}
                     self.values = dict({values_str})
 
                     {base_class}.__init__(self)
 
-                def run(self, input: {input_str}) -> {output_str}:
+                def run(self, input: Tuple({input_str}, {output_str})) -> {output_str}:
                     return {base_class}.run(self, input)
             """
             )
@@ -233,6 +244,7 @@ def _write_class(cls, fp):
                     self,
                     {args_str}
                 ):
+                    {self_str}
                     {base_class}.__init__(self)
                     _{cls.__name__}.__init__(
                         self,
@@ -246,6 +258,7 @@ def _write_class(cls, fp):
         )
 
     fp.flush()
+
 
 def _write_tagger(cls, fp, args_str, init_str, input_str, output_str):
     fp.write(
@@ -273,6 +286,7 @@ def _write_tagger(cls, fp, args_str, init_str, input_str, output_str):
     )
 
     fp.flush()
+
 
 def _walk(module, name="nltk"):
     imports = []
@@ -378,8 +392,6 @@ def _get_args(cls):
 
     args_map = {k: v for k, v in zip(args, specs)}
 
-
-
     drop_args = [
         "url",
         "n_jobs",
@@ -392,7 +404,7 @@ def _get_args(cls):
         "eps",
         "ignore_stopwords",
         "verbose",
-        "load"
+        "load",
     ]
 
     for arg in drop_args:
