@@ -107,8 +107,8 @@ class AutoML:
                 indices = np.arange(0, X.shape[0])
                 np.random.shuffle(indices)
                 split_index = int(self.validation_split * len(indices))
-                train_indices = indices[:split_index]
-                test_indices = indices[split_index:]
+                train_indices = indices[:-split_index]
+                test_indices = indices[-split_index:]
 
                 X_train, y_train, X_test, y_test = (
                     X[train_indices],

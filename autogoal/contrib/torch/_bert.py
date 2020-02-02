@@ -44,7 +44,7 @@ class BertEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self, verbose=True):  # , length: Discrete(16, 512)):
+    def __init__(self, verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
@@ -97,13 +97,20 @@ class BertTokenizeEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self):  # , length: Discrete(16, 512)):
+    def __init__(self, verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
-        print("Using device: %s" % self.device)
+        self.verbose = verbose
+        self.print("Using device: %s" % self.device)
         self.model = None
         self.tokenizer = None
+
+    def print(self, *args, **kwargs):
+        if not self.verbose:
+            return
+
+        print(*args, **kwargs)
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
         if self.model is None:
@@ -116,18 +123,18 @@ class BertTokenizeEmbedding:
                 lambda: BertTokenizer.from_pretrained("bert-base-multilingual-cased"),
             )
 
-        print("Tokenizing...", end="", flush=True)
+        self.print("Tokenizing...", end="", flush=True)
         tokens = [
             self.tokenizer.encode(x, max_length=32, pad_to_max_length=True)
             for x in input
         ]
-        print("done")
+        self.print("done")
 
         ids = torch.tensor(tokens).to(self.device)
 
         with torch.no_grad():
-            print("Embedding...", end="", flush=True)
+            self.print("Embedding...", end="", flush=True)
             output = self.model(ids)[0].numpy()
-            print("done")
+            self.print("done")
 
         return output
