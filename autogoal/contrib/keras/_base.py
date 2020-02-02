@@ -127,10 +127,10 @@ class KerasNeuralNetwork:
 
 
 class KerasClassifier(KerasNeuralNetwork):
-    def __init__(self, **kwargs):
+    def __init__(self, grammar=None, **kwargs):
         self._classes = None
         self._num_classes = None
-        super().__init__(grammar=self._build_grammar(), **kwargs)
+        super().__init__(grammar=grammar or self._build_grammar(), **kwargs)
 
     def _build_grammar(self):
         return build_grammar(features=True)
@@ -189,10 +189,10 @@ class KerasSequenceClassifier(KerasClassifier):
 
 
 class KerasSequenceTagger(KerasNeuralNetwork):
-    def __init__(self, **kwargs):
+    def __init__(self, grammar=None, **kwargs):
         self._classes = None
         self._num_classes = None
-        super().__init__(grammar=self._build_grammar(), **kwargs)
+        super().__init__(grammar=grammar or self._build_grammar(), **kwargs)
 
     def _build_grammar(self):
         return build_grammar(preprocessing=True, features_time_distributed=True)
