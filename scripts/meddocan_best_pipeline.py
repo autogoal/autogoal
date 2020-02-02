@@ -56,7 +56,12 @@ print(pipeline)
 
 from autogoal.datasets import meddocan
 
-Xtrain, Xtest, ytrain, ytest = meddocan.load(max_examples=50)
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--examples", default=None, type=int)
+args = parser.parse_args()
+
+Xtrain, Xtest, ytrain, ytest = meddocan.load(max_examples=args.examples)
 
 pipeline.run((Xtrain, ytrain))
 pipeline.send("eval")
