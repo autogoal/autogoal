@@ -49,10 +49,8 @@ Xtrain, Xtest, ytrain, ytest = meddocan.load(max_examples=args.examples)
 pipeline.run((Xtrain, ytrain))
 pipeline.send("eval")
 
-ypred = pipeline.run((Xtrain, None))
+ypred = pipeline.run((Xtest, None))
 
-print(ypred)
-
-print("F1", meddocan.F1_beta(ytrain, ypred))
-print("Precision", meddocan.precision(ytrain, ypred))
-print("Recall", meddocan.recall(ytrain, ypred))
+print("F1", meddocan.F1_beta(ytest, ypred))
+print("Precision", meddocan.precision(ytest, ypred))
+print("Recall", meddocan.recall(ytest, ypred))

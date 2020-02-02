@@ -205,7 +205,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
     def _build_output(self, outputs, y):
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = 'categorical_crossentropy'
-            self._compile_kwargs["metrics"] = [f1, 'accuracy']
+            self._compile_kwargs["metrics"] = ['accuracy']
 
         dense = Dense(units=len(self._classes), activation="softmax")
 
