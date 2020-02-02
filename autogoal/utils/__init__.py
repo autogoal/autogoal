@@ -119,6 +119,43 @@ Min = 60 * Sec
 Hour = 60 * Min
 
 
+def flatten(y):
+    """
+    Recursively flattens a list.
+
+    ##### Examples
+
+    ```python
+    >>> flatten([[1],[2,[3]],4])
+    [1, 2, 3, 4]
+
+    ```
+    """
+    if isinstance(y, list):
+        return [z for x in y for z in flatten(x)]
+    else:
+        return [y]
+
+
+def compute_class_weights(y):
+    """
+    Computes relative class weights for imbalanced datasets. Works with nested input.
+
+    ##### Examples
+
+    ```python
+    >>> compute_class_weights([['A', 'B', 'A'], ['C'], ['C', 'C']])
+    {'A': 1.5, 'B': 3.0, 'C': 1.0}
+
+    ```
+    """
+    y = flatten(y)
+    class_counts = collections.Counter(y)
+    _, max_class = class_counts.most_common(1)[0]
+
+    return {k: max_class / v for k, v in class_counts.items()}
+
+
 from ._resource import ResourceManager
 from ._process import  RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager

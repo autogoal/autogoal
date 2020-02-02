@@ -1,5 +1,6 @@
 from typing import Optional
 
+import collections
 import numpy as np
 from keras.callbacks import EarlyStopping, TerminateOnNaN
 from keras.layers import Dense, Input, TimeDistributed, concatenate
@@ -101,16 +102,16 @@ class KerasNeuralNetwork:
     def _build_output(self, outputs, y):
         return outputs
 
-    def fit(self, X, y):
+    def fit(self, X, y, **kwargs):
         if self._graph is None:
             raise TypeError("You must call `sample` to generate the internal model.")
 
         self._build_nn(self._graph, X, y)
 
         self.model.summary()
-        self._fit_model(X, y)
+        self._fit_model(X, y, **kwargs)
 
-    def _fit_model(self, X, y):
+    def _fit_model(self, X, y, **kwargs):
         self.model.fit(
             x=X,
             y=y,
@@ -120,6 +121,7 @@ class KerasNeuralNetwork:
                 TerminateOnNaN(),
             ],
             validation_split=self._validation_split,
+            **kwargs,
         )
 
     def predict(self, X):
@@ -202,7 +204,8 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def _build_output(self, outputs, y):
         if "loss" not in self._compile_kwargs:
-            self._compile_kwargs["loss"] = "categorical_crossentropy"
+            self._compile_kwargs["loss"] = 'categorical_crossentropy'
+            self._compile_kwargs["metrics"] = [f1, 'accuracy']
 
         dense = Dense(units=len(self._classes), activation="softmax")
 
@@ -215,6 +218,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def fit(self, X, y):
         distinct_classes = set(x for yi in y for x in yi)
+
         self._classes = {
             k: v for k, v in zip(distinct_classes, range(len(distinct_classes)))
         }
@@ -223,11 +227,14 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         y = [[self._classes[x] for x in yi] for yi in y]
         return super().fit(X, y)
 
-    def _fit_model(self, X, y):
+    def _fit_model(self, X, y, **kwargs):
         def generate_batches():
             while True:
                 for xi, yi in zip(X, y):
-                    xi, yi = np.expand_dims(xi, axis=0), to_categorical([yi], len(self._classes))
+                    xi, yi = (
+                        np.expand_dims(xi, axis=0),
+                        to_categorical([yi], len(self._classes)),
+                    )
 
                     if len(xi.shape) == 3 and len(yi.shape) == 3:
                         yield xi, yi
@@ -243,6 +250,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
                 EarlyStopping(patience=self._early_stop, restore_best_weights=True),
                 TerminateOnNaN(),
             ],
+            **kwargs,
             # validation_split=self._validation_split,
         )
 

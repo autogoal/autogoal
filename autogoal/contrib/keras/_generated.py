@@ -103,8 +103,13 @@ class Embedding(_Embedding):
 
 
 class Dense(_Dense):
-    def __init__(self, units: Discrete(128, 1024), **kwargs):
-        super().__init__(units=units, **kwargs)
+    def __init__(
+        self,
+        units: Discrete(128, 1024),
+        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
+        **kwargs
+    ):
+        super().__init__(units=units, activation=activation, **kwargs)
 
 
 class Conv1D(_Conv1D):
@@ -113,5 +118,5 @@ class Conv1D(_Conv1D):
 
 
 class TimeDistributed(_TimeDistributed):
-    def __init__(self, layer:Dense):
+    def __init__(self, layer: Dense):
         super().__init__(layer)
