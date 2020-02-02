@@ -20,6 +20,7 @@ parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
 parser.add_argument("--token", default=None)
+parser.add_argument("--channel", default=None)
 
 args = parser.parse_args()
 
@@ -53,15 +54,22 @@ class CustomLogger(Logger):
             fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
 
 
-memory_logger = MemoryLogger()
+logger = MemoryLogger()
+loggers = [ProgressLogger(), ConsoleLogger(), logger]
+
+if args.token:
+    from autogoal.contrib.telegram import TelegramLogger
+
+    telegram = TelegramLogger(
+        token=args.token,
+        name=f"MEDDOCAN",
+        channel=args.channel,
+    )
+    loggers.append(telegram)
 
 X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
 
-classifier.fit(
-    X_train,
-    y_train,
-    logger=[CustomLogger(), ConsoleLogger(), ProgressLogger(), memory_logger],
-)
+classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)
 
 print(score)
