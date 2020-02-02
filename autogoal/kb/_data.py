@@ -151,11 +151,13 @@ def build_composite_list(input_type, output_type, depth=1):
         self.inner = inner
 
     def run_method(self, input: input_wrapper) -> output_wrapper:
+        from tqdm import tqdm
+
         def wrap_run(xs, d):
             if d == 0:
                 return self.inner.run(xs)
 
-            return [wrap_run(x, d - 1) for x in xs]
+            return [wrap_run(x, d - 1) for x in tqdm(xs)]
 
         return wrap_run(input, depth)
 
