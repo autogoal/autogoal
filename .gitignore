@@ -146,3 +146,4 @@ dask-worker-space/*
 .env
 *.zip
 *.npy
+*.pickle

@@ -73,5 +73,5 @@ classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)
 
 print(score)
-print(memory_logger.generation_best_fn)
-print(memory_logger.generation_mean_fn)
+print(logger.generation_best_fn)
+print(logger.generation_mean_fn)

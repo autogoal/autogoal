@@ -61,14 +61,8 @@ class BertEmbedding:
 
     def run(self, input: List(Word(language="english"))) -> MatrixContinuousDense():
         if self.model is None:
-            self.model = CacheManager.instance().get(
-                "bert-model",
-                lambda: BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device),
-            )
-            self.tokenizer = CacheManager.instance().get(
-                "bert-tokenizer",
-                lambda: BertTokenizer.from_pretrained("bert-base-multilingual-cased"),
-            )
+            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
+            self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
         self.print("Tokenizing...", end="", flush=True)
         tokens = self.tokenizer.convert_tokens_to_ids(input)
@@ -114,14 +108,8 @@ class BertTokenizeEmbedding:
 
     def run(self, input: List(Sentence(language="english"))) -> Tensor3():
         if self.model is None:
-            self.model = CacheManager.instance().get(
-                "bert-model",
-                lambda: BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device),
-            )
-            self.tokenizer = CacheManager.instance().get(
-                "bert-tokenizer",
-                lambda: BertTokenizer.from_pretrained("bert-base-multilingual-cased"),
-            )
+            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
+            self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
         self.print("Tokenizing...", end="", flush=True)
         tokens = [
