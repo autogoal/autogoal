@@ -36,11 +36,11 @@ def load():
 
     for row, line in enumerate(train_data):
         for col in line.split():
-            Xtrain[row, int(col)-1] = True
+            Xtrain[row, int(col)-1] = 1
 
     for row, line in enumerate(valid_data):
         for col in line.split():
-            Xvalid[row, int(col)-1] = True
+            Xvalid[row, int(col)-1] = 1
 
     for line in train_labels:
         ytrain.append(int(line))
