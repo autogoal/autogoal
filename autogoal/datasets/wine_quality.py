@@ -5,7 +5,7 @@ import os
 
 from autogoal.datasets import download, datapath
 
-def load_corpus(white=False, red=False):
+def load(white=True, red=False, max_examples=None):
     if not red and not white:
         raise ValueError("Either red or white must be selected")
 
@@ -21,6 +21,9 @@ def load_corpus(white=False, red=False):
         title_line = True
         for i in f_white.readlines():
 
+            if max_examples and len(X) >= max_examples:
+                break
+
             if title_line == True:
                 title_line = False
                 continue
@@ -29,11 +32,15 @@ def load_corpus(white=False, red=False):
 
             X.append([float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
+
 
     if red:
         title_line = True
         for i in f_red.readlines():
 
+            if max_examples and len(X) >= max_examples:
+                break
+
             if title_line == True:
                 title_line = False
                 continue
@@ -42,5 +49,6 @@ def load_corpus(white=False, red=False):
 
             X.append([float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
+
 
     return np.asarray(X), np.asarray(y)

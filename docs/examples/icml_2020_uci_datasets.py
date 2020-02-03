@@ -16,7 +16,16 @@ from sklearn.model_selection import train_test_split
 # From `autogoal` we need a bunch of datasets.
 
 from autogoal import datasets
-from autogoal.datasets import abalone, cars, dorothea, gisette, shuttle, yeast
+from autogoal.datasets import (
+    abalone,
+    cars,
+    dorothea,
+    gisette,
+    shuttle,
+    yeast,
+    german_credit,
+    wine_quality,
+)
 
 # We will also import this annotation type.
 
@@ -57,7 +66,16 @@ parser.add_argument("--channel", default=None)
 
 # The most important argument is this one, which selects the dataset.
 
-valid_datasets = ["abalone", "cars", "dorothea", "gisette", "shuttle", "yeast"]
+valid_datasets = [
+    "abalone",
+    "cars",
+    "dorothea",
+    "gisette",
+    "shuttle",
+    "yeast",
+    "german_credit",
+    "wine_quality",
+]
 
 parser.add_argument("--dataset", choices=valid_datasets + ["all"], default="all")
 
