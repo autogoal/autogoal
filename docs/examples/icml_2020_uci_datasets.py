@@ -88,7 +88,6 @@ for epoch in range(args.epochs):
         # paramenters we received from the command line.
 
         classifier = AutoML(
-            input=MatrixContinuousDense(),
             output=CategoricalVector(),
             search_algorithm=PESearch,
             search_iterations=args.iterations,
