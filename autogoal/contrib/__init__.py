@@ -1,4 +1,5 @@
 import warnings
+import re
 
 
 def find_classes(include=".*", exclude=None):
@@ -59,8 +60,17 @@ def find_classes(include=".*", exclude=None):
         )
         pass
 
-    from autogoal.contrib._wrappers import MatrixBuilder, VectorAggregator
+    from autogoal.contrib._wrappers import (
+        MatrixBuilder,
+        VectorAggregator,
+        TensorBuilder,
+    )
 
-    result.extend([MatrixBuilder, VectorAggregator])
+    result.extend([MatrixBuilder, VectorAggregator, TensorBuilder])
 
-    return result
+    return [
+        cls
+        for cls in result
+        if re.match(include, repr(cls))
+        and (exclude is None or not re.match(exclude, repr(cls)))
+    ]

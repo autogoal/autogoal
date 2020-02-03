@@ -144,6 +144,11 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     if not GraphSpace.Start in G:
         raise ValueError("No pipelines can be constructed from input to output.")
 
+    import pprint
+    pprint.pprint(list(G.nodes))
+
+    # raise ValueError()
+
     return PipelineBuilder(G, registry)
 
 
@@ -179,7 +184,8 @@ class Pipeline:
             try:
                 x = step.run(x)
             except Exception as e:
-                raise PipelineError(step=step.__class__.__name__, inner=e)
+                raise e from None
+                # raise PipelineError(step=step.__class__.__name__, inner=e)
 
         return x
 

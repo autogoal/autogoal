@@ -1,38 +1,8 @@
-from autogoal.kb import algorithm, Sentence, List, Word, ContinuousVector, MatrixContinuousDense
+from autogoal.kb import algorithm, Sentence, List, Word, ContinuousVector, MatrixContinuousDense, Tensor3
 from autogoal.grammar import Categorical
 from autogoal.utils import nice_repr
 
 import numpy as np
-
-
-# __all__ = ["SentenceVectorizer", "AggregateMerger", "DocumentVectorizer"]
-
-
-# @nice_repr
-# class SentenceVectorizer:
-#     def __init__(
-#         self,
-#         tokenizer: algorithm(Sentence(), List(Word())),
-#         vectorizer: algorithm(Word(), ContinuousVector()),
-#         merger: algorithm(List(ContinuousVector()), ContinuousVector()),
-#     ):
-#         self.tokenizer = tokenizer
-#         self.vectorizer = vectorizer
-#         self.merger = merger
-
-#     def run(self, input: Sentence()) -> ContinuousVector():
-#         tokens = self.tokenizer.run(input)
-#         vectors = [self.vectorizer.run(token) for token in tokens]
-#         return self.merger.run(vectors)
-
-
-# @nice_repr
-# class DocumentVectorizer:
-#     def __init__(self, vectorizer: SentenceVectorizer):
-#         self.vectorizer = vectorizer
-
-#     def run(self, input: List(Sentence())) -> MatrixContinuousDense():
-#         return np.vstack([self.vectorizer.run(s) for s in input])
 
 
 @nice_repr
@@ -53,5 +23,50 @@ class VectorAggregator:
 
 @nice_repr
 class MatrixBuilder:
+    """
+    Builds a matrix from a list of vectors.
+
+    ##### Examples
+
+    ```python
+    >>> import numpy as np
+    >>> x1 = np.asarray([1,2,3])
+    >>> x2 = np.asarray([2,3,4])
+    >>> x3 = np.asarray([3,4,5])
+    >>> MatrixBuilder().run([x1, x2, x3])
+    array([[1, 2, 3],
+           [2, 3, 4],
+           [3, 4, 5]])
+
+    ```
+    """
     def run(self, input: List(ContinuousVector())) -> MatrixContinuousDense():
         return np.vstack(input)
+
+
+@nice_repr
+class TensorBuilder:
+    """
+    Builds a 3D tensor from a list of matrices.
+
+    ##### Examples
+
+    ```python
+    >>> import numpy as np
+    >>> x1 = np.asarray([[1,2],[3,4]])
+    >>> x2 = np.asarray([[2,3],[4,5]])
+    >>> x3 = np.asarray([[3,4],[5,6]])
+    >>> TensorBuilder().run([x1, x2, x3])
+    array([[[1, 2],
+            [3, 4]],
+    <BLANKLINE>
+           [[2, 3],
+            [4, 5]],
+    <BLANKLINE>
+           [[3, 4],
+            [5, 6]]])
+
+    ```
+    """
+    def run(self, input: List(MatrixContinuousDense())) -> Tensor3():
+        return np.vstack([np.expand_dims(m, axis=0) for m in input])

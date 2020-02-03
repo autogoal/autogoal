@@ -1,4 +1,4 @@
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
     Logger,
@@ -31,9 +31,10 @@ for cls in find_classes():
     print("Using: %s" % cls.__name__)
 
 
-classifier = AutoClassifier(
+classifier = AutoML(
     search_algorithm=PESearch,
     input=List(Sentence()),
+    output=CategoricalVector(),
     search_iterations=args.iterations,
     score_metric=f1_score,
     search_kwargs=dict(
@@ -60,9 +61,9 @@ memory_logger = MemoryLogger()
 loggers = [ProgressLogger(), ConsoleLogger(), CustomLogger(), memory_logger]
 
 if args.token:
-    from autogoal.contrib.telegram import TelegramBotLogger
+    from autogoal.contrib.telegram import TelegramLogger
 
-    telegram = TelegramBotLogger(token=args.token, name=f"HAHA 2019")
+    telegram = TelegramLogger(token=args.token, name=f"HAHA 2019")
     loggers.append(telegram)
 
 X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)

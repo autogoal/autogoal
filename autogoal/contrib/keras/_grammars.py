@@ -33,16 +33,16 @@ def build_grammar(preprocessing=False, reduction=False, features=False, features
     grammar.add("ReductionModule", Seq2VecLSTM)
     grammar.add("ReductionModule", Seq2VecBiLSTM)
 
-    grammar.add("FeaturesModule", Path("Layer", "FeaturesModule"))
+    grammar.add("FeaturesModule", Path("DenseLayer", "FeaturesModule"))
     grammar.add("FeaturesModule", Epsilon())
-    grammar.add("Layer", Block(Dense, "Layer"))
-    grammar.add("Layer", Path(Dense, "Layer"))
-    grammar.add("Layer", Epsilon())
+    grammar.add("DenseLayer", Block(Dense, "DenseLayer"))
+    grammar.add("DenseLayer", Path(Dense, "DenseLayer"))
+    grammar.add("DenseLayer", Epsilon())
 
-    grammar.add("FeaturesTimeDistributed", Path("Layer", "FeaturesTimeDistributed"))
-    grammar.add("FeaturesTimeDistributed", Epsilon())
-    grammar.add("Layer", Block(TimeDistributed, "Layer"))
-    grammar.add("Layer", Path(TimeDistributed, "Layer"))
-    grammar.add("Layer", Epsilon())
+    grammar.add("FeaturesTimeDistributedModule", Path("TDLayer", "FeaturesTimeDistributedModule"))
+    grammar.add("FeaturesTimeDistributedModule", Epsilon())
+    grammar.add("TDLayer", Block(TimeDistributed, "TDLayer"))
+    grammar.add("TDLayer", Path(TimeDistributed, "TDLayer"))
+    grammar.add("TDLayer", Epsilon())
 
     return grammar

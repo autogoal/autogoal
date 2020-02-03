@@ -158,18 +158,18 @@ class WordnetConcept:
         return names_synsets
 
 
-@nice_repr
-class ConvertSynset2Word:
-    """Recive a Synset of nltk and return de Lemma of this
-    """
+# @nice_repr
+# class ConvertSynset2Word:
+#     """Recive a Synset of nltk and return de Lemma of this
+#     """
 
-    def __init__(self):
-        pass
+#     def __init__(self):
+#         pass
 
-    def run(self, input: Synset(domain="general", language="english")) -> Word():
-        """Recive a Synset of nltk and return de Lemma of this
-        """
-        return Lemma(input)
+#     def run(self, input: Synset(domain="general", language="english")) -> Word():
+#         """Recive a Synset of nltk and return de Lemma of this
+#         """
+#         return Lemma(input)
 
 
 @nice_repr
@@ -215,37 +215,59 @@ class GlobalChunker(SklearnWrapper):
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
-        
+
         SklearnWrapper.__init__(self)
-        
+
     def _train(self, input):
         X, y = input
-        raw_sentences_X = [sentence for document in X for sentence in document]
-        pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
-        
+
+        postagged_sentences = []
+        for i in range(len(X)):
+            sentence = []
+            for itoken in range(len(X[i])):
+                x_sent = X[i]
+                word = x_sent[itoken]
+                sentence.append(word)
+
+            postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
+            tagged_sentence = [ (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))]
+            if tagged_sentence:
+                postagged_sentences.append(tagged_sentence)
+
         tagged_sentences = []
         for i in range(len(y)):
-            for j in range(len(y[i])):
-                sentence = []
-                tags = []
-                for itoken in range(len(y[i][j])):
-                    y_sent = y[i][j]
-                    word, tag = y_sent[itoken]
-                    sentence.append(word)
-                    tags.append(tag)
-                    
-                postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
-                tagged_sentence = [ ((sentence[k], postag_sentence[k][1]), tags[k]) for k in range(len(sentence))]
-                if tagged_sentence:
-                    tagged_sentences.append(tagged_sentence)
-                
-        return self.inner_chunker.run((pos_tagged_sents_X, tagged_sentences))
-    
+            sentence = []
+            tags = []
+            for itoken in range(len(y[i])):
+                y_sent = y[i]
+                word, tag = y_sent[itoken]
+                sentence.append(word)
+                tags.append(tag)
+
+            postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
+            tagged_sentence = [ ((sentence[k], postag_sentence[k][1]), tags[k]) for k in range(len(sentence))]
+            if tagged_sentence:
+                tagged_sentences.append(tagged_sentence)
+
+        return self.inner_chunker.run((postagged_sentences, tagged_sentences))
+
     def _eval(self, input):
         X, y = input
-        raw_sentences_X = [sentence for document in X for sentence in document]
-        pos_tagged_sents_X = [self.inner_trained_pos_tagger.run((x, y))[0] for x in raw_sentences_X]
-        return self.inner_chunker.run((pos_tagged_sents_X, y))
-    
-    def run(self, input: List(List(List(Word())))) -> List(List(List(Chunktag()))):
+
+        postagged_document = []
+        for i in range(len(X)):
+            sentence = []
+            for itoken in range(len(X[i])):
+                x_sent = X[i]
+                word = x_sent[itoken]
+                sentence.append(word)
+
+            postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
+            tagged_sentence = [ (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))]
+            if tagged_sentence:
+                postagged_document.append(tagged_sentence)
+
+        return self.inner_chunker.run((postagged_document, y))
+
+    def run(self, input: List(List(Word()))) -> List(List(Chunktag())):
         return SklearnWrapper.run(self, input)

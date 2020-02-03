@@ -6,6 +6,7 @@ import statistics
 import math
 import traceback
 import sys
+import termcolor
 
 from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
 
@@ -99,7 +100,7 @@ class SearchAlgorithm:
 
                         if self._errors == "raise":
                             logger.end(best_solution, best_fn)
-                            raise
+                            raise e from None
 
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
@@ -119,22 +120,25 @@ class SearchAlgorithm:
                     evaluations -= 1
 
                     if evaluations <= 0:
-                        print("(!) Stopping since all evaluations are done." % (spent_time))
+                        print(
+                            "(!) Stopping since all evaluations are done."
+                            % (spent_time)
+                        )
                         stop = True
                         break
 
                     spent_time = time.time() - start_time
 
-                    if (
-                        self._search_timeout
-                        and spent_time > self._search_timeout
-                    ):
+                    if self._search_timeout and spent_time > self._search_timeout:
                         print("(!) Stopping since time spent is %.2f." % (spent_time))
                         stop = True
                         break
 
                     if self._early_stop and no_improvement > self._early_stop:
-                        print("(!) Stopping since no improvement for %i evaluations." % no_improvement)
+                        print(
+                            "(!) Stopping since no improvement for %i evaluations."
+                            % no_improvement
+                        )
                         stop = True
                         break
 
@@ -192,6 +196,30 @@ class ConsoleLogger(Logger):
         self.start_time = time.time()
         self.start_evaluations = evaluations
 
+    @staticmethod
+    def normal(text):
+        return termcolor.colored(text, color="gray")
+
+    @staticmethod
+    def emph(text):
+        return termcolor.colored(text, color="white", attrs=["bold"])
+
+    @staticmethod
+    def success(text):
+        return termcolor.colored(text, color="green")
+
+    @staticmethod
+    def primary(text):
+        return termcolor.colored(text, color="blue")
+
+    @staticmethod
+    def warn(text):
+        return termcolor.colored(text, color="orange")
+
+    @staticmethod
+    def err(text):
+        return termcolor.colored(text, color="red")
+
     def start_generation(self, evaluations, best_fn):
         current_time = time.time()
         elapsed = int(current_time - self.start_time)
@@ -199,26 +227,34 @@ class ConsoleLogger(Logger):
         remaining = int(avg_time * evaluations)
         elapsed = datetime.timedelta(seconds=elapsed)
         remaining = datetime.timedelta(seconds=remaining)
+
         print(
-            "New generation started: best_fn=%.3f, evaluations=%i, elapsed=%s, remaining=%s"
-            % (best_fn or 0, evaluations, elapsed, remaining)
+            self.emph("New generation started"),
+            self.success(f"best_fn={best_fn or 0.0:0.3}"),
+            self.primary(f"evaluations={evaluations}"),
+            self.primary(f"elapsed={elapsed}"),
+            self.primary(f"remaining={remaining}"),
         )
 
     def error(self, e: Exception, solution):
-        print("(!) Error evaluating pipeline: %r" % e)
+        print(self.err("(!) Error evaluating pipeline: %s" % e))
 
     def end(self, best, best_fn):
-        print("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best))
+        print(self.emph("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best)))
 
     def sample_solution(self, solution):
-        print("Evaluating pipeline:\n%r" % solution)
+        print(self.emph("Evaluating pipeline:"))
+        print(solution)
 
     def eval_solution(self, solution, fitness):
-        print("Fitness=%.3f" % fitness)
+        print(self.primary("Fitness=%.3f" % fitness))
 
     def update_best(self, new_best, new_fn, previous_best, previous_fn):
         print(
-            "Best solution: improved=%.3f, previous=%.3f" % (new_fn, previous_fn or 0)
+            self.success(
+                "Best solution: improved=%.3f, previous=%.3f"
+                % (new_fn, previous_fn or 0)
+            )
         )
 
 

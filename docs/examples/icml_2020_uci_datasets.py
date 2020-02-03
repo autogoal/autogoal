@@ -20,11 +20,11 @@ from autogoal.datasets import abalone, cars, dorothea, gisette, shuttle, yeast
 
 # We will also import this annotation type.
 
-from autogoal.kb import MatrixContinuousDense
+from autogoal.kb import MatrixContinuousDense, CategoricalVector
 
 # This is the real deal, the class `AutoClassifier` does all the work.
 
-from autogoal.ml import AutoClassifier
+from autogoal.ml import AutoML
 
 # And from the `autogoal.search` module we will need a couple logging utilities
 # and the `PESearch` class.
@@ -53,6 +53,7 @@ parser.add_argument("--epochs", type=int, default=20)
 parser.add_argument("--global-timeout", type=int, default=60 * 60)
 parser.add_argument("--early-stop", type=int, default=200)
 parser.add_argument("--token", default=None)
+parser.add_argument("--channel", default=None)
 
 # The most important argument is this one, which selects the dataset.
 
@@ -86,8 +87,9 @@ for epoch in range(args.epochs):
         # Finally we can instantiate out `AutoClassifier` with all the custom
         # paramenters we received from the command line.
 
-        classifier = AutoClassifier(
+        classifier = AutoML(
             input=MatrixContinuousDense(),
+            output=CategoricalVector(),
             search_algorithm=PESearch,
             search_iterations=args.iterations,
             search_kwargs=dict(
@@ -106,10 +108,12 @@ for epoch in range(args.epochs):
         loggers = [ProgressLogger(), ConsoleLogger(), logger]
 
         if args.token:
-            from autogoal.contrib.telegram import TelegramBotLogger
+            from autogoal.contrib.telegram import TelegramLogger
 
-            telegram = TelegramBotLogger(
-                token=args.token, name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`"
+            telegram = TelegramLogger(
+                token=args.token,
+                name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`",
+                channel=args.channel,
             )
             loggers.append(telegram)
 
