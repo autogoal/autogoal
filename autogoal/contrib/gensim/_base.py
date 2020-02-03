@@ -21,12 +21,15 @@ class Word2VecEmbedding:
 
     If you are using the development container the model should be already downloaded for you.
     """
+    def __init__(self):
+        self._model = None
 
     @property
     def model(self) -> KeyedVectors:
-        return CacheManager.instance().get(
-            "glove-twitter-25", lambda: api.load("glove-twitter-25")
-        )
+        if self._model is None:
+            self._model = api.load("glove-twitter-25")
+
+        return self._model
 
     def run(
         self, input: Word(domain="general", language="english")
@@ -49,6 +52,8 @@ class Word2VecEmbeddingSpanish:
 
     If you are using the development container the model should be already downloaded for you.
     """
+    def __init__(self):
+        self._model = None
 
     def _load_model(self):
         url = "https://zenodo.org/record/1410403/files/keyed_vectors.zip?download=1"
@@ -62,7 +67,10 @@ class Word2VecEmbeddingSpanish:
 
     @property
     def model(self) -> KeyedVectors:
-        return CacheManager.instance().get("spanish-w2v", self._load_model)
+        if self._model is None:
+            self._model = self._load_model()
+
+        return self._model
 
     def run(
         self, input: Word(domain="general", language="spanish")
