@@ -120,10 +120,7 @@ class SearchAlgorithm:
                     evaluations -= 1
 
                     if evaluations <= 0:
-                        print(
-                            "(!) Stopping since all evaluations are done."
-                            % (spent_time)
-                        )
+                        print("(!) Stopping since all evaluations are done.")
                         stop = True
                         break
 
