@@ -34,34 +34,27 @@ def load():
     valid_data = open(os.path.join(path, "gisette_valid.data"), "r")
     valid_labels = open(os.path.join(path, "gisette_valid.labels"), "r")
 
-    Xtrain = np.zeros((6000, 5000))
+    Xtrain = sp.lil_matrix((6000, 5000))
     ytrain = []
-    Xvalid = np.zeros((1000, 5000))
+    Xvalid = sp.lil_matrix((1000, 5000))
     yvalid = []
 
-    i = 0
-    for row, line in enumerate(train_data):
-        j = 0
-        for value in line.split():
-            Xtrain[i,j] = value
-            j+=1
-        i+=1
+    for i, line in enumerate(train_data):
+        for j, value in enumerate(line.split()):
+            value = int(value)
+            if value > 0:
+                Xtrain[i,j] = value
 
-    i = 0
-    for row, line in enumerate(valid_data):
-        j = 0
-        for value in line.split():
-            Xvalid[i, j] = value
-            j+=1
-        i+=1
-
+    for i, line in enumerate(valid_data):
+        for j, value in enumerate(line.split()):
+            value = int(value)
+            if value > 0:
+                Xvalid[i,j] = value
 
     for line in train_labels:
-        ytrain.append(int(line))
+        ytrain.append(int(line) > 0)
 
     for line in valid_labels:
-        yvalid.append(int(line))
+        yvalid.append(int(line) > 0)
 
-    return Xtrain, Xvalid, ytrain, yvalid
-
-
+    return Xtrain.tocsr(), Xvalid.tocsr(), np.asarray(ytrain), np.asarray(yvalid)
