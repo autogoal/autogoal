@@ -5,11 +5,16 @@ import numpy as np
 
 
 from autogoal.datasets import download, datapath
+from sklearn.feature_extraction import DictVectorizer
+
+
+def _parse(x):
+    return int(x) if x.isdigit() else x
 
 def load(max_examples=None):
     download("german_credit")
 
-    f = open(datapath("german_credit") / "german.data-numeric", "r")
+    f = open(datapath("german_credit") / "german.data", "r")
 
     X = []
     y = []
@@ -21,8 +26,9 @@ def load(max_examples=None):
 
         clean_line = i.strip().split()
 
-        X.append([int(i) for i in clean_line[:-1]])
-        y.append(int(clean_line[-1]))
+        line = {'feature_%i'% i : _parse(v) for i,v in enumerate(clean_line[:-1])}
 
+        X.append(line)
+        y.append(int(clean_line[-1]) == 2)
 
-    return np.asarray(X), np.asarray(y)
+    return DictVectorizer().fit_transform(X), np.asarray(y)
