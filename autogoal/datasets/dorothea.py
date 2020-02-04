@@ -21,17 +21,13 @@ def load():
     ```
     """
 
-    try:
-        download("dorothea")
-    except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
-        raise
+    download("dorothea")
 
-    path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/dorothea"
-    train_data = open(os.path.join(path, "dorothea_train.data"), "r")
-    train_labels = open(os.path.join(path, "dorothea_train.labels"), "r")
-    valid_data = open(os.path.join(path, "dorothea_valid.data"), "r")
-    valid_labels = open(os.path.join(path, "dorothea_valid.labels"), "r")
+    train_data = open(datapath('dorothea')/ "dorothea_train.data", "r")
+    train_labels = open(datapath('dorothea')/ "dorothea_train.labels", "r")
+    valid_data = open(datapath('dorothea')/ "dorothea_valid.data", "r")
+    valid_labels = open(datapath('dorothea')/ "dorothea_valid.labels", "r")
+
 
     Xtrain = sp.lil_matrix((800, 100000), dtype=int)
     ytrain = []
@@ -40,11 +36,11 @@ def load():
 
     for row, line in enumerate(train_data):
         for col in line.split():
-            Xtrain[row, int(col)-1] = True
+            Xtrain[row, int(col)-1] = 1
 
     for row, line in enumerate(valid_data):
         for col in line.split():
-            Xvalid[row, int(col)-1] = False
+            Xvalid[row, int(col)-1] = 1
 
     for line in train_labels:
         ytrain.append(int(line))
@@ -52,4 +48,4 @@ def load():
     for line in valid_labels:
         yvalid.append(int(line))
 
-    return Xtrain, Xvalid, ytrain, yvalid
+    return Xtrain.tocsr(), Xvalid.tocsr(), ytrain, yvalid
