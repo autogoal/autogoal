@@ -148,7 +148,6 @@ for epoch in range(args.epochs):
                 json.dumps(
                     dict(
                         dataset=dataset,
-                        epoch=epoch,
                         score=score,
                         generation_best=logger.generation_best_fn,
                         generation_mean=logger.generation_mean_fn,

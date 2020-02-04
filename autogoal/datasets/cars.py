@@ -5,7 +5,7 @@ from autogoal.datasets import download, datapath
 from sklearn.feature_extraction import DictVectorizer
 
 
-def load(representation='numeric'):
+def load(representation='onehot'):
     download("uci_cars")
 
     f = open(datapath("uci_cars") / "car.data", "r")

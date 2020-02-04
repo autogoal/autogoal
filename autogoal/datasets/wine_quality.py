@@ -5,7 +5,7 @@ import os
 
 from autogoal.datasets import download, datapath
 
-def load(white=True, red=False, max_examples=None):
+def load(white=True, red=True, max_examples=None):
     if not red and not white:
         raise ValueError("Either red or white must be selected")
 
