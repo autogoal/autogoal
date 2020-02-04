@@ -3,7 +3,8 @@ import os
 from autogoal.datasets import datapath, download
 from sklearn.feature_extraction import DictVectorizer
 
-def load():
+
+def load(max_examples=None):
     """
     Loads train and valid datasets from [Shuttle uci dataset](https://archive.ics.uci.edu/ml/datasets/Statlog+(Shuttle)).
 
@@ -51,6 +52,9 @@ def load():
         X_train.append(temp)
         y_train.append(clean_line[9])
 
+        if max_examples and len(X_train) >= max_examples:
+            break
+
     for i in test_data.readlines():
         clean_line = i.strip().split()
 
@@ -67,6 +71,9 @@ def load():
 
         X_test.append(temp)
         y_test.append(clean_line[9])
+
+        if max_examples and len(X_test) >= max_examples:
+            break
 
     X_train, y_train = _load_onehot(X_train, y_train)
     X_test, y_test = _load_onehot(X_test, y_test)
