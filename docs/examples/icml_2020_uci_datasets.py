@@ -24,7 +24,6 @@ from autogoal.datasets import (
     shuttle,
     yeast,
     german_credit,
-    wine_quality,
 )
 
 # We will also import this annotation type.
@@ -75,7 +74,6 @@ valid_datasets = [
     "shuttle",
     "yeast",
     "german_credit",
-    "wine_quality",
 ]
 
 parser.add_argument("--dataset", choices=valid_datasets + ["all"], default="all")
@@ -104,7 +102,7 @@ for epoch in range(args.epochs):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
         # Finally we can instantiate out `AutoClassifier` with all the custom
-        # paramenters we received from the command line.
+        # parameters we received from the command line.
 
         classifier = AutoML(
             output=CategoricalVector(),

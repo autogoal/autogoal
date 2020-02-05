@@ -18,6 +18,47 @@ avg = df.groupby("dataset").agg(["mean", "std", "count"])
 avg
 
 # %%
+best_values = dict(
+    cars=(0.34, 0.51),
+    german_credit=(23.91, 0.22),
+    abalone=(73.14, 1.02),
+    shuttle=(0.01, 0.01),
+    yeast=(38.47, 2.36),
+    dorothea=(6.02, 1.01),
+    gisette=(2.24, 0.33),
+)
+
+worst_values = dict(
+    cars=(1.38, 0.67),
+    german_credit=(26.50, 2.32),
+    abalone=(82.92, 8.38),
+    shuttle=(0.12, 0.06),
+    yeast=(40.51, 2.17),
+    dorothea=(8.69, 1.54),
+    gisette=(3.90, 0.40),
+)
+
+for row in avg.iterrows():
+    dataset = row[0]
+    mean = row[1][0]
+    std = row[1][1]
+
+    best_mean, best_std = best_values[dataset]
+    worst_mean, worst_std = worst_values[dataset]
+
+    _, p1 = ttest(mean, std, 20, best_mean, best_std, 20)
+    _, p2 = ttest(mean, std, 20, worst_mean, worst_std, 20)
+
+    if mean < best_mean and p1 < 0.001:
+        mark = "<"
+    elif mean > worst_mean and p2 < 0.001:
+        mark = ">"
+    else:
+        mark = "~"
+
+    print("%s: (%.3f, %.3f)%s" % (dataset, p1, p2, mark))
+
+# %%
 algorithms = []
 import re
 
