@@ -30,7 +30,7 @@ def load(white=True, red=True, max_examples=None):
 
             clean_line = i.strip().split(";")
 
-            X.append([float(i) for i in clean_line[:-1]])
+            X.append([1,0]+[float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
 
 
@@ -47,7 +47,7 @@ def load(white=True, red=True, max_examples=None):
 
             clean_line = i.strip().split(";")
 
-            X.append([float(i) for i in clean_line[:-1]])
+            X.append([0,1]+[float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
 
 
