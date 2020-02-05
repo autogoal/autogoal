@@ -63,6 +63,7 @@ parser.add_argument("--global-timeout", type=int, default=60 * 60)
 parser.add_argument("--early-stop", type=int, default=200)
 parser.add_argument("--token", default=None)
 parser.add_argument("--channel", default=None)
+parser.add_argument("--target", default=1.0, type=float)
 
 # The most important argument is this one, which selects the dataset.
 
@@ -116,6 +117,7 @@ for epoch in range(args.epochs):
                 memory_limit=args.memory * 1024 ** 3,
                 early_stop=args.early_stop,
                 search_timeout=args.global_timeout,
+                target_fn=args.target,
             ),
         )
 

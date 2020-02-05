@@ -23,6 +23,7 @@ class SearchAlgorithm:
         evaluation_timeout: int = 5 * Min,
         memory_limit: int = 4 * Gb,
         search_timeout: int = 60 * 60,
+        target_fn = None,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
@@ -36,6 +37,7 @@ class SearchAlgorithm:
         self._memory_limit = memory_limit
         self._early_stop = early_stop
         self._search_timeout = search_timeout
+        self._target_fn = target_fn
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(
@@ -114,6 +116,10 @@ class SearchAlgorithm:
                         best_solution = solution
                         best_fn = fn
                         no_improvement = 0
+
+                        if self._target_fn and best_fn >= self._target_fn:
+                            stop = True
+                            break
                     else:
                         no_improvement += 1
 
