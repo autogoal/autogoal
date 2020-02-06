@@ -53,11 +53,13 @@ class Demo:
 
         st.write("The next step is to instantiate an AutoML solver and run it on this problem.")
 
+        iterations = st.number_input("Number of iterations", 1, 100, 10)
+
         with st.echo():
             from autogoal.contrib.streamlit import StreamlitLogger
             from autogoal.ml import AutoML
 
-            automl = AutoML(errors='ignore')
+            automl = AutoML(errors='ignore', search_iterations=iterations)
 
         st.write("And run!")
 
@@ -65,6 +67,13 @@ class Demo:
 
         if st.button("Run it!"):
             automl.fit(X, y, logger=StreamlitLogger())
+
+        st.write(
+            """
+            ## Next steps
+
+            Take a look at the remaining examples in the sidebar.
+            """)
 
 
     def run(self):
