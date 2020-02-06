@@ -1,6 +1,6 @@
 site_name: AutoGOAL
 repo_name: 'sestevez/autogoal'
-repo_url: 'https://github.com/sestevez/autogoal'
+repo_url: 'https://gitlab.com/autogoal/autogoal'
 
 theme:
     name: material
