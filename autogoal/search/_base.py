@@ -53,6 +53,8 @@ class SearchAlgorithm:
         if logger is None:
             logger = Logger()
 
+        print(evaluations)
+
         if evaluations is None:
             evaluations = math.inf
 
@@ -97,7 +99,7 @@ class SearchAlgorithm:
                         logger.sample_solution(solution)
                         fn = self._fitness_fn(solution)
                     except Exception as e:
-                        fn = 0
+                        fn = 0.0
                         logger.error(e, solution)
 
                         if self._errors == "raise":

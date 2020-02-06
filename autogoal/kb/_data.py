@@ -249,6 +249,8 @@ def infer_type(obj):
 
     ##### Examples
 
+    * Natural language
+
     ```python
     >>> infer_type("hello")
     Word()
@@ -256,12 +258,29 @@ def infer_type(obj):
     Sentence()
     >>> infer_type("Hello Word. It is raining.")
     Document()
+
+    ```
+
+    * Vectors
+
+    ```
     >>> import numpy as np
-    >>> infer_type(np.asarray([[0,1],
-    ...                        [1,0]]))
-    MatrixContinuousDense()
-    >>> infer_type(np.asarray(['blue', 'red']))
+    >>> infer_type(np.asarray(["A", "B", "C", "D"]))
     CategoricalVector()
+    >>> infer_type(np.asarray([0.0, 1.1, 2.1, 0.2]))
+    ContinuousVector()
+    >>> infer_type(np.asarray([0, 1, 1, 0]))
+    DiscreteVector()
+
+    ```
+
+    * Matrices
+
+    ```
+    >>> import numpy as np
+    >>> infer_type(np.random.randn(10,10))
+    MatrixContinuousDense()
+
     >>> import scipy.sparse as sp
     >>> infer_type(sp.coo_matrix((10,10)))
     MatrixContinuousSparse()
@@ -287,7 +306,12 @@ def infer_type(obj):
     if hasattr(obj, "shape"):
         if len(obj.shape) == 1:
             if isinstance(obj, ndarray):
-                return CategoricalVector()
+                if obj.dtype.kind == 'U':
+                    return CategoricalVector()
+                if obj.dtype.kind == 'i':
+                    return DiscreteVector()
+                if obj.dtype.kind == 'f':
+                    return ContinuousVector()
         if len(obj.shape) == 2:
             if isinstance(obj, spmatrix):
                 return MatrixContinuousSparse()

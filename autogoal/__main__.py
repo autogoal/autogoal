@@ -6,7 +6,7 @@ from pathlib import Path
 def demo():
     try:
         from streamlit.bootstrap import run
-        run(Path(__file__).parent / "demo.py", "", "")
+        run(Path(__file__).parent / "contrib" / "streamlit" / "demo.py", "", "")
     except ImportError:
         print("(!) Too run the demo you need streamlit installed.")
         print("(!) Fix it by running `pip install streamlit`.")
@@ -25,6 +25,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
