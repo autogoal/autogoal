@@ -1,9 +1,9 @@
 try:
     import streamlit as st
 except ImportError:
-    print("(!) Too run the demo you need streamlit installed.")
-    print("(!) Fix it by running `pip install streamlit`.")
-    sys.exit(1)
+    print("(!) The code inside `autogoal.contrib.streamlit` requires `streamlit>=0.55`.")
+    print("(!) Fix it by running `pip install autogoal[streamlit]`.")
+    raise
 
 
 from autogoal.search import Logger
