@@ -49,9 +49,9 @@ for row in avg.iterrows():
     _, p1 = ttest(mean, std, 20, best_mean, best_std, 20)
     _, p2 = ttest(mean, std, 20, worst_mean, worst_std, 20)
 
-    if mean < best_mean and p1 < 0.001:
+    if mean < best_mean and p1 < 0.05:
         mark = "<"
-    elif mean > worst_mean and p2 < 0.001:
+    elif mean > worst_mean and p2 < 0.05:
         mark = ">"
     else:
         mark = "~"
