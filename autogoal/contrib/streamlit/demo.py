@@ -37,7 +37,7 @@ class Demo:
 
         st.write(
             """
-            Let's start by loading the classic [Cars dataset for the UCI repository](https://archive.ics.uci.edu/ml/datasets/Car+Evaluation).
+            Let's start by (down)loading the classic [Cars dataset for the UCI repository](https://archive.ics.uci.edu/ml/datasets/Car+Evaluation).
             This is a low-dimensionality supervised problem with 21 one-hot encoded features.
             """
         )

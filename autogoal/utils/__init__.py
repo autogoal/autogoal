@@ -1,5 +1,6 @@
 import enum
 import inspect
+import collections
 
 
 MAX_REPR_DEPTH = 10
@@ -154,6 +155,13 @@ def compute_class_weights(y):
     _, max_class = class_counts.most_common(1)[0]
 
     return {k: max_class / v for k, v in class_counts.items()}
+
+
+def factory(func_or_type, *args, **kwargs):
+    def call():
+        return func_or_type(*args, **kwargs)
+
+    return call
 
 
 from ._resource import ResourceManager

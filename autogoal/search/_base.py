@@ -28,7 +28,7 @@ class SearchAlgorithm:
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
 
-        self._generator_fn = generator_fn or self._build_sampler()
+        self._generator_fn = generator_fn
         self._fitness_fn = fitness_fn or (lambda x: x)
         self._pop_size = pop_size
         self._maximize = maximize
@@ -88,7 +88,7 @@ class SearchAlgorithm:
                     no_improvement += 1
 
                     try:
-                        solution = self._generator_fn(self._build_sampler())
+                        solution = self._generate()
                     except Exception as e:
                         logger.error(
                             "Error while generating solution: %s" % e, solution
@@ -139,7 +139,7 @@ class SearchAlgorithm:
                         stop = True
                         break
 
-                    if self._early_stop and no_improvement > self._early_stop:
+                    if early_stop and no_improvement > early_stop:
                         print(
                             "(!) Stopping since no improvement for %i evaluations."
                             % no_improvement
@@ -158,6 +158,14 @@ class SearchAlgorithm:
 
         logger.end(best_solution, best_fn)
         return best_solution, best_fn
+
+    def _generate(self):
+        sampler = self._build_sampler()
+
+        if self._generator_fn is None:
+            return sampler
+
+        return self._generator_fn(sampler)
 
     def _build_sampler(self):
         raise NotImplementedError()
