@@ -2,7 +2,7 @@
 
 AutoGOAL is a framework for the automatic generation and optimization of software pipelines.
 A pipeline is defined as a series of steps, which together form a program that performs some desired task.
-AutoGOAL was designed specifically for optimizing machine learnign pipelines, a problem often called [AutoML](https://automl.org),
+AutoGOAL was designed specifically for optimizing machine learning pipelines, a problem often called [AutoML](https://automl.org),
 but it can be used to optimize anything that can be defined as a set of steps with parameters.
 
 AutoGOAL has been designed to suit a broad range of users with different skill levels, from beginners to experts.
