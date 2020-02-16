@@ -11,6 +11,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Boolean`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L335)
@@ -20,6 +22,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Categorical`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L320)
@@ -29,6 +33,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `CfgInitializer`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L371)
@@ -38,6 +44,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `ContextFreeGrammar`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L152)
@@ -45,6 +53,8 @@
 
 Represents a CFG grammar.
 
+
+---
 ### `Continuous`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L309)
@@ -54,6 +64,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Discrete`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L294)
@@ -63,6 +75,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Empty`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L38)
@@ -72,6 +86,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Epsilon`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L229)
@@ -81,6 +97,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Grammar`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_base.py#L30)
@@ -90,6 +108,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Graph`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L11)
@@ -99,6 +119,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `GraphGrammar`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L243)
@@ -108,6 +130,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `GraphSpace`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L314)
@@ -117,6 +141,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Path`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L183)
@@ -126,6 +152,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Sampler`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_base.py#L4)
@@ -135,6 +163,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Symbol`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L10)
@@ -144,6 +174,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Union`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L344)
@@ -153,6 +185,8 @@ Represents a CFG grammar.
 !!! warning
     This class has no docstrings.
 
+
+---
 
 ## Functions
 
@@ -187,3 +221,5 @@ from an annotated callable (class or function).
 
 ```
 
+
+---

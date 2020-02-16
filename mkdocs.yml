@@ -1,6 +1,6 @@
 site_name: AutoGOAL
-repo_name: 'autogoal/autogoal'
-repo_url: 'https://github.com/autogoal/autogoal'
+# repo_name: 'autogoal/autogoal'
+# repo_url: 'https://github.com/autogoal/autogoal'
 
 theme:
     name: material
@@ -36,10 +36,11 @@ nav:
         - AutoGOAL API: api/autogoal.md
         - Grammars: api/autogoal.grammar.md
         - Search: api/autogoal.search.md
-        - Contrib:
-            - Contrib API: api/autogoal.contrib.md
-            - Sklearn: api/autogoal.contrib.sklearn.md
-            - Keras: api/autogoal.contrib.keras.md
+        - Knowledge Base: api/autogoal.kb.md
+        - AutoML: api/autogoal.ml.md
+        - Contrib: api/autogoal.contrib.md
+            # - Sklearn: api/autogoal.contrib.sklearn.md
+            # - Keras: api/autogoal.contrib.keras.md
         - Datasets: api/autogoal.datasets.md
         - Utils: api/autogoal.utils.md
 

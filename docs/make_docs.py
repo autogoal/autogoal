@@ -109,9 +109,8 @@ def build_api():
     import autogoal.grammar
     import autogoal.search
     import autogoal.contrib
-    import autogoal.contrib.sklearn
-    import autogoal.contrib.keras
     import autogoal.datasets
+    import autogoal.ml
 
     generate(autogoal)
 
@@ -127,8 +126,8 @@ def generate(module, visited=set()):
 
     path = Path(__file__).parent / 'api' / (name + ".md")
     submodules = inspect.getmembers(module, lambda m: inspect.ismodule(m) and m.__name__.startswith('autogoal') and not "._" in m.__name__)
-    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and m.__module__.startswith('autogoal') and not m.__name__.startswith('_'))
-    functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and not m.__name__.startswith('_'))
+    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and m.__module__.startswith(module.__name__) and not m.__name__.startswith('_'))
+    functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and m.__module__.startswith(module.__name__) and not m.__name__.startswith('_'))
 
     with open(path, "w") as fp:
         generate_module(module, name, fp)
@@ -140,17 +139,21 @@ def generate(module, visited=set()):
                 fp.write(f"* [{submodule.__name__}](/api/{submodule.__name__}/)\n")
                 generate(submodule)
 
+            fp.write("\n---\n")
+
         if classes:
             fp.write("\n## Classes\n\n")
 
             for _, clss in classes:
                 generate_class(clss, name, fp)
+                fp.write("\n---\n")
 
         if functions:
             fp.write("\n## Functions\n\n")
 
             for _, func in functions:
                 generate_func(func, name, fp)
+                fp.write("\n---\n")
 
 
 def format_param(p: inspect.Parameter) -> str:

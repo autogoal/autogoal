@@ -28,6 +28,28 @@ To quickly see AutoGOAL in action, simply run:
 
 And navigate to [localhost:8501](http://localhost:8501).
 
+## Quickstart
+
+AutoGOAL is first and foremost a framework for Automatic Machine Learning.
+As such, it comes pre-packaged with hundreds of low-level machine learning
+algorithms that can be automatically assembled into pipelines for different problems.
+
+The core of this functionality lies in the [`AutoML`](/api/autogoal.ml#automl) class.
+
+To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
+
+```python
+from autogoal.datasets import cars
+from autogoal.ml import AutoML
+
+X, y = cars.load()
+automl = AutoML(errors='ignore')
+automl.fit(X, y)
+```
+
+Sensible defaults are defined for each of the many parameters of `AutoML`.
+Make sure to read the documentation for more information on the parameters.
+
 ## Documentation
 
 This documentation is available in HTML and PDF versions. If you are reading the PDF version, some

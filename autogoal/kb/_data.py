@@ -237,7 +237,8 @@ class DataType:
 
 
 def infer_type(obj):
-    """Attempts to automatically infer the most precise semantic type for `obj`.
+    """
+    Attempts to automatically infer the most precise semantic type for `obj`.
 
     ##### Parameters
 

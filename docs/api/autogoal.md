@@ -13,8 +13,11 @@ tunable, and then use search algorithms to find the best way to tune or configur
 * [autogoal.datasets](/api/autogoal.datasets/)
 * [autogoal.grammar](/api/autogoal.grammar/)
 * [autogoal.kb](/api/autogoal.kb/)
+* [autogoal.ml](/api/autogoal.ml/)
 * [autogoal.search](/api/autogoal.search/)
 * [autogoal.utils](/api/autogoal.utils/)
+
+---
 
 ## Functions
 
@@ -27,3 +30,5 @@ tunable, and then use search algorithms to find the best way to tune or configur
 !!! warning
     This class has no docstrings.
 
+
+---

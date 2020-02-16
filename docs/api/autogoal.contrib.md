@@ -1,10 +1,5 @@
 # `autogoal.contrib`
 
-## Submodules
-
-* [autogoal.contrib.keras](/api/autogoal.contrib.keras/)
-* [autogoal.contrib.sklearn](/api/autogoal.contrib.sklearn/)
-
 ## Functions
 
 ### `find_classes`
@@ -16,3 +11,5 @@
 !!! warning
     This class has no docstrings.
 
+
+---

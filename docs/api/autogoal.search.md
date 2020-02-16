@@ -11,6 +11,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `Logger`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_base.py#L180)
@@ -20,6 +22,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `MemoryLogger`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_base.py#L292)
@@ -29,6 +33,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `ModelSampler`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_pge.py#L11)
@@ -38,6 +44,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `PESearch`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_pge.py#L240)
@@ -47,6 +55,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `ProgressLogger`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_base.py#L274)
@@ -56,6 +66,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `RandomSearch`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_random.py#L7)
@@ -65,6 +77,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `SearchAlgorithm`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_base.py#L14)
@@ -74,6 +88,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `SurrogateSearch`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_learning.py#L11)
@@ -83,3 +99,5 @@
 !!! warning
     This class has no docstrings.
 
+
+---

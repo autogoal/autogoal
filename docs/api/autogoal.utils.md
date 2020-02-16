@@ -11,6 +11,8 @@
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `ResourceManager`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_resource.py#L9)
@@ -32,6 +34,8 @@ Resource manager class.
   over total address space in order to get a better estimation of the used memory.
 
 
+
+---
 ### `RestrictedWorker`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_process.py#L13)
@@ -41,6 +45,8 @@ Resource manager class.
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `RestrictedWorkerByJoin`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_process.py#L82)
@@ -50,6 +56,8 @@ Resource manager class.
 !!! warning
     This class has no docstrings.
 
+
+---
 
 ## Functions
 
@@ -69,6 +77,8 @@ Computes relative class weights for imbalanced datasets. Works with nested input
 
 ```
 
+
+---
 ### `factory`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L160)
@@ -78,6 +88,8 @@ Computes relative class weights for imbalanced datasets. Works with nested input
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `flatten`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L123)
@@ -94,6 +106,8 @@ Recursively flattens a list.
 
 ```
 
+
+---
 ### `nice_repr`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L11)
@@ -174,3 +188,5 @@ A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(...))))))))))))
     Change `autogoal.utils.MAX_REPR_DEPTH` to increase the depth level of recursive `repr`.
 
 
+
+---

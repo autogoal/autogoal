@@ -19,6 +19,8 @@ PosixPath('/code/autogoal/datasets/data/movie_reviews')
 
 ```
 
+
+---
 ### `download`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L42)
@@ -28,6 +30,8 @@ PosixPath('/code/autogoal/datasets/data/movie_reviews')
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `download_and_save`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L58)
@@ -37,6 +41,8 @@ PosixPath('/code/autogoal/datasets/data/movie_reviews')
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `pack`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L30)
@@ -46,6 +52,8 @@ PosixPath('/code/autogoal/datasets/data/movie_reviews')
 !!! warning
     This class has no docstrings.
 
+
+---
 ### `unpack`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L36)
@@ -55,3 +63,5 @@ PosixPath('/code/autogoal/datasets/data/movie_reviews')
 !!! warning
     This class has no docstrings.
 
+
+---
