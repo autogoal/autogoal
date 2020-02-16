@@ -128,7 +128,7 @@ def generate(module, visited=set()):
 
     path = Path(__file__).parent / 'api' / (name + ".md")
     submodules = inspect.getmembers(module, lambda m: inspect.ismodule(m) and m.__name__.startswith('autogoal') and not "._" in m.__name__)
-    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and m.__module__.startswith('autogal') and not m.__name__.startswith('_'))
+    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and m.__module__.startswith('autogoal') and not m.__name__.startswith('_'))
     functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and not m.__name__.startswith('_'))
 
     with open(path, "w") as fp:

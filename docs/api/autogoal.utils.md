@@ -1,5 +1,56 @@
 # `autogoal.utils`
 
+## Classes
+
+### `CacheManager`
+
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_cache.py#L87)
+> `CacheManager(self)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `ResourceManager`
+
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_resource.py#L9)
+> `ResourceManager(self, time_limit=300, memory_limit=4294967296)`
+
+
+Resource manager class.
+
+##### Parameters
+
+- `time_limit: int`: maximum amount of seconds a function can run for (default = `5 minutes`).
+- `ram_limit: int`: maximum amount of memory bytes a function can use (default = `4 GB`).
+
+##### Notes
+
+- Only one function may be restricted at the same time.
+  Upcoming updates will fix this matter.
+- Memory restriction is issued upon the process's heap memory size and not
+  over total address space in order to get a better estimation of the used memory.
+
+
+### `RestrictedWorker`
+
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_process.py#L13)
+> `RestrictedWorker(self, function, timeout, memory)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `RestrictedWorkerByJoin`
+
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_process.py#L82)
+> `RestrictedWorkerByJoin(self, function, timeout, memory)`
+
+
+!!! warning
+    This class has no docstrings.
+
+
 ## Functions
 
 ### `compute_class_weights`
