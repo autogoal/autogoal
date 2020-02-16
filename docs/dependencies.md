@@ -4,9 +4,12 @@ AutoGOAL itself does not depends on any third-party machine learning or optimiza
 
     enlighten = "^1.4.0"
     networkx = "^2.4"
-    owlready2 = "^0.22"
     pyyaml = "^5.2"
     toml = "^0.10.0"
+    psutil = "^5.6.7"
+    black = "^19.10b0"
+    fire = "^0.2.1"
+    termcolor = "^1.1.0"
 
 If you simply install with:
 
@@ -19,16 +22,17 @@ Then you will be able to run almost none of the examples, since most of them use
 Currently, first level optional dependencies include:
 
     gensim = "^3.8.1"
-    jupyter = "^1.0.0"
-    jupyterlab = "^1.2.4"
     keras = "^2.3.1"
     matplotlib = "^3.1.2"
+    mypy = "^0.761"
     nltk = "^3.4.5"
     scikit-learn = "^0.22"
     seqlearn = "^0.2"
     sklearn_crfsuite = "^0.3.6"
     spacy = "^2.2.3"
     streamlit = "^0.51.0"
+    wikipedia = "^1.4.0"
+    transformers = "^2.3.0"
 
 You can also hand-pick which of these dependencies to install. It depends on the use you want to make of AutoGOAL.
 

@@ -28,20 +28,11 @@ The step-by-step [User Guide](/guide/quickstart) will show you everything you ne
 
 ### Examples
 
-Looking at the [examples](/examples/) is the best way to learn how to use AutoGOAL:
-
-- [Finding the best scikit-learn pipeline for classifying movie reviews](/examples/sklearn_simple_grammar/)
-- [Finding the best neural network for a dataset](/examples/keras_text_classifier/)
+Looking at the [examples](/examples/) is the best way to learn how to use AutoGOAL.
 
 ### API
 
 The [API documentation](/api) details the public API for AutoGOAL.
-
-In its core, AutoGOAL is an evolutionary program synthesis framework. It consists
-of two main components:
-
-1. The [grammar](autogoal/grammar) module contains tools to design context-free and graph grammars that describe the space of all possible solutions to a specific problem.
-2. The [search](autogoal/search) module contains tools for automatically exploring this vast space efficiently.
 
 ## Contribution
 
