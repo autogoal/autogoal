@@ -30,3 +30,34 @@ automl.fit(X, y)
 Sensible defaults are defined for each of the many parameters of `AutoML`.
 Make sure to read the documentation for more information on the parameters.
 
+## Automatic pipeline discovery
+
+AutoGOAL' automatic pipeline discovery relies on suitable type annotations
+for the input and output of each algorithm.
+For this functionality to work, all possible algorithms to use should
+be defined following the "algorithm" protocol.
+
+For example, a typical classifier has the following interface:
+
+```python
+from autogoal.kb import DenseMatrix, CategoricalVector
+
+class MyClassifier:
+    def run(self, input: DenseMatrix()) -> CategoricalVector():
+        # implementation of the algorithm
+        pass
+```
+
+This protocol allows AutoGOAL to automatically connect algorithms with compatible data types.
+A set of predefined data types are available in [`autogoal.kb`](/api/autogoal.kb),
+but custom data types can be defined easily.
+
+Here is a representation of the current data type hierarchy:
+
+<a href="/guide/datatypes.png", target="_blank">
+  <img src="/guide/datatypes.png" alt="Data types in AutoGOAL">
+</a>
+
+!!! note
+    Click the image to see a full-size version.
+

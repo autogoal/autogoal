@@ -1,5 +1,6 @@
 import types
 import inspect
+import pprint
 
 from typing import Mapping
 from autogoal.grammar import Symbol, Union, Empty
@@ -307,11 +308,11 @@ def infer_type(obj):
     if hasattr(obj, "shape"):
         if len(obj.shape) == 1:
             if isinstance(obj, ndarray):
-                if obj.dtype.kind == 'U':
+                if obj.dtype.kind == "U":
                     return CategoricalVector()
-                if obj.dtype.kind == 'i':
+                if obj.dtype.kind == "i":
                     return DiscreteVector()
-                if obj.dtype.kind == 'f':
+                if obj.dtype.kind == "f":
                     return ContinuousVector()
         if len(obj.shape) == 2:
             if isinstance(obj, spmatrix):
@@ -447,6 +448,60 @@ class Tuple(DataType):
                 return False
 
         return True
+
+
+def draw_data_hierarchy(output_file):
+    """
+    Creates an SVG representation of the `DataType` hierarchy,
+    for documentation purposes.
+    """
+    import pydot
+
+    classes = frozenset(
+        [
+            DataType,
+            Text,
+            Word,
+            Stem,
+            Sentence,
+            Document,
+            Category,
+            Vector,
+            Matrix,
+            DenseMatrix,
+            SparseMatrix,
+            ContinuousVector,
+            DiscreteVector,
+            CategoricalVector,
+            MatrixContinuous,
+            MatrixContinuousDense,
+            MatrixContinuousSparse,
+            Entity,
+            Summary,
+            Sentiment,
+            Synset,
+            Postag,
+            Chunktag,
+            Tensor3,
+            List,
+            Tuple,
+        ]
+    )
+
+    graph = pydot.Dot(direction="LR")
+
+    for clss in classes:
+        graph.add_node(pydot.Node(clss.__name__))
+
+    for clss in classes:
+        for base in clss.__bases__:
+            if base not in classes:
+                continue
+
+            graph.add_edge(pydot.Edge(base.__name__, clss.__name__))
+
+    graph.write(output_file + ".svg", format="svg")
+    graph.write(output_file + ".png", format="png")
 
 
 # __all__ = [

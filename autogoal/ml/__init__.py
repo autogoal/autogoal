@@ -20,6 +20,12 @@ import statistics
 
 
 class AutoML:
+    """
+    Predefined pipeline search with automatic type inference.
+
+    An `AutoML` instance represents a general-purpose machine learning
+    algorithm, that can be applied to any input and output.
+    """
     def __init__(
         self,
         input=None,

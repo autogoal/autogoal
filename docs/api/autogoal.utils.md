@@ -11,13 +11,30 @@
 !!! warning
     This class has no docstrings.
 
+#### `get`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_cache.py#L93)
+> `get(name, func)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `instance`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_cache.py#L104)
+> `instance()`
+
+
+!!! warning
+    This class has no docstrings.
+
 
 ---
 ### `ResourceManager`
 
 > [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_resource.py#L9)
 > `ResourceManager(self, time_limit=300, memory_limit=4294967296)`
-
 
 Resource manager class.
 
@@ -32,7 +49,36 @@ Resource manager class.
   Upcoming updates will fix this matter.
 - Memory restriction is issued upon the process's heap memory size and not
   over total address space in order to get a better estimation of the used memory.
+#### `get_used_memory`
 
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_resource.py#L85)
+> `get_used_memory(self)`
+
+Returns the amount of memory being used by the current process.
+#### `run_restricted`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_resource.py#L100)
+> `run_restricted(self, function, *args, **kwargs)`
+
+Executes a given function with restricted amount of
+CPU time and RAM memory usage.
+#### `set_memory_limit`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_resource.py#L32)
+> `set_memory_limit(self, limit)`
+
+Set the memory limit for future restricted functions.
+
+If memory limit is higher or equal than the current OS limit
+then it won't be changed.
+#### `set_time_limit`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_resource.py#L57)
+> `set_time_limit(self, limit)`
+
+
+!!! warning
+    This class has no docstrings.
 
 
 ---
@@ -45,6 +91,19 @@ Resource manager class.
 !!! warning
     This class has no docstrings.
 
+#### `get_used_memory`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_process.py#L67)
+> `get_used_memory(self)`
+
+returns the amount of memory being used by the current process
+#### `run_restricted`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_process.py#L46)
+> `run_restricted(self, *args, **kwargs)`
+
+Executes a given function with restricted amount of
+CPU time and RAM memory usage
 
 ---
 ### `RestrictedWorkerByJoin`
@@ -56,6 +115,19 @@ Resource manager class.
 !!! warning
     This class has no docstrings.
 
+#### `get_used_memory`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_process.py#L67)
+> `get_used_memory(self)`
+
+returns the amount of memory being used by the current process
+#### `run_restricted`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_process.py#L102)
+> `run_restricted(self, *args, **kwargs)`
+
+Executes a given function with restricted amount of
+CPU time and RAM memory usage
 
 ---
 
@@ -66,7 +138,6 @@ Resource manager class.
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L141)
 > `compute_class_weights(y)`
 
-
 Computes relative class weights for imbalanced datasets. Works with nested input.
 
 ##### Examples
@@ -76,7 +147,6 @@ Computes relative class weights for imbalanced datasets. Works with nested input
 {'A': 1.5, 'B': 3.0, 'C': 1.0}
 
 ```
-
 
 ---
 ### `factory`
@@ -95,7 +165,6 @@ Computes relative class weights for imbalanced datasets. Works with nested input
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L123)
 > `flatten(y)`
 
-
 Recursively flattens a list.
 
 ##### Examples
@@ -106,13 +175,11 @@ Recursively flattens a list.
 
 ```
 
-
 ---
 ### `nice_repr`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L11)
 > `nice_repr(cls)`
-
 
 A decorator that adds a nice `repr(.)` to any decorated class.
 
@@ -186,7 +253,5 @@ A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(a=A(...))))))))))))
 
 !!! note
     Change `autogoal.utils.MAX_REPR_DEPTH` to increase the depth level of recursive `repr`.
-
-
 
 ---

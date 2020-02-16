@@ -4,8 +4,17 @@
 
 ### `CategoricalVector`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L373)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L374)
 > `CategoricalVector(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -15,8 +24,17 @@
 ---
 ### `Category`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L345)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L346)
 > `Category(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -26,8 +44,17 @@
 ---
 ### `Chunktag`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L409)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L410)
 > `Chunktag(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -37,8 +64,17 @@
 ---
 ### `ContinuousVector`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L365)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L366)
 > `ContinuousVector(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -48,8 +84,17 @@
 ---
 ### `DataType`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L215)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L216)
 > `DataType(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -59,8 +104,17 @@
 ---
 ### `DenseMatrix`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L357)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L358)
 > `DenseMatrix(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -70,8 +124,17 @@
 ---
 ### `DiscreteVector`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L369)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L370)
 > `DiscreteVector(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -81,8 +144,17 @@
 ---
 ### `Document`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L341)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L342)
 > `Document(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -92,8 +164,17 @@
 ---
 ### `Entity`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L389)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L390)
 > `Entity(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -103,26 +184,8 @@
 ---
 ### `Interface`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L25)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L26)
 > `Interface(self, *args, **kwargs)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `generate_cfg`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L39)
-> `generate_cfg(grammar, head)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `is_compatible`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L26)
-> `is_compatible(other_cls)`
 
 
 !!! warning
@@ -132,8 +195,17 @@
 ---
 ### `List`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L417)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L418)
 > `List(self, inner)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -143,8 +215,17 @@
 ---
 ### `Matrix`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L353)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L354)
 > `Matrix(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -154,8 +235,17 @@
 ---
 ### `MatrixContinuous`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L377)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L378)
 > `MatrixContinuous(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -165,8 +255,17 @@
 ---
 ### `MatrixContinuousDense`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L381)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L382)
 > `MatrixContinuousDense(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -176,8 +275,17 @@
 ---
 ### `MatrixContinuousSparse`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L385)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L386)
 > `MatrixContinuousSparse(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -187,8 +295,17 @@
 ---
 ### `Postag`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L405)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L406)
 > `Postag(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -198,8 +315,17 @@
 ---
 ### `Sentence`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L337)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L338)
 > `Sentence(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -209,8 +335,17 @@
 ---
 ### `Sentiment`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L397)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L398)
 > `Sentiment(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -220,8 +355,17 @@
 ---
 ### `SparseMatrix`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L361)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L362)
 > `SparseMatrix(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -231,8 +375,17 @@
 ---
 ### `Stem`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L333)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L334)
 > `Stem(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -242,8 +395,17 @@
 ---
 ### `Summary`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L393)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L394)
 > `Summary(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -253,8 +415,17 @@
 ---
 ### `Synset`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L401)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L402)
 > `Synset(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -264,8 +435,17 @@
 ---
 ### `Tensor3`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L413)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L414)
 > `Tensor3(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -275,8 +455,17 @@
 ---
 ### `Text`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L325)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L326)
 > `Text(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -286,8 +475,17 @@
 ---
 ### `Tuple`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L429)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L430)
 > `Tuple(self, *inner)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -297,8 +495,17 @@
 ---
 ### `Vector`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L349)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L350)
 > `Vector(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -308,8 +515,17 @@
 ---
 ### `Word`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L329)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L330)
 > `Word(self, **tags)`
+
+
+!!! warning
+    This class has no docstrings.
+
+#### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
 
 
 !!! warning
@@ -322,7 +538,7 @@
 
 ### `algorithm`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L11)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L12)
 > `algorithm(input_type, output_type)`
 
 
@@ -333,7 +549,7 @@
 ---
 ### `build_composite_list`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L137)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L138)
 > `build_composite_list(input_type, output_type, depth=1)`
 
 
@@ -344,21 +560,18 @@
 ---
 ### `build_composite_tuple`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L179)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L180)
 > `build_composite_tuple(index, input_type, output_type)`
-
 
 Dynamically generate a class `CompositeAlgorithm` that wraps
 another algorithm to receive a Tuple but pass only one of the
 parameters to the internal algorithm.
-
 
 ---
 ### `build_pipelines`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_algorithm.py#L11)
 > `build_pipelines(input, output, registry)`
-
 
 Creates a `PipelineBuilder` instance that generates all pipelines
 from `input` to `output` types.
@@ -369,11 +582,10 @@ from `input` to `output` types.
 - `output`: type descriptor for the desired output.
 - `registry`: list of available classes to build the pipelines.
 
-
 ---
 ### `conforms`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L56)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L57)
 > `conforms(type1, type2)`
 
 
@@ -382,11 +594,19 @@ from `input` to `output` types.
 
 
 ---
+### `draw_data_hierarchy`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L453)
+> `draw_data_hierarchy(output_file)`
+
+Creates an SVG representation of the `DataType` hierarchy,
+for documentation purposes.
+
+---
 ### `infer_type`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L239)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L240)
 > `infer_type(obj)`
-
 
 Attempts to automatically infer the most precise semantic type for `obj`.
 
@@ -437,6 +657,5 @@ MatrixContinuousDense()
 MatrixContinuousSparse()
 
 ```
-
 
 ---

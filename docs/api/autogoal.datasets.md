@@ -7,7 +7,6 @@
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L14)
 > `datapath(path)`
 
-
 Returns a `Path` object that points to the dataset path
 where `path` is located.
 
@@ -18,7 +17,6 @@ where `path` is located.
 PosixPath('/code/autogoal/datasets/data/movie_reviews')
 
 ```
-
 
 ---
 ### `download`
