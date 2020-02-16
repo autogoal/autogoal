@@ -12,6 +12,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 * [autogoal.contrib](/api/autogoal.contrib/)
 * [autogoal.datasets](/api/autogoal.datasets/)
 * [autogoal.grammar](/api/autogoal.grammar/)
+* [autogoal.kb](/api/autogoal.kb/)
 * [autogoal.search](/api/autogoal.search/)
 * [autogoal.utils](/api/autogoal.utils/)
 
@@ -19,7 +20,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 
 ### `optimize`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/utils/_helpers.py#L40)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_helpers.py#L40)
 > `optimize(fn, search_strategy=None, iterations=None, logger=None, **kwargs)`
 
 

@@ -2,7 +2,7 @@
 name = "autogoal"
 version = "0.1.0"
 description = "Automatic Generation Optimization And Learning"
-authors = ["Suilan Estevez-Velarde", "Alejandro Piad-Morffis"]
+authors = []
 license = "MIT"
 readme = "Readme.md"
 

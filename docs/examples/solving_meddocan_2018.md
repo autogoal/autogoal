@@ -1,6 +1,6 @@
 ```python
 from autogoal.ml import AutoML
-from autogoal.datasets import haha
+from autogoal.datasets import meddocan
 from autogoal.search import (
     Logger,
     PESearch,
@@ -8,9 +8,7 @@ from autogoal.search import (
     ProgressLogger,
     MemoryLogger,
 )
-from autogoal.kb import List, Sentence, Tuple, CategoricalVector
-from autogoal.contrib import find_classes
-from sklearn.metrics import f1_score
+from autogoal.kb import List, Sentence, Word, Postag
 
 import argparse
 
@@ -29,16 +27,14 @@ args = parser.parse_args()
 
 print(args)
 
-for cls in find_classes():
-    print("Using: %s" % cls.__name__)
-
-
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=List(Sentence()),
-    output=CategoricalVector(),
+    input=List(List(Word())),
+    output=List(List(Postag())),
     search_iterations=args.iterations,
-    score_metric=f1_score,
+    score_metric=meddocan.F1_beta,
+    cross_validation_steps=1,
+    exclude_filter=".*Word2Vec.*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
@@ -51,11 +47,11 @@ classifier = AutoML(
 class CustomLogger(Logger):
     def error(self, e: Exception, solution):
         if e and solution:
-            with open("haha_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={repr(e)}\n\n")
+            with open("meddocan_errors.log", "a") as fp:
+                fp.write(f"solution={repr(solution)}\nerror={e}\n\n")
 
     def update_best(self, new_best, new_fn, *args):
-        with open("haha.log", "a") as fp:
+        with open("meddocan.log", "a") as fp:
             fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
 
 
@@ -67,12 +63,12 @@ if args.token:
 
     telegram = TelegramLogger(
         token=args.token,
-        name=f"HAHA",
+        name=f"MEDDOCAN",
         channel=args.channel,
     )
     loggers.append(telegram)
 
-X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)
+X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
 
 classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)

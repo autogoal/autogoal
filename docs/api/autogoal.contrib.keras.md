@@ -1,20 +1,20 @@
 # `autogoal.contrib.keras`
 
-## Classes
+## Functions
 
-### `KerasClassifier`
+### `build_grammar`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/keras/_base.py#L81)
-> `KerasClassifier(self, grammar, input_shape=None, epochs=10, **compile_kwargs)`
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_grammars.py#L5)
+> `build_grammar(preprocessing=False, reduction=False, features=False, features_time_distributed=False)`
 
 
 !!! warning
     This class has no docstrings.
 
-### `KerasNeuralNetwork`
+### `find_classes`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/keras/_base.py#L9)
-> `KerasNeuralNetwork(self, grammar, input_shape=None, epochs=10, **compile_kwargs)`
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/__init__.py#L15)
+> `find_classes(self, include=None, exclude=None)`
 
 
 !!! warning

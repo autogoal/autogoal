@@ -4,7 +4,7 @@
 
 ### `load`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L4)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L4)
 > `load(max_examples=None)`
 
 
@@ -13,7 +13,7 @@
 
 ### `make_fn`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L29)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/movie_reviews.py#L29)
 > `make_fn(test_size=0.25, examples=None)`
 
 

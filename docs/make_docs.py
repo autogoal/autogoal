@@ -128,7 +128,7 @@ def generate(module, visited=set()):
 
     path = Path(__file__).parent / 'api' / (name + ".md")
     submodules = inspect.getmembers(module, lambda m: inspect.ismodule(m) and m.__name__.startswith('autogoal') and not "._" in m.__name__)
-    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and not m.__name__.startswith('_'))
+    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and m.__module__.startswith('autogal') and not m.__name__.startswith('_'))
     functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and not m.__name__.startswith('_'))
 
     with open(path, "w") as fp:
@@ -184,7 +184,7 @@ def generate_class(clss, name, fp):
     src = inspect.getsourcefile(clss)
     if src:
         line = inspect.getsourcelines(clss)[1]
-        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/autogal/autogoal/blob/master/")
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)
 
@@ -215,7 +215,7 @@ def generate_func(func, name, fp, indent="###"):
     src = inspect.getsourcefile(func)
     if src:
         line = inspect.getsourcelines(func)[1]
-        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/autogoal/autogoal/blob/master/")
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)
 

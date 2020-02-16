@@ -1,52 +1,51 @@
 # `autogoal.utils`
 
-## Classes
-
-### `CacheManager`
-
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/utils/_cache.py#L1)
-> `CacheManager(self)`
-
-
-!!! warning
-    This class has no docstrings.
-
-### `ResourceManager`
-
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/utils/_resource.py#L9)
-> `ResourceManager(self, time_limit=300, memory_limit=4294967296)`
-
-
-Resource manager class.
-
-##### Parameters
-
-- `time_limit: int`: maximum amount of seconds a function can run for (default = `5 minutes`).
-- `ram_limit: int`: maximum amount of memory bytes a function can use (default = `4 GB`).
-
-##### Notes
-
-- Only one function may be restricted at the same time.
-  Upcoming updates will fix this matter.
-- Memory restriction is issued upon the process's heap memory size and not
-  over total address space in order to get a better estimation of the used memory.
-
-
-### `RestrictedWorker`
-
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/utils/_process.py#L12)
-> `RestrictedWorker(self, function, timeout, memory)`
-
-
-!!! warning
-    This class has no docstrings.
-
-
 ## Functions
+
+### `compute_class_weights`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L141)
+> `compute_class_weights(y)`
+
+
+Computes relative class weights for imbalanced datasets. Works with nested input.
+
+##### Examples
+
+```python
+>>> compute_class_weights([['A', 'B', 'A'], ['C'], ['C', 'C']])
+{'A': 1.5, 'B': 3.0, 'C': 1.0}
+
+```
+
+### `factory`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L160)
+> `factory(func_or_type, *args, **kwargs)`
+
+
+!!! warning
+    This class has no docstrings.
+
+### `flatten`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L123)
+> `flatten(y)`
+
+
+Recursively flattens a list.
+
+##### Examples
+
+```python
+>>> flatten([[1],[2,[3]],4])
+[1, 2, 3, 4]
+
+```
 
 ### `nice_repr`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/utils/__init__.py#L10)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L11)
 > `nice_repr(cls)`
 
 

@@ -1,21 +1,24 @@
 ```python
-from autogoal.kb import List, Sentence, CategoricalVector, ContinuousVector, MatrixContinuousDense
-from autogoal.contrib import find_classes
-from autogoal.kb import build_pipelines
+from autogoal.contrib.nltk._generated import AffixTagger
+from autogoal.datasets.meddocan import load
 
 
-for cls in find_classes():
-    print(cls)
+X, _, y, _ = load()
+```
 
+for sent in X:
+    print(repr(sent))
 
-pipelines = build_pipelines(
-    input=List(Sentence()),
-    output=MatrixContinuousDense(),
-    registry=find_classes()
-)
+```python
+X = X[:10]
+y = y[:10]
 
+tagger = AffixTagger(-3, 2, 0)
+tagger.run((X, y))
+tagger.eval()
+ypred = tagger.run((X, None))
 
-for i in range(10):
-    print(pipelines.sample())
+print("ypred", ypred)
+print("ytrue", y)
 ```
 

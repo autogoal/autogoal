@@ -23,7 +23,7 @@ enumerate the wrappers implemented in this module applying some filters.
 
 ### `find_classes`
 
-> [📝](https://github.com/sestevez/autogoal/blob/master/autogoal/contrib/sklearn/__init__.py#L37)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/sklearn/__init__.py#L37)
 > `find_classes(include='.*', exclude=None)`
 
 
