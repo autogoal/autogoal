@@ -112,7 +112,6 @@ def build_api():
     import autogoal.contrib.sklearn
     import autogoal.contrib.keras
     import autogoal.datasets
-    import autogoal.datasets.movie_reviews
 
     generate(autogoal)
 

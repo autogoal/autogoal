@@ -1,3 +1,12 @@
+# ICML 2020 example in the HAHA challenge
+
+This script runs an instance of [`AutoClassifier`](/api/autogoal.ml#AutoClassifier)
+in the HAHA 2019 challenge.
+The results obtained were published in the paper presented at ICML 2020.
+
+Most of this example follows the same logic as the [ICML UCI example](/examples/solving_uci_datasets).
+First the necessary imports
+
 ```python
 from autogoal.ml import AutoML
 from autogoal.datasets import haha
@@ -11,7 +20,13 @@ from autogoal.search import (
 from autogoal.kb import List, Sentence, Tuple, CategoricalVector
 from autogoal.contrib import find_classes
 from sklearn.metrics import f1_score
+```
 
+Next, we parse the command line arguments to configure the experiment.
+
+The default values are the ones used for the experimentation reported in the paper.
+
+```python
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -28,11 +43,22 @@ parser.add_argument("--channel", default=None)
 args = parser.parse_args()
 
 print(args)
+```
 
+The next line will print all the algorithms that AutoGOAL found
+in the `contrib` library, i.e., anything that could be potentially used
+to solve an AutoML problem.
+
+```python
 for cls in find_classes():
     print("Using: %s" % cls.__name__)
+```
 
+Instantiate the classifier.
+Note that the input and output types here are defined to match the problem statement,
+i.e., text classification.
 
+```python
 classifier = AutoML(
     search_algorithm=PESearch,
     input=List(Sentence()),
@@ -46,8 +72,12 @@ classifier = AutoML(
         memory_limit=args.memory * 1024 ** 3,
     ),
 )
+```
 
+This custom logger is used for debugging purposes, to be able later to recover
+the best pipelines and all the errors encountered in the experimentation process.
 
+```python
 class CustomLogger(Logger):
     def error(self, e: Exception, solution):
         if e and solution:
@@ -57,8 +87,11 @@ class CustomLogger(Logger):
     def update_best(self, new_best, new_fn, *args):
         with open("haha.log", "a") as fp:
             fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
+```
 
+Basic logging configuration.
 
+```python
 logger = MemoryLogger()
 loggers = [ProgressLogger(), ConsoleLogger(), logger]
 
@@ -71,7 +104,12 @@ if args.token:
         channel=args.channel,
     )
     loggers.append(telegram)
+```
 
+Finally, loading the HAHA dataset, running the `AutoClassifier` instance,
+and printing the results.
+
+```python
 X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)
 
 classifier.fit(X_train, y_train, logger=loggers)

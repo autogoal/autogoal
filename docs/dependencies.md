@@ -1,5 +1,8 @@
 # Mandatory and optional dependencies
 
+!!! note
+    This section is not relevant if you downloaded the Docker image of AutoGOAL.
+
 AutoGOAL itself does not depends on any third-party machine learning or optimization framework. The only real **mandatory** dependencies are:
 
     enlighten = "^1.4.0"

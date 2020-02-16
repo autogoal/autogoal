@@ -10,7 +10,7 @@ Likewise, the API suits different needs, from practical use cases requiring fast
 to more involved, research-oriented use cases that require customizing and tweaking many things.
 Whatever your case, the following guides should help you get started.
 
-* **[Predesigned Pipelines](/guide/predesigned/)**:
+* **[Predefined Pipelines](/guide/predefined/)**:
     Pre-packaged with pipelines based on [scikit-learn](/api/sklearn/) and [keras](/api/keras/)
     that you can use in few lines of code to build highly optimized machine learning pipelines for a broad range of problems.
 

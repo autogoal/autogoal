@@ -7,6 +7,11 @@ theme:
     feature:
         tabs: true
 
+plugins:
+    - search
+    # - pdf-export
+        # combined: true
+
 markdown_extensions:
     - codehilite
     - toc:
@@ -18,16 +23,14 @@ nav:
     - Home: index.md
     - Dependencies: dependencies.md
     - Contributing: contributing.md
-    - History: history.md
 
     - User Guide:
         - First steps: guide/index.md
-        - Pre-designed pipelines: guide/predesigned.md
+        - Predefined pipelines: guide/predefined.md
         - Defining the space:
             - Class-based API: guide/cfg.md
             - Graph-based API: guide/graph.md
             - Functional API: guide/functional.md
-
 
     - API:
         - AutoGOAL API: api/autogoal.md
@@ -41,5 +44,9 @@ nav:
         - Utils: api/autogoal.utils.md
 
     - Examples:
+        - Home: examples/index.md
+        - ICML UCI datasets: examples/solving_uci_datasets.md
+        - ICML HAHA 2019: examples/solving_haha_2019.md
+        - ICML MEDDOCAN 2019: examples/solving_meddocan_2019.md
         - Sklearn: examples/sklearn_simple_grammar.md
-        - Keras: examples/keras_text_classifier.md
+        - Search Strategies: examples/comparing_search_strategies.md

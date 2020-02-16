@@ -45,6 +45,7 @@ test-full:
 .PHONY: docker-build
 docker-build:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose build;)
+	docker tag autogoal-dev:${BASE_VERSION}-cpu autogoal/autogoal
 
 .PHONY: docker-push
 docker-push:
@@ -67,7 +68,6 @@ dev-install: dev-ensure
 	pip install poetry
 	poetry config virtualenvs.create false
 	poetry install
-
 
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure

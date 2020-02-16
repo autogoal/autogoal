@@ -1,3 +1,12 @@
+# # ICML 2020 example in the HAHA challenge
+
+# This script runs an instance of [`AutoClassifier`](/api/autogoal.ml#AutoClassifier)
+# in the HAHA 2019 challenge.
+# The results obtained were published in the paper presented at ICML 2020.
+
+# Most of this example follows the same logic as the [ICML UCI example](/examples/solving_uci_datasets).
+# First the necessary imports
+
 from autogoal.ml import AutoML
 from autogoal.datasets import meddocan
 from autogoal.search import (
@@ -8,6 +17,10 @@ from autogoal.search import (
     MemoryLogger,
 )
 from autogoal.kb import List, Sentence, Word, Postag
+
+# Next, we parse the command line arguments to configure the experiment.
+
+# The default values are the ones used for the experimentation reported in the paper.
 
 import argparse
 
@@ -26,6 +39,10 @@ args = parser.parse_args()
 
 print(args)
 
+# Instantiate the classifier.
+# Note that the input and output types here are defined to match the problem statement,
+# i.e., entity recognition.
+
 classifier = AutoML(
     search_algorithm=PESearch,
     input=List(List(Word())),
@@ -42,6 +59,8 @@ classifier = AutoML(
     ),
 )
 
+# This custom logger is used for debugging purposes, to be able later to recover
+# the best pipelines and all the errors encountered in the experimentation process.
 
 class CustomLogger(Logger):
     def error(self, e: Exception, solution):
@@ -53,6 +72,7 @@ class CustomLogger(Logger):
         with open("meddocan.log", "a") as fp:
             fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
 
+# Basic logging configuration.
 
 logger = MemoryLogger()
 loggers = [ProgressLogger(), ConsoleLogger(), logger]
@@ -66,6 +86,9 @@ if args.token:
         channel=args.channel,
     )
     loggers.append(telegram)
+
+# Finally, loading the MEDDOCAN dataset, running the `AutoClassifier` instance,
+# and printing the results.
 
 X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
 

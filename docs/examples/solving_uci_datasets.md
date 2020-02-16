@@ -63,6 +63,8 @@ Here we simply receive a bunch of arguments from the command line
 to decide which dataset to run and hyperparameters.
 They should be pretty self-explanatory.
 
+The default values are the ones used for the experimentation reported in the paper.
+
 ```python
 parser = argparse.ArgumentParser()
 parser.add_argument("--iterations", type=int, default=10000)
@@ -98,6 +100,9 @@ args = parser.parse_args()
 
 ## Experimentation
 
+Now we run all the experiments, in each of the datasets selected,
+for as many epochs as specified in the command line.
+
 ```python
 if args.dataset != "all":
     valid_datasets = [args.dataset]
@@ -108,19 +113,23 @@ for epoch in range(args.epochs):
         print(" Running dataset: %s - Epoch: %s" % (dataset, epoch))
         print("=============================================")
         data = getattr(datasets, dataset).load()
+```
 
-        # Here we dynamically load the corresponding dataset and,
-        # if necesary, split it into training and testing sets.
+Here we dynamically load the corresponding dataset and,
+if necesary, split it into training and testing sets.
 
+```python
         if len(data) == 4:
             X_train, X_test, y_train, y_test = data
         else:
             X, y = data
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+```
 
-        # Finally we can instantiate out `AutoClassifier` with all the custom
-        # parameters we received from the command line.
+Finally we can instantiate out `AutoClassifier` with all the custom
+parameters we received from the command line.
 
+```python
         classifier = AutoML(
             output=CategoricalVector(),
             search_algorithm=PESearch,
@@ -135,12 +144,21 @@ for epoch in range(args.epochs):
                 target_fn=args.target,
             ),
         )
+```
 
-        # And run it.
+Here we configure all the logging strategies we will use.
+`MemoryLogger` stores each generation's info in a list that we can
+later dump into a JSON log file.
+`ProgressLogger` and `ConsoleLogger` are for pretty printing the results on the console.
 
+```python
         logger = MemoryLogger()
         loggers = [ProgressLogger(), ConsoleLogger(), logger]
+```
 
+`TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
+
+```python
         if args.token:
             from autogoal.contrib.telegram import TelegramLogger
 
@@ -150,16 +168,22 @@ for epoch in range(args.epochs):
                 channel=args.channel,
             )
             loggers.append(telegram)
+```
 
+Finally, we run the AutoML classifier once and compute the score on an independent test-set.
+
+```python
         classifier.fit(X_train, y_train, logger=loggers)
         score = classifier.score(X_test, y_test)
-
-        # Let's see how it went.
 
         print(score)
         print(logger.generation_best_fn)
         print(logger.generation_mean_fn)
+```
 
+And store the results on a log file.
+
+```python
         with open("uci_datasets.log", "a") as fp:
             fp.write(
                 json.dumps(

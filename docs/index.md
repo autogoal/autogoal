@@ -10,17 +10,36 @@ but it can be used in any scenario where you have several possible ways (i.e., p
 
 ## Installation
 
-Installation is very simple:
+The easiest way to get AutoGOAL up and running right now is to pull the development Docker image:
 
-    pip install autogoal
+    docker pull autogoal/autogoal
 
-However, `autogoal` comes with a bunch of optional dependencies. You can install them all with:
+Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
 
-    pip install autogoal[all]
+!!! note
+    A proper Python package is in the making. However, for anonymity reasons
+    this package will not published until the anonymity period for ICML 2020 ends.
 
-To fine-pick which dependencies you want, read the [dependencies section](/dependencies/).
+## Demo
+
+To quickly see AutoGOAL in action, simply run:
+
+    docker run -p 8501:8501 autogoal/autogoal
+
+And navigate to [localhost:8501](http://localhost:8501).
 
 ## Documentation
+
+This documentation is available in HTML and PDF versions. If you are reading the PDF version, some
+features like search and navigation are unfortunately not available. The HTML version can be
+deployed by downloading the AutoGOAL Docker image and running:
+
+    docker run -p 8000:8000 autogoal/autogoal mkdocs serve
+
+And navigating to [localhost:8000](http://localhost:8000).
+
+!!! note
+    This documentation will be publicly hosted online once the anonymity period for ICML 2020 ends.
 
 ### User Guide
 
