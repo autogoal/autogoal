@@ -2,8 +2,6 @@
 
 > Automatic Generation, Optimization And Learning
 
-## What is this?
-
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
 It has been designed mainly for Automatic Machine Learning (aka [AutoML](https://www.automl.org))
 but it can be used in any scenario where you have several possible ways (i.e., programs) to solve a given task.
@@ -53,10 +51,12 @@ Make sure to read the documentation for more information on the parameters.
 ## Documentation
 
 This documentation is available in HTML and PDF versions. If you are reading the PDF version, some
-features like search and navigation are unfortunately not available. The HTML version can be
-deployed by downloading the AutoGOAL Docker image and running:
+features like search and navigation are unfortunately not available. It also has some
+rendering issues with respect to icons.
 
-    docker run -p 8000:8000 autogoal/autogoal mkdocs serve
+The HTML version can be deployed by downloading the AutoGOAL Docker image and running:
+
+    docker run -p 8000:8000 autogoal/autogoal mkdocs serve -a 0.0.0.0:8000
 
 And navigating to [localhost:8000](http://localhost:8000).
 
