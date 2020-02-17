@@ -42,6 +42,7 @@ spacy = "^2.2.3"
 streamlit = "^0.51.0"
 transformers = "^2.3.0"
 wikipedia = "^1.4.0"
+markdown-include = "^0.5.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

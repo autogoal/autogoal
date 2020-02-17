@@ -286,7 +286,32 @@ def build_schemas():
     draw_data_hierarchy(str(Path(__file__).parent / "guide" / "datatypes"))
 
 
+def make_algorithms_table():
+    from autogoal.contrib import find_classes
+
+    all_classes = find_classes()
+
+    with open(Path(__file__).parent / "guide" / "algorithms.md", "w") as fp:
+        fp.write(textwrap.dedent(
+            """
+            |Algorithm|Dependencies|Input|Output|
+            |--|--|--|--|
+            """
+        ))
+
+        for clss in all_classes:
+            print(clss)
+            signature = inspect.signature(clss.run)
+            dependency = clss.__module__.split('.')[2]
+
+            if dependency.startswith('_'):
+                dependency = ""
+
+            fp.write(f"| {clss.__name__} | {dependency} | {signature.parameters['input'].annotation} | {signature.return_annotation} | \n")
+
+
 if __name__ == "__main__":
     build_examples()
     build_api()
     build_schemas()
+    make_algorithms_table()

@@ -61,3 +61,12 @@ Here is a representation of the current data type hierarchy:
 !!! note
     Click the image to see a full-size version.
 
+## Bundled algorithms
+
+AutoGOAL bundles over 100 algorithm implementations, based on multiple machine learning
+frameworks. An exhaustive list of the available algorithms is provided next. The dependencies
+that each algorithm has are also shown. Read the section on [dependencies](/dependencies/)
+for more information.
+
+{!docs/guide/algorithms.md!}
+

@@ -18,6 +18,7 @@ markdown_extensions:
         permalink: true
     - admonition
     - mkautodoc
+    - markdown_include.include
 
 nav:
     - Home: index.md
@@ -27,10 +28,9 @@ nav:
     - User Guide:
         - First steps: guide/index.md
         - Predefined pipelines: guide/predefined.md
-        - Defining the space:
-            - Class-based API: guide/cfg.md
-            - Graph-based API: guide/graph.md
-            - Functional API: guide/functional.md
+        - Class-based API: guide/cfg.md
+        - Graph-based API: guide/graph.md
+        - Functional API: guide/functional.md
 
     - API:
         - AutoGOAL API: api/autogoal.md
