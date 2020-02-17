@@ -69,8 +69,6 @@
 | SGDRegressor | sklearn | Tuple(MatrixContinuous(), ContinuousVector()) | ContinuousVector() | 
 | SVC | sklearn | Tuple(MatrixContinuous(), CategoricalVector()) | CategoricalVector() | 
 | SVR | sklearn | Tuple(MatrixContinuous(), ContinuousVector()) | ContinuousVector() | 
-| SklearnEstimator | sklearn | <class 'inspect._empty'> | <class 'inspect._empty'> | 
-| SklearnTransformer | sklearn | <class 'inspect._empty'> | <class 'inspect._empty'> | 
 | SparsePCA | sklearn | MatrixContinuousDense() | MatrixContinuousDense() | 
 | StandardScaler | sklearn | MatrixContinuousDense() | MatrixContinuousDense() | 
 | TfidfTransformer | sklearn | MatrixContinuous() | MatrixContinuousSparse() | 
@@ -78,7 +76,6 @@
 | TheilSenRegressor | sklearn | Tuple(MatrixContinuousDense(), ContinuousVector()) | ContinuousVector() | 
 | TruncatedSVD | sklearn | MatrixContinuous() | MatrixContinuousDense() | 
 | CountVectorizerNoTokenize | sklearn | List(Sentence()) | MatrixContinuousSparse() | 
-| SklearnTransformer | sklearn | <class 'inspect._empty'> | <class 'inspect._empty'> | 
 | AffixTagger | nltk | Tuple(List(List(Word())), List(List(Postag()))) | List(List(Postag())) | 
 | BigramTagger | nltk | Tuple(List(List(Word())), List(List(Postag()))) | List(List(Postag())) | 
 | BlanklineTokenizer | nltk | Document() | List(Sentence()) | 

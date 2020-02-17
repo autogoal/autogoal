@@ -14,7 +14,7 @@
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L217)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning
@@ -23,7 +23,7 @@
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `make(self, initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning
@@ -199,7 +199,7 @@ Represents a CFG grammar.
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L234)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning
@@ -208,7 +208,7 @@ Represents a CFG grammar.
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `make(self, initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning
@@ -1492,7 +1492,7 @@ add_nodes_from: add multiple nodes to a graph
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L193)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning
@@ -1501,7 +1501,7 @@ add_nodes_from: add multiple nodes to a graph
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7fcdaa9d7f28>)`
+> `make(self, initializer=<function default_initializer at 0x7f53b755ef28>)`
 
 
 !!! warning

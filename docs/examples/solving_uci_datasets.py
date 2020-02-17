@@ -1,8 +1,21 @@
 # # ICML 2020 UCI datasets
 
-# This script runs an instance of [`AutoClassifier`](/api/autogoal.ml#AutoClassifier)
+# This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 # in anyone of the UCI datasets available.
 # The results obtained were published in the paper presented at ICML 2020.
+
+# The datasets used in this experimentation are taken from the [UCI repository](https://archive.ics.uci.edu/ml/index.php).
+# Concretely, the following datasets are used:
+
+# | Dataset | URL |
+# |--|--|
+# | Abalone | <https://archive.ics.uci.edu/ml/datasets/Abalone> |
+# | Cars | <https://archive.ics.uci.edu/ml/datasets/Car+Evaluation> |
+# | Dorothea | <https://archive.ics.uci.edu/ml/datasets/dorothea> |
+# | Gisette | <https://archive.ics.uci.edu/ml/datasets/Gisette> |
+# | Shuttle | <https://archive.ics.uci.edu/ml/datasets/Statlog+(Shuttle)> |
+# | Yeast | <https://archive.ics.uci.edu/ml/datasets/Yeast> |
+# | German Credit | <https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)> |
 
 # ## Experimentation parameters
 #
@@ -24,7 +37,8 @@
 
 # | Config | CPU | Cache | Memory | HDD |
 # |--|--|--|--|--|
-# | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB |
+# | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB  |
+# | **B** | 6 core Intel Xeon E5-1650 v3 | 15360 KB |  32045.5MB  | 2500.5GB |
 
 # !!! note
 #     The hardware configuration details were extracted with `inxi -CmD` and summarized.

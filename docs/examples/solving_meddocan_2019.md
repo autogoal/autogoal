@@ -1,8 +1,12 @@
 # ICML 2020 example in the MEDDOCAN challenge
 
-This script runs an instance of [`AutoClassifier`](/api/autogoal.ml#AutoClassifier)
-in the MEDDOCAN 2019 challenge.
+This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
+in the [MEDDOCAN 2019 challenge](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
 The results obtained were published in the paper presented at ICML 2020.
+
+| Dataset | URL |
+|--|--|
+| MEDDOCAN 2019 | <https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN> |
 
 ## Experimentation parameters
 
@@ -25,6 +29,7 @@ The experiments were run in the following hardware configurations
 | Config | CPU | Cache | Memory | HDD |
 |--|--|--|--|--|
 | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB |
+| **B** | 6 core Intel Xeon E5-1650 v3 | 15360 KB |  32045.5MB  | 2500.5GB |
 
 !!! note
     The hardware configuration details were extracted with `inxi -CmD` and summarized.
