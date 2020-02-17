@@ -4,6 +4,33 @@
 # in the HAHA 2019 challenge.
 # The results obtained were published in the paper presented at ICML 2020.
 
+# ## Experimentation parameters
+#
+# This experiment was run with the following parameters:
+#
+# | Parameter | Value |
+# |--|--|
+# | Total epochs         | 1      |
+# | Maximum iterations   | 10000  |
+# | Timeout per pipeline | 30 min |
+# | Global timeout       | -      |
+# | Max RAM per pipeline | 20 GB  |
+# | Population size      | 50     |
+# | Selection (k-best)   | 10     |
+# | Early stop           |-       |
+
+# The experiments were run in the following hardware configurations
+# (allocated indistinctively according to available resources):
+
+# | Config | CPU | Cache | Memory | HDD |
+# |--|--|--|--|--|
+# | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB |
+
+# !!! note
+#     The hardware configuration details were extracted with `inxi -CmD` and summarized.
+
+# ## Relevant imports
+
 # Most of this example follows the same logic as the [ICML UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
@@ -21,6 +48,8 @@ from autogoal.contrib import find_classes
 from sklearn.metrics import f1_score
 
 # Next, we parse the command line arguments to configure the experiment.
+
+# ## Parsing arguments
 
 # The default values are the ones used for the experimentation reported in the paper.
 
@@ -47,6 +76,8 @@ print(args)
 
 for cls in find_classes():
     print("Using: %s" % cls.__name__)
+
+# ## Experimentation
 
 # Instantiate the classifier.
 # Note that the input and output types here are defined to match the problem statement,

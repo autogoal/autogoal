@@ -45,12 +45,12 @@
 <polygon fill="black" stroke="black" points="151.607,-105.491 141.013,-105.371 149.22,-112.071 151.607,-105.491"/>
 </g>
 <!-- DenseMatrix -->
-<g id="node16" class="node"><title>DenseMatrix</title>
+<g id="node15" class="node"><title>DenseMatrix</title>
 <ellipse fill="none" stroke="black" cx="474.389" cy="-90" rx="71.4873" ry="18"/>
 <text text-anchor="middle" x="474.389" y="-86.3" font-family="Times,serif" font-size="14.00">DenseMatrix</text>
 </g>
 <!-- Matrix&#45;&gt;DenseMatrix -->
-<g id="edge17" class="edge"><title>Matrix&#45;&gt;DenseMatrix</title>
+<g id="edge16" class="edge"><title>Matrix&#45;&gt;DenseMatrix</title>
 <path fill="none" stroke="black" d="M324.517,-149.284C352.754,-138.302 395.383,-121.724 427.967,-109.053"/>
 <polygon fill="black" stroke="black" points="429.247,-112.31 437.299,-105.424 426.71,-105.786 429.247,-112.31"/>
 </g>
@@ -64,85 +64,80 @@
 <path fill="none" stroke="black" d="M293.153,-143.697C292.602,-135.983 291.94,-126.712 291.325,-118.112"/>
 <polygon fill="black" stroke="black" points="294.814,-117.83 290.61,-108.104 287.832,-118.328 294.814,-117.83"/>
 </g>
-<!-- Postag -->
-<g id="node5" class="node"><title>Postag</title>
-<ellipse fill="none" stroke="black" cx="396.389" cy="-162" rx="42.4939" ry="18"/>
-<text text-anchor="middle" x="396.389" y="-158.3" font-family="Times,serif" font-size="14.00">Postag</text>
-</g>
 <!-- Category -->
-<g id="node6" class="node"><title>Category</title>
-<ellipse fill="none" stroke="black" cx="510.389" cy="-162" rx="53.8905" ry="18"/>
-<text text-anchor="middle" x="510.389" y="-158.3" font-family="Times,serif" font-size="14.00">Category</text>
+<g id="node5" class="node"><title>Category</title>
+<ellipse fill="none" stroke="black" cx="408.389" cy="-162" rx="53.8905" ry="18"/>
+<text text-anchor="middle" x="408.389" y="-158.3" font-family="Times,serif" font-size="14.00">Category</text>
 </g>
 <!-- Sentence -->
-<g id="node7" class="node"><title>Sentence</title>
+<g id="node6" class="node"><title>Sentence</title>
 <ellipse fill="none" stroke="black" cx="1211.39" cy="-90" rx="53.8905" ry="18"/>
 <text text-anchor="middle" x="1211.39" y="-86.3" font-family="Times,serif" font-size="14.00">Sentence</text>
 </g>
 <!-- MatrixContinuousDense -->
-<g id="node8" class="node"><title>MatrixContinuousDense</title>
+<g id="node7" class="node"><title>MatrixContinuousDense</title>
 <ellipse fill="none" stroke="black" cx="448.389" cy="-18" rx="124.278" ry="18"/>
 <text text-anchor="middle" x="448.389" y="-14.3" font-family="Times,serif" font-size="14.00">MatrixContinuousDense</text>
 </g>
 <!-- Word -->
-<g id="node9" class="node"><title>Word</title>
+<g id="node8" class="node"><title>Word</title>
 <ellipse fill="none" stroke="black" cx="1319.39" cy="-90" rx="35.9954" ry="18"/>
 <text text-anchor="middle" x="1319.39" y="-86.3" font-family="Times,serif" font-size="14.00">Word</text>
 </g>
 <!-- Summary -->
-<g id="node10" class="node"><title>Summary</title>
+<g id="node9" class="node"><title>Summary</title>
 <ellipse fill="none" stroke="black" cx="1431.39" cy="-18" rx="55.4913" ry="18"/>
 <text text-anchor="middle" x="1431.39" y="-14.3" font-family="Times,serif" font-size="14.00">Summary</text>
 </g>
 <!-- CategoricalVector -->
-<g id="node11" class="node"><title>CategoricalVector</title>
+<g id="node10" class="node"><title>CategoricalVector</title>
 <ellipse fill="none" stroke="black" cx="658.389" cy="-90" rx="94.7833" ry="18"/>
 <text text-anchor="middle" x="658.389" y="-86.3" font-family="Times,serif" font-size="14.00">CategoricalVector</text>
 </g>
 <!-- Chunktag -->
-<g id="node12" class="node"><title>Chunktag</title>
-<ellipse fill="none" stroke="black" cx="638.389" cy="-162" rx="56.59" ry="18"/>
-<text text-anchor="middle" x="638.389" y="-158.3" font-family="Times,serif" font-size="14.00">Chunktag</text>
+<g id="node11" class="node"><title>Chunktag</title>
+<ellipse fill="none" stroke="black" cx="536.389" cy="-162" rx="56.59" ry="18"/>
+<text text-anchor="middle" x="536.389" y="-158.3" font-family="Times,serif" font-size="14.00">Chunktag</text>
 </g>
 <!-- Entity -->
-<g id="node13" class="node"><title>Entity</title>
-<ellipse fill="none" stroke="black" cx="752.389" cy="-162" rx="39.7935" ry="18"/>
-<text text-anchor="middle" x="752.389" y="-158.3" font-family="Times,serif" font-size="14.00">Entity</text>
+<g id="node12" class="node"><title>Entity</title>
+<ellipse fill="none" stroke="black" cx="650.389" cy="-162" rx="39.7935" ry="18"/>
+<text text-anchor="middle" x="650.389" y="-158.3" font-family="Times,serif" font-size="14.00">Entity</text>
 </g>
 <!-- ContinuousVector -->
-<g id="node14" class="node"><title>ContinuousVector</title>
+<g id="node13" class="node"><title>ContinuousVector</title>
 <ellipse fill="none" stroke="black" cx="865.389" cy="-90" rx="94.4839" ry="18"/>
 <text text-anchor="middle" x="865.389" y="-86.3" font-family="Times,serif" font-size="14.00">ContinuousVector</text>
 </g>
 <!-- Synset -->
-<g id="node15" class="node"><title>Synset</title>
-<ellipse fill="none" stroke="black" cx="852.389" cy="-162" rx="42.4939" ry="18"/>
-<text text-anchor="middle" x="852.389" y="-158.3" font-family="Times,serif" font-size="14.00">Synset</text>
+<g id="node14" class="node"><title>Synset</title>
+<ellipse fill="none" stroke="black" cx="750.389" cy="-162" rx="42.4939" ry="18"/>
+<text text-anchor="middle" x="750.389" y="-158.3" font-family="Times,serif" font-size="14.00">Synset</text>
 </g>
 <!-- DenseMatrix&#45;&gt;MatrixContinuousDense -->
-<g id="edge9" class="edge"><title>DenseMatrix&#45;&gt;MatrixContinuousDense</title>
+<g id="edge8" class="edge"><title>DenseMatrix&#45;&gt;MatrixContinuousDense</title>
 <path fill="none" stroke="black" d="M468.095,-72.055C465.168,-64.1762 461.618,-54.6165 458.341,-45.794"/>
 <polygon fill="black" stroke="black" points="461.568,-44.4309 454.805,-36.2753 455.006,-46.8682 461.568,-44.4309"/>
 </g>
 <!-- List -->
-<g id="node17" class="node"><title>List</title>
-<ellipse fill="none" stroke="black" cx="941.389" cy="-162" rx="28.6953" ry="18"/>
-<text text-anchor="middle" x="941.389" y="-158.3" font-family="Times,serif" font-size="14.00">List</text>
+<g id="node16" class="node"><title>List</title>
+<ellipse fill="none" stroke="black" cx="839.389" cy="-162" rx="28.6953" ry="18"/>
+<text text-anchor="middle" x="839.389" y="-158.3" font-family="Times,serif" font-size="14.00">List</text>
 </g>
 <!-- Vector -->
-<g id="node18" class="node"><title>Vector</title>
-<ellipse fill="none" stroke="black" cx="1029.39" cy="-162" rx="40.8928" ry="18"/>
-<text text-anchor="middle" x="1029.39" y="-158.3" font-family="Times,serif" font-size="14.00">Vector</text>
+<g id="node17" class="node"><title>Vector</title>
+<ellipse fill="none" stroke="black" cx="927.389" cy="-162" rx="40.8928" ry="18"/>
+<text text-anchor="middle" x="927.389" y="-158.3" font-family="Times,serif" font-size="14.00">Vector</text>
 </g>
 <!-- Vector&#45;&gt;CategoricalVector -->
-<g id="edge12" class="edge"><title>Vector&#45;&gt;CategoricalVector</title>
-<path fill="none" stroke="black" d="M998.953,-149.766C992.548,-147.653 985.792,-145.606 979.389,-144 976.436,-143.26 831.771,-119.462 737.676,-104.01"/>
-<polygon fill="black" stroke="black" points="738.036,-100.523 727.601,-102.356 736.902,-107.43 738.036,-100.523"/>
+<g id="edge11" class="edge"><title>Vector&#45;&gt;CategoricalVector</title>
+<path fill="none" stroke="black" d="M896.587,-150.041C890.27,-147.931 883.64,-145.815 877.389,-144 828.073,-129.681 771.748,-116.11 728.569,-106.286"/>
+<polygon fill="black" stroke="black" points="729.254,-102.853 718.728,-104.06 727.709,-109.68 729.254,-102.853"/>
 </g>
 <!-- Vector&#45;&gt;ContinuousVector -->
-<g id="edge15" class="edge"><title>Vector&#45;&gt;ContinuousVector</title>
-<path fill="none" stroke="black" d="M1000.82,-148.807C976.169,-138.284 940.103,-122.89 911.387,-110.633"/>
-<polygon fill="black" stroke="black" points="912.529,-107.315 901.958,-106.609 909.781,-113.753 912.529,-107.315"/>
+<g id="edge14" class="edge"><title>Vector&#45;&gt;ContinuousVector</title>
+<path fill="none" stroke="black" d="M913.009,-144.765C905.407,-136.182 895.913,-125.462 887.406,-115.858"/>
+<polygon fill="black" stroke="black" points="889.806,-113.289 880.556,-108.124 884.566,-117.93 889.806,-113.289"/>
 </g>
 <!-- DiscreteVector -->
 <g id="node26" class="node"><title>DiscreteVector</title>
@@ -151,83 +146,88 @@
 </g>
 <!-- Vector&#45;&gt;DiscreteVector -->
 <g id="edge27" class="edge"><title>Vector&#45;&gt;DiscreteVector</title>
-<path fill="none" stroke="black" d="M1036.41,-144.055C1039.67,-136.176 1043.63,-126.617 1047.29,-117.794"/>
-<polygon fill="black" stroke="black" points="1050.64,-118.853 1051.23,-108.275 1044.17,-116.174 1050.64,-118.853"/>
+<path fill="none" stroke="black" d="M952.337,-147.669C971.304,-137.534 997.751,-123.402 1019.49,-111.786"/>
+<polygon fill="black" stroke="black" points="1021.31,-114.781 1028.48,-106.981 1018.01,-108.607 1021.31,-114.781"/>
 </g>
 <!-- Document -->
-<g id="node19" class="node"><title>Document</title>
+<g id="node18" class="node"><title>Document</title>
 <ellipse fill="none" stroke="black" cx="1431.39" cy="-90" rx="58.4896" ry="18"/>
 <text text-anchor="middle" x="1431.39" y="-86.3" font-family="Times,serif" font-size="14.00">Document</text>
 </g>
 <!-- Document&#45;&gt;Summary -->
-<g id="edge11" class="edge"><title>Document&#45;&gt;Summary</title>
+<g id="edge10" class="edge"><title>Document&#45;&gt;Summary</title>
 <path fill="none" stroke="black" d="M1431.39,-71.6966C1431.39,-63.9827 1431.39,-54.7125 1431.39,-46.1124"/>
 <polygon fill="black" stroke="black" points="1434.89,-46.1043 1431.39,-36.1043 1427.89,-46.1044 1434.89,-46.1043"/>
 </g>
+<!-- Postag -->
+<g id="node19" class="node"><title>Postag</title>
+<ellipse fill="none" stroke="black" cx="1028.39" cy="-162" rx="42.4939" ry="18"/>
+<text text-anchor="middle" x="1028.39" y="-158.3" font-family="Times,serif" font-size="14.00">Postag</text>
+</g>
 <!-- Stem -->
 <g id="node21" class="node"><title>Stem</title>
-<ellipse fill="none" stroke="black" cx="1122.39" cy="-162" rx="34.394" ry="18"/>
-<text text-anchor="middle" x="1122.39" y="-158.3" font-family="Times,serif" font-size="14.00">Stem</text>
+<ellipse fill="none" stroke="black" cx="1123.39" cy="-162" rx="34.394" ry="18"/>
+<text text-anchor="middle" x="1123.39" y="-158.3" font-family="Times,serif" font-size="14.00">Stem</text>
 </g>
 <!-- DataType -->
 <g id="node22" class="node"><title>DataType</title>
-<ellipse fill="none" stroke="black" cx="752.389" cy="-234" rx="55.4913" ry="18"/>
-<text text-anchor="middle" x="752.389" y="-230.3" font-family="Times,serif" font-size="14.00">DataType</text>
+<ellipse fill="none" stroke="black" cx="750.389" cy="-234" rx="55.4913" ry="18"/>
+<text text-anchor="middle" x="750.389" y="-230.3" font-family="Times,serif" font-size="14.00">DataType</text>
 </g>
 <!-- DataType&#45;&gt;Sentiment -->
 <g id="edge2" class="edge"><title>DataType&#45;&gt;Sentiment</title>
-<path fill="none" stroke="black" d="M697.834,-231.046C591.996,-226.625 351.679,-213.5 152.389,-180 147.27,-179.14 141.969,-178.094 136.688,-176.948"/>
-<polygon fill="black" stroke="black" points="137.141,-173.462 126.613,-174.646 135.582,-180.286 137.141,-173.462"/>
+<path fill="none" stroke="black" d="M695.606,-231.014C589.911,-226.551 350.758,-213.375 152.389,-180 147.27,-179.139 141.969,-178.093 136.689,-176.947"/>
+<polygon fill="black" stroke="black" points="137.142,-173.46 126.613,-174.644 135.582,-180.284 137.142,-173.46"/>
 </g>
 <!-- DataType&#45;&gt;Tuple -->
 <g id="edge3" class="edge"><title>DataType&#45;&gt;Tuple</title>
-<path fill="none" stroke="black" d="M697.41,-231.765C603.262,-228.658 405.63,-217.795 243.389,-180 240.238,-179.266 237.009,-178.375 233.794,-177.391"/>
-<polygon fill="black" stroke="black" points="234.88,-174.063 224.287,-174.217 232.664,-180.703 234.88,-174.063"/>
+<path fill="none" stroke="black" d="M695.25,-231.728C601.323,-228.568 404.777,-217.631 243.389,-180 240.238,-179.265 237.009,-178.374 233.794,-177.389"/>
+<polygon fill="black" stroke="black" points="234.881,-174.062 224.287,-174.215 232.664,-180.702 234.881,-174.062"/>
 </g>
 <!-- DataType&#45;&gt;Matrix -->
 <g id="edge4" class="edge"><title>DataType&#45;&gt;Matrix</title>
-<path fill="none" stroke="black" d="M698.801,-229.321C620.411,-223.199 470.226,-208.654 345.389,-180 342.012,-179.225 338.541,-178.317 335.076,-177.331"/>
-<polygon fill="black" stroke="black" points="335.991,-173.951 325.405,-174.392 333.955,-180.649 335.991,-173.951"/>
-</g>
-<!-- DataType&#45;&gt;Postag -->
-<g id="edge5" class="edge"><title>DataType&#45;&gt;Postag</title>
-<path fill="none" stroke="black" d="M701.98,-226.598C641.102,-218.328 535.854,-202.297 447.389,-180 444.176,-179.19 440.873,-178.278 437.568,-177.308"/>
-<polygon fill="black" stroke="black" points="438.317,-173.876 427.729,-174.265 436.249,-180.563 438.317,-173.876"/>
+<path fill="none" stroke="black" d="M696.739,-229.269C618.644,-223.099 469.441,-208.515 345.389,-180 342.012,-179.224 338.542,-178.315 335.077,-177.329"/>
+<polygon fill="black" stroke="black" points="335.991,-173.949 325.406,-174.389 333.955,-180.646 335.991,-173.949"/>
 </g>
 <!-- DataType&#45;&gt;Category -->
-<g id="edge6" class="edge"><title>DataType&#45;&gt;Category</title>
-<path fill="none" stroke="black" d="M712.427,-221.441C670.617,-209.347 604.914,-190.342 559.857,-177.309"/>
-<polygon fill="black" stroke="black" points="560.586,-173.876 550.007,-174.46 558.641,-180.601 560.586,-173.876"/>
+<g id="edge5" class="edge"><title>DataType&#45;&gt;Category</title>
+<path fill="none" stroke="black" d="M702.334,-225.116C646.364,-215.654 551.246,-198.706 470.389,-180 466.291,-179.052 462.055,-178.015 457.812,-176.935"/>
+<polygon fill="black" stroke="black" points="458.518,-173.502 447.958,-174.36 456.748,-180.274 458.518,-173.502"/>
 </g>
 <!-- DataType&#45;&gt;Chunktag -->
-<g id="edge13" class="edge"><title>DataType&#45;&gt;Chunktag</title>
-<path fill="none" stroke="black" d="M727.652,-217.811C711.481,-207.881 690.143,-194.779 672.384,-183.874"/>
-<polygon fill="black" stroke="black" points="673.824,-180.651 663.47,-178.401 670.161,-186.616 673.824,-180.651"/>
+<g id="edge12" class="edge"><title>DataType&#45;&gt;Chunktag</title>
+<path fill="none" stroke="black" d="M712.622,-220.647C676.783,-208.923 622.782,-191.26 584.007,-178.576"/>
+<polygon fill="black" stroke="black" points="585.09,-175.248 574.497,-175.465 582.914,-181.901 585.09,-175.248"/>
 </g>
 <!-- DataType&#45;&gt;Entity -->
-<g id="edge14" class="edge"><title>DataType&#45;&gt;Entity</title>
-<path fill="none" stroke="black" d="M752.389,-215.697C752.389,-207.983 752.389,-198.712 752.389,-190.112"/>
-<polygon fill="black" stroke="black" points="755.889,-190.104 752.389,-180.104 748.889,-190.104 755.889,-190.104"/>
+<g id="edge13" class="edge"><title>DataType&#45;&gt;Entity</title>
+<path fill="none" stroke="black" d="M728.195,-217.465C713.825,-207.405 694.96,-194.2 679.406,-183.312"/>
+<polygon fill="black" stroke="black" points="681.354,-180.403 671.154,-177.536 677.339,-186.138 681.354,-180.403"/>
 </g>
 <!-- DataType&#45;&gt;Synset -->
-<g id="edge16" class="edge"><title>DataType&#45;&gt;Synset</title>
-<path fill="none" stroke="black" d="M774.582,-217.465C788.856,-207.473 807.562,-194.378 823.056,-183.533"/>
-<polygon fill="black" stroke="black" points="825.099,-186.375 831.284,-177.773 821.085,-180.64 825.099,-186.375"/>
+<g id="edge15" class="edge"><title>DataType&#45;&gt;Synset</title>
+<path fill="none" stroke="black" d="M750.389,-215.697C750.389,-207.983 750.389,-198.712 750.389,-190.112"/>
+<polygon fill="black" stroke="black" points="753.889,-190.104 750.389,-180.104 746.889,-190.104 753.889,-190.104"/>
 </g>
 <!-- DataType&#45;&gt;List -->
-<g id="edge18" class="edge"><title>DataType&#45;&gt;List</title>
-<path fill="none" stroke="black" d="M789.941,-220.786C820.689,-210.554 865.189,-195.218 903.389,-180 905.462,-179.174 907.587,-178.3 909.723,-177.402"/>
-<polygon fill="black" stroke="black" points="911.229,-180.564 919.016,-173.38 908.448,-174.14 911.229,-180.564"/>
+<g id="edge17" class="edge"><title>DataType&#45;&gt;List</title>
+<path fill="none" stroke="black" d="M770.584,-217.116C783.496,-206.961 800.345,-193.709 814.138,-182.86"/>
+<polygon fill="black" stroke="black" points="816.572,-185.399 822.268,-176.466 812.244,-179.897 816.572,-185.399"/>
 </g>
 <!-- DataType&#45;&gt;Vector -->
-<g id="edge19" class="edge"><title>DataType&#45;&gt;Vector</title>
-<path fill="none" stroke="black" d="M797.949,-223.742C844.025,-214.056 917.133,-197.804 979.389,-180 982.518,-179.105 985.741,-178.131 988.971,-177.118"/>
-<polygon fill="black" stroke="black" points="990.165,-180.411 998.599,-173.998 988.007,-173.751 990.165,-180.411"/>
+<g id="edge18" class="edge"><title>DataType&#45;&gt;Vector</title>
+<path fill="none" stroke="black" d="M784.098,-219.669C813.784,-207.928 857.031,-190.825 888.241,-178.482"/>
+<polygon fill="black" stroke="black" points="889.907,-181.587 897.919,-174.655 887.332,-175.078 889.907,-181.587"/>
+</g>
+<!-- DataType&#45;&gt;Postag -->
+<g id="edge20" class="edge"><title>DataType&#45;&gt;Postag</title>
+<path fill="none" stroke="black" d="M795.927,-223.663C841.985,-213.917 915.08,-197.618 977.389,-180 980.532,-179.111 983.769,-178.148 987.016,-177.146"/>
+<polygon fill="black" stroke="black" points="988.23,-180.433 996.699,-174.067 986.109,-173.762 988.23,-180.433"/>
 </g>
 <!-- DataType&#45;&gt;Stem -->
 <g id="edge23" class="edge"><title>DataType&#45;&gt;Stem</title>
-<path fill="none" stroke="black" d="M804.668,-228.044C869.854,-221.065 984.292,-206.174 1079.39,-180 1081.98,-179.286 1084.64,-178.467 1087.29,-177.583"/>
-<polygon fill="black" stroke="black" points="1088.55,-180.849 1096.77,-174.17 1086.18,-174.262 1088.55,-180.849"/>
+<path fill="none" stroke="black" d="M802.669,-227.989C868.171,-220.935 983.472,-205.949 1079.39,-180 1082.2,-179.238 1085.09,-178.359 1087.97,-177.41"/>
+<polygon fill="black" stroke="black" points="1089.38,-180.625 1097.63,-173.984 1087.04,-174.028 1089.38,-180.625"/>
 </g>
 <!-- Text -->
 <g id="node24" class="node"><title>Text</title>
@@ -236,8 +236,8 @@
 </g>
 <!-- DataType&#45;&gt;Text -->
 <g id="edge25" class="edge"><title>DataType&#45;&gt;Text</title>
-<path fill="none" stroke="black" d="M806.564,-229.965C886.178,-224.628 1039.02,-211.033 1165.39,-180 1169.28,-179.045 1173.29,-177.867 1177.25,-176.581"/>
-<polygon fill="black" stroke="black" points="1178.59,-179.82 1186.88,-173.223 1176.29,-173.209 1178.59,-179.82"/>
+<path fill="none" stroke="black" d="M804.653,-230.151C884.789,-225.035 1039.04,-211.699 1166.39,-180 1170.2,-179.051 1174.13,-177.877 1178.01,-176.593"/>
+<polygon fill="black" stroke="black" points="1179.18,-179.889 1187.43,-173.238 1176.84,-173.294 1179.18,-179.889"/>
 </g>
 <!-- Tensor3 -->
 <g id="node25" class="node"><title>Tensor3</title>
@@ -246,11 +246,11 @@
 </g>
 <!-- DataType&#45;&gt;Tensor3 -->
 <g id="edge26" class="edge"><title>DataType&#45;&gt;Tensor3</title>
-<path fill="none" stroke="black" d="M806.787,-230.503C899.023,-225.54 1091.65,-212.019 1251.39,-180 1255.32,-179.212 1259.37,-178.272 1263.41,-177.244"/>
-<polygon fill="black" stroke="black" points="1264.64,-180.539 1273.37,-174.545 1262.81,-173.782 1264.64,-180.539"/>
+<path fill="none" stroke="black" d="M804.634,-230.543C897.093,-225.627 1090.8,-212.156 1251.39,-180 1255.49,-179.179 1259.72,-178.192 1263.94,-177.113"/>
+<polygon fill="black" stroke="black" points="1264.95,-180.464 1273.68,-174.46 1263.11,-173.71 1264.95,-180.464"/>
 </g>
 <!-- MatrixContinuous&#45;&gt;MatrixContinuousDense -->
-<g id="edge8" class="edge"><title>MatrixContinuous&#45;&gt;MatrixContinuousDense</title>
+<g id="edge7" class="edge"><title>MatrixContinuous&#45;&gt;MatrixContinuousDense</title>
 <path fill="none" stroke="black" d="M325.071,-73.2906C347.785,-63.2911 377.437,-50.2365 401.973,-39.4347"/>
 <polygon fill="black" stroke="black" points="403.703,-42.4973 411.445,-35.2646 400.882,-36.0907 403.703,-42.4973"/>
 </g>
@@ -260,17 +260,17 @@
 <polygon fill="black" stroke="black" points="175.598,-36.0183 165.03,-35.2646 172.821,-42.4441 175.598,-36.0183"/>
 </g>
 <!-- Text&#45;&gt;Sentence -->
-<g id="edge7" class="edge"><title>Text&#45;&gt;Sentence</title>
+<g id="edge6" class="edge"><title>Text&#45;&gt;Sentence</title>
 <path fill="none" stroke="black" d="M1211.39,-143.697C1211.39,-135.983 1211.39,-126.712 1211.39,-118.112"/>
 <polygon fill="black" stroke="black" points="1214.89,-118.104 1211.39,-108.104 1207.89,-118.104 1214.89,-118.104"/>
 </g>
 <!-- Text&#45;&gt;Word -->
-<g id="edge10" class="edge"><title>Text&#45;&gt;Word</title>
+<g id="edge9" class="edge"><title>Text&#45;&gt;Word</title>
 <path fill="none" stroke="black" d="M1231.2,-148.161C1247.6,-137.53 1271.15,-122.265 1289.79,-110.184"/>
 <polygon fill="black" stroke="black" points="1291.74,-113.091 1298.23,-104.715 1287.93,-107.217 1291.74,-113.091"/>
 </g>
 <!-- Text&#45;&gt;Document -->
-<g id="edge20" class="edge"><title>Text&#45;&gt;Document</title>
+<g id="edge19" class="edge"><title>Text&#45;&gt;Document</title>
 <path fill="none" stroke="black" d="M1234.9,-150.475C1240.27,-148.219 1245.99,-145.935 1251.39,-144 1293.44,-128.932 1342.08,-114.801 1378.19,-104.926"/>
 <polygon fill="black" stroke="black" points="1379.29,-108.253 1388.02,-102.256 1377.46,-101.498 1379.29,-108.253"/>
 </g>

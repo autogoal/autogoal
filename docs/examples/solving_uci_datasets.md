@@ -4,6 +4,33 @@ This script runs an instance of [`AutoClassifier`](/api/autogoal.ml#AutoClassifi
 in anyone of the UCI datasets available.
 The results obtained were published in the paper presented at ICML 2020.
 
+## Experimentation parameters
+
+This experiment was run with the following parameters:
+
+| Parameter | Value |
+|--|--|
+| Total epochs         | 20     |
+| Maximum iterations   | 10000  |
+| Timeout per pipeline | 5 min  |
+| Global timeout       | 1 hour |
+| Max RAM per pipeline | 10 GB  |
+| Population size      | 100    |
+| Selection (k-best)   | 20     |
+| Early stop           | 200 iterations |
+
+The experiments were run in the following hardware configurations
+(allocated indistinctively according to available resources):
+
+| Config | CPU | Cache | Memory | HDD |
+|--|--|--|--|--|
+| **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB |
+
+!!! note
+    The hardware configuration details were extracted with `inxi -CmD` and summarized.
+
+## Relevant imports
+
 We will need `argparse` for passing arguments to the script and `json` for serialization of results.
 
 ```python
