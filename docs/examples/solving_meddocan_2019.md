@@ -1,14 +1,12 @@
-# ICML 2020 example in the HAHA challenge
+# ICML 2020 example in the MEDDOCAN challenge
 
 This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
-in the [HAHA 2019 challenge](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data).
+in the [MEDDOCAN 2019 challenge](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
 The results obtained were published in the paper presented at ICML 2020.
-
-The dataset used is:
 
 | Dataset | URL |
 |--|--|
-| HAHA 2019 | <https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data> |
+| MEDDOCAN 2019 | <https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN> |
 
 ## Experimentation parameters
 
@@ -43,7 +41,7 @@ First the necessary imports
 
 ```python
 from autogoal.ml import AutoML
-from autogoal.datasets import haha
+from autogoal.datasets import meddocan
 from autogoal.search import (
     Logger,
     PESearch,
@@ -51,14 +49,12 @@ from autogoal.search import (
     ProgressLogger,
     MemoryLogger,
 )
-from autogoal.kb import List, Sentence, Tuple, CategoricalVector
-from autogoal.contrib import find_classes
-from sklearn.metrics import f1_score
+from autogoal.kb import List, Sentence, Word, Postag
 ```
 
-Next, we parse the command line arguments to configure the experiment.
-
 ## Parsing arguments
+
+Next, we parse the command line arguments to configure the experiment.
 
 The default values are the ones used for the experimentation reported in the paper.
 
@@ -81,28 +77,21 @@ args = parser.parse_args()
 print(args)
 ```
 
-The next line will print all the algorithms that AutoGOAL found
-in the `contrib` library, i.e., anything that could be potentially used
-to solve an AutoML problem.
-
-```python
-for cls in find_classes():
-    print("Using: %s" % cls.__name__)
-```
-
 ## Experimentation
 
 Instantiate the classifier.
 Note that the input and output types here are defined to match the problem statement,
-i.e., text classification.
+i.e., entity recognition.
 
 ```python
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=List(Sentence()),
-    output=CategoricalVector(),
+    input=List(List(Word())),
+    output=List(List(Postag())),
     search_iterations=args.iterations,
-    score_metric=f1_score,
+    score_metric=meddocan.F1_beta,
+    cross_validation_steps=1,
+    exclude_filter=".*Word2Vec.*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
@@ -119,11 +108,11 @@ the best pipelines and all the errors encountered in the experimentation process
 class CustomLogger(Logger):
     def error(self, e: Exception, solution):
         if e and solution:
-            with open("haha_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={repr(e)}\n\n")
+            with open("meddocan_errors.log", "a") as fp:
+                fp.write(f"solution={repr(solution)}\nerror={e}\n\n")
 
     def update_best(self, new_best, new_fn, *args):
-        with open("haha.log", "a") as fp:
+        with open("meddocan.log", "a") as fp:
             fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
 ```
 
@@ -138,17 +127,17 @@ if args.token:
 
     telegram = TelegramLogger(
         token=args.token,
-        name=f"HAHA",
+        name=f"MEDDOCAN",
         channel=args.channel,
     )
     loggers.append(telegram)
 ```
 
-Finally, loading the HAHA dataset, running the `AutoClassifier` instance,
+Finally, loading the MEDDOCAN dataset, running the `AutoClassifier` instance,
 and printing the results.
 
 ```python
-X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)
+X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
 
 classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)

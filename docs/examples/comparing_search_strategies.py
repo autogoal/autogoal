@@ -17,16 +17,6 @@ from autogoal.grammar import generate_cfg, Union
 from autogoal.utils import nice_repr
 
 
-def evaluate(expr):
-    def stream():
-        for i in range(1, 10):
-            yield i
-
-        raise ValueError("Too many values asked")
-
-    return expr(stream())
-
-
 @nice_repr
 class Number:
     def __call__(self, stream):
@@ -66,6 +56,9 @@ grammar = generate_cfg(Expr)
 
 print(grammar)
 
+# Our grammar is composed of addition, multiplication and concatenation operators.
+# Here are some possible examples:
+
 for i in range(100):
     try:
         solution = grammar.sample()
@@ -73,6 +66,21 @@ for i in range(100):
     except ValueError:
         continue
 
+# To evaluate how good a formula is, we simply feed the expression instance
+# with a sequence of numbers from 1 to 9. If the expression requires more
+# than 9 digits, it results in an error. The actual value of performing
+# corresponding operations is done in the `__call__` method of the expression classes.
+
+def evaluate(expr):
+    def stream():
+        for i in range(1, 10):
+            yield i
+
+        raise ValueError("Too many values asked")
+
+    return expr(stream())
+
+# We will run 1000 iterations of each search strategy to compare their long-term performance.
 
 search_rand = RandomSearch(grammar, evaluate, errors='ignore')
 best_rand, best_fn_rand = search_rand.run(1000, logger=ConsoleLogger())
@@ -80,7 +88,7 @@ best_rand, best_fn_rand = search_rand.run(1000, logger=ConsoleLogger())
 search_pe = PESearch(grammar, evaluate, pop_size=10, errors='ignore')
 best_pe, best_fn_pe = search_pe.run(1000, logger=ConsoleLogger())
 
+# And here are the results.
+
 print(best_rand, best_fn_rand)
 print(best_pe, best_fn_pe)
-
-print(search_pe._model)

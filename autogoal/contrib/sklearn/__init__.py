@@ -69,6 +69,7 @@ def find_classes(include=".*", exclude=None):
         return (
             inspect.isclass(c)
             and issubclass(c, (SklearnEstimator, SklearnTransformer))
+            and c not in (SklearnEstimator, SklearnTransformer)
             and re.match(include, c.__name__)
             and (exclude is None or not re.match(exclude, c.__name__))
         )

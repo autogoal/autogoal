@@ -9,6 +9,10 @@ from ._base import Grammar, Sampler
 
 
 class Graph(nx.DiGraph):
+    """
+    Represents a graph in AutoGOAL that can be expanded with graph grammars.
+    """
+
     def __init__(self, **attrs):
         super(Graph, self).__init__(**attrs)
 

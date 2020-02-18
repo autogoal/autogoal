@@ -5,16 +5,13 @@ services:
     container_name: autogoal-dev-${PYTHON_VERSION}-cpu
     image: autogoal/autogoal-dev:${PYTHON_VERSION}-cpu
     build:
-      dockerfile: cpu.dockerfile
       context: "."
       args:
         PYTHON_VERSION: ${PYTHON_VERSION}
     volumes:
       - "./:/code"
       - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
-      - "~/nltk_data:/root/nltk_data"
       - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
-    command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
     network_mode: host
 
   # autogoal-tester-gpu:

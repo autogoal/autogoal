@@ -1,11 +1,14 @@
 site_name: AutoGOAL
-repo_name: 'sestevez/autogoal'
-repo_url: 'https://gitlab.com/autogoal/autogoal'
 
 theme:
     name: material
     feature:
         tabs: true
+
+plugins:
+    - search
+    # - pdf-export:
+    #     combined: true
 
 markdown_extensions:
     - codehilite
@@ -13,33 +16,36 @@ markdown_extensions:
         permalink: true
     - admonition
     - mkautodoc
+    - markdown_include.include
 
 nav:
     - Home: index.md
     - Dependencies: dependencies.md
     - Contributing: contributing.md
-    - History: history.md
 
     - User Guide:
         - First steps: guide/index.md
-        - Pre-designed pipelines: guide/predesigned.md
-        - Defining the space:
-            - Class-based API: guide/cfg.md
-            - Graph-based API: guide/graph.md
-            - Functional API: guide/functional.md
+        - Predefined pipelines: guide/predefined.md
+        - Class-based API: guide/cfg.md
+        - Graph-based API: guide/graph.md
+        - Functional API: guide/functional.md
 
+    - Examples:
+        - Home: examples/index.md
+        - ICML UCI datasets: examples/solving_uci_datasets.md
+        - ICML HAHA 2019: examples/solving_haha_2019.md
+        - ICML MEDDOCAN 2019: examples/solving_meddocan_2019.md
+        - Sklearn integration: examples/sklearn_simple_grammar.md
+        - Search strategies: examples/comparing_search_strategies.md
 
     - API:
         - AutoGOAL API: api/autogoal.md
         - Grammars: api/autogoal.grammar.md
         - Search: api/autogoal.search.md
-        - Contrib:
-            - Contrib API: api/autogoal.contrib.md
-            - Sklearn: api/autogoal.contrib.sklearn.md
-            - Keras: api/autogoal.contrib.keras.md
+        - Knowledge Base: api/autogoal.kb.md
+        - AutoML: api/autogoal.ml.md
+        - Contrib: api/autogoal.contrib.md
+            # - Sklearn: api/autogoal.contrib.sklearn.md
+            # - Keras: api/autogoal.contrib.keras.md
         - Datasets: api/autogoal.datasets.md
         - Utils: api/autogoal.utils.md
-
-    - Examples:
-        - Sklearn: examples/sklearn_simple_grammar.md
-        - Keras: examples/keras_text_classifier.md
