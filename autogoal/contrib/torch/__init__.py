@@ -8,4 +8,8 @@ except:
     raise
 
 
-from ._bert import BertEmbedding
+from ._bert import BertEmbedding, BertTokenizeEmbedding
+
+
+def find_classes(self, include=None, exclude=None):
+    return [BertEmbedding, BertTokenizeEmbedding]

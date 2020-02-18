@@ -93,9 +93,9 @@ def is_categorical(obj):
         original_length = len(obj)
         obj = set(obj)
 
-        return len(obj) < max(0.1 * original_length, 10) and all(
-            isinstance(x, (str, int)) for x in obj
-        )
+        a = len(obj) < max(0.1 * original_length, 10)
+        b = all(isinstance(x, (str, int, np.int64, np.int32)) for x in obj)
+        return a and b
     except:
         return False
 
@@ -171,7 +171,7 @@ DATA_RESOLVERS = {
     kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
     kb.CategoricalVector(): is_categorical,
     kb.ContinuousVector(): is_continuous,
-    kb.List(kb.Word()): is_string_list,
+    kb.List(kb.Sentence()): is_string_list,
 }
 
 
@@ -181,7 +181,7 @@ DATA_TYPE_EXAMPLES = {
     kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
     kb.ContinuousVector(): np.random.rand(10),
     kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
-    kb.List(kb.Word()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
+    kb.List(kb.Sentence()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
 
@@ -209,7 +209,7 @@ def is_classifier(cls, verbose=False):
 
     >>> from sklearn.linear_model import LogisticRegression, LinearRegression
     >>> is_classifier(LogisticRegression)
-    (True, (MatrixContinuous(), CategoricalVector()))
+    (True, (Tuple(MatrixContinuous(), CategoricalVector()), CategoricalVector()))
     >>> is_classifier(LinearRegression)
     (False, None)
 
@@ -237,7 +237,7 @@ def is_classifier(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.CategoricalVector())
+        return True, (kb.Tuple(inputs, kb.CategoricalVector()), kb.CategoricalVector())
     else:
         return False, None
 
@@ -252,7 +252,7 @@ def is_regressor(cls, verbose=False):
     >>> is_regressor(LogisticRegression)
     (False, None)
     >>> is_regressor(LinearRegression)
-    (True, (MatrixContinuous(), ContinuousVector()))
+    (True, (Tuple(MatrixContinuous(), ContinuousVector()), ContinuousVector()))
 
     """
     if not is_algorithm(cls, verbose=verbose):
@@ -278,7 +278,7 @@ def is_regressor(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.ContinuousVector())
+        return True, (kb.Tuple(inputs, kb.ContinuousVector()), kb.ContinuousVector())
     else:
         return False, None
 
@@ -333,7 +333,7 @@ def is_transformer(cls, verbose=False):
 
     >>> from sklearn.feature_extraction.text import CountVectorizer
     >>> is_transformer(CountVectorizer)
-    (True, (List(Word()), MatrixContinuousSparse()))
+    (True, (List(Sentence()), MatrixContinuousSparse()))
     >>> from sklearn.decomposition.pca import PCA
     >>> is_transformer(PCA)
     (True, (MatrixContinuousDense(), MatrixContinuousDense()))
@@ -345,8 +345,8 @@ def is_transformer(cls, verbose=False):
     allowed_inputs = set()
     allowed_outputs = set()
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
-        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Word())]:
+    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
+        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
             try:
                 X = DATA_TYPE_EXAMPLES[input_type]
 

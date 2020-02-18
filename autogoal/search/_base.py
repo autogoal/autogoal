@@ -1,23 +1,50 @@
 import enlighten
 import warnings
-import signal
+import time
+import datetime
+import statistics
+import math
+import traceback
+import sys
+import termcolor
 
-from autogoal.utils import ResourceManager
+from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
 
 
 class SearchAlgorithm:
-    def __init__(self, generator_fn, fitness_fn=None, *, maximize=True, errors='raise', evaluation_timeout:int=300, memory_limit:int=4 * 1024 ** 3):
+    def __init__(
+        self,
+        generator_fn=None,
+        fitness_fn=None,
+        pop_size=1,
+        maximize=True,
+        errors="raise",
+        early_stop=None,
+        evaluation_timeout: int = 5 * Min,
+        memory_limit: int = 4 * Gb,
+        search_timeout: int = 60 * 60,
+        target_fn = None,
+    ):
+        if generator_fn is None and fitness_fn is None:
+            raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
+
         self._generator_fn = generator_fn
-        self._fitness_fn = fitness_fn or self._identity
+        self._fitness_fn = fitness_fn or (lambda x: x)
+        self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
+        self._early_stop = early_stop
+        self._search_timeout = search_timeout
+        self._target_fn = target_fn
 
-    def _identity(self, x):
-        return x
+        if self._evaluation_timeout > 0 or self._memory_limit > 0:
+            self._fitness_fn = RestrictedWorkerByJoin(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            )
 
-    def run(self, evaluations, logger=None):
+    def run(self, evaluations=None, logger=None):
         """Runs the search performing at most `evaluations` of `fitness_fn`.
 
         Returns:
@@ -26,30 +53,58 @@ class SearchAlgorithm:
         if logger is None:
             logger = Logger()
 
+        print(evaluations)
+
+        if evaluations is None:
+            evaluations = math.inf
+
+        if isinstance(logger, list):
+            logger = MultiLogger(*logger)
+
+        if isinstance(self._early_stop, float):
+            early_stop = int(self._early_stop * evaluations)
+        else:
+            early_stop = self._early_stop
+
         best_solution = None
         best_fn = None
+        no_improvement = 0
 
         logger.begin(evaluations)
+
+        start_time = time.time()
+
         try:
-            resource_manager = ResourceManager(time_limit = self._evaluation_timeout, memory_limit = self._memory_limit)
             while evaluations > 0:
-                logger.start_generation()
+                stop = False
+
+                logger.start_generation(evaluations, best_fn)
                 self._start_generation()
 
                 fns = []
 
-                for solution in self._run_one_generation():
-                    logger.sample_solution(solution)
-                    
-                    try:
-                        fn = resource_manager.run_restricted(self._fitness_fn, solution)
-                    except Exception as e:
-                        if self._errors == 'raise':
-                            raise
+                for _ in range(self._pop_size):
+                    solution = None
+                    no_improvement += 1
 
-                        fn = 0
-                        if self._errors == 'warn':
-                            warnings.warn(str(e))
+                    try:
+                        solution = self._generate()
+                    except Exception as e:
+                        logger.error(
+                            "Error while generating solution: %s" % e, solution
+                        )
+                        continue
+
+                    try:
+                        logger.sample_solution(solution)
+                        fn = self._fitness_fn(solution)
+                    except Exception as e:
+                        fn = 0.0
+                        logger.error(e, solution)
+
+                        if self._errors == "raise":
+                            logger.end(best_solution, best_fn)
+                            raise e from None
 
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
@@ -62,21 +117,57 @@ class SearchAlgorithm:
                         logger.update_best(solution, fn, best_solution, best_fn)
                         best_solution = solution
                         best_fn = fn
+                        no_improvement = 0
+
+                        if self._target_fn and best_fn >= self._target_fn:
+                            stop = True
+                            break
+                    else:
+                        no_improvement += 1
 
                     evaluations -= 1
 
                     if evaluations <= 0:
+                        print("(!) Stopping since all evaluations are done.")
+                        stop = True
+                        break
+
+                    spent_time = time.time() - start_time
+
+                    if self._search_timeout and spent_time > self._search_timeout:
+                        print("(!) Stopping since time spent is %.2f." % (spent_time))
+                        stop = True
+                        break
+
+                    if early_stop and no_improvement > early_stop:
+                        print(
+                            "(!) Stopping since no improvement for %i evaluations."
+                            % no_improvement
+                        )
+                        stop = True
                         break
 
                 logger.finish_generation(fns)
                 self._finish_generation(fns)
 
-            return best_solution, best_fn
+                if stop:
+                    break
 
         except KeyboardInterrupt:
-            logger.end(best_solution, best_fn)
+            pass
 
-    def _run_one_generation(self):
+        logger.end(best_solution, best_fn)
+        return best_solution, best_fn
+
+    def _generate(self):
+        sampler = self._build_sampler()
+
+        if self._generator_fn is None:
+            return sampler
+
+        return self._generator_fn(sampler)
+
+    def _build_sampler(self):
         raise NotImplementedError()
 
     def _start_generation(self):
@@ -93,7 +184,7 @@ class Logger:
     def end(self, best, best_fn):
         pass
 
-    def start_generation(self):
+    def start_generation(self, evaluations, best_fn):
         pass
 
     def finish_generation(self, fns):
@@ -105,28 +196,144 @@ class Logger:
     def eval_solution(self, solution, fitness):
         pass
 
+    def error(self, e: Exception, solution):
+        pass
+
     def update_best(self, new_best, new_fn, previous_best, previous_fn):
         pass
 
 
-class EnlightenLogger(Logger):
-    def __init__(self, *, log_solutions=False):
-        self.log_solutions = log_solutions
-
+class ConsoleLogger(Logger):
     def begin(self, evaluations):
-        self.manager = enlighten.get_manager()
-        self.total_counter = self.manager.counter(total=evaluations, unit="runs", leave=False)
+        print("Starting search: evaluations=%i" % evaluations)
+        self.start_time = time.time()
+        self.start_evaluations = evaluations
+
+    @staticmethod
+    def normal(text):
+        return termcolor.colored(text, color="gray")
+
+    @staticmethod
+    def emph(text):
+        return termcolor.colored(text, color="white", attrs=["bold"])
+
+    @staticmethod
+    def success(text):
+        return termcolor.colored(text, color="green")
+
+    @staticmethod
+    def primary(text):
+        return termcolor.colored(text, color="blue")
+
+    @staticmethod
+    def warn(text):
+        return termcolor.colored(text, color="orange")
+
+    @staticmethod
+    def err(text):
+        return termcolor.colored(text, color="red")
+
+    def start_generation(self, evaluations, best_fn):
+        current_time = time.time()
+        elapsed = int(current_time - self.start_time)
+        avg_time = elapsed / (self.start_evaluations - evaluations + 1)
+        remaining = int(avg_time * evaluations)
+        elapsed = datetime.timedelta(seconds=elapsed)
+        remaining = datetime.timedelta(seconds=remaining)
+
+        print(
+            self.emph("New generation started"),
+            self.success(f"best_fn={best_fn or 0.0:0.3}"),
+            self.primary(f"evaluations={evaluations}"),
+            self.primary(f"elapsed={elapsed}"),
+            self.primary(f"remaining={remaining}"),
+        )
+
+    def error(self, e: Exception, solution):
+        print(self.err("(!) Error evaluating pipeline: %s" % e))
+
+    def end(self, best, best_fn):
+        print(self.emph("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best)))
 
     def sample_solution(self, solution):
-        if self.log_solutions:
-            print(solution)
+        print(self.emph("Evaluating pipeline:"))
+        print(solution)
 
+    def eval_solution(self, solution, fitness):
+        print(self.primary("Fitness=%.3f" % fitness))
+
+    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+        print(
+            self.success(
+                "Best solution: improved=%.3f, previous=%.3f"
+                % (new_fn, previous_fn or 0)
+            )
+        )
+
+
+class ProgressLogger(Logger):
+    def begin(self, evaluations):
+        self.manager = enlighten.get_manager()
+        self.total_counter = self.manager.counter(
+            total=evaluations, unit="runs", leave=False, desc="Best: 0.000"
+        )
+
+    def sample_solution(self, solution):
         self.total_counter.update()
 
-    def eval_solution(self, solution, fn):
-        if self.log_solutions:
-            print("Fitness: %.4f" % fn)
+    def update_best(self, new_best, new_fn, *args):
+        self.total_counter.desc = "Best: %.3f" % new_fn
 
     def end(self, *args):
         self.total_counter.close()
         self.manager.stop()
+
+
+class MemoryLogger(Logger):
+    def __init__(self):
+        self.generation_best_fn = [0]
+        self.generation_mean_fn = []
+
+    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+        self.generation_best_fn[-1] = new_fn
+
+    def finish_generation(self, fns):
+        try:
+            mean = statistics.mean(fns)
+        except:
+            mean = 0
+        self.generation_mean_fn.append(mean)
+        self.generation_best_fn.append(self.generation_best_fn[-1])
+
+
+class MultiLogger(Logger):
+    def __init__(self, *loggers):
+        self.loggers = loggers
+
+    def run(self, name, *args, **kwargs):
+        for logger in self.loggers:
+            getattr(logger, name)(*args, **kwargs)
+
+    def begin(self, *args, **kwargs):
+        self.run("begin", *args, **kwargs)
+
+    def end(self, *args, **kwargs):
+        self.run("end", *args, **kwargs)
+
+    def start_generation(self, *args, **kwargs):
+        self.run("start_generation", *args, **kwargs)
+
+    def finish_generation(self, *args, **kwargs):
+        self.run("finish_generation", *args, **kwargs)
+
+    def sample_solution(self, *args, **kwargs):
+        self.run("sample_solution", *args, **kwargs)
+
+    def eval_solution(self, *args, **kwargs):
+        self.run("eval_solution", *args, **kwargs)
+
+    def error(self, *args, **kwargs):
+        self.run("error", *args, **kwargs)
+
+    def update_best(self, *args, **kwargs):
+        self.run("update_best", *args, **kwargs)

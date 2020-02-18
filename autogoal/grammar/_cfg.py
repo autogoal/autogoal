@@ -2,7 +2,7 @@ import inspect
 import random
 import warnings
 import sys
-from typing import List, Dict, Set, Callable
+from typing import List, Dict, Set
 
 from ._base import Grammar, Sampler
 
@@ -31,7 +31,7 @@ class Production:
     ):
         raise NotImplementedError()
 
-    def sample(self, sampler, namespace):
+    def sample(self, sampler, namespace, max_iterations):
         raise NotImplementedError()
 
 
@@ -47,7 +47,7 @@ class Empty(Production):
         )
         visited.add(self.head)
 
-    def sample(self, sampler, namespace):
+    def sample(self, sampler, namespace, max_iterations):
         return None
 
 
@@ -78,9 +78,12 @@ class OneOf(Production):
 
             self.grammar[symbol].to_string(code, visited, max_symbol_length)
 
-    def sample(self, sampler, namespace):
+    def sample(self, sampler, namespace, max_iterations):
+        if max_iterations <= 0:
+            raise ValueError("Max iterations exceeded")
+
         option = sampler.choice(self.options, handle=self.head)
-        return self.grammar[option].sample(sampler, namespace)
+        return self.grammar[option].sample(sampler, namespace, max_iterations-1)
 
 
 class Callable(Production):
@@ -116,12 +119,15 @@ class Callable(Production):
 
             self.grammar[symbol].to_string(code, visited, max_symbol_length)
 
-    def sample(self, sampler, namespace):
+    def sample(self, sampler, namespace, max_iterations):
+        if max_iterations <= 0:
+            raise ValueError("Max iterations exceeded")
+
         kwargs = {}
 
         for arg, symbol in self._parameters.items():
             if isinstance(symbol, Symbol):
-                arg_value = self.grammar[symbol].sample(sampler, namespace)
+                arg_value = self.grammar[symbol].sample(sampler, namespace, max_iterations-1)
             else:
                 arg_value = symbol
 
@@ -129,8 +135,8 @@ class Callable(Production):
 
         obj = namespace[self._name](**kwargs)
 
-        if hasattr(obj, "sample"):
-            obj.sample(sampler)
+        if hasattr(obj, "sample") and callable(obj.sample):
+            obj.sample(sampler, max_iterations=max_iterations)
 
         return obj
 
@@ -139,7 +145,7 @@ class Distribution(Callable):
     def __repr__(self):
         return "Distribution(name=%r, parameters=%r)" % (self._name, self._parameters)
 
-    def sample(self, sampler, namespace):
+    def sample(self, sampler, namespace, max_iterations):
         return sampler.distribution(self._name, handle=self.head, **self._parameters)
 
 
@@ -149,7 +155,7 @@ class ContextFreeGrammar(Grammar):
 
     def __init__(self, start: Symbol, namespace: Dict[str, type] = None):
         super(ContextFreeGrammar, self).__init__(start)
-        self._namespace = namespace or {}
+        self._namespace = {} if namespace is None else namespace
         self._productions: Dict[Symbol, Production] = {}
 
     @property
@@ -187,10 +193,10 @@ class ContextFreeGrammar(Grammar):
 
     def _sample(self, symbol, max_iterations, sampler):
         production = self[symbol]
-        return production.sample(sampler, self._namespace)
+        return production.sample(sampler, self._namespace, max_iterations)
 
 
-def generate_cfg(cls, registry=None):
+def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
     """
     Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)
     from an annotated callable (class or function).
@@ -198,6 +204,10 @@ def generate_cfg(cls, registry=None):
     ##### Parameters
 
     * `cls`: class or function with annotated arguments.
+
+    ##### Returns
+
+    * `ContextFreeGrammar`: the generated grammar.
 
     ##### Examples
 
@@ -262,6 +272,12 @@ def _generate_cfg(
 
         if annotation_cls == "self":
             annotation_cls = cls
+
+        if isinstance(annotation_cls, str):
+            try:
+                annotation_cls = grammar.namespace[annotation_cls]
+            except KeyError:
+                raise ValueError("To use strings for annotations, make sure recursion hits the corresponding class first.")
 
         if hasattr(annotation_cls, "__name__"):
             param_symbol = Symbol(annotation_cls.__name__)
@@ -357,8 +373,8 @@ class CfgInitializer:
         self._grammars = {}
         self._registry = registry
 
-    def __call__(self, cls):
+    def __call__(self, cls, sampler=None):
         if cls not in self._grammars:
             self._grammars[cls] =  generate_cfg(cls, self._registry)
 
-        return self._grammars[cls].sample()
+        return self._grammars[cls].sample(sampler=sampler)

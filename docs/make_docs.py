@@ -70,29 +70,29 @@ def process(fname: Path):
 
     with fname.open("r") as fp:
         current = []
-        state = 'markdown'
+        state = "markdown"
 
         for line in fp:
             if hide(line):
                 continue
 
             if line.startswith("#"):
-                if state == 'python':
+                if state == "python":
                     if current:
                         content.append(Python(current))
                         current = []
-                    state = 'markdown'
+                    state = "markdown"
                 current.append(line)
             else:
-                if state == 'markdown':
+                if state == "markdown":
                     if current:
                         content.append(Markdown(current))
                         current = []
-                    state = 'python'
+                    state = "python"
                 current.append(line)
 
         if current:
-            if state == 'markdown':
+            if state == "markdown":
                 content.append(Markdown(current))
             else:
                 content.append(Python(current))
@@ -109,10 +109,8 @@ def build_api():
     import autogoal.grammar
     import autogoal.search
     import autogoal.contrib
-    import autogoal.contrib.sklearn
-    import autogoal.contrib.keras
     import autogoal.datasets
-    import autogoal.datasets.movie_reviews
+    import autogoal.ml
 
     generate(autogoal)
 
@@ -126,10 +124,25 @@ def generate(module, visited=set()):
     visited.add(name)
     print(name)
 
-    path = Path(__file__).parent / 'api' / (name + ".md")
-    submodules = inspect.getmembers(module, lambda m: inspect.ismodule(m) and m.__name__.startswith('autogoal') and not "._" in m.__name__)
-    classes = inspect.getmembers(module, lambda m: inspect.isclass(m) and not m.__name__.startswith('_'))
-    functions = inspect.getmembers(module, lambda m: inspect.isfunction(m) and not m.__name__.startswith('_'))
+    path = Path(__file__).parent / "api" / (name + ".md")
+    submodules = inspect.getmembers(
+        module,
+        lambda m: inspect.ismodule(m)
+        and m.__name__.startswith("autogoal")
+        and not "._" in m.__name__,
+    )
+    classes = inspect.getmembers(
+        module,
+        lambda m: inspect.isclass(m)
+        and m.__module__.startswith(module.__name__)
+        and not m.__name__.startswith("_"),
+    )
+    functions = inspect.getmembers(
+        module,
+        lambda m: inspect.isfunction(m)
+        and m.__module__.startswith(module.__name__)
+        and not m.__name__.startswith("_"),
+    )
 
     with open(path, "w") as fp:
         generate_module(module, name, fp)
@@ -141,17 +154,21 @@ def generate(module, visited=set()):
                 fp.write(f"* [{submodule.__name__}](/api/{submodule.__name__}/)\n")
                 generate(submodule)
 
+            fp.write("\n---\n")
+
         if classes:
             fp.write("\n## Classes\n\n")
 
             for _, clss in classes:
                 generate_class(clss, name, fp)
+                fp.write("\n---\n")
 
         if functions:
             fp.write("\n## Functions\n\n")
 
             for _, func in functions:
                 generate_func(func, name, fp)
+                fp.write("\n---\n")
 
 
 def format_param(p: inspect.Parameter) -> str:
@@ -184,25 +201,33 @@ def generate_class(clss, name, fp):
     src = inspect.getsourcefile(clss)
     if src:
         line = inspect.getsourcelines(clss)[1]
-        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src = src.replace(
+            "/usr/local/lib/python3.6/site-packages/",
+            "https://github.com/autogal/autogoal/blob/master/",
+        )
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)
 
     fp.write(f"> `{format_signature(clss.__init__, clss.__name__)}`\n\n")
 
+    doc = inspect.getdoc(clss)
 
-    if clss.__doc__:
-        fp.write(textwrap.dedent(clss.__doc__))
+    if doc:
+        fp.write(doc)
         fp.write("\n")
     else:
-        fp.write(textwrap.dedent(
-            """
-            !!! warning
-                This class has no docstrings.\n
-            """
-        ))
+        fp.write(
+            textwrap.dedent(
+                """
+                !!! warning
+                    This class has no docstrings.\n
+                """
+            )
+        )
 
-    members = inspect.getmembers(clss, lambda m: inspect.ismethod(m) and not m.__name__.startswith("_"))
+    members = inspect.getmembers(
+        clss, lambda m: inspect.isfunction(m) and not m.__name__.startswith("_")
+    )
 
     for _, member in members:
         generate_func(member, name, fp, indent="####")
@@ -215,22 +240,29 @@ def generate_func(func, name, fp, indent="###"):
     src = inspect.getsourcefile(func)
     if src:
         line = inspect.getsourcelines(func)[1]
-        src = src.replace("/usr/local/lib/python3.6/site-packages/", "https://github.com/sestevez/autogoal/blob/master/")
+        src = src.replace(
+            "/usr/local/lib/python3.6/site-packages/",
+            "https://github.com/autogoal/autogoal/blob/master/",
+        )
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)
 
     fp.write(f"> `{format_signature(func)}`\n\n")
 
-    if func.__doc__:
-        fp.write(textwrap.dedent(func.__doc__))
+    doc = inspect.getdoc(func)
+
+    if doc:
+        fp.write(doc)
         fp.write("\n")
     else:
-        fp.write(textwrap.dedent(
-            """
-            !!! warning
-                This class has no docstrings.\n
-            """
-        ))
+        fp.write(
+            textwrap.dedent(
+                """
+                !!! warning
+                    This class has no docstrings.\n
+                """
+            )
+        )
 
 
 def generate_module(module, name, fp):
@@ -248,6 +280,38 @@ def generate_module(module, name, fp):
     # ))
 
 
+def build_schemas():
+    from autogoal.kb._data import draw_data_hierarchy
+
+    draw_data_hierarchy(str(Path(__file__).parent / "guide" / "datatypes"))
+
+
+def make_algorithms_table():
+    from autogoal.contrib import find_classes
+
+    all_classes = find_classes()
+
+    with open(Path(__file__).parent / "guide" / "algorithms.md", "w") as fp:
+        fp.write(textwrap.dedent(
+            """
+            |Algorithm|Dependencies|Input|Output|
+            |--|--|--|--|
+            """
+        ))
+
+        for clss in all_classes:
+            print(clss)
+            signature = inspect.signature(clss.run)
+            dependency = clss.__module__.split('.')[2]
+
+            if dependency.startswith('_'):
+                dependency = ""
+
+            fp.write(f"| {clss.__name__} | {dependency} | {signature.parameters['input'].annotation} | {signature.return_annotation} | \n")
+
+
 if __name__ == "__main__":
     build_examples()
     build_api()
+    build_schemas()
+    make_algorithms_table()

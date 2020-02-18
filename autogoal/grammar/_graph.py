@@ -9,6 +9,10 @@ from ._base import Grammar, Sampler
 
 
 class Graph(nx.DiGraph):
+    """
+    Represents a graph in AutoGOAL that can be expanded with graph grammars.
+    """
+
     def __init__(self, **attrs):
         super(Graph, self).__init__(**attrs)
 
@@ -37,13 +41,18 @@ class Graph(nx.DiGraph):
         Returns the last of the values computed.
         """
         previous_values = {}
+        final_values = []
 
         for node, in_nodes in self.build_order():
             in_values = [previous_values[n] for n in in_nodes]
             value = function(node, in_nodes, in_values)
+
+            if not list(self.neighbors(node)):
+                final_values.append(value)
+
             previous_values[node] = value
 
-        return value
+        return final_values
 
     def contains_any(self, *items):
         return any((node in items) for node in self)
@@ -57,7 +66,7 @@ def first_selection(items):
     return items[0]
 
 
-def default_initializer(cls):
+def default_initializer(cls, sampler=None):
     return cls()
 
 
@@ -75,6 +84,7 @@ def _get_generated_class(name):
     return clss
 
 
+@nice_repr
 class Production:
     def __init__(self, pattern, replacement, *, initializer=None):
         if not isinstance(pattern, Graph):
@@ -87,7 +97,7 @@ class Production:
 
         self.pattern = pattern
         self.replacement = replacement
-        self.initializer = initializer or default_initializer
+        self._initializer = initializer or default_initializer
 
     def _matches(self, graph: Graph):
         # TODO: Generalizar a permitir cualquier tipo de grafo como patrón, no solo un nodo
@@ -122,10 +132,13 @@ class Production:
 
         graph.remove_node(node)
         self.replacement.build(
-            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self.initializer
+            graph, in_nodes=in_nodes, out_nodes=out_nodes, initializer=self._initializer
         )
 
         return graph
+
+    def __repr__(self):
+        return "Production(Pa)"
 
 
 class GraphPattern:
@@ -217,6 +230,20 @@ class Block(GraphPattern):
             self._add_out_nodes(graph, out_nodes, item)
 
 
+class Epsilon(GraphPattern):
+    def build(
+        self,
+        graph: Graph,
+        *,
+        in_nodes=[],
+        out_nodes=[],
+        initializer=default_initializer,
+    ):
+        for u in in_nodes:
+            for v in out_nodes:
+                graph.add_edge(u, v)
+
+
 class GraphGrammar(Grammar):
     def __init__(self, start, *, initializer=None, non_terminals=None):
         if isinstance(start, str):
@@ -274,6 +301,9 @@ class GraphGrammar(Grammar):
 
         return symbol
 
+    def __repr__(self):
+        return repr(self._productions)
+
 
 @nice_repr
 class Start:
@@ -313,5 +343,7 @@ class GraphSpace(Grammar):
 
             next_node = sampler.choice(next_nodes, handle=last_node)
             path.append(next_node)
+        else:
+            raise ValueError("Reached maximum iterations")
 
-        return [self.initializer(clss) for clss in path[1:-1]]
+        return [self.initializer(clss, sampler=sampler) for clss in path[1:-1]]

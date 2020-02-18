@@ -1,8 +1,12 @@
 import types
 import inspect
+import pprint
 
 from typing import Mapping
 from autogoal.grammar import Symbol, Union, Empty
+
+from scipy.sparse.base import spmatrix
+from numpy import ndarray
 
 
 def algorithm(input_type, output_type):
@@ -21,28 +25,33 @@ def algorithm(input_type, output_type):
 
 class Interface:
     @classmethod
+    def is_compatible(cls, other_cls):
+        own_methods = _get_annotations(cls, ignore=["generate_cfg", "is_compatible"])
+
+        if not inspect.isclass(other_cls):
+            return False
+
+        if issubclass(other_cls, Interface):
+            return False
+
+        type_methods = _get_annotations(other_cls)
+        return _compatible_annotations(own_methods, type_methods)
+
+    @classmethod
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
-
-        own_methods = _get_annotations(cls, ignore=["generate_cfg"])
         compatible = []
 
-        for _, clss in grammar.namespace.items():
-            if issubclass(clss, Interface):
-                continue
-
-            type_methods = _get_annotations(clss)
-
-            if _compatible_annotations(own_methods, type_methods):
-                compatible.append(clss)
+        for _, other_cls in grammar.namespace.items():
+            if cls.is_compatible(other_cls):
+                compatible.append(other_cls)
 
         if not compatible:
             raise ValueError(
                 "Cannot find compatible implementations for interface %r" % cls
             )
 
-        grammar = Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
-        return grammar
+        return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
 def conforms(type1, type2):
@@ -80,7 +89,7 @@ def _compatible_annotations(
 
             ann_im = param_im.annotation
 
-            if not conforms(ann_im, ann_if):
+            if not conforms(ann_if, ann_im):
                 return False
 
         return_if = mif.return_annotation
@@ -90,7 +99,7 @@ def _compatible_annotations(
 
         return_im = mim.return_annotation
 
-        if not conforms(return_if, return_im):
+        if not conforms(return_im, return_if):
             return False
 
     return True
@@ -126,16 +135,60 @@ def _get_annotations(clss, ignore=[]):
     return signatures
 
 
-def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
+def build_composite_list(input_type, output_type, depth=1):
+    def wrap(t, d):
+        if d == 0:
+            return t
+
+        return List(wrap(t, d - 1))
+
+    input_wrapper = wrap(input_type, depth)
+    output_wrapper = wrap(output_type, depth)
+
+    # name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
+    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
+
+    def init_method(self, inner: algorithm(input_type, output_type)):
+        self.inner = inner
+
+    def run_method(self, input: input_wrapper) -> output_wrapper:
+        from tqdm import tqdm
+
+        def wrap_run(xs, d):
+            if d == 0:
+                return self.inner.run(xs)
+
+            return [wrap_run(x, d - 1) for x in tqdm(xs)]
+
+        return wrap_run(input, depth)
+
+    def repr_method(self):
+        return f"{name}(inner={repr(self.inner)})"
+
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
+    def body(ns):
+        ns["__init__"] = init_method
+        ns["run"] = run_method
+        ns["__repr__"] = repr_method
+        ns["__getattr__"] = getattr_method
+
+    return types.new_class(name=name, bases=(), exec_body=body)
+
+
+def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     """
-    Dynamically generate a class `CompositeAlgorithmXXX` that wraps
+    Dynamically generate a class `CompositeAlgorithm` that wraps
     another algorithm to receive a Tuple but pass only one of the
     parameters to the internal algorithm.
     """
 
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
-    name = 'CompositeAlgorithm[%s, %s]' % (input_type, output_type)
+
+    # name = "TupleAlgorithm"  # [%s, %s]' % (input_type, output_type)
+    name = "TupleAlgorithm[%s, %s]" % (input_type, output_type)
 
     def init_method(self, inner: algorithm(internal_input, internal_output)):
         self.inner = inner
@@ -148,16 +201,16 @@ def build_composite(index, input_type: 'Tuple', output_type: 'Tuple'):
     def repr_method(self):
         return f"{name}(inner={repr(self.inner)})"
 
-    def body(ns):
-        ns['__init__'] = init_method
-        ns['run'] = run_method
-        ns['__repr__'] = repr_method
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
 
-    return types.new_class(
-        name=name,
-        bases=(),
-        exec_body=body
-    )
+    def body(ns):
+        ns["__init__"] = init_method
+        ns["run"] = run_method
+        ns["__repr__"] = repr_method
+        ns["__getattr__"] = getattr_method
+
+    return types.new_class(name=name, bases=(), exec_body=body)
 
 
 class DataType:
@@ -184,7 +237,97 @@ class DataType:
         return issubclass(self.__class__, other.__class__)
 
 
-class Word(DataType):
+def infer_type(obj):
+    """
+    Attempts to automatically infer the most precise semantic type for `obj`.
+
+    ##### Parameters
+
+    * `obj`: Object to detect its semantic type.
+
+    ##### Raises
+
+    * `TypeError`: if no valid semantic type was found that matched `obj`.
+
+    ##### Examples
+
+    * Natural language
+
+    ```python
+    >>> infer_type("hello")
+    Word()
+    >>> infer_type("hello world")
+    Sentence()
+    >>> infer_type("Hello Word. It is raining.")
+    Document()
+
+    ```
+
+    * Vectors
+
+    ```
+    >>> import numpy as np
+    >>> infer_type(np.asarray(["A", "B", "C", "D"]))
+    CategoricalVector()
+    >>> infer_type(np.asarray([0.0, 1.1, 2.1, 0.2]))
+    ContinuousVector()
+    >>> infer_type(np.asarray([0, 1, 1, 0]))
+    DiscreteVector()
+
+    ```
+
+    * Matrices
+
+    ```
+    >>> import numpy as np
+    >>> infer_type(np.random.randn(10,10))
+    MatrixContinuousDense()
+
+    >>> import scipy.sparse as sp
+    >>> infer_type(sp.coo_matrix((10,10)))
+    MatrixContinuousSparse()
+
+    ```
+    """
+    if isinstance(obj, str):
+        if " " not in obj:
+            return Word()
+
+        if "." not in obj:
+            return Sentence()
+
+        return Document()
+
+    if isinstance(obj, list):
+        internal_types = set([infer_type(x) for x in obj])
+
+        for test_type in [Document(), Sentence(), Word()]:
+            if test_type in internal_types:
+                return List(test_type)
+
+    if hasattr(obj, "shape"):
+        if len(obj.shape) == 1:
+            if isinstance(obj, ndarray):
+                if obj.dtype.kind == "U":
+                    return CategoricalVector()
+                if obj.dtype.kind == "i":
+                    return DiscreteVector()
+                if obj.dtype.kind == "f":
+                    return ContinuousVector()
+        if len(obj.shape) == 2:
+            if isinstance(obj, spmatrix):
+                return MatrixContinuousSparse()
+            if isinstance(obj, ndarray):
+                return MatrixContinuousDense()
+
+    raise TypeError("Cannot infer type for %r" % obj)
+
+
+class Text(DataType):
+    pass
+
+
+class Word(Text):
     pass
 
 
@@ -192,11 +335,11 @@ class Stem(DataType):
     pass
 
 
-class Sentence(DataType):
+class Sentence(Text):
     pass
 
 
-class Document(DataType):
+class Document(Text):
     pass
 
 
@@ -220,15 +363,15 @@ class SparseMatrix(Matrix):
     pass
 
 
-class ContinuousVector(DataType):
+class ContinuousVector(Vector):
     pass
 
 
-class DiscreteVector(DataType):
+class DiscreteVector(Vector):
     pass
 
 
-class CategoricalVector(DataType):
+class CategoricalVector(Vector):
     pass
 
 
@@ -244,13 +387,41 @@ class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
     pass
 
 
+class Entity(DataType):
+    pass
+
+
+class Summary(Document):
+    pass
+
+
+class Sentiment(DataType):
+    pass
+
+
+class Synset(DataType):
+    pass
+
+
+class Postag(DataType):
+    pass
+
+
+class Chunktag(DataType):
+    pass
+
+
+class Tensor3(DataType):
+    pass
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner
-        super().__init__(**inner.tags)
+        # super().__init__(**inner.tags)
 
     def __conforms__(self, other):
-        return isinstance(other, List) and conforms(self.inner, other._inner)
+        return isinstance(other, List) and conforms(self.inner, other.inner)
 
     def __repr__(self):
         return "List(%r)" % self.inner
@@ -279,24 +450,84 @@ class Tuple(DataType):
         return True
 
 
-__all__ = [
-    "algorithm",
-    "CategoricalVector",
-    "Category",
-    "ContinuousVector",
-    "DataType",
-    "DenseMatrix",
-    "DiscreteVector",
-    "Document",
-    "List",
-    "Matrix",
-    "MatrixContinuous",
-    "MatrixContinuousDense",
-    "MatrixContinuousSparse",
-    "Sentence",
-    "SparseMatrix",
-    "Stem",
-    "Tuple",
-    "Vector",
-    "Word",
-]
+def draw_data_hierarchy(output_file):
+    """
+    Creates an SVG representation of the `DataType` hierarchy,
+    for documentation purposes.
+    """
+    import pydot
+
+    classes = frozenset(
+        [
+            DataType,
+            Text,
+            Word,
+            Stem,
+            Sentence,
+            Document,
+            Category,
+            Vector,
+            Matrix,
+            DenseMatrix,
+            SparseMatrix,
+            ContinuousVector,
+            DiscreteVector,
+            CategoricalVector,
+            MatrixContinuous,
+            MatrixContinuousDense,
+            MatrixContinuousSparse,
+            Entity,
+            Summary,
+            Sentiment,
+            Synset,
+            Postag,
+            Chunktag,
+            Tensor3,
+            List,
+            Tuple,
+        ]
+    )
+
+    graph = pydot.Dot(direction="LR")
+
+    for clss in classes:
+        graph.add_node(pydot.Node(clss.__name__))
+
+    for clss in classes:
+        for base in clss.__bases__:
+            if base not in classes:
+                continue
+
+            graph.add_edge(pydot.Edge(base.__name__, clss.__name__))
+
+    graph.write(output_file + ".svg", format="svg")
+    graph.write(output_file + ".png", format="png")
+
+
+# __all__ = [
+#     "algorithm",
+#     "CategoricalVector",
+#     "Category",
+#     "ContinuousVector",
+#     "DataType",
+#     "DenseMatrix",
+#     "DiscreteVector",
+#     "Document",
+#     "List",
+#     "Matrix",
+#     "MatrixContinuous",
+#     "MatrixContinuousDense",
+#     "MatrixContinuousSparse",
+#     "Sentence",
+#     "SparseMatrix",
+#     "Stem",
+#     "Tuple",
+#     "Vector",
+#     "Word",
+#     "Entity",
+#     "Summary",
+#     "Synset",
+#     "Text",
+#     "Sentiment",
+#     "conforms",
+# ]

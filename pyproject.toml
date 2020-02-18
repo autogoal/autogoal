@@ -2,17 +2,20 @@
 name = "autogoal"
 version = "0.1.0"
 description = "Automatic Generation Optimization And Learning"
-authors = ["Suilan Estevez-Velarde", "Alejandro Piad-Morffis"]
+authors = []
 license = "MIT"
 readme = "Readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+black = "^19.10b0"
 enlighten = "^1.4.0"
+fire = "^0.2.1"
 networkx = "^2.4"
-pyyaml = "^5.2"
-toml = "^0.10.0"
 psutil = "^5.6.7"
+pyyaml = "^5.2"
+termcolor = "^1.1.0"
+toml = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 codecov = "^2.0.15"
@@ -22,20 +25,24 @@ jupyter = "^1.0.0"
 jupyterlab = "^1.2.4"
 keras = "^2.3.1"
 matplotlib = "^3.1.2"
+mkautodoc = "^0.1.0"
+mkdocs = "^1.0.4"
+mkdocs-material = "^4.6.0"
+mkdocs-pdf-export-plugin = "^0.5.5"
 mypy = "^0.761"
 nltk = "^3.4.5"
 pylint = "^2.4.4"
 pytest = "^5.3.2"
 pytest-cov = "^2.8.1"
+python-telegram-bot = "^12.4.2"
 scikit-learn = "^0.22"
 seqlearn = "^0.2"
 sklearn_crfsuite = "^0.3.6"
 spacy = "^2.2.3"
 streamlit = "^0.51.0"
-tf-hub-nightly = "^0.8.0-alpha.201912270005"
-mkdocs = "^1.0.4"
-mkdocs-material = "^4.6.0"
-mkautodoc = "^0.1.0"
+transformers = "^2.3.0"
+wikipedia = "^1.4.0"
+markdown-include = "^0.5.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
