@@ -124,7 +124,7 @@ if args.token:
     )
     loggers.append(telegram)
 
-# Finally, loading the MEDDOCAN dataset, running the `AutoClassifier` instance,
+# Finally, loading the MEDDOCAN dataset, running the `AutoML` instance,
 # and printing the results.
 
 X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)

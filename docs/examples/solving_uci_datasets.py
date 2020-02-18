@@ -72,7 +72,7 @@ from autogoal.datasets import (
 
 from autogoal.kb import MatrixContinuousDense, CategoricalVector
 
-# This is the real deal, the class `AutoClassifier` does all the work.
+# This is the real deal, the class `AutoML` does all the work.
 
 from autogoal.ml import AutoML
 
@@ -148,7 +148,7 @@ for epoch in range(args.epochs):
             X, y = data
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-# Finally we can instantiate out `AutoClassifier` with all the custom
+# Finally we can instantiate out `AutoML` with all the custom
 # parameters we received from the command line.
 
         classifier = AutoML(

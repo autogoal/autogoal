@@ -133,7 +133,7 @@ if args.token:
     )
     loggers.append(telegram)
 
-# Finally, loading the HAHA dataset, running the `AutoClassifier` instance,
+# Finally, loading the HAHA dataset, running the `AutoML` instance,
 # and printing the results.
 
 X_train, X_test, y_train, y_test = haha.load(max_examples=args.examples)

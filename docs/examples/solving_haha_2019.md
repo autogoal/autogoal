@@ -30,8 +30,9 @@ The experiments were run in the following hardware configurations
 
 | Config | CPU | Cache | Memory | HDD |
 |--|--|--|--|--|
-| **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB |
+| **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB  |
 | **B** | 6 core Intel Xeon E5-1650 v3 | 15360 KB |  32045.5MB  | 2500.5GB |
+| **C** | Quad core Intel Core i7-2600 |  8192 KB |  15917.1MB  | 1480.3GB |
 
 !!! note
     The hardware configuration details were extracted with `inxi -CmD` and summarized.
@@ -144,7 +145,7 @@ if args.token:
     loggers.append(telegram)
 ```
 
-Finally, loading the HAHA dataset, running the `AutoClassifier` instance,
+Finally, loading the HAHA dataset, running the `AutoML` instance,
 and printing the results.
 
 ```python
@@ -157,4 +158,3 @@ print(score)
 print(logger.generation_best_fn)
 print(logger.generation_mean_fn)
 ```
-

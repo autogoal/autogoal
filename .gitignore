@@ -147,3 +147,4 @@ dask-worker-space/*
 *.zip
 *.npy
 *.pickle
+*.pdf

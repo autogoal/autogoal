@@ -39,6 +39,7 @@ The experiments were run in the following hardware configurations
 |--|--|--|--|--|
 | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB  |
 | **B** | 6 core Intel Xeon E5-1650 v3 | 15360 KB |  32045.5MB  | 2500.5GB |
+| **C** | Quad core Intel Core i7-2600 |  8192 KB |  15917.1MB  | 1480.3GB |
 
 !!! note
     The hardware configuration details were extracted with `inxi -CmD` and summarized.
@@ -79,7 +80,7 @@ We will also import this annotation type.
 from autogoal.kb import MatrixContinuousDense, CategoricalVector
 ```
 
-This is the real deal, the class `AutoClassifier` does all the work.
+This is the real deal, the class `AutoML` does all the work.
 
 ```python
 from autogoal.ml import AutoML
@@ -167,7 +168,7 @@ if necesary, split it into training and testing sets.
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 ```
 
-Finally we can instantiate out `AutoClassifier` with all the custom
+Finally we can instantiate out `AutoML` with all the custom
 parameters we received from the command line.
 
 ```python
@@ -248,4 +249,3 @@ And store the results on a log file.
             )
             fp.write("\n")
 ```
-
