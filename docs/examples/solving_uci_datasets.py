@@ -39,6 +39,7 @@
 # |--|--|--|--|--|
 # | **A** | 12 core Intel Xeon Gold 6126 | 19712 KB |  191927.2MB | 999.7GB  |
 # | **B** | 6 core Intel Xeon E5-1650 v3 | 15360 KB |  32045.5MB  | 2500.5GB |
+# | **C** | Quad core Intel Core i7-2600 |  8192 KB |  15917.1MB  | 1480.3GB |
 
 # !!! note
 #     The hardware configuration details were extracted with `inxi -CmD` and summarized.
