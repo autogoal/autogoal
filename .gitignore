@@ -148,3 +148,5 @@ dask-worker-space/*
 *.npy
 *.pickle
 *.pdf
+demo-long.webm
+demo-short.webm
