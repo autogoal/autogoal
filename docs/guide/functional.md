@@ -10,7 +10,7 @@ one particular task into optimizable software that seems to magically solve the 
 Let's start with a toy example just to show the basic usage of the API.
 
 ```python
-from autogoal.grammar import Sampler
+from autogoal.sampling import Sampler
 
 
 def generate(sampler: Sampler):

@@ -305,74 +305,9 @@
 
 
 ---
-### `ModelSampler`
-
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_pge.py#L11)
-> `ModelSampler(self, model=None, **kwargs)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `boolean`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_pge.py#L72)
-> `boolean(self, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `categorical`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_pge.py#L80)
-> `categorical(self, options, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `choice`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_pge.py#L46)
-> `choice(self, options, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `continuous`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_pge.py#L64)
-> `continuous(self, min=0, max=1, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `discrete`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_pge.py#L56)
-> `discrete(self, min=0, max=10, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `distribution`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L11)
-> `distribution(self, name, handle=None, **kwargs)`
-
-
-!!! warning
-    This class has no docstrings.
-
-
----
 ### `PESearch`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_pge.py#L240)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_pge.py#L11)
 > `PESearch(self, *args, learning_factor=0.05, selection=0.2, epsilon_greed=0.1, random_state=None, **kwargs)`
 
 

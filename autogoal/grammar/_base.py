@@ -1,30 +1,6 @@
 import random
 
-
-class Sampler:
-    def __init__(self, *, random_state: int = None):
-        self.rand = random.Random(random_state)
-
-    def choice(self, options, handle=None):
-        return self.categorical(options, handle=handle)
-
-    def distribution(self, name: str, handle=None, **kwargs):
-        try:
-            return getattr(self, name)(handle=handle, **kwargs)
-        except AttributeError:
-            raise ValueError("Unrecognized distribution name: %s" % name)
-
-    def discrete(self, min=0, max=10, handle=None):
-        return self.rand.randint(min, max)
-
-    def continuous(self, min=0, max=1, handle=None):
-        return self.rand.uniform(min, max)
-
-    def boolean(self, handle=None):
-        return self.rand.uniform(0, 1) < 0.5
-
-    def categorical(self, options, handle=None):
-        return self.rand.choice(options)
+from autogoal.sampling import Sampler
 
 
 class Grammar:

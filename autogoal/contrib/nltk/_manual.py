@@ -1,7 +1,6 @@
 import nltk
 from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
-from nltk.corpus import sentiwordnet as swn
-from nltk.corpus import stopwords, wordnet
+
 from numpy import inf, nan
 
 from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
@@ -11,8 +10,12 @@ from autogoal.kb import *
 from autogoal.kb._data import *
 from autogoal.utils import nice_repr
 
-
 nltk.download("wordnet")
+nltk.download("sentiwordnet")
+nltk.download("stopwords")
+
+from nltk.corpus import sentiwordnet as swn
+from nltk.corpus import stopwords, wordnet
 
 
 @nice_repr

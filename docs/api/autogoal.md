@@ -14,6 +14,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 * [autogoal.grammar](/api/autogoal.grammar/)
 * [autogoal.kb](/api/autogoal.kb/)
 * [autogoal.ml](/api/autogoal.ml/)
+* [autogoal.sampling](/api/autogoal.sampling/)
 * [autogoal.search](/api/autogoal.search/)
 * [autogoal.utils](/api/autogoal.utils/)
 
@@ -24,7 +25,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 ### `optimize`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_helpers.py#L40)
-> `optimize(fn, search_strategy=None, iterations=None, logger=None, **kwargs)`
+> `optimize(fn, search_strategy=<class 'autogoal.search._pge.PESearch'>, iterations=None, logger=None, **kwargs)`
 
 A general-purpose optimization function.
 

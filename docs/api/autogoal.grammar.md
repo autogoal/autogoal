@@ -14,7 +14,7 @@
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L217)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f8f0348d1e0>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning
@@ -23,7 +23,7 @@
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7f8f0348d1e0>)`
+> `make(self, initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning
@@ -109,7 +109,7 @@ Represents a CFG grammar.
 
 #### `sample`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L34)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L10)
 > `sample(self, max_iterations=100, sampler=None)`
 
 
@@ -199,7 +199,7 @@ Represents a CFG grammar.
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L234)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f8f0348d1e0>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning
@@ -208,7 +208,7 @@ Represents a CFG grammar.
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7f8f0348d1e0>)`
+> `make(self, initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning
@@ -218,7 +218,7 @@ Represents a CFG grammar.
 ---
 ### `Grammar`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_base.py#L30)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_base.py#L6)
 > `Grammar(self, start)`
 
 
@@ -227,7 +227,7 @@ Represents a CFG grammar.
 
 #### `sample`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L34)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L10)
 > `sample(self, max_iterations=100, sampler=None)`
 
 
@@ -1451,7 +1451,7 @@ add_nodes_from: add multiple nodes to a graph
 
 #### `sample`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L34)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L10)
 > `sample(self, max_iterations=100, sampler=None)`
 
 
@@ -1471,7 +1471,7 @@ add_nodes_from: add multiple nodes to a graph
 
 #### `sample`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L34)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L10)
 > `sample(self, max_iterations=100, sampler=None)`
 
 
@@ -1492,7 +1492,7 @@ add_nodes_from: add multiple nodes to a graph
 #### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L193)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f8f0348d1e0>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning
@@ -1501,72 +1501,7 @@ add_nodes_from: add multiple nodes to a graph
 #### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L163)
-> `make(self, initializer=<function default_initializer at 0x7f8f0348d1e0>)`
-
-
-!!! warning
-    This class has no docstrings.
-
-
----
-### `Sampler`
-
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_base.py#L4)
-> `Sampler(self, random_state=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `boolean`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L23)
-> `boolean(self, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `categorical`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L26)
-> `categorical(self, options, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `choice`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L8)
-> `choice(self, options, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `continuous`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L20)
-> `continuous(self, min=0, max=1, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `discrete`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L17)
-> `discrete(self, min=0, max=10, handle=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-#### `distribution`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_base.py#L11)
-> `distribution(self, name, handle=None, **kwargs)`
+> `make(self, initializer=<function default_initializer at 0x7fdb357c7598>)`
 
 
 !!! warning

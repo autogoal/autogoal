@@ -9,7 +9,7 @@
 
 # Let's start with a toy example just to show the basic usage of the API.
 
-from autogoal.grammar import Sampler
+from autogoal.sampling import Sampler
 
 
 def generate(sampler: Sampler):

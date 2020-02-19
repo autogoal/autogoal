@@ -106,11 +106,13 @@ def process(fname: Path):
 
 def build_api():
     import autogoal
-    import autogoal.grammar
-    import autogoal.search
     import autogoal.contrib
     import autogoal.datasets
+    import autogoal.grammar
+    import autogoal.kb
     import autogoal.ml
+    import autogoal.sampling
+    import autogoal.search
 
     generate(autogoal)
 

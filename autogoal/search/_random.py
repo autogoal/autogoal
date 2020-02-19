@@ -1,7 +1,7 @@
 import random
 
 from ._base import SearchAlgorithm
-from autogoal.grammar import Sampler
+from autogoal.sampling import Sampler
 
 
 class RandomSearch(SearchAlgorithm):
