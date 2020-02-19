@@ -37,7 +37,7 @@ def _make_params_func(fn: Callable):
     return locals_dict[func_name]
 
 
-def optimize(fn, search_strategy=None, iterations=None, logger=None, **kwargs):
+def optimize(fn, search_strategy=PESearch, iterations=None, logger=None, **kwargs):
     """
     A general-purpose optimization function.
 
@@ -51,9 +51,6 @@ def optimize(fn, search_strategy=None, iterations=None, logger=None, **kwargs):
     * `logger`: instance of `Logger` (or list) to pass to the search strategy.
     * `**kwargs`: additional keyword arguments passed to the search strategy constructor.
     """
-    if search_strategy is None:
-        search_strategy = PESearch
-
     params_func = _make_params_func(fn)
 
     @functools.wraps(fn)
