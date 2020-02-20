@@ -7,6 +7,8 @@ from ._base import SearchAlgorithm
 
 import random
 
+import pickle
+import time
 
 class PESearch(SearchAlgorithm):
     def __init__(
@@ -16,6 +18,8 @@ class PESearch(SearchAlgorithm):
         selection: float = 0.2,
         epsilon_greed: float = 0.1,
         random_state: Optional[int] = None,
+        name: str = None,
+        save: bool = True,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -24,6 +28,8 @@ class PESearch(SearchAlgorithm):
         self._epsilon_greed = epsilon_greed
         self._model: Dict = {}
         self._random_states = random.Random(random_state)
+        self._name = if None: str(time.time()) else: name 
+        self._save = save
 
     def _start_generation(self):
         self._samplers = []
@@ -47,3 +53,8 @@ class PESearch(SearchAlgorithm):
 
         # Update the probabilistic model with the marginal model from the best pipelines
         self._model = update_model(self._model, updates, self._learning_factor)
+        
+        # save an internal state of metaheuristic for other executions
+        if self._save = True:
+            with open('model'+self.name+'.pickle', 'wb') as f:
+                pickle.dump(self._model, f) 
