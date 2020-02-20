@@ -3,7 +3,7 @@ version: "2.3"
 services:
   autogoal-tester-cpu:
     container_name: autogoal-dev-${PYTHON_VERSION}-cpu
-    image: autogoal/autogoal-dev:${PYTHON_VERSION}-cpu
+    image: autogoal/autogoal:latest
     build:
       context: "."
       args:

@@ -15,7 +15,6 @@ markdown_extensions:
     - toc:
         permalink: true
     - admonition
-    - mkautodoc
     - markdown_include.include
 
 nav:
