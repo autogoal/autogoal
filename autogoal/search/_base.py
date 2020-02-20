@@ -243,7 +243,7 @@ class ConsoleLogger(Logger):
 
         print(
             self.emph("New generation started"),
-            self.success(f"best_fn={best_fn or 0.0:0.3}"),
+            self.success(f"best_fn={float(best_fn or 0.0):0.3}"),
             self.primary(f"evaluations={evaluations}"),
             self.primary(f"elapsed={elapsed}"),
             self.primary(f"remaining={remaining}"),

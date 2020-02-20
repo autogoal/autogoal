@@ -28,7 +28,7 @@ class PESearch(SearchAlgorithm):
         self._epsilon_greed = epsilon_greed
         self._model: Dict = {}
         self._random_states = random.Random(random_state)
-        self._name = if None: str(time.time()) else: name 
+        self._name = name or str(time.time())
         self._save = save
 
     def _start_generation(self):
@@ -55,6 +55,14 @@ class PESearch(SearchAlgorithm):
         self._model = update_model(self._model, updates, self._learning_factor)
         
         # save an internal state of metaheuristic for other executions
-        if self._save = True:
-            with open('model'+self.name+'.pickle', 'wb') as f:
+        if self._save == True:
+            with open('model-'+self._name+'.pickle', 'wb') as f:
                 pickle.dump(self._model, f) 
+
+    def load(self, name_pickle_file):
+        """Rewrites the probabilistic distribution of metaheuristic with the value of the name model.
+        """
+        
+        with open(name_pickle_file) as f:
+            loaded_obj = pickle.load(f)
+        self._model = loaded_obj
