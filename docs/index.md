@@ -55,7 +55,7 @@ AutoGOAL is first and foremost a framework for Automatic Machine Learning.
 As such, it comes pre-packaged with hundreds of low-level machine learning
 algorithms that can be automatically assembled into pipelines for different problems.
 
-The core of this functionality lies in the [`AutoML`](/api/autogoal.ml#automl) class.
+The core of this functionality lies in the [`AutoML`](./api/autogoal.ml#automl) class.
 
 To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
 
@@ -87,16 +87,16 @@ And navigating to [localhost:8000](http://localhost:8000).
 
 ### User Guide
 
-The step-by-step [User Guide](/guide/quickstart) will show you everything you need to know to use AuoGOAL.
+The step-by-step [User Guide](./guide/quickstart) will show you everything you need to know to use AuoGOAL.
 
 ### Examples
 
-Looking at the [examples](/examples/) is the best way to learn how to use AutoGOAL.
+Looking at the [examples](./examples/) is the best way to learn how to use AutoGOAL.
 
 ### API
 
-The [API documentation](/api) details the public API for AutoGOAL.
+The [API documentation](./api) details the public API for AutoGOAL.
 
 ## Contribution
 
-Code is licensed under MIT. Read the details in the [collaboration section](/contributing).
+Code is licensed under MIT. Read the details in the [collaboration section](./contributing).
