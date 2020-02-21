@@ -87,7 +87,7 @@ And navigating to [localhost:8000](http://localhost:8000).
 
 ### User Guide
 
-The step-by-step [User Guide](./guide/quickstart) will show you everything you need to know to use AuoGOAL.
+The step-by-step [User Guide](./guide/) will show you everything you need to know to use AuoGOAL.
 
 ### Examples
 
