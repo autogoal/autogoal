@@ -1,0 +1,10 @@
+# `autogoal.kb.Tuple`
+
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L430)
+> `Tuple(self, *inner)`
+
+### `get_tag`
+
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> `get_tag(self, tag)`
+

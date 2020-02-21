@@ -1,0 +1,34 @@
+site_name: AutoGOAL
+
+theme:
+    name: material
+    feature:
+        tabs: true
+
+plugins:
+    - search
+
+markdown_extensions:
+    - codehilite
+    - toc:
+        permalink: true
+    - admonition
+    - markdown_include.include
+
+nav:
+    - Home: index.md
+    - Dependencies: dependencies.md
+    - Contributing: contributing.md
+    - User Guide:
+        - First steps: guide/index.md
+        - Predefined pipelines: guide/predefined.md
+        - Class-based API: guide/cfg.md
+        - Graph-based API: guide/graph.md
+        - Functional API: guide/functional.md
+    - Examples:
+        - Home: examples/index.md
+        - ICML UCI datasets: examples/solving_uci_datasets.md
+        - ICML HAHA 2019: examples/solving_haha_2019.md
+        - ICML MEDDOCAN 2019: examples/solving_meddocan_2019.md
+        - Sklearn integration: examples/sklearn_simple_grammar.md
+        - Search strategies: examples/comparing_search_strategies.md

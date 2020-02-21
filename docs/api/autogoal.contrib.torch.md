@@ -1,0 +1,14 @@
+# `autogoal.contrib.torch`
+
+## Classes
+
+### [`BertEmbedding`](../autogoal.contrib.torch.BertEmbedding)
+> Transforms a sentence already tokenized into a list of vector embeddings using a Bert pretrained English model.
+
+### [`BertTokenizeEmbedding`](../autogoal.contrib.torch.BertTokenizeEmbedding)
+> Transforms a sentence into a list of vector embeddings using a Bert pretrained English model.
+
+
+## Functions
+
+### [`find_classes`](../autogoal.contrib.torch.find_classes)

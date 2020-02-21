@@ -1,15 +1,13 @@
 # `autogoal.contrib`
 
+## Submodules
+
+* [autogoal.contrib.gensim](../autogoal.contrib.gensim/)
+* [autogoal.contrib.keras](../autogoal.contrib.keras/)
+* [autogoal.contrib.nltk](../autogoal.contrib.nltk/)
+* [autogoal.contrib.sklearn](../autogoal.contrib.sklearn/)
+* [autogoal.contrib.torch](../autogoal.contrib.torch/)
+
 ## Functions
 
-### `find_classes`
-
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/__init__.py#L5)
-> `find_classes(include='.*', exclude=None)`
-
-
-!!! warning
-    This class has no docstrings.
-
-
----
+### [`find_classes`](../autogoal.contrib.find_classes)
