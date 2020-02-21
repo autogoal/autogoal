@@ -309,10 +309,22 @@ class GraphGrammar(Grammar):
 class Start:
     __slots__ = ()
 
+    def __eq__(self, other):
+        return isinstance(other, Start)
+
+    def __hash__(self):
+        return 0
+
 
 @nice_repr
 class End:
     __slots__ = ()
+
+    def __eq__(self, other):
+        return isinstance(other, End)
+
+    def __hash__(self):
+        return 0
 
 
 class GraphSpace(Grammar):

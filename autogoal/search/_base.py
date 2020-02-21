@@ -9,6 +9,7 @@ import sys
 import termcolor
 
 from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
+from autogoal.sampling import ReplaySampler
 
 
 class SearchAlgorithm:
@@ -160,12 +161,20 @@ class SearchAlgorithm:
         return best_solution, best_fn
 
     def _generate(self):
-        sampler = self._build_sampler()
+        # BUG: When multiprocessing is used for evaluation and no generation
+        #      function is defined, the actual sampling occurs during fitness
+        #      evaluation, and since that process has a copy of the solution
+        #      we don't get the history in the `ReplaySampler`.
 
-        if self._generator_fn is None:
-            return sampler
+        sampler = ReplaySampler(self._build_sampler())
 
-        return self._generator_fn(sampler)
+        if self._generator_fn is not None:
+            solution = self._generator_fn(sampler)
+        else:
+            solution = sampler
+
+        solution.sampler_ = sampler
+        return solution
 
     def _build_sampler(self):
         raise NotImplementedError()

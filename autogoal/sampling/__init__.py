@@ -1,5 +1,6 @@
 import random
 import statistics
+import pickle
 
 from typing import Dict, List, Sequence
 import abc
@@ -225,9 +226,11 @@ class ReplaySampler:
     ```
 
     Then call the `replay` method and reuse the same values.
+    `replay()` returns the same instance, to enable chaining method calls.
 
     ```python
     >>> sampler.replay()
+    <autogoal.sampling.ReplaySampler object at ...>
     >>> [sampler.discrete(0,10) for _ in range(5)]
     [6, 6, 0, 4, 8]
     >>> [sampler.discrete(0,10) for _ in range(5)]
@@ -238,14 +241,12 @@ class ReplaySampler:
     If you try to use it in a different way as originally, it will complain.
 
     ```python
-    >>> sampler.replay()
-    >>> sampler.discrete(0,5)
+    >>> sampler.replay().discrete(0,5)
     Traceback (most recent call last):
         ...
     TypeError: Invalid invocation of `discrete` with `args=(0, 5)`, replay history says args='(0, 10)'.
 
-    >>> sampler.replay()
-    >>> sampler.boolean()
+    >>> sampler.replay().boolean()
     Traceback (most recent call last):
         ...
     TypeError: Invalid invocation of `boolean`, replay history says discrete comes next.
@@ -300,9 +301,71 @@ class ReplaySampler:
             self._current_history.pop(0)
             return top["result"]
 
-    def replay(self):
+    def replay(self) -> "ReplaySampler":
         self._mode = ReplaySampler.REPLAY
         self._current_history = list(self._history)
+        return self
+
+    def save(self, fp):
+        """
+        Saves the state of a `ReplaySampler` to a stream. It must be in replay mode.
+
+        You are responsible for opening and closing the stream yourself.
+
+        ##### Examples
+
+        In this example we create a sampler, and save its state into a `StringIO`
+        stream to be able to see what's being saved.
+
+        ```python
+        >>> sampler = ReplaySampler(Sampler(random_state=0))
+        >>> [sampler.discrete(0, 10) for _ in range(3)]
+        [6, 6, 0]
+
+        >>> import io
+        >>> fp = io.BytesIO()
+        >>> sampler.replay().save(fp)
+        >>> len(fp.getvalue())
+        183
+
+        ```
+        """
+        if self._mode != ReplaySampler.REPLAY:
+            raise TypeError("A sampler must be in replay mode, i.e., call the `replay()` method.")
+
+        pickle.Pickler(fp).dump(self._history)
+
+    @staticmethod
+    def load(fp) -> "ReplaySampler":
+        """
+        Creates a `ReplaySampler` from a stream and returns it already in
+        replay mode.
+
+        You are responsible for opening and closing the stream yourself.
+
+        ##### Examples
+
+        ```python
+        >>> sampler = ReplaySampler(Sampler(random_state=1))
+        >>> [sampler.discrete(0, 10) for _ in range(10)]
+        [2, 9, 1, 4, 1, 7, 7, 7, 10, 6]
+
+        >>> import io
+        >>> fp = io.BytesIO()
+        >>> sampler.replay().save(fp)
+        >>> fp.seek(0)
+        0
+        >>> other_sampler = ReplaySampler.load(fp)
+        >>> [other_sampler.discrete(0, 10) for _ in range(5)]
+        [2, 9, 1, 4, 1]
+        >>> [other_sampler.discrete(0, 10) for _ in range(5)]
+        [7, 7, 7, 10, 6]
+
+        """
+        history = pickle.Unpickler(fp).load()
+        sampler = ReplaySampler(None)
+        sampler._history = history
+        return sampler.replay()
 
     def choice(self, *args, **kwargs):
         return self._run("choice", *args, **kwargs)
