@@ -112,7 +112,7 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     connect_tuple_wrappers(GraphSpace.Start, input)
 
     if GraphSpace.Start not in G:
-        raise ValueError("There are no classes compatible with input type.")
+        raise ValueError("There are no classes compatible with input type:%r." % input)
 
     while open_nodes:
         clss = open_nodes.pop(0)
@@ -135,14 +135,14 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
             G.add_edge(clss, GraphSpace.End)
 
     if GraphSpace.End not in G:
-        raise ValueError("No pipelines can be constructed from input to output.")
+        raise ValueError("No pipelines can be constructed from input:%r to output:%r." % (input, output))
 
     reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
     unreachable_nodes = set(G.nodes) - reachable_from_end
     G.remove_nodes_from(unreachable_nodes)
 
     if not GraphSpace.Start in G:
-        raise ValueError("No pipelines can be constructed from input to output.")
+        raise ValueError("No pipelines can be constructed from input:%r to output:%r." % (input, output))
 
     import pprint
     pprint.pprint(list(G.nodes))

@@ -12,11 +12,12 @@ from autogoal.kb import (
 )
 
 from autogoal.ml.metrics import accuracy
-
+from autogoal.sampling import ReplaySampler
 from autogoal.contrib import find_classes
 import numpy as np
 import random
 import statistics
+import pickle
 
 
 class AutoML:
@@ -61,21 +62,23 @@ class AutoML:
         if random_state:
             np.random.seed(random_state)
 
-    def fit(self, X, y, **kwargs):
+    def _make_pipeline_builder(self):
         registry = self.registry or find_classes(
             include=self.include_filter, exclude=self.exclude_filter
         )
 
-        output_type = self._output_type(y)
-
-        self.pipeline_builder_ = build_pipelines(
-            input=Tuple(self._input_type(X), output_type),
-            output=output_type,
+        return build_pipelines(
+            input=Tuple(self.input, self.output),
+            output=self.output,
             registry=registry,
         )
 
+    def fit(self, X, y, **kwargs):
+        self.input = self._input_type(X)
+        self.output = self._output_type(y)
+
         search = self.search_algorithm(
-            self.pipeline_builder_,
+            self._make_pipeline_builder(),
             self._make_fitness_fn(X, y),
             random_state=self.random_state,
             errors=self.errors,
@@ -86,9 +89,38 @@ class AutoML:
             self.search_iterations, **kwargs
         )
 
+        self.fit_pipeline(X, y)
+
+    def fit_pipeline(self, X, y):
+        if not hasattr(self, 'best_pipeline_'):
+            raise TypeError("You have to call `fit()` first.")
+
         self.best_pipeline_.send("train")
         self.best_pipeline_.run((X, y))
         self.best_pipeline_.send("eval")
+
+    def save_pipeline(self, fp):
+        """
+        Saves the state of the best pipeline.
+        You are responsible for opening and closing the stream.
+        """
+        if not hasattr(self, 'best_pipeline_'):
+            raise TypeError("You have to call `fit()` first.")
+
+        self.best_pipeline_.sampler_.replay().save(fp)
+        pickle.Pickler(fp).dump((self.input, self.output))
+
+    def load_pipeline(self, fp):
+        """
+        Loads the state of the best pipeline and retrains.
+        You are responsible for opening and closing the stream.
+
+        After calling load, the best pipeline is **not** trained.
+        You need to retrain it by calling `fit_pipeline(X, y)`.
+        """
+        sampler = ReplaySampler.load(fp)
+        self.input, self.output = pickle.Unpickler(fp).load()
+        self.best_pipeline_ = self._make_pipeline_builder()(sampler)
 
     def score(self, X, y):
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
