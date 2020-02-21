@@ -10,25 +10,25 @@ Likewise, the API suits different needs, from practical use cases requiring fast
 to more involved, research-oriented use cases that require customizing and tweaking many things.
 Whatever your case, the following guides should help you get started.
 
-* **[Predefined Pipelines](/guide/predefined/)**:
+* **[Predefined Pipelines](./predefined/)**:
     Pre-packaged with pipelines based on popular machine learning frameworks,
     that you can use in few lines of code to build highly optimized machine learning pipelines for a broad range of problems.
 
-* **[Class-based Pipelines](/guide/cfg/)**:
+* **[Class-based Pipelines](./cfg/)**:
     The class-based API allows you to turn any class hierarchy into an optimizable space.
     You define classes and annotate the constructor's parameters
     with attributes, and AutoGOAL automatically builds a grammar that generates all possible
     instances of your hierarchy.
 
-* **[Graph-based Pipelines](/guide/graph/)**:
+* **[Graph-based Pipelines](./graph/)**:
     The graph-based API allows you to explore spaces defined as graphs. You define a graph grammar as
     a set of graph rewriting rules, that take existing nodes and replace them for more complex patterns.
     AutoGOAL then transforms into an evaluatable object, e.g., a neural network.
 
-* **[Functional Pipelines](/guide/functional/)**:
+* **[Functional Pipelines](./functional/)**:
     If none of the previous suits you, the functional API allows you to magically turn any Python code
     that solves some task into an optimizable pipeline.
     You write a regular method and introduce AutoGOAL parameters in the code flow, which will be later
     automatically optimized to produce the optimal output.
 
-Don't forget to also look at the [examples](/examples/) for more down-to-earth specific use cases.
+Don't forget to also look at the [examples](../examples/) for more down-to-earth specific use cases.
