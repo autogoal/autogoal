@@ -20,11 +20,12 @@ class SearchAlgorithm:
         pop_size=1,
         maximize=True,
         errors="raise",
-        early_stop=None,
+        early_stop=0.5,
         evaluation_timeout: int = 5 * Min,
         memory_limit: int = 4 * Gb,
         search_timeout: int = 60 * 60,
-        target_fn = None,
+        target_fn=None,
+        allow_duplicates=True,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
@@ -39,14 +40,15 @@ class SearchAlgorithm:
         self._early_stop = early_stop
         self._search_timeout = search_timeout
         self._target_fn = target_fn
+        self._allow_duplicates = allow_duplicates
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 
-    def run(self, evaluations=None, logger=None):
-        """Runs the search performing at most `evaluations` of `fitness_fn`.
+    def run(self, generations=None, logger=None):
+        """Runs the search performing at most `generations` of `fitness_fn`.
 
         Returns:
             Tuple `(best, fn)` of the best found solution and its corresponding fitness.
@@ -54,39 +56,40 @@ class SearchAlgorithm:
         if logger is None:
             logger = Logger()
 
-        print(evaluations)
+        print(generations)
 
-        if evaluations is None:
-            evaluations = math.inf
+        if generations is None:
+            generations = math.inf
 
         if isinstance(logger, list):
             logger = MultiLogger(*logger)
 
         if isinstance(self._early_stop, float):
-            early_stop = int(self._early_stop * evaluations)
+            early_stop = int(self._early_stop * generations)
         else:
             early_stop = self._early_stop
 
         best_solution = None
         best_fn = None
         no_improvement = 0
-
-        logger.begin(evaluations)
-
         start_time = time.time()
+        seen = set()
+
+        logger.begin(generations, self._pop_size)
 
         try:
-            while evaluations > 0:
+            while generations > 0:
                 stop = False
 
-                logger.start_generation(evaluations, best_fn)
+                logger.start_generation(generations, best_fn)
                 self._start_generation()
 
                 fns = []
 
+                improvement = False
+
                 for _ in range(self._pop_size):
                     solution = None
-                    no_improvement += 1
 
                     try:
                         solution = self._generate()
@@ -94,6 +97,9 @@ class SearchAlgorithm:
                         logger.error(
                             "Error while generating solution: %s" % e, solution
                         )
+                        continue
+
+                    if not self._allow_duplicates and repr(solution) in seen:
                         continue
 
                     try:
@@ -107,6 +113,9 @@ class SearchAlgorithm:
                             logger.end(best_solution, best_fn)
                             raise e from None
 
+                    if not self._allow_duplicates:
+                        seen.add(repr(solution))
+
                     logger.eval_solution(solution, fn)
                     fns.append(fn)
 
@@ -118,20 +127,11 @@ class SearchAlgorithm:
                         logger.update_best(solution, fn, best_solution, best_fn)
                         best_solution = solution
                         best_fn = fn
-                        no_improvement = 0
+                        improvement = True
 
                         if self._target_fn and best_fn >= self._target_fn:
                             stop = True
                             break
-                    else:
-                        no_improvement += 1
-
-                    evaluations -= 1
-
-                    if evaluations <= 0:
-                        print("(!) Stopping since all evaluations are done.")
-                        stop = True
-                        break
 
                     spent_time = time.time() - start_time
 
@@ -140,13 +140,25 @@ class SearchAlgorithm:
                         stop = True
                         break
 
-                    if early_stop and no_improvement > early_stop:
-                        print(
-                            "(!) Stopping since no improvement for %i evaluations."
-                            % no_improvement
-                        )
-                        stop = True
-                        break
+                if not improvement:
+                    no_improvement += 1
+                else:
+                    no_improvement = 0
+
+                generations -= 1
+
+                if generations <= 0:
+                    print("(!) Stopping since all generations are done.")
+                    stop = True
+                    break
+
+                if early_stop and no_improvement >= early_stop:
+                    print(
+                        "(!) Stopping since no improvement for %i generations."
+                        % no_improvement
+                    )
+                    stop = True
+                    break
 
                 logger.finish_generation(fns)
                 self._finish_generation(fns)
@@ -187,13 +199,13 @@ class SearchAlgorithm:
 
 
 class Logger:
-    def begin(self, evaluations):
+    def begin(self, generations, pop_size):
         pass
 
     def end(self, best, best_fn):
         pass
 
-    def start_generation(self, evaluations, best_fn):
+    def start_generation(self, generations, best_fn):
         pass
 
     def finish_generation(self, fns):
@@ -213,10 +225,10 @@ class Logger:
 
 
 class ConsoleLogger(Logger):
-    def begin(self, evaluations):
-        print("Starting search: evaluations=%i" % evaluations)
+    def begin(self, generations, pop_size):
+        print("Starting search: generations=%i" % generations)
         self.start_time = time.time()
-        self.start_evaluations = evaluations
+        self.start_generations = generations
 
     @staticmethod
     def normal(text):
@@ -242,18 +254,18 @@ class ConsoleLogger(Logger):
     def err(text):
         return termcolor.colored(text, color="red")
 
-    def start_generation(self, evaluations, best_fn):
+    def start_generation(self, generations, best_fn):
         current_time = time.time()
         elapsed = int(current_time - self.start_time)
-        avg_time = elapsed / (self.start_evaluations - evaluations + 1)
-        remaining = int(avg_time * evaluations)
+        avg_time = elapsed / (self.start_generations - generations + 1)
+        remaining = int(avg_time * generations)
         elapsed = datetime.timedelta(seconds=elapsed)
         remaining = datetime.timedelta(seconds=remaining)
 
         print(
             self.emph("New generation started"),
             self.success(f"best_fn={float(best_fn or 0.0):0.3}"),
-            self.primary(f"evaluations={evaluations}"),
+            self.primary(f"generations={generations}"),
             self.primary(f"elapsed={elapsed}"),
             self.primary(f"remaining={remaining}"),
         )
@@ -281,19 +293,28 @@ class ConsoleLogger(Logger):
 
 
 class ProgressLogger(Logger):
-    def begin(self, evaluations):
+    def begin(self, generations, pop_size):
         self.manager = enlighten.get_manager()
+        self.pop_counter = self.manager.counter(
+            total=pop_size, unit="evals", leave=True, desc="Current Gen"
+        )
         self.total_counter = self.manager.counter(
-            total=evaluations, unit="runs", leave=False, desc="Best: 0.000"
+            total=generations * pop_size, unit="evals", leave=True, desc="Best: 0.000"
         )
 
     def sample_solution(self, solution):
+        self.pop_counter.update()
         self.total_counter.update()
+
+    def start_generation(self, generations, best_fn):
+        self.pop_counter.count = 0
+        self.total_counter.update(force=True)
 
     def update_best(self, new_best, new_fn, *args):
         self.total_counter.desc = "Best: %.3f" % new_fn
 
     def end(self, *args):
+        self.pop_counter.close()
         self.total_counter.close()
         self.manager.stop()
 

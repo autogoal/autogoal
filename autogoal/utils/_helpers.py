@@ -8,6 +8,10 @@ from autogoal.search import PESearch
 from autogoal.grammar import generate_cfg
 
 
+class _ParamsDict(dict):
+    pass
+
+
 def _make_params_func(fn: Callable):
     signature = inspect.signature(fn)
 
@@ -26,18 +30,20 @@ def _make_params_func(fn: Callable):
     func_code = textwrap.dedent(
         f"""
         def {func_name}({params_line}):
-            return dict(
+            return _ParamsDict(
                 {args_line}
             )
         """
     )
 
+    globals_dict = dict(fn.__globals__)
+    globals_dict['_ParamsDict'] = _ParamsDict
     locals_dict = {}
-    exec(func_code, fn.__globals__, locals_dict)
+    exec(func_code, globals_dict, locals_dict)
     return locals_dict[func_name]
 
 
-def optimize(fn, search_strategy=PESearch, iterations=None, logger=None, **kwargs):
+def optimize(fn, search_strategy=PESearch, generations=100, pop_size=10, allow_duplicates=False, logger=None, **kwargs):
     """
     A general-purpose optimization function.
 
@@ -47,7 +53,7 @@ def optimize(fn, search_strategy=PESearch, iterations=None, logger=None, **kwarg
     ##### Parameters
 
     * `search_strategy`: customize the search strategy. By default a `PESearch` will be performed.
-    * `iterations`: max number of iterations to run.
+    * `generations`: max number of generations to run.
     * `logger`: instance of `Logger` (or list) to pass to the search strategy.
     * `**kwargs`: additional keyword arguments passed to the search strategy constructor.
     """
@@ -59,7 +65,7 @@ def optimize(fn, search_strategy=PESearch, iterations=None, logger=None, **kwarg
 
     grammar = generate_cfg(params_func)
 
-    search = search_strategy(grammar, eval_func, **kwargs)
-    best, best_fn = search.run(iterations, logger=logger)
+    search = search_strategy(grammar, eval_func, pop_size=pop_size, allow_duplicates=allow_duplicates, **kwargs)
+    best, best_fn = search.run(generations, logger=logger)
 
     return best, best_fn

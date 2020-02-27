@@ -10,6 +10,9 @@ Likewise, the API suits different needs, from practical use cases requiring fast
 to more involved, research-oriented use cases that require customizing and tweaking many things.
 Whatever your case, the following guides should help you get started.
 
+* **[Black-Box Optimization](./blackbox/)**:
+    A black-box optimizer that can be applied to any function.
+
 * **[Predefined Pipelines](./predefined/)**:
     Pre-packaged with pipelines based on popular machine learning frameworks,
     that you can use in few lines of code to build highly optimized machine learning pipelines for a broad range of problems.
