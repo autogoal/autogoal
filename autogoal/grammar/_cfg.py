@@ -336,7 +336,8 @@ class Boolean:
     def __repr__(self):
         return f"Boolean()"
 
-    def generate_cfg(self, grammar, head):
+    @staticmethod
+    def generate_cfg(grammar, head):
         grammar.add(head, Distribution(head, grammar, "boolean"))
         return grammar
 

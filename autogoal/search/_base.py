@@ -56,8 +56,6 @@ class SearchAlgorithm:
         if logger is None:
             logger = Logger()
 
-        print(generations)
-
         if generations is None:
             generations = math.inf
 
