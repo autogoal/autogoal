@@ -14,11 +14,11 @@ def load(training_batches=5):
 
     ##### Examples
 
-    >>> X_train, y_train, X_test, y_test = load(training_batches=1)
+    >>> X_train, y_train, X_test, y_test = load(training_batches=5)
     >>> X_train.shape
-    (10000, 3072)
+    (50000, 3072)
     >>> len(y_train)
-    10000
+    50000
     >>> X_test.shape
     (10000, 3072)
     >>> len(y_test)
