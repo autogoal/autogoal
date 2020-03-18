@@ -22,6 +22,10 @@ docs-deploy:
 shell:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} bash
 
+.PHONY: shell-gpu
+shell-gpu:
+	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/lib/python3/dist-packages/autogoal  autogoal/autogoal:3.6-gpu bash
+
 .PHONY: lock
 lock:
 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} poetry lock
