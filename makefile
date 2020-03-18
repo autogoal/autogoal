@@ -47,6 +47,10 @@ docker-build:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose build;)
 	docker tag autogoal-dev:${BASE_VERSION}-cpu autogoal/autogoal
 
+.PHONY: docker-build-gpu
+docker-build-gpu:
+	docker build -t autogoal/autogoal:3.6-gpu -f gpu.dockerfile .
+
 .PHONY: docker-push
 docker-push:
 	$(foreach VERSION, $(ALL_VERSIONS), PYTHON_VERSION=${VERSION} docker-compose push;)
@@ -65,9 +69,9 @@ dev-ensure:
 
 .PHONY: dev-install
 dev-install: dev-ensure
-	pip install poetry
-	poetry config virtualenvs.create false
-	poetry install
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+	${HOME}/.poetry/bin/poetry config virtualenvs.create false
+	${HOME}/.poetry/bin/poetry install
 
 .PHONY: dev-test-fast
 dev-test-fast: dev-ensure
