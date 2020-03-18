@@ -146,3 +146,4 @@ dask-worker-space/*
 **/*.zip
 **/*.npy
 **/*.pickle
+autogoal/datasets/data/*
