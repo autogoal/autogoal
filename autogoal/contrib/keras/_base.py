@@ -319,7 +319,7 @@ class KerasImagePreprocessor(_ImageDataGenerator):
 
     def __init__(
         self,
-        grow_size: Discrete(1, 100),
+        grow_size: Discrete(1, 10),
         featurewise_center: Boolean(),
         samplewise_center: Boolean(),
         featurewise_std_normalization: Boolean(),
