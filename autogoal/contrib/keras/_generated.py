@@ -1,9 +1,11 @@
-from keras.layers import Conv1D as _Conv1D
-from keras.layers import Dense as _Dense
-from keras.layers import Embedding as _Embedding
-from keras.layers import LSTM as _LSTM
-from keras.layers import Reshape, MaxPool1D, Flatten, Bidirectional
-from keras.layers import TimeDistributed as _TimeDistributed
+from tensorflow.keras.layers import Conv1D as _Conv1D
+from tensorflow.keras.layers import Conv2D as _Conv2D
+from tensorflow.keras.layers import MaxPooling2D as _MaxPooling2D
+from tensorflow.keras.layers import Dense as _Dense
+from tensorflow.keras.layers import Embedding as _Embedding
+from tensorflow.keras.layers import LSTM as _LSTM
+from tensorflow.keras.layers import Reshape, Flatten, Bidirectional
+from tensorflow.keras.layers import TimeDistributed as _TimeDistributed
 
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 
@@ -115,6 +117,29 @@ class Dense(_Dense):
 class Conv1D(_Conv1D):
     def __init__(self, filters: Discrete(5, 20), kernel_size: Categorical(3, 5, 7)):
         super().__init__(filters=filters, kernel_size=kernel_size, padding="causal")
+
+
+class Conv2D(_Conv2D):
+    def __init__(
+        self,
+        filters: Discrete(5, 20),
+        activation: Categorical("linear", "relu", "sigmoid", "tanh"),
+        kernel_size: Categorical(3, 5, 7),
+    ):
+        super().__init__(
+            filters=filters,
+            kernel_size=(kernel_size, kernel_size),
+            padding="same",
+            data_format="channels_last",
+        )
+
+
+class MaxPooling2D(_MaxPooling2D):
+    def __init__(self):
+        super().__init__(
+            data_format="channels_last",
+            padding="same",
+        )
 
 
 class TimeDistributed(_TimeDistributed):

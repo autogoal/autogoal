@@ -2,10 +2,10 @@ from typing import Optional
 
 import collections
 import numpy as np
-from keras.callbacks import EarlyStopping, TerminateOnNaN
-from keras.layers import Dense, Input, TimeDistributed, concatenate
-from keras.models import Model
-from keras.utils import to_categorical
+from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
+from tensorflow.keras.layers import Dense, Input, TimeDistributed, concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.utils import to_categorical
 
 from autogoal.contrib.keras._grammars import build_grammar
 from autogoal.grammar import Graph, GraphGrammar, Sampler
@@ -15,6 +15,7 @@ from autogoal.kb import (
     MatrixContinuousDense,
     Postag,
     Tensor3,
+    Tensor4,
     Tuple,
 )
 
@@ -177,6 +178,25 @@ class KerasClassifier(KerasNeuralNetwork):
         self, input: Tuple(MatrixContinuousDense(), CategoricalVector())
     ) -> CategoricalVector():
         return super().run(input)
+
+
+class KerasImageClassifier(KerasClassifier):
+    def _build_grammar(self):
+        return build_grammar(
+            preprocessing=True,
+            preprocessing_recurrent=False,
+            preprocessing_conv=True,
+            reduction=True,
+            reduction_recurrent=False,
+            reduction_conv=True,
+            features=True,
+        )
+
+    def run(self, input: Tuple(Tensor4(), CategoricalVector())) -> CategoricalVector():
+        return super().run(input)
+
+    def _build_input(self, X):
+        return Input(shape=X.shape[1:])
 
 
 class KerasSequenceClassifier(KerasClassifier):

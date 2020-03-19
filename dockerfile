@@ -19,7 +19,7 @@ ENV XDG_CACHE_HOME="/opt/dev/cache"
 # Use system's Python for installing dev tools
 RUN make dev-install
 
-RUN pip install tensorflow==1.14
+RUN pip install tensorflow
 RUN pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 
 RUN apt update && apt install -y graphviz
