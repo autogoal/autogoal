@@ -13,6 +13,6 @@ automl = AutoML(
     cross_validation_steps=1,
 )
 
-Xtrain, ytrain, Xtest, ytest = cifar10.load(1)
+Xtrain, ytrain, Xtest, ytest = cifar10.load()
 
 automl.fit(Xtrain, ytrain, logger=[ConsoleLogger(), ProgressLogger()])
