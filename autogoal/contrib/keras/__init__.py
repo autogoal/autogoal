@@ -8,9 +8,22 @@ except:
     raise
 
 
-from ._base import KerasNeuralNetwork, KerasClassifier, KerasSequenceClassifier, KerasSequenceTagger, KerasImageClassifier
+from ._base import (
+    KerasNeuralNetwork,
+    KerasClassifier,
+    KerasSequenceClassifier,
+    KerasSequenceTagger,
+    KerasImageClassifier,
+    KerasImagePreprocessor,
+)
 from ._grammars import build_grammar
 
 
 def find_classes(self, include=None, exclude=None):
-    return [KerasSequenceClassifier, KerasClassifier, KerasSequenceTagger, KerasImageClassifier]
+    return [
+        KerasSequenceClassifier,
+        KerasClassifier,
+        KerasSequenceTagger,
+        KerasImageClassifier,
+        KerasImagePreprocessor
+    ]

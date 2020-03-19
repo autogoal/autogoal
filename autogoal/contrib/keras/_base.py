@@ -6,9 +6,18 @@ from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
 from tensorflow.keras.layers import Dense, Input, TimeDistributed, concatenate
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.image import ImageDataGenerator as _ImageDataGenerator
 
 from autogoal.contrib.keras._grammars import build_grammar
-from autogoal.grammar import Graph, GraphGrammar, Sampler
+from autogoal.grammar import (
+    Graph,
+    GraphGrammar,
+    Sampler,
+    Boolean,
+    Categorical,
+    Continuous,
+    Discrete,
+)
 from autogoal.kb import (
     CategoricalVector,
     List,
@@ -18,6 +27,7 @@ from autogoal.kb import (
     Tensor4,
     Tuple,
 )
+from autogoal.utils import nice_repr
 
 
 class KerasNeuralNetwork:
@@ -224,8 +234,8 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def _build_output(self, outputs, y):
         if "loss" not in self._compile_kwargs:
-            self._compile_kwargs["loss"] = 'categorical_crossentropy'
-            self._compile_kwargs["metrics"] = ['accuracy']
+            self._compile_kwargs["loss"] = "categorical_crossentropy"
+            self._compile_kwargs["metrics"] = ["accuracy"]
 
         dense = Dense(units=len(self._classes), activation="softmax")
 
@@ -267,7 +277,11 @@ class KerasSequenceTagger(KerasNeuralNetwork):
             steps_per_epoch=len(X),
             epochs=self._epochs,
             callbacks=[
-                EarlyStopping(patience=self._early_stop, restore_best_weights=True, monitor='accuracy'),
+                EarlyStopping(
+                    patience=self._early_stop,
+                    restore_best_weights=True,
+                    monitor="accuracy",
+                ),
                 TerminateOnNaN(),
             ],
             **kwargs,
@@ -289,3 +303,73 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))
     ) -> List(List(Postag())):
         return super().run(input)
+
+
+@nice_repr
+class KerasImagePreprocessor(_ImageDataGenerator):
+    """Augment a dataset of images by making changes to the original training set.
+
+    Applies standard dataset augmentation strategies, such as rotating,
+    scaling and fliping the image.
+    Uses the `ImageDataGenerator` class from keras.
+
+    The parameter `grow_size` determines how many new images will be created for each original image.
+    The remaining parameters are passed to `ImageDataGenerator`.
+    """
+
+    def __init__(
+        self,
+        grow_size: Discrete(1, 100),
+        featurewise_center: Boolean(),
+        samplewise_center: Boolean(),
+        featurewise_std_normalization: Boolean(),
+        samplewise_std_normalization: Boolean(),
+        zca_epsilon: Continuous(1e-9, 1e-3),
+        zca_whitening: Boolean(),
+        rotation_range: Discrete(0, 90),
+        width_shift_range: Continuous(0, 1),
+        height_shift_range: Continuous(0, 1),
+        # brightness_range:
+        shear_range: Continuous(0, 90),
+        zoom_range: Continuous(0, 1),
+        horizontal_flip: Boolean(),
+        vertical_flip: Boolean(),
+    ):
+        self._mode = "eval"
+        self.grow_size = grow_size
+
+        super().__init__(
+            featurewise_center=featurewise_center,
+            samplewise_center=samplewise_center,
+            featurewise_std_normalization=featurewise_std_normalization,
+            samplewise_std_normalization=samplewise_std_normalization,
+            zca_epsilon=zca_epsilon,
+            zca_whitening=zca_whitening,
+            rotation_range=rotation_range,
+            width_shift_range=width_shift_range,
+            height_shift_range=height_shift_range,
+            shear_range=shear_range,
+            zoom_range=zoom_range,
+            horizontal_flip=horizontal_flip,
+            vertical_flip=vertical_flip,
+        )
+
+    def train(self):
+        self._mode = "train"
+
+    def eval(self):
+        self._mode = "eval"
+
+    def run(
+        self, input: Tuple(Tensor4(), CategoricalVector())
+    ) -> Tuple(Tensor4(), CategoricalVector()):
+        """Augment a dataset of images by making changes to the original training set."""
+        
+        if self._mode == "eval":
+            return input
+
+        X, y = input
+        self.fit(X)
+
+        for X, y in self.flow(X, y, batch_size=len(X) * self.grow_size):
+            return X, y
