@@ -16,6 +16,7 @@ automl = AutoML(
         search_timeout = 24 * 60 * 60,
         evaluation_timeout = 0,
         memory_limit=0,
+        save=False,
     ),   
     search_iterations=1000,
 )
