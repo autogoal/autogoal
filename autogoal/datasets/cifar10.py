@@ -41,13 +41,13 @@ def load(training_batches=5):
             y_train.extend(data[b'labels'])
 
     X_train = np.vstack(X_train)
-    X_train = np.reshape(X_train, (-1, 32, 32, 3))
+    X_train = np.reshape(X_train, (-1, 3, 32, 32)).transpose(0, 2, 3, 1)
 
     test_batch = datapath('cifar10') / 'test_batch'
 
     with open(test_batch, 'rb') as fp:
         data = pickle.load(fp, encoding='bytes')
         X_test, y_test = data[b'data'], data[b'labels']
-        X_test = np.reshape(X_test, (-1, 32, 32, 3))
+        X_test = np.reshape(X_test, (-1, 3, 32, 32)).transpose(0, 2, 3, 1)
 
     return X_train, y_train, X_test, y_test

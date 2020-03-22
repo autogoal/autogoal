@@ -8,7 +8,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator as _ImageDataGenerator
 
-from autogoal.contrib.keras._grammars import build_grammar
+from autogoal.contrib.keras._grammars import build_grammar, generate_grammar, Modules
 from autogoal.grammar import (
     Graph,
     GraphGrammar,
@@ -192,14 +192,9 @@ class KerasClassifier(KerasNeuralNetwork):
 
 class KerasImageClassifier(KerasClassifier):
     def _build_grammar(self):
-        return build_grammar(
-            preprocessing=True,
-            preprocessing_recurrent=False,
-            preprocessing_conv=True,
-            reduction=True,
-            reduction_recurrent=False,
-            reduction_conv=True,
-            features=True,
+        return generate_grammar(
+            Modules.Preprocessing.Conv2D(),
+            Modules.Features.Dense()
         )
 
     def run(self, input: Tuple(Tensor4(), CategoricalVector())) -> CategoricalVector():

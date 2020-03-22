@@ -385,6 +385,9 @@ class ReplaySampler:
     def categorical(self, *args, **kwargs):
         return self._run("categorical", *args, **kwargs)
 
+    def __getattr__(self, attr):
+        return getattr(self.sampler, attr)
+
 
 class ModelParam(metaclass=abc.ABCMeta):
     @abc.abstractmethod

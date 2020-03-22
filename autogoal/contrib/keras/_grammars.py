@@ -2,6 +2,79 @@ from autogoal.contrib.keras._generated import *
 from autogoal.grammar import GraphGrammar, Path, Block, CfgInitializer, Epsilon
 
 
+class Module:
+    def make_top_level(self, top_level: list):
+        pass
+
+    def add_productions(self, grammar: GraphGrammar):
+        raise NotImplementedError()
+
+
+class Modules:
+    class Preprocessing:
+        class Recurrent(Module):
+            def make_top_level(self, top_level):
+                if "PreprocessingModule" not in top_level:
+                    top_level.append("PreprocessingModule")
+            
+            def add_productions(self, grammar: GraphGrammar):
+                grammar.add("PreprocessingModule", "RecurrentModule")
+                
+                grammar.add("RecurrentModule", Path("RecurrentCell", "RecurrentModule"))
+                grammar.add("RecurrentModule", "RecurrentCell")
+
+                grammar.add("RecurrentCell", Seq2SeqLSTM)
+                grammar.add("RecurrentCell", Seq2SeqBiLSTM)
+
+        class Conv2D(Module): 
+            def make_top_level(self, top_level):
+                if "PreprocessingModule" not in top_level:
+                    top_level.append("PreprocessingModule")
+
+            def add_productions(self, grammar: GraphGrammar):
+                grammar.add("PreprocessingModule", Path("Conv2DModule", Flatten))
+                
+                grammar.add("Conv2DModule", Path("Conv2DBlock", "Conv2DModule"))
+                grammar.add("Conv2DModule", "Conv2DBlock")
+
+                grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D))
+                grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D, Dropout))
+
+                grammar.add("Conv2DCells", Path("Conv2DCell", "Conv2DCells"))
+                grammar.add("Conv2DCells", Path("Conv2DCell"))
+
+                grammar.add("Conv2DCell", Path(Conv2D, BatchNormalization))
+                grammar.add("Conv2DCell", Conv2D)
+
+    class Features:
+        class Dense(Module):
+            def make_top_level(self, top_level):
+                if "FeaturesModule" not in top_level:
+                    top_level.append("FeaturesModule")
+            def add_productions(self, grammar):
+                grammar.add("FeaturesModule", Path("DenseModule", "FeaturesModule"))
+                grammar.add("FeaturesModule", Epsilon())
+
+                grammar.add("DenseModule", Block(Dense, "DenseModule"))
+                grammar.add("DenseModule", Path(Dense, "DenseModule"))
+                grammar.add("DenseModule", Path(Dense, Dropout, "DenseModule"))
+                grammar.add("DenseModule", Epsilon())
+
+
+def generate_grammar(*modules):
+    top_level = []
+
+    for mod in modules:
+        mod.make_top_level(top_level)
+
+    grammar = GraphGrammar(start=Path(*top_level), initializer=CfgInitializer())
+
+    for mod in modules:
+        mod.add_productions(grammar)
+
+    return grammar
+
+
 def build_grammar(
     preprocessing=False,
     preprocessing_recurrent=True,
@@ -30,7 +103,9 @@ def build_grammar(
         raise ValueError("Cannot combine recurrent with convolutional preprocessing.")
 
     if reduction_recurrent and reduction_conv:
-        raise ValueError("Cannot combine recurrent with convolutional reduction modules.")
+        raise ValueError(
+            "Cannot combine recurrent with convolutional reduction modules."
+        )
 
     if (reduction or features) and features_time_distributed:
         raise ValueError("Cannot combine time-distributed modules with flat modules.")
@@ -48,12 +123,15 @@ def build_grammar(
         grammar.add("Recurrent", Seq2SeqBiLSTM)
 
     if preprocessing_conv:
-        grammar.add("PreprocessingModule", Path("Convolutional", "PreprocessingModuleC"))
+        grammar.add(
+            "PreprocessingModule", Path("Convolutional", "PreprocessingModuleC")
+        )
         grammar.add(
             "PreprocessingModuleC", Path("Convolutional", "PreprocessingModuleC")
         )
         grammar.add("PreprocessingModuleC", Epsilon())
         grammar.add("Convolutional", Path(Conv2D, MaxPooling2D))
+        grammar.add("Convolutional", Path(Conv2D, MaxPooling2D, Dropout))
 
     if reduction_recurrent:
         grammar.add("ReductionModule", Seq2VecLSTM)
@@ -67,6 +145,7 @@ def build_grammar(
         grammar.add("FeaturesModule", Epsilon())
         grammar.add("DenseLayer", Block(Dense, "DenseLayer"))
         grammar.add("DenseLayer", Path(Dense, "DenseLayer"))
+        grammar.add("DenseLayer", Path(Dense, Dropout, "DenseLayer"))
         grammar.add("DenseLayer", Epsilon())
 
     if features_time_distributed:

@@ -5,6 +5,8 @@ from tensorflow.keras.layers import Dense as _Dense
 from tensorflow.keras.layers import Embedding as _Embedding
 from tensorflow.keras.layers import LSTM as _LSTM
 from tensorflow.keras.layers import Reshape, Flatten, Bidirectional
+from tensorflow.keras.layers import Dropout as _Dropout
+from tensorflow.keras.layers import BatchNormalization as _BatchNormalization
 from tensorflow.keras.layers import TimeDistributed as _TimeDistributed
 
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
@@ -145,3 +147,13 @@ class MaxPooling2D(_MaxPooling2D):
 class TimeDistributed(_TimeDistributed):
     def __init__(self, layer: Dense):
         super().__init__(layer)
+
+
+class Dropout(_Dropout):
+    def __init__(self, rate: Continuous(0, 0.5)):
+        super().__init__(rate=rate)
+
+
+class BatchNormalization(_BatchNormalization):
+    def __init__(self):
+        super().__init__()
