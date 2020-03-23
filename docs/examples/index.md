@@ -10,7 +10,7 @@ at ICML 2020.
 
 * [Optimizing seven UCI repository datasets](./solving_uci_datasets)
 * [Optimizing the HAHA 2019 challenge](./solving_haha_2019)
-* [Optimizing the MEDDOCAN 2019 challenge](./solving_meddocan_2018)
+* [Optimizing the MEDDOCAN 2019 challenge](./solving_meddocan_2019)
 
 ## Other examples
 
