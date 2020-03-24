@@ -255,7 +255,7 @@ class KerasImageClassifier(KerasClassifier):
     def _fit_model(self, X, y, **kwargs):
         self.preprocessor.fit(X)
         batch_size = 64
-        validation_size = int(0.1 * len(X))
+        validation_size = int(0.25 * len(X))
 
         Xtrain, Xvalid = X[:-validation_size], X[-validation_size:]
         ytrain, yvalid = y[:-validation_size], y[-validation_size:]
@@ -271,7 +271,7 @@ class KerasImageClassifier(KerasClassifier):
             validation_data=self.preprocessor.flow(
                 Xvalid, yvalid, batch_size=batch_size
             ),
-            validation_steps=len(Xvalid) / batch_size,
+            validation_steps=len(Xvalid) // batch_size,
             **kwargs,
         )
 
