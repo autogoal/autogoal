@@ -1,3 +1,5 @@
+import numpy as np
+
 from autogoal.ml import AutoML
 from autogoal.contrib.keras import KerasImageClassifier, KerasImagePreprocessor
 from autogoal.datasets import cifar10
@@ -9,8 +11,8 @@ from autogoal.contrib.keras._grammars import build_grammar
 automl = AutoML(
     input=Tensor4(),
     output=CategoricalVector(),
-    registry=[KerasImageClassifier],
-    # registry=[KerasImageClassifier, KerasImagePreprocessor],
+    # registry=[KerasImageClassifier],
+    registry=[KerasImageClassifier, KerasImagePreprocessor],
     cross_validation_steps=1,
     search_kwargs=dict(
         pop_size=20,
@@ -20,9 +22,14 @@ automl = AutoML(
         save=False,
     ),
     search_iterations=1000,
+    validation_split=1/6
 )
 
 
 Xtrain, ytrain, Xtest, ytest = cifar10.load()
+X = np.vstack((Xtrain, Xtest))
+y = np.hstack((ytrain, ytest))
 
-automl.fit(Xtrain, ytrain, logger=[ConsoleLogger(), ProgressLogger()])
+print(y)
+
+automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
