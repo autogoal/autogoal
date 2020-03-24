@@ -262,7 +262,7 @@ class KerasImageClassifier(KerasClassifier):
             steps_per_epoch=len(X) // batch_size,
             epochs=self._epochs,
             callbacks=[
-                EarlyStopping(patience=self._early_stop, restore_best_weights=True),
+                # EarlyStopping(patience=self._early_stop, restore_best_weights=True),
                 TerminateOnNaN(),
             ],
             validation_data=self.preprocessor.flow(
