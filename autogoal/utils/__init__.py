@@ -84,20 +84,19 @@ def nice_repr(cls):
         Change `autogoal.utils.MAX_REPR_DEPTH` to increase the depth level of recursive `repr`.
 
     """
-
-    init_signature = inspect.signature(cls.__init__)
-    exclude_param_names = set(['self'])
-
     def repr_method(self):
+        init_signature = inspect.signature(self.__init__)
+        exclude_param_names = set(['self'])
+
         if _repr_depth[0] > MAX_REPR_DEPTH:
-            return f"{cls.__name__}(...)"
+            return f"{self.__class__.__name__}(...)"
 
         _repr_depth[0] += 1
 
         parameter_names = [name for name in init_signature.parameters if name not in exclude_param_names]
         parameter_values = [getattr(self, param, None) for param in parameter_names]
         args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value is not None)
-        fr = f"{cls.__name__}({args})"
+        fr = f"{self.__class__.__name__}({args})"
 
         _repr_depth[0] -= 1
 

@@ -8,9 +8,8 @@ from tensorflow.keras.layers import Reshape, Flatten, Bidirectional
 from tensorflow.keras.layers import Dropout as _Dropout
 from tensorflow.keras.layers import BatchNormalization as _BatchNormalization
 from tensorflow.keras.layers import TimeDistributed as _TimeDistributed
-
-# Activation layers
 from tensorflow.keras.layers import Activation as _Activation
+from tensorflow.keras import regularizers
 
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 
@@ -110,26 +109,29 @@ class Embedding(_Embedding):
 
 
 class Dense(_Dense):
-    def __init__(
-        self,
-        units: Discrete(128, 1024),
-        **kwargs
-    ):
+    def __init__(self, units: Discrete(128, 1024), **kwargs):
         super().__init__(units=units, **kwargs)
 
 
 class Conv1D(_Conv1D):
     def __init__(self, filters: Discrete(2, 8), kernel_size: Categorical(3, 5, 7)):
-        super().__init__(filters=2 ** filters, kernel_size=kernel_size, padding="causal")
+        super().__init__(
+            filters=2 ** filters, kernel_size=kernel_size, padding="causal"
+        )
 
 
 class Conv2D(_Conv2D):
     def __init__(
-        self, filters: Discrete(2, 8), kernel_size: Categorical(3, 5, 7),
+        self,
+        filters: Discrete(2, 8),
+        kernel_size: Categorical(3, 5, 7),
+        l1_regularizer: Continuous(0, 1),
+        l2_regularizer: Continuous(0, 1),
     ):
         super().__init__(
             filters=2 ** filters,
             kernel_size=(kernel_size, kernel_size),
+            kernel_regularizer=regularizers.l1_l2(l1=l1_regularizer, l2=l2_regularizer),
             padding="same",
             data_format="channels_last",
         )

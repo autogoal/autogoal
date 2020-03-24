@@ -6,7 +6,9 @@ from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
 from tensorflow.keras.layers import Dense, Input, TimeDistributed, concatenate
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.preprocessing.image import ImageDataGenerator as _ImageDataGenerator
+from tensorflow.keras.preprocessing.image import (
+    ImageDataGenerator as _ImageDataGenerator,
+)
 
 from autogoal.contrib.keras._grammars import build_grammar, generate_grammar, Modules
 from autogoal.grammar import (
@@ -30,16 +32,19 @@ from autogoal.kb import (
 from autogoal.utils import nice_repr
 
 
+@nice_repr
 class KerasNeuralNetwork:
     def __init__(
         self,
         grammar: GraphGrammar,
+        optimizer: Categorical("sgd", "adam", "rmsprop"),
         epochs=100,
-        early_stop=3,
+        early_stop=10,
         validation_split=0.1,
         **compile_kwargs,
     ):
-        self.grammar = grammar
+        self.optimizer = optimizer
+        self._grammar = grammar
         self._epochs = epochs
         self._compile_kwargs = compile_kwargs
         self._model: Optional[Model] = None
@@ -79,7 +84,7 @@ class KerasNeuralNetwork:
         if sampler is None:
             sampler = Sampler()
 
-        self._graph = self.grammar.sample(
+        self._graph = self._grammar.sample(
             sampler=sampler, max_iterations=max_iterations
         )
         return self
@@ -102,7 +107,7 @@ class KerasNeuralNetwork:
         final_ouput = self._build_output(output_y, y)
 
         if "optimizer" not in self._compile_kwargs:
-            self._compile_kwargs["optimizer"] = "adam"
+            self._compile_kwargs["optimizer"] = self.optimizer
 
         self._model = Model(inputs=input_x, outputs=final_ouput)
         self._model.compile(**self._compile_kwargs)
@@ -156,6 +161,7 @@ class KerasClassifier(KerasNeuralNetwork):
 
         if "loss" not in self._compile_kwargs:
             self._compile_kwargs["loss"] = "categorical_crossentropy"
+            self._compile_kwargs["metrics"] = ["accuracy"]
 
         return Dense(units=self._num_classes, activation="softmax")
 
@@ -190,11 +196,80 @@ class KerasClassifier(KerasNeuralNetwork):
         return super().run(input)
 
 
+@nice_repr
+class KerasImagePreprocessor(_ImageDataGenerator):
+    """Augment a dataset of images by making changes to the original training set.
+
+    Applies standard dataset augmentation strategies, such as rotating,
+    scaling and fliping the image.
+    Uses the `ImageDataGenerator` class from keras.
+
+    The parameter `grow_size` determines how many new images will be created for each original image.
+    The remaining parameters are passed to `ImageDataGenerator`.
+    """
+
+    def __init__(
+        self,
+        featurewise_center: Boolean(),
+        samplewise_center: Boolean(),
+        featurewise_std_normalization: Boolean(),
+        samplewise_std_normalization: Boolean(),
+        rotation_range: Discrete(0, 15),
+        width_shift_range: Continuous(0, 0.25),
+        height_shift_range: Continuous(0, 0.25),
+        shear_range: Continuous(0, 15),
+        zoom_range: Continuous(0, 0.25),
+        horizontal_flip: Boolean(),
+        vertical_flip: Boolean(),
+    ):
+        super().__init__(
+            featurewise_center=featurewise_center,
+            samplewise_center=samplewise_center,
+            featurewise_std_normalization=featurewise_std_normalization,
+            samplewise_std_normalization=samplewise_std_normalization,
+            rotation_range=rotation_range,
+            width_shift_range=width_shift_range,
+            height_shift_range=height_shift_range,
+            shear_range=shear_range,
+            zoom_range=zoom_range,
+            horizontal_flip=horizontal_flip,
+            vertical_flip=vertical_flip,
+            validation_split=0.1,
+        )
+
+
 class KerasImageClassifier(KerasClassifier):
+    def __init__(
+        self,
+        preprocessor: KerasImagePreprocessor,
+        optimizer: Categorical("sgd", "adam", "rmsprop"),
+        **kwargs,
+    ):
+        self.preprocessor = preprocessor
+        super().__init__(optimizer=optimizer, **kwargs)
+
     def _build_grammar(self):
         return generate_grammar(
-            Modules.Preprocessing.Conv2D(),
-            Modules.Features.Dense()
+            Modules.Preprocessing.Conv2D(), Modules.Features.Dense()
+        )
+
+    def _fit_model(self, X, y, **kwargs):
+        self.preprocessor.fit(X)
+        batch_size = 64
+
+        self.model.fit_generator(
+            self.preprocessor.flow(X, y, batch_size=batch_size, subset="training"),
+            steps_per_epoch=len(X) // batch_size,
+            epochs=self._epochs,
+            callbacks=[
+                EarlyStopping(patience=self._early_stop, restore_best_weights=True),
+                TerminateOnNaN(),
+            ],
+            validation_data=self.preprocessor.flow(
+                X, y, batch_size=batch_size, subset="validation"
+            ),
+            validation_steps=10,
+            **kwargs,
         )
 
     def run(self, input: Tuple(Tensor4(), CategoricalVector())) -> CategoricalVector():
@@ -298,68 +373,3 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))
     ) -> List(List(Postag())):
         return super().run(input)
-
-
-@nice_repr
-class KerasImagePreprocessor(_ImageDataGenerator):
-    """Augment a dataset of images by making changes to the original training set.
-
-    Applies standard dataset augmentation strategies, such as rotating,
-    scaling and fliping the image.
-    Uses the `ImageDataGenerator` class from keras.
-
-    The parameter `grow_size` determines how many new images will be created for each original image.
-    The remaining parameters are passed to `ImageDataGenerator`.
-    """
-
-    def __init__(
-        self,
-        grow_size: Discrete(1, 10),
-        featurewise_center: Boolean(),
-        samplewise_center: Boolean(),
-        featurewise_std_normalization: Boolean(),
-        samplewise_std_normalization: Boolean(),
-        rotation_range: Discrete(0, 90),
-        width_shift_range: Continuous(0, 1),
-        height_shift_range: Continuous(0, 1),
-        shear_range: Continuous(0, 90),
-        zoom_range: Continuous(0, 1),
-        horizontal_flip: Boolean(),
-        vertical_flip: Boolean(),
-    ):
-        self._mode = "eval"
-        self.grow_size = grow_size
-
-        super().__init__(
-            featurewise_center=featurewise_center,
-            samplewise_center=samplewise_center,
-            featurewise_std_normalization=featurewise_std_normalization,
-            samplewise_std_normalization=samplewise_std_normalization,
-            rotation_range=rotation_range,
-            width_shift_range=width_shift_range,
-            height_shift_range=height_shift_range,
-            shear_range=shear_range,
-            zoom_range=zoom_range,
-            horizontal_flip=horizontal_flip,
-            vertical_flip=vertical_flip,
-        )
-
-    def train(self):
-        self._mode = "train"
-
-    def eval(self):
-        self._mode = "eval"
-
-    def run(
-        self, input: Tuple(Tensor4(), CategoricalVector())
-    ) -> Tuple(Tensor4(), CategoricalVector()):
-        """Augment a dataset of images by making changes to the original training set."""
-        
-        if self._mode == "eval":
-            return input
-
-        X, y = input
-        self.fit(X)
-
-        for X, y in self.flow(X, y, batch_size=len(X) * self.grow_size):
-            return X, y

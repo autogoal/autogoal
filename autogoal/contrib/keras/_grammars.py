@@ -35,7 +35,7 @@ class Modules:
                 grammar.add("PreprocessingModule", Path("Conv2DModule", Flatten))
                 
                 grammar.add("Conv2DModule", Path("Conv2DBlock", "Conv2DModule"))
-                grammar.add("Conv2DModule", "Conv2DBlock")
+                grammar.add("Conv2DModule", Epsilon())
 
                 grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D))
                 grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D, Dropout))
@@ -51,7 +51,7 @@ class Modules:
             def make_top_level(self, top_level):
                 if "FeaturesModule" not in top_level:
                     top_level.append("FeaturesModule")
-                    
+
             def add_productions(self, grammar):
                 grammar.add("FeaturesModule", Path("DenseModule", "FeaturesModule"))
                 grammar.add("FeaturesModule", Epsilon())
