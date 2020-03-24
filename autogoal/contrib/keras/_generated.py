@@ -9,6 +9,9 @@ from tensorflow.keras.layers import Dropout as _Dropout
 from tensorflow.keras.layers import BatchNormalization as _BatchNormalization
 from tensorflow.keras.layers import TimeDistributed as _TimeDistributed
 
+# Activation layers
+from tensorflow.keras.layers import Activation as _Activation
+
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 
 
@@ -110,26 +113,22 @@ class Dense(_Dense):
     def __init__(
         self,
         units: Discrete(128, 1024),
-        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
         **kwargs
     ):
-        super().__init__(units=units, activation=activation, **kwargs)
+        super().__init__(units=units, **kwargs)
 
 
 class Conv1D(_Conv1D):
-    def __init__(self, filters: Discrete(5, 20), kernel_size: Categorical(3, 5, 7)):
-        super().__init__(filters=filters, kernel_size=kernel_size, padding="causal")
+    def __init__(self, filters: Discrete(2, 8), kernel_size: Categorical(3, 5, 7)):
+        super().__init__(filters=2 ** filters, kernel_size=kernel_size, padding="causal")
 
 
 class Conv2D(_Conv2D):
     def __init__(
-        self,
-        filters: Discrete(5, 20),
-        activation: Categorical("linear", "relu", "sigmoid", "tanh"),
-        kernel_size: Categorical(3, 5, 7),
+        self, filters: Discrete(2, 8), kernel_size: Categorical(3, 5, 7),
     ):
         super().__init__(
-            filters=filters,
+            filters=2 ** filters,
             kernel_size=(kernel_size, kernel_size),
             padding="same",
             data_format="channels_last",
@@ -139,8 +138,7 @@ class Conv2D(_Conv2D):
 class MaxPooling2D(_MaxPooling2D):
     def __init__(self):
         super().__init__(
-            data_format="channels_last",
-            padding="same",
+            data_format="channels_last", padding="same",
         )
 
 
@@ -157,3 +155,20 @@ class Dropout(_Dropout):
 class BatchNormalization(_BatchNormalization):
     def __init__(self):
         super().__init__()
+
+
+class Activation(_Activation):
+    def __init__(
+        self,
+        activation: Categorical(
+            "elu",
+            "selu",
+            "relu",
+            "tanh",
+            "sigmoid",
+            "hard_sigmoid",
+            "exponential",
+            "linear",
+        ),
+    ):
+        super().__init__(activation=activation)

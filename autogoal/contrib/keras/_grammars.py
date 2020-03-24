@@ -43,22 +43,24 @@ class Modules:
                 grammar.add("Conv2DCells", Path("Conv2DCell", "Conv2DCells"))
                 grammar.add("Conv2DCells", Path("Conv2DCell"))
 
-                grammar.add("Conv2DCell", Path(Conv2D, BatchNormalization))
-                grammar.add("Conv2DCell", Conv2D)
+                grammar.add("Conv2DCell", Path(Conv2D, Activation, BatchNormalization))
+                grammar.add("Conv2DCell", Path(Conv2D, Activation))
 
     class Features:
         class Dense(Module):
             def make_top_level(self, top_level):
                 if "FeaturesModule" not in top_level:
                     top_level.append("FeaturesModule")
+                    
             def add_productions(self, grammar):
                 grammar.add("FeaturesModule", Path("DenseModule", "FeaturesModule"))
                 grammar.add("FeaturesModule", Epsilon())
 
-                grammar.add("DenseModule", Block(Dense, "DenseModule"))
-                grammar.add("DenseModule", Path(Dense, "DenseModule"))
-                grammar.add("DenseModule", Path(Dense, Dropout, "DenseModule"))
+                grammar.add("DenseModule", Block("DenseCell", "DenseModule"))
+                grammar.add("DenseModule", Path("DenseCell", "DenseModule"))
                 grammar.add("DenseModule", Epsilon())
+                grammar.add("DenseCell", Path(Dense, Activation, Dropout))
+                grammar.add("DenseCell", Path(Dense, Activation))
 
 
 def generate_grammar(*modules):
