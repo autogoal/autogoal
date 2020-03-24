@@ -234,7 +234,6 @@ class KerasImagePreprocessor(_ImageDataGenerator):
             zoom_range=zoom_range,
             horizontal_flip=horizontal_flip,
             vertical_flip=vertical_flip,
-            validation_split=0.1,
         )
 
 
@@ -256,9 +255,10 @@ class KerasImageClassifier(KerasClassifier):
     def _fit_model(self, X, y, **kwargs):
         self.preprocessor.fit(X)
         batch_size = 64
+        validation_size = int(0.1 * len(X))
 
         self.model.fit_generator(
-            self.preprocessor.flow(X, y, batch_size=batch_size, subset="training"),
+            self.preprocessor.flow(X[:validation_size], y[:validation_size], batch_size=batch_size),
             steps_per_epoch=len(X) // batch_size,
             epochs=self._epochs,
             callbacks=[
@@ -266,7 +266,7 @@ class KerasImageClassifier(KerasClassifier):
                 TerminateOnNaN(),
             ],
             validation_data=self.preprocessor.flow(
-                X, y, batch_size=batch_size, subset="validation"
+                X[validation_size:], y[validation_size:], batch_size=batch_size
             ),
             validation_steps=10,
             **kwargs,
