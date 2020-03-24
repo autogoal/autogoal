@@ -257,18 +257,21 @@ class KerasImageClassifier(KerasClassifier):
         batch_size = 64
         validation_size = int(0.1 * len(X))
 
+        Xtrain, Xvalid = X[:-validation_size], X[-validation_size:]
+        ytrain, yvalid = y[:-validation_size], y[-validation_size:]
+
         self.model.fit_generator(
-            self.preprocessor.flow(X[:validation_size], y[:validation_size], batch_size=batch_size),
-            steps_per_epoch=len(X) // batch_size,
+            self.preprocessor.flow(Xtrain, ytrain, batch_size=batch_size),
+            steps_per_epoch=len(Xtrain) // batch_size,
             epochs=self._epochs,
             callbacks=[
-                # EarlyStopping(patience=self._early_stop, restore_best_weights=True),
+                EarlyStopping(patience=self._early_stop, restore_best_weights=True),
                 TerminateOnNaN(),
             ],
             validation_data=self.preprocessor.flow(
-                X[validation_size:], y[validation_size:], batch_size=batch_size
+                Xvalid, yvalid, batch_size=batch_size
             ),
-            validation_steps=10,
+            validation_steps=len(Xvalid) / batch_size,
             **kwargs,
         )
 
