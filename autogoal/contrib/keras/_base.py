@@ -335,8 +335,6 @@ class KerasImagePreprocessor(_ImageDataGenerator):
             samplewise_center=samplewise_center,
             featurewise_std_normalization=featurewise_std_normalization,
             samplewise_std_normalization=samplewise_std_normalization,
-            zca_epsilon=zca_epsilon,
-            zca_whitening=zca_whitening,
             rotation_range=rotation_range,
             width_shift_range=width_shift_range,
             height_shift_range=height_shift_range,
