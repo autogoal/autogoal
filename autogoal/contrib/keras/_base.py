@@ -34,7 +34,7 @@ class KerasNeuralNetwork:
     def __init__(
         self,
         grammar: GraphGrammar,
-        epochs=10,
+        epochs=100,
         early_stop=3,
         validation_split=0.1,
         **compile_kwargs,
@@ -319,12 +319,9 @@ class KerasImagePreprocessor(_ImageDataGenerator):
         samplewise_center: Boolean(),
         featurewise_std_normalization: Boolean(),
         samplewise_std_normalization: Boolean(),
-        zca_epsilon: Continuous(1e-9, 1e-3),
-        zca_whitening: Boolean(),
         rotation_range: Discrete(0, 90),
         width_shift_range: Continuous(0, 1),
         height_shift_range: Continuous(0, 1),
-        # brightness_range:
         shear_range: Continuous(0, 90),
         zoom_range: Continuous(0, 1),
         horizontal_flip: Boolean(),
