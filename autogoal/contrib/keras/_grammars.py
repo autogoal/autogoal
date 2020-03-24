@@ -35,7 +35,8 @@ class Modules:
                 grammar.add("PreprocessingModule", Path("Conv2DModule", Flatten))
                 
                 grammar.add("Conv2DModule", Path("Conv2DBlock", "Conv2DModule"))
-                grammar.add("Conv2DModule", Epsilon())
+                grammar.add("Conv2DModule", "Conv2DBlock")
+                # grammar.add("Conv2DModule", Epsilon())
 
                 grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D))
                 grammar.add("Conv2DBlock", Path("Conv2DCells", MaxPooling2D, Dropout))

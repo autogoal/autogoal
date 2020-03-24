@@ -73,6 +73,16 @@ class KerasNeuralNetwork:
         nodes = len(self._graph.nodes) if self._graph is not None else None
         return f"{self.__class__.__name__}(nodes={nodes}, compile_kwargs={self._compile_kwargs})"
 
+    def __nice_repr_hook__(self, names, values):
+        graph = []
+
+        if self._graph is not None:
+            for node, _ in self._graph.build_order():
+                graph.append(node)
+
+        names.append('graph')
+        values.append(graph)
+
     @property
     def model(self):
         if self._model is None:
@@ -123,7 +133,6 @@ class KerasNeuralNetwork:
             raise TypeError("You must call `sample` to generate the internal model.")
 
         self._build_nn(self._graph, X, y)
-
         self.model.summary()
         self._fit_model(X, y, **kwargs)
 
@@ -256,7 +265,7 @@ class KerasImageClassifier(KerasClassifier):
     def _fit_model(self, X, y, **kwargs):
         self.preprocessor.fit(X)
         batch_size = 64
-        validation_size = min(int(0.25 * len(X)), 10)
+        validation_size = min(int(0.25 * len(X)), 10 * batch_size)
 
         Xtrain, Xvalid = X[:-validation_size], X[-validation_size:]
         ytrain, yvalid = y[:-validation_size], y[-validation_size:]
@@ -269,10 +278,7 @@ class KerasImageClassifier(KerasClassifier):
                 EarlyStopping(patience=self._early_stop, restore_best_weights=True),
                 TerminateOnNaN(),
             ],
-            validation_data=self.preprocessor.flow(
-                Xvalid, yvalid, batch_size=batch_size
-            ),
-            validation_steps=len(Xvalid) // batch_size,
+            validation_data=(Xvalid, yvalid),
             **kwargs,
         )
 
