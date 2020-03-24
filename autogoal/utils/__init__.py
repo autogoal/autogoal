@@ -95,6 +95,10 @@ def nice_repr(cls):
 
         parameter_names = [name for name in init_signature.parameters if name not in exclude_param_names]
         parameter_values = [getattr(self, param, None) for param in parameter_names]
+
+        if hasattr(self, '__nice_repr_hook__'):
+            self.__nice_repr_hook__(parameter_names, parameter_values)
+
         args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value is not None)
         fr = f"{self.__class__.__name__}({args})"
 
