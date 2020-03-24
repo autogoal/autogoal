@@ -249,13 +249,14 @@ class KerasImageClassifier(KerasClassifier):
 
     def _build_grammar(self):
         return generate_grammar(
-            Modules.Preprocessing.Conv2D(), Modules.Features.Dense()
+            Modules.Preprocessing.Conv2D(), 
+            # Modules.Features.Dense()
         )
 
     def _fit_model(self, X, y, **kwargs):
         self.preprocessor.fit(X)
         batch_size = 64
-        validation_size = int(0.25 * len(X))
+        validation_size = min(int(0.25 * len(X)), 10)
 
         Xtrain, Xvalid = X[:-validation_size], X[-validation_size:]
         ytrain, yvalid = y[:-validation_size], y[-validation_size:]

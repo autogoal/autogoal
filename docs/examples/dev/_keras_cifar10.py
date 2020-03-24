@@ -6,8 +6,6 @@ from autogoal.datasets import cifar10
 from autogoal.kb import CategoricalVector, Tensor4
 from autogoal.search import ConsoleLogger, ProgressLogger
 
-from autogoal.contrib.keras._grammars import build_grammar
-
 automl = AutoML(
     input=Tensor4(),
     output=CategoricalVector(),
@@ -24,7 +22,6 @@ automl = AutoML(
     search_iterations=1000,
     validation_split=1/6
 )
-
 
 Xtrain, ytrain, Xtest, ytest = cifar10.load()
 X = np.vstack((Xtrain, Xtest))
