@@ -1,7 +1,9 @@
 try:
     import streamlit as st
 except ImportError:
-    print("(!) The code inside `autogoal.contrib.streamlit` requires `streamlit>=0.55`.")
+    print(
+        "(!) The code inside `autogoal.contrib.streamlit` requires `streamlit>=0.55`."
+    )
     print("(!) Fix it by running `pip install autogoal[streamlit]`.")
     raise
 
@@ -21,7 +23,7 @@ class StreamlitLogger(Logger):
         self.current_pipeline = st.code("")
         self.best_pipeline = None
 
-    def begin(self, evaluations):
+    def begin(self, evaluations, pop_size):
         self.status.info(f"Starting evaluation for {evaluations} iterations.")
         self.progress.progress(0)
         self.evaluations = evaluations
@@ -34,8 +36,9 @@ class StreamlitLogger(Logger):
         self.current += 1
         self.status.info(
             f"""
-            [Best={self.best_fn:0.3}] :clock1: Iteration {self.current}/{self.evaluations}.
-            """)
+            [Best={self.best_fn:0.3}] 🕐 Iteration {self.current}/{self.evaluations}.
+            """
+        )
         self.progress.progress(self.current / self.evaluations)
         self.current_pipeline.code(repr(solution))
 
@@ -45,7 +48,8 @@ class StreamlitLogger(Logger):
     def end(self, best, best_fn):
         self.status.success(
             f"""
-            **Evaluation completed:** :thumbsup: Best solution={best_fn:0.3}
+            **Evaluation completed:** 👍 Best solution={best_fn:0.3}
             """
         )
+        self.progress.progress(1.0)
         self.current_pipeline.code(self.best_pipeline)

@@ -6,6 +6,7 @@ class Demo:
     def __init__(self):
         self.main_sections = {
             "Intro": self.intro,
+            "Automatic pipelines": self.build_pipelines,
         }
 
     def intro(self):
@@ -44,6 +45,7 @@ class Demo:
 
         with st.echo():
             from autogoal.datasets import cars
+
             X, y = cars.load()
 
         if st.checkbox("Preview data"):
@@ -51,7 +53,9 @@ class Demo:
             st.show(X[:head, :])
             st.show(y[:head])
 
-        st.write("The next step is to instantiate an AutoML solver and run it on this problem.")
+        st.write(
+            "The next step is to instantiate an AutoML solver and run it on this problem."
+        )
 
         iterations = st.number_input("Number of iterations", 1, 100, 10)
 
@@ -59,7 +63,12 @@ class Demo:
             from autogoal.contrib.streamlit import StreamlitLogger
             from autogoal.ml import AutoML
 
-            automl = AutoML(errors='ignore', search_iterations=iterations)
+            automl = AutoML(
+                random_state=0,  # fixed seed fo reproducibility
+                errors="ignore",  # ignore exceptions
+                search_iterations=iterations,  # total iterations
+                search_kwargs=dict(search_timeout=5),  # max time per pipeline
+            )
 
         st.write("And run!")
 
@@ -73,8 +82,30 @@ class Demo:
             ## Next steps
 
             Take a look at the remaining examples in the sidebar.
-            """)
+            """
+        )
 
+    def build_pipelines(self):
+        st.write("# Building automatic pipelines")
+
+        st.write(
+            "This example illustrate how AutoGOAL automatically builds "
+            "a graph of pipelines for different problems settings."
+        )
+
+        with st.echo():
+            from autogoal.kb import CategoricalVector, Document, Tuple
+            from autogoal.kb import build_pipelines
+            from autogoal.contrib import find_classes
+
+            space = build_pipelines(
+                input=Tuple(Document(), CategoricalVector()),
+                output=CategoricalVector(),
+                registry=find_classes(),
+            )
+
+        if st.button("Sample"):
+            st.code(space.sample())
 
     def run(self):
         main_section = st.sidebar.selectbox("Demo", list(self.main_sections))

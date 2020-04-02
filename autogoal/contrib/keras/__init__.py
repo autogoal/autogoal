@@ -25,5 +25,4 @@ def find_classes(self, include=None, exclude=None):
         KerasClassifier,
         KerasSequenceTagger,
         KerasImageClassifier,
-        KerasImagePreprocessor
     ]

@@ -80,7 +80,7 @@ class KerasNeuralNetwork:
             for node, _ in self._graph.build_order():
                 graph.append(node)
 
-        names.append('graph')
+        names.append("graph")
         values.append(graph)
 
     @property
@@ -154,10 +154,12 @@ class KerasNeuralNetwork:
 
 
 class KerasClassifier(KerasNeuralNetwork):
-    def __init__(self, grammar=None, **kwargs):
+    def __init__(
+        self, optimizer: Categorical("sgd", "adam", "rmsprop"), grammar=None, **kwargs
+    ):
         self._classes = None
         self._num_classes = None
-        super().__init__(grammar=grammar or self._build_grammar(), **kwargs)
+        super().__init__(grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs)
 
     def _build_grammar(self):
         return build_grammar(features=True)
@@ -258,7 +260,7 @@ class KerasImageClassifier(KerasClassifier):
 
     def _build_grammar(self):
         return generate_grammar(
-            Modules.Preprocessing.Conv2D(), 
+            Modules.Preprocessing.Conv2D(),
             # Modules.Features.Dense()
         )
 

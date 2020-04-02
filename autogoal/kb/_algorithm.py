@@ -199,7 +199,6 @@ class PipelineBuilder(GraphSpace):
         return Pipeline(path)
 
 
-
 Annotations = namedtuple("Annotations", ["input", "output"])
 
 

@@ -82,7 +82,7 @@ class OneOf(Production):
         if max_iterations <= 0:
             raise ValueError("Max iterations exceeded")
 
-        option = sampler.choice(self.options, handle=self.head)
+        option = sampler.choice(self.options, handle=self.head.name)
         return self.grammar[option].sample(sampler, namespace, max_iterations-1)
 
 
@@ -146,7 +146,7 @@ class Distribution(Callable):
         return "Distribution(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def sample(self, sampler, namespace, max_iterations):
-        return sampler.distribution(self._name, handle=self.head, **self._parameters)
+        return sampler.distribution(self._name, handle=self.head.name, **self._parameters)
 
 
 class ContextFreeGrammar(Grammar):

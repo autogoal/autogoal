@@ -84,4 +84,5 @@ def training_examples(X, y=None):
 @feature_extractor
 def has_numeric_features(X, y=None):
     return any([xi for xi in X[0] if isinstance(xi, (float, int))])
-  
+   
+
