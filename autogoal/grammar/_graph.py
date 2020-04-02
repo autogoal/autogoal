@@ -308,6 +308,7 @@ class GraphGrammar(Grammar):
 @nice_repr
 class Start:
     __slots__ = ()
+    __name__ = "Start"
 
     def __eq__(self, other):
         return isinstance(other, Start)
@@ -319,6 +320,7 @@ class Start:
 @nice_repr
 class End:
     __slots__ = ()
+    __name__ = "End"
 
     def __eq__(self, other):
         return isinstance(other, End)
@@ -353,7 +355,9 @@ class GraphSpace(Grammar):
             if not next_nodes:
                 raise ValueError("Cannot continue sampling. Graph is disconnected.")
 
-            next_node = sampler.choice(next_nodes, handle=last_node)
+            names_values = { x.__name__: x for x in next_nodes }
+
+            next_node = names_values[sampler.choice(list(names_values))]
             path.append(next_node)
         else:
             raise ValueError("Reached maximum iterations")

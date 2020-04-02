@@ -5,6 +5,8 @@ import pickle
 from typing import Dict, List, Sequence
 import abc
 
+from autogoal.utils import nice_repr
+
 
 class Sampler:
     """
@@ -395,6 +397,7 @@ class ModelParam(metaclass=abc.ABCMeta):
         pass
 
 
+@nice_repr
 class UnormalizedWeightParam(ModelParam):
     def __init__(self, value):
         self.value = value
@@ -403,6 +406,7 @@ class UnormalizedWeightParam(ModelParam):
         return UnormalizedWeightParam(self.value + alpha * sum(updates))
 
 
+@nice_repr
 class DistributionParam(ModelParam):
     def __init__(self, weights):
         total = sum(weights) or 1
@@ -417,6 +421,7 @@ class DistributionParam(ModelParam):
         return DistributionParam(weights)
 
 
+@nice_repr
 class MeanDevParam(ModelParam):
     def __init__(self, mean, dev):
         self.mean = mean
@@ -432,6 +437,7 @@ class MeanDevParam(ModelParam):
         )
 
 
+@nice_repr
 class WeightParam(ModelParam):
     def __init__(self, value):
         self.value = value
