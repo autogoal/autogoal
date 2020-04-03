@@ -15,23 +15,20 @@ from autogoal.datasets import cars, abalone, german_credit, cifar10, haha, meddo
 
 from autogoal.ml import AutoML, DatasetFeatureLogger, LearnerMedia, DatasetFeatureExtractor
 from autogoal.ml._metalearning import SolutionInfo
+from autogoal.contrib.keras import KerasClassifier
 
 extractor = DatasetFeatureExtractor()
 
 X, y = cars.load()
 X2, y2 = german_credit.load()
 
-logger = DatasetFeatureLogger(X, y)
+# logger = DatasetFeatureLogger(X, y)
 
-automl = AutoML()
-automl.fit(X, y, logger=logger)
+# automl = AutoML()
+# automl.fit(X, y, logger=logger)
 
-# with open("metalearning.json") as fp:
-#     solutions = [SolutionInfo.from_dict(json.loads(s)) for s in fp]
+with open("metalearning.json") as fp:
+    solutions = [SolutionInfo.from_dict(json.loads(s)) for s in fp]
 
-# pprint.pprint(solutions)
-
-# learner = LearnerMedia(None, extractor.extract_features(X, y), solutions)
-# mean = learner.compute_mean("LogisticRegression_multi_class")
-
-# print(mean)
+learner = LearnerMedia(extractor.extract_features(X, y), solutions)
+learner.compute_all_features()

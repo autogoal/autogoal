@@ -9,6 +9,7 @@ import numpy as np
 from typing import List
 from autogoal.search import Logger
 from autogoal.utils import nice_repr
+from autogoal import sampling
 from sklearn.feature_extraction import DictVectorizer
 
 
@@ -30,12 +31,14 @@ class DatasetFeatureLogger(Logger):
         sampler = solution.sampler_
 
         features = {k: v for k, v in sampler._updates.items() if isinstance(k, str)}
+        feature_types = {k: repr(v) for k, v in sampler._model.items() if k in features}
 
         info = SolutionInfo(
             uuid=self.run_id,
             fitness=fitness,
             problem_features=self.dataset_features_,
             pipeline_features=features,
+            feature_types=feature_types,
         ).to_dict()
 
         with open(self.output_file, "a") as fp:
@@ -112,10 +115,12 @@ class SolutionInfo:
         uuid: str,
         problem_features: dict,
         pipeline_features: dict,
+        feature_types: dict,
         fitness: float,
     ):
         self.problem_features = problem_features
         self.pipeline_features = pipeline_features
+        self.feature_types = feature_types
         self.fitness = fitness
         self.uuid = uuid
 
@@ -128,40 +133,54 @@ class SolutionInfo:
 
 
 class LearnerMedia:
-    def __init__(self, grammar, problem, solutions: List[SolutionInfo], beta=1):
+    def __init__(self, problem, solutions: List[SolutionInfo], beta=1):
         self.solutions = solutions
         self.problem = problem
         self.beta = beta
-        self.grammar = grammar
+
+    def initialize(self):
         self.best_fitness = collections.defaultdict(lambda: 0)
+        self.all_features = {}
 
         for i in self.solutions:
             self.best_fitness[i.uuid] = max(self.best_fitness[i.uuid], i.fitness)
+            
+            for feature in i.pipeline_features:
+                self.all_features[feature] = None
 
         self.vect = DictVectorizer(sparse=False)
-        self.vect.fit([problem])
+        self.vect.fit([self.problem])
 
         self.weights_solution = self.calculate_weight_examples(self.solutions)
 
-    def compute_mean(self, feature):
+    def compute_all_features(self):
+        self.initialize()
+
+        for feature in list(self.all_features):
+            self.all_features[feature] = self.compute_feature(feature)
+            print(feature, "=", self.all_features[feature])
+
+    def compute_feature(self, feature):
         """Select for training all solutions where is used the especific feature.
     
         Predict the media of the parameter value.
         """
         # find the relevant solutions, that contain the production to predict
         important_solutions = []
+        feature_prototype = None 
 
         for i, w in zip(self.solutions, self.weights_solution):
             if feature in i.pipeline_features:
-                important_solutions.append((i.pipeline_features[feature], w))
+                for value in i.pipeline_features[feature]:
+                    important_solutions.append((value, w))
 
-        result = 0
-        result_w = 0
-        for s, w in important_solutions:
-            result += s * w
-            result_w += w
+                if feature_prototype is None:
+                    feature_prototype = eval(i.feature_types[feature], sampling.__dict__, {})
 
-        return result / result_w
+        if feature_prototype is None:
+            return None
+
+        return feature_prototype.weighted(important_solutions)
 
     def calculate_weight_examples(self, solutions: List[SolutionInfo]):
         """Calcule a weight of each example considering the fitness and the similariti with the
@@ -172,13 +191,17 @@ class LearnerMedia:
 
         weights = []
 
-        for i in solutions:
+        for info in solutions:
             # normalize fitness
-            i.fitness = self.normalize_fitness(i)
+            info.fitness = self.normalize_fitness(info)
+
+            if info.fitness == 0:
+                continue
+
             # calculate similarity
-            simil = self.similarity_cosine(i.problem_features)
+            sim = self.similarity_cosine(info.problem_features)
             # calculate metric for weight
-            weights.append(i.fitness * (simil) ** self.beta)
+            weights.append(info.fitness * (sim) ** self.beta)
 
         return weights
 
@@ -200,4 +223,3 @@ class LearnerMedia:
         """ Implementar una espicie de encoding para los feature de los problemas
         """
         raise NotImplementedError()
-

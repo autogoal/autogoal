@@ -1,6 +1,8 @@
+import math
 import random
 import statistics
 import pickle
+import numpy as np
 
 from typing import Dict, List, Sequence
 import abc
@@ -333,7 +335,9 @@ class ReplaySampler:
         ```
         """
         if self._mode != ReplaySampler.REPLAY:
-            raise TypeError("A sampler must be in replay mode, i.e., call the `replay()` method.")
+            raise TypeError(
+                "A sampler must be in replay mode, i.e., call the `replay()` method."
+            )
 
         pickle.Pickler(fp).dump(self._history)
 
@@ -405,6 +409,13 @@ class UnormalizedWeightParam(ModelParam):
     def update(self, alpha: float, updates: list) -> "UnormalizedWeightParam":
         return UnormalizedWeightParam(self.value + alpha * sum(updates))
 
+    def weighted(self, solutions):
+        result = 0
+        for s, w in solutions:
+            result += s * w
+
+        return UnormalizedWeightParam(1 + result)
+
 
 @nice_repr
 class DistributionParam(ModelParam):
@@ -420,12 +431,25 @@ class DistributionParam(ModelParam):
 
         return DistributionParam(weights)
 
+    def weighted(self, solutions):
+        weights = [1] * len(self.weights)
+
+        for s, w in solutions:
+            weights[s] += w
+
+        return DistributionParam(weights)
+
 
 @nice_repr
 class MeanDevParam(ModelParam):
-    def __init__(self, mean, dev):
+    def __init__(self, mean, dev, *, initial_params=None):
         self.mean = mean
         self.dev = dev
+
+        if initial_params is None:
+            self.initial_params = (mean, dev)
+        else:
+            self.initial_params = initial_params
 
     def update(self, alpha: float, updates) -> "MeanDevParam":
         new_mean = statistics.mean(updates)
@@ -434,7 +458,23 @@ class MeanDevParam(ModelParam):
         return MeanDevParam(
             mean=self.mean * (1 - alpha) + new_mean * alpha,
             dev=self.dev * (1 - alpha) + new_dev * alpha,
+            initial_params=self.initial_params,
         )
+
+    def weighted(self, solutions):
+        values = np.asarray(
+            [s for s, w in solutions]
+            + [
+                self.initial_params[0] - 2 * self.initial_params[1],
+                self.initial_params[0] + 2 * self.initial_params[1],
+            ]
+        )
+        weights = np.asarray([w for s, w in solutions] + [1, 1])
+
+        average = np.average(values, weights=weights)
+        variance = np.average((values - average) ** 2, weights=weights)
+
+        return MeanDevParam(average, math.sqrt(variance), initial_params=self.initial_params)
 
 
 @nice_repr
@@ -445,6 +485,12 @@ class WeightParam(ModelParam):
     def update(self, alpha: float, updates) -> "WeightParam":
         new_value = statistics.mean(updates)
         return WeightParam(value=self.value * (1 - alpha) + new_value * alpha)
+
+    def weighted(self, solutions):
+        values = np.asarray([s for s, w in solutions] + [0, 1])
+        weights = np.asarray([w for s, w in solutions] + [1, 1])
+
+        return WeightParam(np.average(values, weights=weights))
 
 
 def update_model(model, updates, alpha: float = 1):

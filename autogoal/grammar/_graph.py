@@ -86,7 +86,7 @@ def _get_generated_class(name):
 
 @nice_repr
 class Production:
-    def __init__(self, pattern, replacement, *, initializer=None):
+    def __init__(self, production_id, pattern, replacement, *, initializer=None):
         if not isinstance(pattern, Graph):
             obj = pattern
             pattern = Graph()
@@ -95,6 +95,7 @@ class Production:
         if not isinstance(replacement, GraphPattern):
             replacement = Node(replacement)
 
+        self.production_id = production_id
         self.pattern = pattern
         self.replacement = replacement
         self._initializer = initializer or default_initializer
@@ -136,9 +137,6 @@ class Production:
         )
 
         return graph
-
-    def __repr__(self):
-        return "Production(Pa)"
 
 
 class GraphPattern:
@@ -269,7 +267,7 @@ class GraphGrammar(Grammar):
             self._non_terminals.add(pattern)
 
         self._productions.append(
-            Production(pattern, replacement, initializer=initializer)
+            Production("production_%i" % len(self._productions), pattern, replacement, initializer=initializer)
         )
 
     def _sample(self, symbol: Graph, max_iterations: int, sampler: Sampler):
@@ -294,7 +292,8 @@ class GraphGrammar(Grammar):
             if not valid_productions:
                 return symbol
 
-            production = sampler.choice(valid_productions)
+            production_ids = {p.production_id: p for p in valid_productions} 
+            production = production_ids[sampler.choice(list(production_ids))]
             symbol = production.apply(symbol)
 
             max_iterations -= 1
