@@ -38,6 +38,7 @@ def run_automl(X, y, input=None, output=None):
         errors="ignore",
         input=input,
         output=output,
+        cross_validation_steps=1,
     )
 
 
@@ -62,12 +63,9 @@ for dataset in [movie_reviews, haha]:
 
 for dataset in [meddocan]:
     X, _, y, _ = dataset.load()
-
-    run_automl(
-        X, y, input=List(List(Word())), output=List(List(Postag())),
-    )
+    run_automl(X, y, input=List(List(Word())), output=List(List(Postag())))
 
 
 for dataset in [cifar10]:
     X, y, *_ = dataset.load()
-    run_automl(X,y,input=Tensor4(), output=CategoricalVector())
+    run_automl(X, y, input=Tensor4(), output=CategoricalVector())
