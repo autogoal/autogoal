@@ -15,6 +15,8 @@ from autogoal.kb import (
 from autogoal.ml.metrics import accuracy
 from autogoal.sampling import ReplaySampler
 from autogoal.contrib import find_classes
+from autogoal.ml._metalearning import DatasetFeatureLogger
+
 import numpy as np
 import random
 import statistics
@@ -45,6 +47,7 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
+        metalearning_log=False,
     ):
         self.input = input
         self.output = output
@@ -60,6 +63,7 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.score_metric = score_metric or accuracy
+        self.metalearning_log = metalearning_log
 
         if random_state:
             np.random.seed(random_state)
@@ -78,6 +82,19 @@ class AutoML:
     def fit(self, X, y, **kwargs):
         self.input = self._input_type(X)
         self.output = self._output_type(y)
+
+        if self.metalearning_log:
+            loggers = kwargs.get('logger', [])
+            loggers.append(DatasetFeatureLogger(X, y, problem_features=dict(
+                input=repr(self.input),
+                output=repr(self.output),
+                metric=self.score_metric.__name__,
+            ), environment_features=dict(
+                memory_limit=self.search_kwargs.get('memory_limit'),
+                search_timeout=self.search_kwargs.get('search_timeout'),
+                evaluation_timeout=self.search_kwargs.get('evaluation_timeout'),
+            )))
+            kwargs['logger'] = loggers
 
         search = self.search_algorithm(
             self._make_pipeline_builder(),

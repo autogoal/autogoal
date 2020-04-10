@@ -13,22 +13,31 @@ from autogoal.datasets import cars, abalone, german_credit, cifar10, haha, meddo
 
 # Testing that AutoML saves model
 
-from autogoal.ml import AutoML, DatasetFeatureLogger, LearnerMedia, DatasetFeatureExtractor
+from autogoal.ml import (
+    AutoML,
+    DatasetFeatureLogger,
+    LearnerMedia,
+    DatasetFeatureExtractor,
+)
 from autogoal.ml._metalearning import SolutionInfo
 from autogoal.contrib.keras import KerasClassifier
+from autogoal.kb import List, Word, Postag, CategoricalVector, Sentence
+from autogoal.contrib import find_classes
 
-extractor = DatasetFeatureExtractor()
 
-X, y = cars.load()
-X2, y2 = german_credit.load()
+# X, y = cars.load()
+# X, _, y, _ = meddocan.load(max_examples=100)
+X, _, y, _ = haha.load(max_examples=100)
 
-# logger = DatasetFeatureLogger(X, y)
 
-# automl = AutoML()
-# automl.fit(X, y, logger=logger)
+automl = AutoML(
+    search_iterations=1,
+    metalearning_log=True,
+    # input=List(List(Word())),
+    # output=List(List(Postag())),
+    input=List(Sentence()),
+    output=CategoricalVector(),
 
-with open("metalearning.json") as fp:
-    solutions = [SolutionInfo.from_dict(json.loads(s)) for s in fp]
-
-learner = LearnerMedia(extractor.extract_features(X, y), solutions)
-learner.compute_all_features()
+    registry=find_classes(exclude=".*Keras.*")
+)
+automl.fit(X, y)

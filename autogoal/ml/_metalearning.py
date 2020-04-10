@@ -14,12 +14,22 @@ from sklearn.feature_extraction import DictVectorizer
 
 
 class DatasetFeatureLogger(Logger):
-    def __init__(self, X, y=None, extractor=None, output_file="metalearning.json"):
+    def __init__(
+        self,
+        X,
+        y=None,
+        extractor=None,
+        output_file="metalearning.json",
+        problem_features=None,
+        environment_features=None,
+    ):
         self.extractor = extractor or DatasetFeatureExtractor()
         self.X = X
         self.y = y
         self.run_id = str(uuid.uuid4())
         self.output_file = output_file
+        self.problem_features = problem_features or {}
+        self.environment_features = environment_features or {}
 
     def begin(self, generations, pop_size):
         self.dataset_features_ = self.extractor.extract_features(self.X, self.y)
@@ -36,7 +46,8 @@ class DatasetFeatureLogger(Logger):
         info = SolutionInfo(
             uuid=self.run_id,
             fitness=fitness,
-            problem_features=self.dataset_features_,
+            problem_features=dict(self.dataset_features_, **self.problem_features),
+            environment_features=dict(self.environment_features),
             pipeline_features=features,
             feature_types=feature_types,
         ).to_dict()
@@ -115,11 +126,13 @@ class SolutionInfo:
         uuid: str,
         problem_features: dict,
         pipeline_features: dict,
+        environment_features: dict,
         feature_types: dict,
         fitness: float,
     ):
         self.problem_features = problem_features
         self.pipeline_features = pipeline_features
+        self.environment_features = environment_features
         self.feature_types = feature_types
         self.fitness = fitness
         self.uuid = uuid
@@ -144,7 +157,7 @@ class LearnerMedia:
 
         for i in self.solutions:
             self.best_fitness[i.uuid] = max(self.best_fitness[i.uuid], i.fitness)
-            
+
             for feature in i.pipeline_features:
                 self.all_features[feature] = None
 
@@ -167,7 +180,7 @@ class LearnerMedia:
         """
         # find the relevant solutions, that contain the production to predict
         important_solutions = []
-        feature_prototype = None 
+        feature_prototype = None
 
         for i, w in zip(self.solutions, self.weights_solution):
             if feature in i.pipeline_features:
@@ -175,7 +188,9 @@ class LearnerMedia:
                     important_solutions.append((value, w))
 
                 if feature_prototype is None:
-                    feature_prototype = eval(i.feature_types[feature], sampling.__dict__, {})
+                    feature_prototype = eval(
+                        i.feature_types[feature], sampling.__dict__, {}
+                    )
 
         if feature_prototype is None:
             return None
