@@ -119,6 +119,21 @@ def has_numeric_features(X, y=None):
     return any([xi for xi in X[0] if isinstance(xi, (float, int))])
 
 
+@feature_extractor
+def numeric_variance(X, y=None):
+    return X.std()
+
+
+@feature_extractor
+def average_number_of_words(X, y=None):
+    return sum(len(sentence.split(" ")) for sentence in X) / len(X)
+
+
+@feature_extractor
+def has_text_features(X, y=None):
+    return isinstance(X[0], str)
+
+
 @nice_repr
 class SolutionInfo:
     def __init__(
