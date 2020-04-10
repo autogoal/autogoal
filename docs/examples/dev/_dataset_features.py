@@ -34,7 +34,7 @@ def run_automl(X, y, input=None, output=None):
     automl = AutoML(
         search_iterations=1000,
         metalearning_log=True,
-        search_kwargs=dict(search_timeout=3600,),
+        search_kwargs=dict(search_timeout=2 * 60 * 60,),
         errors="ignore",
         input=input,
         output=output,
