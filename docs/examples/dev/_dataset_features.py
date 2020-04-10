@@ -2,16 +2,21 @@ import pprint
 import json
 
 from autogoal.ml import DatasetFeatureExtractor
-from autogoal.datasets import cars, abalone, german_credit, cifar10, haha, meddocan
+from autogoal.datasets import (
+    abalone,
+    cars,
+    cifar10,
+    dorothea,
+    german_credit,
+    gisette,
+    haha,
+    meddocan,
+    movie_reviews,
+    shuttle,
+    wine_quality,
+    yeast,
+)
 
-
-# for dataset in [cars, abalone, german_credit, cifar10, haha, meddocan]:
-#     X, y, *_ = dataset.load()
-#     features = DatasetFeatureExtractor().extract_features(X, y)
-#     pprint.pprint(dict(dataset=dataset.__name__, features=features))
-
-
-# Testing that AutoML saves model
 
 from autogoal.ml import (
     AutoML,
@@ -21,23 +26,48 @@ from autogoal.ml import (
 )
 from autogoal.ml._metalearning import SolutionInfo
 from autogoal.contrib.keras import KerasClassifier
-from autogoal.kb import List, Word, Postag, CategoricalVector, Sentence
+from autogoal.kb import List, Word, Postag, CategoricalVector, Sentence, Tensor4
 from autogoal.contrib import find_classes
 
 
-# X, y = cars.load()
-# X, _, y, _ = meddocan.load(max_examples=100)
-X, _, y, _ = haha.load(max_examples=100)
+def run_automl(X, y, input=None, output=None):
+    automl = AutoML(
+        search_iterations=1000,
+        metalearning_log=True,
+        search_kwargs=dict(search_timeout=3600,),
+        errors="ignore",
+        input=input,
+        output=output,
+    )
 
 
-automl = AutoML(
-    search_iterations=1,
-    metalearning_log=True,
-    # input=List(List(Word())),
-    # output=List(List(Postag())),
-    input=List(Sentence()),
-    output=CategoricalVector(),
+for dataset in [
+    abalone,
+    cars,
+    dorothea,
+    german_credit,
+    gisette,
+    shuttle,
+    wine_quality,
+    yeast,
+]:
+    X, y, *_ = dataset.load()
+    run_automl(X, y)
 
-    registry=find_classes(exclude=".*Keras.*")
-)
-automl.fit(X, y)
+
+for dataset in [movie_reviews, haha]:
+    X, y, *_ = dataset.load()
+    run_automl(X, y, input=List(Sentence()), output=CategoricalVector())
+
+
+for dataset in [meddocan]:
+    X, _, y, _ = dataset.load()
+
+    run_automl(
+        X, y, input=List(List(Word())), output=List(List(Postag())),
+    )
+
+
+for dataset in [cifar10]:
+    X, y, *_ = dataset.load()
+    run_automl(X,y,input=Tensor4(), output=CategoricalVector())
