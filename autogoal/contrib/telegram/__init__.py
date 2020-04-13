@@ -14,15 +14,15 @@ class TelegramLogger(Logger):
         self.updater = Updater(token)
         self.dispatcher = self.updater.dispatcher
         self.progress = 0
-        self.evaluations = 1
+        self.generations = 1
         self.best = 0.0
         self.current = ""
         self.message = self.message = self.dispatcher.bot.send_message(
             chat_id=self.channel, text=f"**{self.name}**\nStarting...", parse_mode=ParseMode.MARKDOWN,
         )
 
-    def begin(self, evaluations):
-        self.evaluations = evaluations
+    def begin(self, generations, pop_size):
+        self.generations = generations
         self._send()
 
     def update_best(self, new_best, new_fn, *args):
@@ -50,7 +50,7 @@ class TelegramLogger(Logger):
             f"""
             **{self.name}**
             Best: `{float(self.best):0.3}`
-            Iterations: `{self.progress}/{self.evaluations}`
+            Iterations: `{self.progress}/{self.generations}`
             """
         )
         try:
