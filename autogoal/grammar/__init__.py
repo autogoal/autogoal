@@ -11,5 +11,6 @@ from ._cfg import (
     CfgInitializer,
     Empty,
     Symbol,
+    Subset,
 )
 from ._graph import GraphGrammar, Path, Block, Graph, GraphSpace, Epsilon

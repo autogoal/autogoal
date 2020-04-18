@@ -2,13 +2,25 @@ import inspect
 import warnings
 import networkx as nx
 from collections import namedtuple
+import logging
+
 
 from autogoal.grammar import GraphSpace, Graph, CfgInitializer
 from autogoal.utils import nice_repr
-from autogoal.kb._data import conforms, build_composite_tuple, Tuple, build_composite_list, List
+from autogoal.kb._data import (
+    conforms,
+    build_composite_tuple,
+    Tuple,
+    build_composite_list,
+    List,
+    DataType
+)
 
 
-def build_pipelines(input, output, registry) -> 'PipelineBuilder':
+MAX_LIST_DEPTH = 5
+
+
+def build_pipeline_graph(input: DataType, output: DataType, registry, max_pipeline_width=5) -> "PipelineBuilder":
     """
     Creates a `PipelineBuilder` instance that generates all pipelines
     from `input` to `output` types.
@@ -19,6 +31,139 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     - `output`: type descriptor for the desired output.
     - `registry`: list of available classes to build the pipelines.
     """
+    
+    logger = logging.getLogger("autogoal.build_pipeline_graph")
+    
+    # First we will unpack the input and output type and
+    # store them in actual lists for easier use
+
+    if isinstance(input, Tuple):
+        input_type = list(input.inner)
+    else:
+        input_type = [input]
+
+    if isinstance(output, Tuple):
+        output_type = list(output.inner)
+    else:
+        output_type = [output]
+
+    logger.debug(f"input_type={input_type}")
+    logger.debug(f"output_type={output_type}")
+    
+    # The graph contains all the algorithms, each algorithm is connected
+    # to all those nodes that it can process, which are nodes whose output
+    # type is a superset of what the algorithm requires.
+    G = Graph()
+
+    # For each node stored in the graph, we will store also the full list
+    # of all outputs that we can guarantee are available at this point.
+    # Initially we add the `Start` node, which produces all of the inputs.
+    G.add_node(GraphSpace.Start, types=input_type)
+
+    # We will apply a BFS algorithm at this point. We will make sure
+    # that once a node is processed, all the algorithms to which it could
+    # potentially connect are stored in the graph.
+    # Initially the `Start` node is the only one open.
+    open_nodes = [GraphSpace.Start]
+    closed_nodes = set()
+
+    while open_nodes:
+        # This is the next node we will need to connect.
+        node = open_nodes.pop(0)
+
+        if node in closed_nodes:
+            continue
+
+        # When leaving this node we can guarantee that we have the types in this list.
+        types = G.nodes[node]['types']
+        logger.debug(f"Processing node={node.__name__} with types={types}")
+
+        # We will need this method to check if all of the input types of and algorithm are
+        # guaranteed at this point, i.e., if they are available in `types`,
+        # or at least a conforming type is.
+        def type_is_guaranteed(input_type):
+            for other_type in types:
+                if conforms(other_type, input_type):
+                    return True
+
+            return False
+
+        # In this point we have to identify all the algorithms that could continue
+        # from this point on. These are all the algorithms whose input expects a subset
+        # of the types that we already have.
+        for algorithm in registry:
+            annotations = _get_annotations(algorithm)
+            algorithm_input_types = annotations.input.inner if isinstance(annotations.input, Tuple) else [annotations.input]
+            algorithm_output_types = annotations.output.inner if isinstance(annotations.output, Tuple) else [annotations.output]
+            logger.debug(f"Analyzing algorithm={algorithm.__name__} with inputs={algorithm_input_types} and outputs={algorithm_output_types}")
+
+            if any(not type_is_guaranteed(input_type) for input_type in algorithm_input_types):
+                logger.debug(f"Skipping algorithm={algorithm.__name__}")
+                continue
+                    
+            # At this point we can add the current algorithm to the graph.
+            # We have two options for doing this.
+            # First, we make the current algorithm "consume" the input types,
+            # hence, the output types produced at this point are the output types
+            # this algorithm provides plus any input type not consumed so far.
+            output_types = [t for t in types if t not in algorithm_input_types] + algorithm_output_types
+            logger.debug(f"Adding node={algorithm.__name__} producing types={output_types}")
+
+            # We add this node to the graph and we mark that it consumes the inputs,
+            # so that later when sampling we can correctly align all the types
+            G.add_node(algorithm, types=output_types, consume=algorithm_input_types)
+            G.add_edge(node, algorithm)
+            open_nodes.append(algorithm)
+
+        # Let's check if we can add the `End` node.
+        if all(type_is_guaranteed(t) for t in output_type):
+            G.add_edge(node, GraphSpace.End)
+            
+        closed_nodes.add(node)
+
+    # Once done we have to check if the `End` node was at some point included in the graph.
+    # Otherwise that means there is no possible path.
+    if GraphSpace.End not in G:
+        raise TypeError(
+            "No pipelines can be constructed from input:%r to output:%r."
+            % (input, output)
+        )
+
+    # Now we remove all nodes that don't participate in any path
+    # leaving to `End`
+    reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
+    unreachable_nodes = set(G.nodes) - reachable_from_end
+    G.remove_nodes_from(unreachable_nodes)
+
+    # If the node `Start` was removed, that means the graph is disconnected.
+    if not GraphSpace.Start in G:
+        raise TypeError(
+            "No pipelines can be constructed from input:%r to output:%r."
+            % (input, output)
+        )
+
+    return PipelineBuilder(G, registry)
+                    
+
+def build_pipelines(input, output, registry) -> "PipelineBuilder":
+    """
+    Creates a `PipelineBuilder` instance that generates all pipelines
+    from `input` to `output` types.
+
+    ##### Parameters
+
+    - `input`: type descriptor for the desired input.
+    - `output`: type descriptor for the desired output.
+    - `registry`: list of available classes to build the pipelines.
+    """
+
+    warnings.warn(
+        "This method is deprecated and not under use by AutoGOAL's"
+        " internal API anymore, use `build_pipeline_graph` instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     list_pairs = set()
     types_queue = []
 
@@ -26,6 +171,11 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
         types_queue.extend(input.inner)
     else:
         types_queue.append(input)
+
+    if isinstance(output, Tuple):
+        types_queue.extend(output.inner)
+    else:
+        types_queue.append(output)
 
     types_seen = set()
 
@@ -59,10 +209,16 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
         depth = 0
 
         while isinstance(output_type, List):
+            if output_type.depth() >= MAX_LIST_DEPTH:
+                break
+
             depth += 1
+
             output_type = output_type.inner
             build(output_type, depth)
             types_seen.add(output_type)
+
+            print(output_type)
 
     list_tuples = set()
 
@@ -91,7 +247,9 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
                 if (index, output_type, output_tuple_type) in list_tuples:
                     continue
 
-                other_wrapper = build_composite_tuple(index, output_type, output_tuple_type)
+                other_wrapper = build_composite_tuple(
+                    index, output_type, output_tuple_type
+                )
                 list_tuples.add((index, output_type, output_tuple_type))
                 registry.append(other_wrapper)
 
@@ -112,7 +270,7 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
     connect_tuple_wrappers(GraphSpace.Start, input)
 
     if GraphSpace.Start not in G:
-        raise ValueError("There are no classes compatible with input type:%r." % input)
+        raise TypeError("There are no classes compatible with input type:%r." % input)
 
     while open_nodes:
         clss = open_nodes.pop(0)
@@ -135,16 +293,23 @@ def build_pipelines(input, output, registry) -> 'PipelineBuilder':
             G.add_edge(clss, GraphSpace.End)
 
     if GraphSpace.End not in G:
-        raise ValueError("No pipelines can be constructed from input:%r to output:%r." % (input, output))
+        raise TypeError(
+            "No pipelines can be constructed from input:%r to output:%r."
+            % (input, output)
+        )
 
     reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
     unreachable_nodes = set(G.nodes) - reachable_from_end
     G.remove_nodes_from(unreachable_nodes)
 
     if not GraphSpace.Start in G:
-        raise ValueError("No pipelines can be constructed from input:%r to output:%r." % (input, output))
+        raise TypeError(
+            "No pipelines can be constructed from input:%r to output:%r."
+            % (input, output)
+        )
 
     import pprint
+
     pprint.pprint(list(G.nodes))
 
     # raise ValueError()
@@ -177,7 +342,7 @@ class Pipeline:
                 found = True
 
         if not found:
-            warnings.warn(f'No step answered message {msg}.')
+            warnings.warn(f"No step answered message {msg}.")
 
     def run(self, x):
         for step in self.steps:

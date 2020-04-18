@@ -1,5 +1,13 @@
 import sys
 import streamlit as st
+import textwrap
+import networkx as nx
+import pandas as pd
+import altair as alt
+import nx_altair as nxa
+
+from autogoal.kb import build_pipeline_graph
+from matplotlib import pyplot as plt
 
 
 class Demo:
@@ -93,22 +101,62 @@ class Demo:
             "a graph of pipelines for different problems settings."
         )
 
-        with st.echo():
-            from autogoal.kb import CategoricalVector, Document, Tuple
+        input_type = st.text_input(
+            "Input type", "Tuple(Document(), CategoricalVector())"
+        )
+        output_type = st.text_input("Output type", "CategoricalVector()")
+
+        code = textwrap.dedent(
+            f"""
+            from autogoal.kb import *
             from autogoal.kb import build_pipelines
             from autogoal.contrib import find_classes
 
             space = build_pipelines(
-                input=Tuple(Document(), CategoricalVector()),
-                output=CategoricalVector(),
+                input={input_type},
+                output={output_type},
                 registry=find_classes(),
             )
+            """
+        )
 
-        if st.button("Sample"):
-            st.code(space.sample())
+        st.code(code)
+
+        locals_dict = {}
+        exec(code, globals(), locals_dict)
+        space = locals_dict["space"]
+
+        st.write("#### Pipelines graph")
+        graph = nx.DiGraph()
+
+        def get_node_repr(node):
+            try:
+                return get_node_repr(node.inner)
+            except:
+                return dict(label=str(node).split(".")[-1], module=node.__module__.split("_")[0])
+
+        for node in space.graph.nodes:
+            attrs = get_node_repr(node)
+            graph.add_node(attrs["label"], **attrs)
+
+        for u, v in space.graph.edges:
+            graph.add_edge(get_node_repr(u)["label"], get_node_repr(v)["label"])
+
+        pos = nx.nx_pydot.pydot_layout(graph, prog="dot", root=space.Start)
+        chart = (
+            nxa.draw_networkx(graph, pos=pos, node_color="module", node_tooltip="label")
+            .properties(height=500)
+            .interactive()
+        )
+
+        st.altair_chart(chart, use_container_width=True)
+
+        st.write("#### Example pipeline")
+        st.button("Sample another pipeline")
+        st.code(space.sample())
 
     def run(self):
-        main_section = st.sidebar.selectbox("Demo", list(self.main_sections))
+        main_section = st.sidebar.selectbox("Section", list(self.main_sections))
         self.main_sections[main_section]()
 
 

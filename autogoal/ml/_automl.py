@@ -1,6 +1,7 @@
 
 from autogoal.search import RandomSearch, PESearch
 from autogoal.kb import (
+    build_pipeline_graph,
     build_pipelines,
     CategoricalVector,
     List,

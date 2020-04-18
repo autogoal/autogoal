@@ -8,4 +8,18 @@ except:
     raise
 
 
-from ._base import wikipedia
+from ._base import (
+    WikipediaContainsWord,
+    WikipediaContainsWordSpanish,
+    WikipediaSummary,
+    WikipediaSummarySpanish,
+)
+
+
+def find_classes(self, include=None, exclude=None):
+    return [
+        WikipediaContainsWord,
+        WikipediaContainsWordSpanish,
+        WikipediaSummary,
+        WikipediaSummarySpanish,
+    ]

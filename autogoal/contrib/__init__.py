@@ -60,13 +60,38 @@ def find_classes(include=".*", exclude=None):
         )
         pass
 
+    try:
+        from autogoal.contrib.wikipedia import find_classes as f
+
+        result.extend(f(include, exclude))
+    except ImportError as e:
+        warnings.warn(repr(e))
+        warnings.warn(
+            "Skipping `wikipedia`. Run `pip install autogoal[wikipedia]` to include it."
+        )
+        pass
+
     from autogoal.contrib._wrappers import (
         MatrixBuilder,
         VectorAggregator,
         TensorBuilder,
+        FlagsMerger,
+        SentenceFeatureExtractor,
+        DocumentFeatureExtractor,
+        MultipleFeatureExtractor,
     )
 
-    result.extend([MatrixBuilder, VectorAggregator, TensorBuilder])
+    result.extend(
+        [
+            MatrixBuilder,
+            VectorAggregator,
+            TensorBuilder,
+            FlagsMerger,
+            SentenceFeatureExtractor,
+            DocumentFeatureExtractor,
+            MultipleFeatureExtractor,
+        ]
+    )
 
     return [
         cls

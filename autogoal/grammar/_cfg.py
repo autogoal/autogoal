@@ -86,6 +86,51 @@ class OneOf(Production):
         return self.grammar[option].sample(sampler, namespace, max_iterations-1)
 
 
+class SubsetOf(Production):
+    def __init__(self, head, grammar, *options, allow_empty=False):
+        super().__init__(head, grammar)
+        self._options: List[Symbol] = list(options)
+        self._allow_empty = allow_empty
+
+    @property
+    def options(self) -> List[Symbol]:
+        return self._options
+
+    def __repr__(self):
+        return "SubsetOf(options=%r)" % self._options
+
+    def to_string(
+        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+    ):
+        lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
+        rhs = ["<%s>" % option.name for option in self._options]
+
+        code.append("%s := { %s }" % (lhs, " , ".join(rhs)))
+        visited.add(self.head)
+
+        for symbol in self._options:
+            if symbol in visited:
+                continue
+
+            self.grammar[symbol].to_string(code, visited, max_symbol_length)
+
+    def sample(self, sampler, namespace, max_iterations):
+        if max_iterations <= 0:
+            raise ValueError("Max iterations exceeded")
+
+        while True:
+            selected = []
+
+            for option in self.options:
+                if sampler.boolean(handle=self.head.name + "_" + option.name):
+                    selected.append(self.grammar[option].sample(sampler, namespace, max_iterations-1))
+
+            if len(selected) > 0 or self._allow_empty:
+                break
+
+        return selected
+
+
 class Callable(Production):
     def __init__(self, head, grammar, name, **parameters):
         super().__init__(head, grammar)
@@ -366,6 +411,34 @@ class Union:
             _generate_cfg(child, grammar, child_symbol)
 
         grammar.replace(symbol, OneOf(symbol, grammar, *children))
+        return grammar
+
+
+class Subset:
+    def __init__(self, name, *clss, allow_empty=False):
+        self.__name__ = name
+        self.clss = list(clss)
+        self.allow_empty = allow_empty
+
+    def __repr__(self):
+        # args = ", ".join(str(s) for s in self.clss)
+        return self.__name__
+
+    def generate_cfg(self, grammar, head):
+        symbol = head or Symbol(self.__name__)
+
+        if symbol in grammar:
+            return grammar
+
+        grammar.add(symbol, Empty(symbol, grammar))
+        children = []
+
+        for child in self.clss:
+            child_symbol = Symbol(child.__name__)
+            children.append(child_symbol)
+            _generate_cfg(child, grammar, child_symbol)
+
+        grammar.replace(symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty))
         return grammar
 
 

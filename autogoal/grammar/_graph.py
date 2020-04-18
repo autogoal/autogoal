@@ -342,6 +342,7 @@ class GraphSpace(Grammar):
 
     def _sample(self, symbol, max_iterations, sampler):
         path = symbol
+        visited = set()
 
         while max_iterations > 0:
             last_node = path[-1]
@@ -349,6 +350,7 @@ class GraphSpace(Grammar):
             if last_node == GraphSpace.End:
                 break
 
+            # next_nodes = list(set(self.graph.neighbors(last_node)) - visited)
             next_nodes = list(self.graph.neighbors(last_node))
 
             if not next_nodes:
@@ -358,6 +360,7 @@ class GraphSpace(Grammar):
 
             next_node = names_values[sampler.choice(list(names_values))]
             path.append(next_node)
+            visited.add(next_node)
         else:
             raise ValueError("Reached maximum iterations")
 

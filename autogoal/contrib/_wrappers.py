@@ -1,4 +1,15 @@
-from autogoal.kb import algorithm, Sentence, List, Word, ContinuousVector, MatrixContinuousDense, Tensor3
+from autogoal.kb import (
+    algorithm,
+    Sentence,
+    List,
+    Word,
+    ContinuousVector,
+    MatrixContinuousDense,
+    Tensor3,
+    Flags,
+    Document,
+    Distinct
+)
 from autogoal.grammar import Categorical
 from autogoal.utils import nice_repr
 
@@ -40,6 +51,7 @@ class MatrixBuilder:
 
     ```
     """
+
     def run(self, input: List(ContinuousVector())) -> MatrixContinuousDense():
         return np.vstack(input)
 
@@ -68,5 +80,66 @@ class TensorBuilder:
 
     ```
     """
+
     def run(self, input: List(MatrixContinuousDense())) -> Tensor3():
         return np.vstack([np.expand_dims(m, axis=0) for m in input])
+
+
+@nice_repr
+class FlagsMerger:
+    def run(self, input: List(Flags())) -> Flags():
+        result = {}
+
+        for d in input:
+            result.update(d)
+
+        return result
+
+
+@nice_repr
+class MultipleFeatureExtractor:
+    def __init__(
+        self,
+        extractors: Distinct(algorithm(Word(), Flags()), exceptions=["MultipleFeatureExtractor"]),
+        merger: algorithm(List(Flags()), Flags())
+    ):
+        self.extractors = extractors
+        self.merger = merger
+
+    def run(self, input: Word()) -> Flags():
+        flags = [extractor.run(input) for extractor in self.extractors]
+        return self.merger.run(flags)
+
+
+@nice_repr
+class SentenceFeatureExtractor:
+    def __init__(
+        self,
+        tokenizer: algorithm(Sentence(), List(Word())),
+        feature_extractor: algorithm(Word(), Flags()),
+    ):
+        self.tokenizer = tokenizer
+        self.feature_extractor = feature_extractor
+
+    def run(self, input: Sentence()) -> Flags():
+        tokens = self.tokenizer.run(input)
+        flags = [self.feature_extractor(w) for w in tokens]
+        return {
+            f"{w}|{f}": v for w, flags in zip(tokens, flags) for f, v in flags.items()
+        }
+
+
+@nice_repr
+class DocumentFeatureExtractor:
+    def __init__(
+        self,
+        tokenizer: algorithm(Document(), List(Sentence())),
+        feature_extractor: algorithm(Sentence(), Flags()),
+    ):
+        self.tokenizer = tokenizer
+        self.feature_extractor = feature_extractor
+
+    def run(self, input: Document()) -> List(Flags()):
+        tokens = self.tokenizer.run(input)
+        flags = [self.feature_extractor(w) for w in tokens]
+        return

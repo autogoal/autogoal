@@ -10,7 +10,7 @@ from autogoal.utils import CacheManager, nice_repr
 @nice_repr
 class BertEmbedding:
     """
-    Transforms a sentence already tokenized into a list of vector embeddings using a Bert pretrained English model.
+    Transforms a sentence already tokenized into a list of vector embeddings using a Bert pretrained multilingual model.
 
     ##### Examples
 
@@ -38,7 +38,8 @@ class BertEmbedding:
 
     ##### Notes
 
-    On the first use the model `best-base-multilingual-cased` from [huggingface/transformers](https://github.com/huggingface/transformers)
+    On the first use the model `best-base-multilingual-cased` 
+    from [huggingface/transformers](https://github.com/huggingface/transformers)
     will be downloaded. This may take a few minutes.
 
     If you are using the development container the model should be already downloaded for you.

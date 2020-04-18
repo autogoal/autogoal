@@ -3,7 +3,7 @@ import inspect
 import pprint
 
 from typing import Mapping
-from autogoal.grammar import Symbol, Union, Empty
+from autogoal.grammar import Symbol, Union, Empty, Subset
 
 from scipy.sparse.base import spmatrix
 from numpy import ndarray
@@ -52,6 +52,33 @@ class Interface:
             )
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
+
+
+class Distinct:
+    def __init__(self, interface: Interface, exceptions=None):
+        self.interface = interface
+        self.exceptions = exceptions
+
+    def generate_cfg(self, grammar, head):
+        symbol = head or Symbol(self.__class__.__name__)
+        compatible = []
+
+        for _, other_cls in grammar.namespace.items():
+            if other_cls in self.exceptions:
+                continue
+
+            if hasattr(other_cls, '__name__') and other_cls.__name__ in self.exceptions:
+                continue
+
+            if self.interface.is_compatible(other_cls):
+                compatible.append(other_cls)
+
+        if not compatible:
+            raise ValueError(
+                "Cannot find compatible implementations for interface %r" % self.interface
+            )
+
+        return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
 def conforms(type1, type2):
@@ -187,8 +214,8 @@ def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
 
-    # name = "TupleAlgorithm"  # [%s, %s]' % (input_type, output_type)
-    name = "TupleAlgorithm[%s, %s]" % (input_type, output_type)
+    # name = "TupleWrapper"
+    name = "TupleWrapper[%s, %s]" % (input_type, output_type)
 
     def init_method(self, inner: algorithm(internal_input, internal_output)):
         self.inner = inner
@@ -419,10 +446,20 @@ class Tensor4(DataType):
     pass
 
 
+class Flags(DataType):
+    pass
+
+
 class List(DataType):
     def __init__(self, inner):
         self.inner = inner
         # super().__init__(**inner.tags)
+
+    def depth(self):
+        if not isinstance(self.inner, List):
+            return 1
+
+        return 1 + self.inner.depth()
 
     def __conforms__(self, other):
         return isinstance(other, List) and conforms(self.inner, other.inner)
@@ -489,6 +526,7 @@ def draw_data_hierarchy(output_file):
             Tensor3,
             List,
             Tuple,
+            Flags,
         ]
     )
 
@@ -506,32 +544,3 @@ def draw_data_hierarchy(output_file):
 
     graph.write(output_file + ".svg", format="svg")
     graph.write(output_file + ".png", format="png")
-
-
-# __all__ = [
-#     "algorithm",
-#     "CategoricalVector",
-#     "Category",
-#     "ContinuousVector",
-#     "DataType",
-#     "DenseMatrix",
-#     "DiscreteVector",
-#     "Document",
-#     "List",
-#     "Matrix",
-#     "MatrixContinuous",
-#     "MatrixContinuousDense",
-#     "MatrixContinuousSparse",
-#     "Sentence",
-#     "SparseMatrix",
-#     "Stem",
-#     "Tuple",
-#     "Vector",
-#     "Word",
-#     "Entity",
-#     "Summary",
-#     "Synset",
-#     "Text",
-#     "Sentiment",
-#     "conforms",
-# ]
