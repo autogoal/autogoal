@@ -4,5 +4,4 @@ from ._algorithm import (
     build_pipeline_graph,
     PipelineBuilder,
     Pipeline,
-    PipelineError,
 )

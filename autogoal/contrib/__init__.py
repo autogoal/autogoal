@@ -61,6 +61,17 @@ def find_classes(include=".*", exclude=None):
         pass
 
     try:
+        from autogoal.contrib.spacy import find_classes as f
+
+        result.extend(f(include, exclude))
+    except ImportError as e:
+        warnings.warn(repr(e))
+        warnings.warn(
+            "Skipping `spacy`. Run `pip install autogoal[spacy]` to include it."
+        )
+        pass
+
+    try:
         from autogoal.contrib.wikipedia import find_classes as f
 
         result.extend(f(include, exclude))

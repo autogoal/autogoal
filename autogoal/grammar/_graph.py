@@ -364,4 +364,4 @@ class GraphSpace(Grammar):
         else:
             raise ValueError("Reached maximum iterations")
 
-        return [self.initializer(clss, sampler=sampler) for clss in path[1:-1]]
+        return [self.initializer(node, sampler=sampler) for node in path[1:-1]]

@@ -67,7 +67,7 @@ class Distinct:
             if other_cls in self.exceptions:
                 continue
 
-            if hasattr(other_cls, '__name__') and other_cls.__name__ in self.exceptions:
+            if hasattr(other_cls, "__name__") and other_cls.__name__ in self.exceptions:
                 continue
 
             if self.interface.is_compatible(other_cls):
@@ -75,7 +75,8 @@ class Distinct:
 
         if not compatible:
             raise ValueError(
-                "Cannot find compatible implementations for interface %r" % self.interface
+                "Cannot find compatible implementations for interface %r"
+                % self.interface
             )
 
         return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
@@ -160,6 +161,41 @@ def _get_annotations(clss, ignore=[]):
         signatures.pop(name, None)
 
     return signatures
+
+
+def make_list_wrapper(algorithm):
+    from autogoal.kb._algorithm import _get_annotations
+
+    input_type, output_type = _get_annotations(algorithm)
+    name = f"List[{algorithm.__name__}]"
+
+    def wrap_list(types):
+        if isinstance(types, Tuple):
+            return Tuple(*(List(t) for t in types.inner))
+
+        return List(types)
+
+    def init_method(self, inner: algorithm):
+        self.inner = inner
+
+    def run_method(self, input: wrap_list(input_type)) -> wrap_list(output_type):
+        from tqdm import tqdm
+
+        return [self.inner.run(x) for x in tqdm(xs)]
+
+    def repr_method(self):
+        return f"{name}(inner={repr(self.inner)})"
+
+    def getattr_method(self, attr):
+        return getattr(self.inner, attr)
+
+    def body(ns):
+        ns["__init__"] = init_method
+        ns["run"] = run_method
+        ns["__repr__"] = repr_method
+        ns["__getattr__"] = getattr_method
+
+    return types.new_class(name=name, bases=(), exec_body=body)
 
 
 def build_composite_list(input_type, output_type, depth=1):
@@ -491,6 +527,39 @@ class Tuple(DataType):
         return True
 
 
+DATA_TYPES = frozenset(
+    [
+        DataType,
+        Text,
+        Word,
+        Stem,
+        Sentence,
+        Document,
+        Category,
+        Vector,
+        Matrix,
+        DenseMatrix,
+        SparseMatrix,
+        ContinuousVector,
+        DiscreteVector,
+        CategoricalVector,
+        MatrixContinuous,
+        MatrixContinuousDense,
+        MatrixContinuousSparse,
+        Entity,
+        Summary,
+        Sentiment,
+        Synset,
+        Postag,
+        Chunktag,
+        Tensor3,
+        List,
+        Tuple,
+        Flags,
+    ]
+)
+
+
 def draw_data_hierarchy(output_file):
     """
     Creates an SVG representation of the `DataType` hierarchy,
@@ -498,37 +567,7 @@ def draw_data_hierarchy(output_file):
     """
     import pydot
 
-    classes = frozenset(
-        [
-            DataType,
-            Text,
-            Word,
-            Stem,
-            Sentence,
-            Document,
-            Category,
-            Vector,
-            Matrix,
-            DenseMatrix,
-            SparseMatrix,
-            ContinuousVector,
-            DiscreteVector,
-            CategoricalVector,
-            MatrixContinuous,
-            MatrixContinuousDense,
-            MatrixContinuousSparse,
-            Entity,
-            Summary,
-            Sentiment,
-            Synset,
-            Postag,
-            Chunktag,
-            Tensor3,
-            List,
-            Tuple,
-            Flags,
-        ]
-    )
+    classes = DATA_TYPES
 
     graph = pydot.Dot(direction="LR")
 
