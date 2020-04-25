@@ -9,6 +9,7 @@ from autogoal.kb import ContinuousVector, Word
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors
+from gensim.models.fasttext import FastText
 
 
 @nice_repr
@@ -81,3 +82,132 @@ class Word2VecEmbeddingSpanish:
             return self.model.get_vector(input.lower())
         except KeyError:
             return np.zeros(400)
+
+
+@nice_repr
+class FastTextEmbeddingSpanishSUC:
+    """This class transform a word in embedding vector using FastText of `gensim`.
+
+    ##### Notes
+
+    On the first use the model will be downloaded. This may take a few minutes.
+    If you are using the development container the model should be already downloaded for you.
+
+    ##### Examples
+
+    >>> embedder = FastTextEmbeddingSpanishSUC()
+    >>> embedder.run("algoritmo")
+
+    """
+    def __init__(self):
+        self._model = None
+
+    def _load_model(self):
+        url = "https://zenodo.org/record/3234051/files/embeddings-l-model.bin?download=1"
+        path = Path(__file__).parent / "fasttext-spanish-suc.bin"
+
+        download_and_save(url, path)
+        return FastText.load_fasttext_format(str(path)).wv
+
+    @property
+    def model(self) -> FastTextKeyedVectors:
+        if self._model is None:
+            self._model = self._load_model()
+
+        return self._model
+
+    def run(
+        self, input: Word(domain="general", language="spanish")
+    ) -> ContinuousVector():
+        """This method use FastText of gensim for tranform a word in embedding vector.
+        """
+        try:
+            return self.model.get_vector(input.lower())
+        except KeyError:
+            return np.zeros(300)
+
+
+@nice_repr
+class FastTextEmbeddingSpanishSWBC:
+    """This class transform a word in embedding vector using FastText of `gensim`.
+
+    ##### Notes
+
+    On the first use the model will be downloaded. This may take a few minutes.
+    If you are using the development container the model should be already downloaded for you.
+
+    ##### Examples
+
+    >>> embedder = FastTextEmbeddingSpanishSWBC()
+    >>> embedder.run("algoritmo")
+
+    """
+    def __init__(self):
+        self._model = None
+
+    def _load_model(self):
+        url = "http://dcc.uchile.cl/~jperez/word-embeddings/fasttext-sbwc.bin"
+        path = Path(__file__).parent / "fasttext-spanish-swbc.bin"
+
+        download_and_save(url, path)
+        return FastText.load_fasttext_format(str(path)).wv
+
+    @property
+    def model(self) -> FastTextKeyedVectors:
+        if self._model is None:
+            self._model = self._load_model()
+
+        return self._model
+
+    def run(
+        self, input: Word(domain="general", language="spanish")
+    ) -> ContinuousVector():
+        """This method use FastText of gensim for tranform a word in embedding vector.
+        """
+        try:
+            return self.model.get_vector(input.lower())
+        except KeyError:
+            return np.zeros(300)
+
+
+@nice_repr
+class GloveEmbeddingSpanishSWBC:
+    """This class transform a word in embedding vector using Glove of `gensim`.
+
+    ##### Notes
+
+    On the first use the model will be downloaded. This may take a few minutes.
+    If you are using the development container the model should be already downloaded for you.
+
+    ##### Examples
+
+    >>> embedder = FastTextEmbeddingSpanishSWBC()
+    >>> embedder.run("algoritmo")
+
+    """
+    def __init__(self):
+        self._model = None
+
+    def _load_model(self):
+        url = "http://dcc.uchile.cl/~jperez/word-embeddings/glove-sbwc.i25.bin"
+        path = Path(__file__).parent / "glove-spanish-swbc.bin"
+
+        download_and_save(url, path)
+        return FastText.load_fasttext_format(str(path)).wv
+
+    @property
+    def model(self) -> FastTextKeyedVectors:
+        if self._model is None:
+            self._model = self._load_model()
+
+        return self._model
+
+    def run(
+        self, input: Word(domain="general", language="spanish")
+    ) -> ContinuousVector():
+        """This method use FastText of gensim for tranform a word in embedding vector.
+        """
+        try:
+            return self.model.get_vector(input.lower())
+        except KeyError:
+            return np.zeros(300)
