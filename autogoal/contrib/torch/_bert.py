@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, List, Word
-from autogoal.grammar import Discrete
+from autogoal.grammar import Discrete, Categorical
 from autogoal.utils import CacheManager, nice_repr
 
 
@@ -15,24 +15,18 @@ class BertEmbedding:
     ##### Examples
 
     ```python
-    >>> sentence = "the show must go on".split()
+    >>> sentence = "embed this wrongword".split()
     >>> bert = BertEmbedding(verbose=False)
     >>> embedding = bert.run(sentence)
-    Creating cached object 'bert-model'
-    Creating cached object 'bert-tokenizer'
     >>> embedding.shape
-    (5, 768)
+    (3, 768)
     >>> embedding
-    array([[-0.36865586, -0.09041885, -0.05140949, ...,  0.1486538 ,
-             0.5336794 ,  0.336316  ],
-           [-0.09966173, -0.05827313,  0.30103225, ..., -0.14690986,
-             0.0892544 , -0.12143768],
-           [-0.04454202,  0.4275659 ,  0.34425724, ..., -0.07058787,
-             0.05012058,  0.18611997],
-           [-0.10367895, -0.14797121,  0.29116577, ..., -0.14221254,
-            -0.29068246,  0.16387418],
-           [ 0.03009991, -0.17941667,  0.37870008, ..., -0.01924773,
-            -0.12460218,  0.16398118]], dtype=float32)
+    array([[ 0.3887945 , -0.22509816,  0.24768752, ...,  0.7490128 ,
+             0.00565467, -0.2144883 ],
+           [ 0.1428812 , -0.25218996,  0.19961214, ...,  0.964931  ,
+             0.5816741 , -0.2297722 ],
+           [ 0.63840234, -0.09097156, -0.80802155, ...,  0.9195696 ,
+             0.27364567,  0.14955777]], dtype=float32)
 
     ```
 
@@ -45,12 +39,13 @@ class BertEmbedding:
     If you are using the development container the model should be already downloaded for you.
     """
 
-    def __init__(self, verbose=False):  # , length: Discrete(16, 512)):
+    def __init__(self, merge_mode: Categorical("avg", "first") = "avg", verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
         self.verbose = verbose
         self.print("Using device: %s" % self.device)
+        self.merge_mode = merge_mode
         self.model = None
         self.tokenizer = None
 
@@ -65,18 +60,50 @@ class BertEmbedding:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
-        self.print("Tokenizing...", end="", flush=True)
-        tokens = self.tokenizer.convert_tokens_to_ids(input)
-        self.print("done")
+    #     # !!! TODO: fix tokenizer to use sub-word tokens for missing tokens (ala Jonpi's)
+    #     self.print("Tokenizing...", end="", flush=True)
+    #     tokens = self.tokenizer.convert_tokens_to_ids(input)
+    #     self.print("done")
 
-        ids = torch.tensor(tokens).unsqueeze(0).to(self.device)
+    #     ids = torch.tensor(tokens).unsqueeze(0).to(self.device)
 
+    #     with torch.no_grad():
+    #         self.print("Embedding...", end="", flush=True)
+    #         output = self.model(ids)[0].numpy().reshape(len(tokens), -1)
+    #         self.print("done")
+
+    #     return output
+
+    # def __call__(self, sentence) -> List[Token]:
+    #     doc = Document(self._nlp(sentence))
+        bert_tokens = [self.tokenizer.tokenize(x) for x in input]
+        bert_senquence = self.tokenizer.encode_plus(
+            [t for tokens in bert_tokens for t in tokens], return_tensors="pt"
+        )
         with torch.no_grad():
-            self.print("Embedding...", end="", flush=True)
-            output = self.model(ids)[0].numpy().reshape(len(tokens), -1)
-            self.print("done")
+            encoded_tokens, _ = self.model(**bert_senquence)
+            encoded_tokens = encoded_tokens.squeeze(0)
 
-        return output
+        count = 0
+        matrix = []
+        for i, token in enumerate(input):
+            contiguous = len(bert_tokens[i])
+            vectors = encoded_tokens[count : count + contiguous, :]
+            vector = self._merge(vectors)
+            matrix.append(vector)
+            count += contiguous
+
+        return np.vstack(matrix)
+
+    def _merge(self, vectors):
+        if not vectors.size(0):
+            return np.zeros(vectors.size(1), dtype="float32")
+        if self.merge_mode == "avg":
+            return vectors.mean(dim=0).numpy()
+        elif self.merge_mode == "first":
+            return vectors[0, :].numpy()
+        else:
+            raise ValueError("Unknown merge mode")
 
 
 @nice_repr
