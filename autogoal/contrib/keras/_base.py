@@ -38,9 +38,8 @@ class KerasNeuralNetwork:
         self,
         grammar: GraphGrammar,
         optimizer: Categorical("sgd", "adam", "rmsprop"),
-        # epochs=100,
-        epochs=1,
-        early_stop=10,
+        epochs=100,
+        early_stop=3,
         validation_split=0.1,
         **compile_kwargs,
     ):
@@ -328,11 +327,14 @@ class KerasSequenceTagger(KerasNeuralNetwork):
             raise ValueError(f"Invalid decode={decode}")
 
         self.decode = decode
-        self.decode = "dense"
-        super().__init__(grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs)
+        super().__init__(
+            grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs
+        )
 
     def _build_grammar(self):
-        return build_grammar(preprocessing=True, features_time_distributed=True)
+        from autogoal.grammar._graph import Epsilon
+
+        return GraphGrammar(Epsilon())
 
     def _build_input(self, X):
         return Input(shape=(None, X[0].shape[-1]))
@@ -371,24 +373,21 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def _encode(self, xi, yi):
         if self.decode == "dense":
-            return (
-                np.expand_dims(xi, axis=0),
-                to_categorical([yi], len(self._classes)),
-            )
-        elif self.decode == "crf":
-            return (
-                np.expand_dims(xi, axis=0),
-                np.expand_dims(yi, axis=0),
-            )
+            yi = to_categorical(yi, len(self._classes))
+            
+        return (
+            np.expand_dims(xi, axis=0),
+            np.expand_dims(yi, axis=0),
+        )
+        
+    def _generate_batches(self, X, y):
+        while True:
+            for xi, yi in zip(X, y):
+                yield self._encode(xi, yi)
 
     def _fit_model(self, X, y, **kwargs):
-        def generate_batches():
-            while True:
-                for xi, yi in zip(X, y):
-                    yield self._encode(xi, yi)
-
         self.model.fit(
-            generate_batches(),
+            self._generate_batches(X, y),
             steps_per_epoch=len(X),
             epochs=self._epochs,
             callbacks=[
@@ -400,7 +399,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
                 TerminateOnNaN(),
             ],
             **kwargs,
-            # validation_split=self._validation_split,
         )
 
     def _decode(self, predictions):
