@@ -86,7 +86,8 @@ class BertTokenizeEmbedding:
 
     ##### Notes
 
-    On the first use the model `best-base-multilingual-cased` from [huggingface/transformers](https://github.com/huggingface/transformers)
+    On the first use the model `best-base-multilingual-cased` from 
+    [huggingface/transformers](https://github.com/huggingface/transformers)
     will be downloaded. This may take a few minutes.
 
     If you are using the development container the model should be already downloaded for you.

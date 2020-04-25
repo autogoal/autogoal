@@ -9,7 +9,7 @@ from autogoal.kb import ContinuousVector, Word
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors
-from gensim.models.fasttext import FastText
+from gensim.models.fasttext import FastText, FastTextKeyedVectors
 
 
 @nice_repr

@@ -38,7 +38,8 @@ class KerasNeuralNetwork:
         self,
         grammar: GraphGrammar,
         optimizer: Categorical("sgd", "adam", "rmsprop"),
-        epochs=100,
+        # epochs=100,
+        epochs=1,
         early_stop=10,
         validation_split=0.1,
         **compile_kwargs,
@@ -159,7 +160,9 @@ class KerasClassifier(KerasNeuralNetwork):
     ):
         self._classes = None
         self._num_classes = None
-        super().__init__(grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs)
+        super().__init__(
+            grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs
+        )
 
     def _build_grammar(self):
         return build_grammar(features=True)
@@ -272,7 +275,7 @@ class KerasImageClassifier(KerasClassifier):
         Xtrain, Xvalid = X[:-validation_size], X[-validation_size:]
         ytrain, yvalid = y[:-validation_size], y[-validation_size:]
 
-        self.model.fit_generator(
+        self.model.fit(
             self.preprocessor.flow(Xtrain, ytrain, batch_size=batch_size),
             steps_per_epoch=len(Xtrain) // batch_size,
             epochs=self._epochs,
@@ -302,11 +305,31 @@ class KerasSequenceClassifier(KerasClassifier):
         return super().run(input)
 
 
+# !!! warning
+# These imports are taken from <https://github.com/tensorflow/addons/pull/377>
+# since the CRF layer has not yet landed in tensorflow
+# TODO: Make sure to replace this when tensorflow merges this commit
+from autogoal.contrib.keras._crf import CRF
+from autogoal.contrib.keras._crf import crf_loss
+
+
 class KerasSequenceTagger(KerasNeuralNetwork):
-    def __init__(self, grammar=None, **kwargs):
+    def __init__(
+        self,
+        decode: Categorical("dense", "crf"),
+        optimizer: Categorical("sgd", "adam", "rmsprop"),
+        grammar=None,
+        **kwargs,
+    ):
         self._classes = None
         self._num_classes = None
-        super().__init__(grammar=grammar or self._build_grammar(), **kwargs)
+
+        if decode not in ["dense", "crf"]:
+            raise ValueError(f"Invalid decode={decode}")
+
+        self.decode = decode
+        self.decode = "dense"
+        super().__init__(grammar=grammar or self._build_grammar(), optimizer=optimizer, **kwargs)
 
     def _build_grammar(self):
         return build_grammar(preprocessing=True, features_time_distributed=True)
@@ -316,17 +339,24 @@ class KerasSequenceTagger(KerasNeuralNetwork):
 
     def _build_output(self, outputs, y):
         if "loss" not in self._compile_kwargs:
-            self._compile_kwargs["loss"] = "categorical_crossentropy"
             self._compile_kwargs["metrics"] = ["accuracy"]
 
-        dense = Dense(units=len(self._classes), activation="softmax")
+            if self.decode == "dense":
+                self._compile_kwargs["loss"] = "categorical_crossentropy"
+            elif self.decode == "crf":
+                self._compile_kwargs["loss"] = crf_loss
 
         if len(outputs) > 1:
             outputs = concatenate(outputs)
         else:
             outputs = outputs[0]
 
-        return TimeDistributed(dense)(outputs)
+        if self.decode == "dense":
+            dense = Dense(units=len(self._classes), activation="softmax")
+            return TimeDistributed(dense)(outputs)
+        elif self.decode == "crf":
+            crf = CRF(units=len(self._classes))
+            return crf(outputs)
 
     def fit(self, X, y):
         distinct_classes = set(x for yi in y for x in yi)
@@ -339,22 +369,25 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         y = [[self._classes[x] for x in yi] for yi in y]
         return super().fit(X, y)
 
+    def _encode(self, xi, yi):
+        if self.decode == "dense":
+            return (
+                np.expand_dims(xi, axis=0),
+                to_categorical([yi], len(self._classes)),
+            )
+        elif self.decode == "crf":
+            return (
+                np.expand_dims(xi, axis=0),
+                np.expand_dims(yi, axis=0),
+            )
+
     def _fit_model(self, X, y, **kwargs):
         def generate_batches():
             while True:
                 for xi, yi in zip(X, y):
-                    xi, yi = (
-                        np.expand_dims(xi, axis=0),
-                        to_categorical([yi], len(self._classes)),
-                    )
+                    yield self._encode(xi, yi)
 
-                    if len(xi.shape) == 3 and len(yi.shape) == 3:
-                        yield xi, yi
-
-                    # assert len(xi.shape) == 3#, 'xi has shape %r' % xi.shape
-                    # assert len(yi.shape) == 3#, 'yi has shape %r' % yi.shape
-
-        self.model.fit_generator(
+        self.model.fit(
             generate_batches(),
             steps_per_epoch=len(X),
             epochs=self._epochs,
@@ -370,6 +403,13 @@ class KerasSequenceTagger(KerasNeuralNetwork):
             # validation_split=self._validation_split,
         )
 
+    def _decode(self, predictions):
+        if self.decode == "dense":
+            predictions = [pr.argmax(axis=-1) for pr in predictions]
+            return [[self._inverse_classes[x] for x in yi[0]] for yi in predictions]
+        elif self.decode == "crf":
+            return [[self._inverse_classes[x] for x in yi[0]] for yi in predictions]
+
     def predict(self, X):
         if self._classes is None:
             raise TypeError(
@@ -377,9 +417,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
             )
 
         predictions = [self.model.predict(np.expand_dims(xi, axis=0)) for xi in X]
-        predictions = [pr.argmax(axis=-1) for pr in predictions]
-
-        return [[self._inverse_classes[x] for x in yi[0]] for yi in predictions]
+        return self._decode(predictions)
 
     def run(
         self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))

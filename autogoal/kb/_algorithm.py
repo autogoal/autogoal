@@ -4,7 +4,7 @@ import networkx as nx
 from collections import namedtuple, defaultdict
 import logging
 
-from autogoal.grammar import GraphSpace, Graph, generate_cfg
+from autogoal.grammar import GraphSpace, Graph, generate_cfg, CfgInitializer
 from autogoal.utils import nice_repr
 from autogoal.kb._data import (
     conforms,
@@ -428,12 +428,21 @@ class Pipeline:
         return x
 
 
-class PipelineBuilder(GraphSpace):
+class NewPipelineBuilder(GraphSpace):
     def __init__(self, graph, registry):
         super().__init__(graph, initializer=self.initialize)
 
     def initialize(self, node, sampler):
         return node.sample(sampler)
+
+    def sample(self, *args, **kwargs) -> Pipeline:
+        path = super().sample(*args, **kwargs)
+        return Pipeline(path)
+
+
+class PipelineBuilder(GraphSpace):
+    def __init__(self, graph, registry):
+        super().__init__(graph, initializer=CfgInitializer(registry=registry))
 
     def sample(self, *args, **kwargs) -> Pipeline:
         path = super().sample(*args, **kwargs)

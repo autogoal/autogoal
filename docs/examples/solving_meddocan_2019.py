@@ -88,6 +88,7 @@ classifier = AutoML(
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
     exclude_filter=".*Word2Vec.*",
+    include_filter=".*(Bert|Keras).*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,

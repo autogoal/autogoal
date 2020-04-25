@@ -5,6 +5,7 @@
 ARG PYTHON_VERSION
 
 FROM tensorflow/tensorflow:latest-gpu-py3
+RUN pip install tensorflow_addons
 
 # ==========================================
 # Project-specific installation instruction
