@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from autogoal.datasets import datapath, download
-from sklearn.feature_extraction import DictVectorizer
+
 
 def load(max_examples=None):
     """
@@ -22,10 +22,15 @@ def load(max_examples=None):
     try:
         download("meddocan_2018")
     except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
         raise
 
-    path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/meddocan_2018"
+    path = (
+        str(datapath(os.path.dirname(os.path.abspath(__file__))))
+        + "/data/meddocan_2018"
+    )
     train_path = path + "/train/brat"
     dev_path = path + "/dev/brat"
     test_path = path + "/test/brat"
@@ -42,24 +47,24 @@ def load(max_examples=None):
     for file in os.scandir(train_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
-            if compare_tags(bart_corpora, phi):
+            brat_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
+            if compare_tags(brat_corpora, phi):
                 X_train.extend(text)
                 y_train.extend(ibo_corpora)
 
     for file in os.scandir(dev_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
-            if compare_tags(bart_corpora, phi):
+            brat_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
+            if compare_tags(brat_corpora, phi):
                 X_train.extend(text)
                 y_train.extend(ibo_corpora)
 
     for file in os.scandir(test_path):
         if file.name.split(".")[1] == "ann":
             text, phi = parse_text_and_tags(file.path)
-            bart_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
-            if compare_tags(bart_corpora, phi):
+            brat_corpora, text, ibo_corpora = get_tagged_tokens(text, phi)
+            if compare_tags(brat_corpora, phi):
                 X_test.extend(text)
                 y_test.extend(ibo_corpora)
 
@@ -71,6 +76,7 @@ def load(max_examples=None):
 
     return X_train, X_test, y_train, y_test
 
+
 def parse_text_and_tags(file_name=None):
     """
     Given a file representing an annotated text in Brat format
@@ -80,9 +86,9 @@ def parse_text_and_tags(file_name=None):
     phi = []
 
     if file_name is not None:
-        text = open(os.path.splitext(file_name)[0] + '.txt', 'r').read()
+        text = open(os.path.splitext(file_name)[0] + ".txt", "r").read()
 
-        for row in open(file_name, 'r'):
+        for row in open(file_name, "r"):
             line = row.strip()
             if line.startswith("T"):  # Lines is a Brat TAG
                 try:
@@ -93,11 +99,17 @@ def parse_text_and_tags(file_name=None):
                     value = text[start:end]
                     phi.append((tag, start, end, value))
                 except IndexError:
-                    print("ERROR! Index error while splitting sentence '" +
-                            line + "' in document '" + file_name + "'!")
+                    print(
+                        "ERROR! Index error while splitting sentence '"
+                        + line
+                        + "' in document '"
+                        + file_name
+                        + "'!"
+                    )
             else:  # Line is a Brat comment
                 print("\tSkipping line (comment):\t" + line)
     return (text, phi)
+
 
 def get_tagged_tokens(text, tags):
     """
@@ -139,16 +151,26 @@ def get_tagged_tokens(text, tags):
             else:
                 sentences[-1].append((token, tag))
 
-
             token = ""
             current_tag = ""
             processing_token = False
 
-        if not processing_token and char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
+        if not processing_token and char in [
+            "\n",
+            " ",
+            ",",
+            ".",
+            ";",
+            ":",
+            "!",
+            "?",
+            "(",
+            ")",
+        ]:
             if token:
                 sentences[-1].append((token, tag))
 
-            if char in ["\n", ".", "!"," ?"] and len(sentences[-1]) > 1:
+            if char in ["\n", ".", "!", " ?"] and len(sentences[-1]) > 1:
                 sentences.append([])
 
             token = ""
@@ -157,10 +179,10 @@ def get_tagged_tokens(text, tags):
 
         if offset == next_tag_init:
             if token:
-                if char in ["\n"," ", ",", ".", ";", ":", "!", "?", "(", ")"]:
+                if char in ["\n", " ", ",", ".", ";", ":", "!", "?", "(", ")"]:
                     sentences[-1].append((token, tag))
                 else:
-                    token+=char
+                    token += char
                     sentences[-1].append((token, tag))
                 token = ""
 
@@ -180,9 +202,12 @@ def get_tagged_tokens(text, tags):
         token += char
         offset += 1
 
-    raw_sentences = [[word for word,_ in sentence] for sentence in sentences if sentence]
+    raw_sentences = [
+        [word for word, _ in sentence] for sentence in sentences if sentence
+    ]
     raw_tags = [[tag for _, tag in sentence] for sentence in sentences if sentence]
     return tagged_tokens, raw_sentences, raw_tags
+
 
 def compare_tags(tag_list, other_tag_list):
     """
@@ -193,11 +218,13 @@ def compare_tags(tag_list, other_tag_list):
     tags_amount = len(tag_list)
 
     if tags_amount != len(other_tag_list):
-        print("missmatch of amount of tags %d vs %d" %(tags_amount, len(other_tag_list)))
+        print(
+            "missmatch of amount of tags %d vs %d" % (tags_amount, len(other_tag_list))
+        )
         return False
 
-    tag_list.sort(key = lambda x: x[1])
-    other_tag_list.sort(key = lambda x: x[1])
+    tag_list.sort(key=lambda x: x[1])
+    other_tag_list.sort(key=lambda x: x[1])
     for i in range(tags_amount):
         if len(tag_list[i]) != len(other_tag_list[i]):
             print("missmatch of tags format")
@@ -205,10 +232,14 @@ def compare_tags(tag_list, other_tag_list):
 
         for j in range(len(tag_list[i])):
             if tag_list[i][j] != other_tag_list[i][j]:
-                print("missmatch of tags %s vs %s" %(tag_list[i][j], other_tag_list[i][j]))
+                print(
+                    "missmatch of tags %s vs %s"
+                    % (tag_list[i][j], other_tag_list[i][j])
+                )
                 return False
 
     return True
+
 
 def get_qvals(y, predicted):
     tp = 0
@@ -222,14 +253,15 @@ def get_qvals(y, predicted):
 
             if tag != "O":
                 if tag == predicted_tag:
-                    tp+=1
+                    tp += 1
                 else:
-                    fn+=1
+                    fn += 1
             elif tag != predicted_tag:
-                fp+=1
-        total_sentences+=1
+                fp += 1
+        total_sentences += 1
 
     return tp, fp, fn, total_sentences
+
 
 def leak(y, predicted):
     """
@@ -237,9 +269,10 @@ def leak(y, predicted):
     """
     tp, fp, fn, total_sentences = get_qvals(y, predicted)
     try:
-        return float(fn/total_sentences)
+        return float(fn / total_sentences)
     except ZeroDivisionError:
         return 0.0
+
 
 def precision(y, predicted):
     """
@@ -251,6 +284,7 @@ def precision(y, predicted):
     except ZeroDivisionError:
         return 0.0
 
+
 def recall(y, predicted):
     """
     recall evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)
@@ -261,6 +295,7 @@ def recall(y, predicted):
     except ZeroDivisionError:
         return 0.0
 
+
 def F1_beta(y, predicted, beta=1):
     """
     F1 evaluation function from [MEDDOCAN iberleaf 2018](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN)
@@ -268,20 +303,40 @@ def F1_beta(y, predicted, beta=1):
     p = precision(predicted, y)
     r = recall(predicted, y)
     try:
-        return (1 + beta**2) * ((p * r) / (p + r))
+        return (1 + beta ** 2) * ((p * r) / (p + r))
     except ZeroDivisionError:
         return 0.0
         pass
+
 
 def basic_fn(y, predicted):
     correct = 0
     total = 0
     for i in range(len(y)):
         for j in range(len(y[i])):
-            total+=1
+            total += 1
 
             _, tag = y[i][j]
             _, predicted_tag = predicted[i][j]
-            correct+=1 if tag == predicted_tag else 0
+            correct += 1 if tag == predicted_tag else 0
 
-    return correct/total
+    return correct / total
+
+
+def test_meddocan():
+    X_train, X_valid, y_train, y_valid = load()
+
+    assert len(X_train) == len(y_train)
+    assert len(X_valid) == len(y_valid)
+
+    assert all(isinstance(x, list) for x in X_train)
+    assert all(isinstance(x, list) for x in X_valid)
+
+    assert all(len(x) > 0 for x in X_train)
+    assert all(len(x) > 0 for x in X_valid)
+
+    for xi, yi in zip(X_train, y_train):
+        assert len(xi) == len(yi)
+
+    for xi, yi in zip(X_valid, y_valid):
+        assert len(xi) == len(yi)
