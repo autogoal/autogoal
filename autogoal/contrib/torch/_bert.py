@@ -60,22 +60,6 @@ class BertEmbedding:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
-    #     # !!! TODO: fix tokenizer to use sub-word tokens for missing tokens (ala Jonpi's)
-    #     self.print("Tokenizing...", end="", flush=True)
-    #     tokens = self.tokenizer.convert_tokens_to_ids(input)
-    #     self.print("done")
-
-    #     ids = torch.tensor(tokens).unsqueeze(0).to(self.device)
-
-    #     with torch.no_grad():
-    #         self.print("Embedding...", end="", flush=True)
-    #         output = self.model(ids)[0].numpy().reshape(len(tokens), -1)
-    #         self.print("done")
-
-    #     return output
-
-    # def __call__(self, sentence) -> List[Token]:
-    #     doc = Document(self._nlp(sentence))
         bert_tokens = [self.tokenizer.tokenize(x) for x in input]
         bert_senquence = self.tokenizer.encode_plus(
             [t for tokens in bert_tokens for t in tokens], return_tensors="pt"
