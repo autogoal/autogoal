@@ -9,9 +9,8 @@ from autogoal.kb import (
     Flags,
     Document,
     Distinct,
-    Boolean,
 )
-from autogoal.grammar import Categorical
+from autogoal.grammar import Categorical, Boolean
 from autogoal.utils import nice_repr
 
 import numpy as np

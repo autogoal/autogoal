@@ -32,6 +32,7 @@ class PipelineNode:
     def __eq__(self, other: "PipelineNode"):
         if not isinstance(other, PipelineNode):
             return False
+                
 
         return self.algorithm == other.algorithm and self.input == other.input and self.output == other.output
 
