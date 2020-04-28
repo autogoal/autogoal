@@ -1,4 +1,5 @@
 from transformers import BertModel, BertTokenizer
+from pathlib import Path
 import torch
 import numpy as np
 
@@ -38,8 +39,9 @@ class BertEmbedding:
 
     If you are using the development container the model should be already downloaded for you.
     """
+    use_cache = False
 
-    def __init__(self, merge_mode: Categorical("avg", "first") = "avg", verbose=False):  # , length: Discrete(16, 512)):
+    def __init__(self, merge_mode: Categorical("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
@@ -60,6 +62,13 @@ class BertEmbedding:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
+        if self.use_cache:
+            sentence_hash = hash(" ".join(input))
+            cache_path = Path(__file__).parent / f"cached_bert_{sentence_hash}.npy"
+
+            if cache_path.exists():
+                return np.load(cache_path)
+
         bert_tokens = [self.tokenizer.tokenize(x) for x in input]
         bert_senquence = self.tokenizer.encode_plus(
             [t for tokens in bert_tokens for t in tokens], return_tensors="pt"
@@ -77,7 +86,12 @@ class BertEmbedding:
             matrix.append(vector)
             count += contiguous
 
-        return np.vstack(matrix)
+        matrix = np.vstack(matrix)
+
+        if self.use_cache:
+            np.save(cache_path, matrix)
+
+        return matrix
 
     def _merge(self, vectors):
         if not vectors.size(0):
