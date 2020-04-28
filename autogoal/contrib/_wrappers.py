@@ -8,7 +8,8 @@ from autogoal.kb import (
     Tensor3,
     Flags,
     Document,
-    Distinct
+    Distinct,
+    Boolean,
 )
 from autogoal.grammar import Categorical
 from autogoal.utils import nice_repr
@@ -117,16 +118,24 @@ class SentenceFeatureExtractor:
         self,
         tokenizer: algorithm(Sentence(), List(Word())),
         feature_extractor: algorithm(Word(), Flags()),
+        include_text: Boolean(),
     ):
         self.tokenizer = tokenizer
         self.feature_extractor = feature_extractor
+        self.include_text = include_text
 
     def run(self, input: Sentence()) -> Flags():
         tokens = self.tokenizer.run(input)
         flags = [self.feature_extractor(w) for w in tokens]
-        return {
-            f"{w}|{f}": v for w, flags in zip(tokens, flags) for f, v in flags.items()
-        }
+
+        if self.include_text:
+            return {
+                f"{w}|{f}": v for w, flag in zip(tokens, flags) for f, v in flag.items()
+            }
+        else:
+            return {
+                f: v for flag in flags for f, v in flag.items()
+            }
 
 
 @nice_repr
