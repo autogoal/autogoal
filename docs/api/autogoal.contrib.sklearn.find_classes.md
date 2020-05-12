@@ -1,6 +1,6 @@
 # `autogoal.contrib.sklearn.find_classes`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/sklearn/__init__.py#L37)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/sklearn/__init__.py#L37)
 > `find_classes(include='.*', exclude=None)`
 
 Returns the list of all `scikit-learn` wrappers in `autogoal`.

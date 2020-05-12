@@ -1,75 +1,75 @@
 # `autogoal.search.ConsoleLogger`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_base.py#L215)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L225)
 > `ConsoleLogger(self, *args, **kwargs)`
 
 ### `begin`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L216)
-> `begin(self, evaluations)`
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L226)
+> `begin(self, generations, pop_size)`
 
 ### `emph`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L225)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L235)
 > `emph(text)`
 
 ### `end`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L264)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L274)
 > `end(self, best, best_fn)`
 
 ### `err`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L241)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L251)
 > `err(text)`
 
 ### `error`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L261)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L271)
 > `error(self, e, solution)`
 
 ### `eval_solution`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L271)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L281)
 > `eval_solution(self, solution, fitness)`
 
 ### `finish_generation`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L199)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L209)
 > `finish_generation(self, fns)`
 
 ### `normal`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L221)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L231)
 > `normal(text)`
 
 ### `primary`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L233)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L243)
 > `primary(text)`
 
 ### `sample_solution`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L267)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L277)
 > `sample_solution(self, solution)`
 
 ### `start_generation`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L245)
-> `start_generation(self, evaluations, best_fn)`
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L255)
+> `start_generation(self, generations, best_fn)`
 
 ### `success`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L229)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L239)
 > `success(text)`
 
 ### `update_best`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L274)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L284)
 > `update_best(self, new_best, new_fn, previous_best, previous_fn)`
 
 ### `warn`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L237)
+> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L247)
 > `warn(text)`
 

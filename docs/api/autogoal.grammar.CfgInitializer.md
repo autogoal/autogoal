@@ -1,5 +1,5 @@
 # `autogoal.grammar.CfgInitializer`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L371)
+> [📝](/usr/lib/python3/dist-packages/autogoal/grammar/_cfg.py#L445)
 > `CfgInitializer(self, registry=None)`
 

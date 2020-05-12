@@ -1,10 +1,15 @@
 # `autogoal.kb.List`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L418)
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L489)
 > `List(self, inner)`
+
+### `depth`
+
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L494)
+> `depth(self)`
 
 ### `get_tag`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L283)
 > `get_tag(self, tag)`
 

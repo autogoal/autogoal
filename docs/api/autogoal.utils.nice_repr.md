@@ -1,6 +1,6 @@
 # `autogoal.utils.nice_repr`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L11)
+> [📝](/usr/lib/python3/dist-packages/autogoal/utils/__init__.py#L11)
 > `nice_repr(cls)`
 
 A decorator that adds a nice `repr(.)` to any decorated class.

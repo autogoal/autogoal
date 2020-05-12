@@ -1,6 +1,6 @@
 # `autogoal.kb.build_pipelines`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_algorithm.py#L11)
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_algorithm.py#L237)
 > `build_pipelines(input, output, registry)`
 
 Creates a `PipelineBuilder` instance that generates all pipelines

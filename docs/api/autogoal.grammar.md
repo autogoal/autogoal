@@ -20,6 +20,7 @@
 ### [`GraphGrammar`](../autogoal.grammar.GraphGrammar)
 ### [`GraphSpace`](../autogoal.grammar.GraphSpace)
 ### [`Path`](../autogoal.grammar.Path)
+### [`Subset`](../autogoal.grammar.Subset)
 ### [`Symbol`](../autogoal.grammar.Symbol)
 ### [`Union`](../autogoal.grammar.Union)
 

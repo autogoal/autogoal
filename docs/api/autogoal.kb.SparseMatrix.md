@@ -1,10 +1,10 @@
 # `autogoal.kb.SparseMatrix`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L362)
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L425)
 > `SparseMatrix(self, **tags)`
 
 ### `get_tag`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L220)
+> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L283)
 > `get_tag(self, tag)`
 

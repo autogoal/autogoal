@@ -1,6 +1,6 @@
 # `autogoal.contrib.nltk.find_classes`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/nltk/__init__.py#L5)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/nltk/__init__.py#L5)
 > `find_classes(include='.*', exclude=None)`
 
 Returns the list of all `nltk` wrappers in `autogoal`.

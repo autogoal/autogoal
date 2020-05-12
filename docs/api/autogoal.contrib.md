@@ -6,7 +6,9 @@
 * [autogoal.contrib.keras](../autogoal.contrib.keras/)
 * [autogoal.contrib.nltk](../autogoal.contrib.nltk/)
 * [autogoal.contrib.sklearn](../autogoal.contrib.sklearn/)
+* [autogoal.contrib.spacy](../autogoal.contrib.spacy/)
 * [autogoal.contrib.torch](../autogoal.contrib.torch/)
+* [autogoal.contrib.wikipedia](../autogoal.contrib.wikipedia/)
 
 ## Functions
 

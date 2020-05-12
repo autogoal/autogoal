@@ -9,14 +9,18 @@
 ### [`DataType`](../autogoal.kb.DataType)
 ### [`DenseMatrix`](../autogoal.kb.DenseMatrix)
 ### [`DiscreteVector`](../autogoal.kb.DiscreteVector)
+### [`Distinct`](../autogoal.kb.Distinct)
 ### [`Document`](../autogoal.kb.Document)
 ### [`Entity`](../autogoal.kb.Entity)
+### [`Flags`](../autogoal.kb.Flags)
 ### [`Interface`](../autogoal.kb.Interface)
 ### [`List`](../autogoal.kb.List)
 ### [`Matrix`](../autogoal.kb.Matrix)
 ### [`MatrixContinuous`](../autogoal.kb.MatrixContinuous)
 ### [`MatrixContinuousDense`](../autogoal.kb.MatrixContinuousDense)
 ### [`MatrixContinuousSparse`](../autogoal.kb.MatrixContinuousSparse)
+### [`Pipeline`](../autogoal.kb.Pipeline)
+### [`PipelineBuilder`](../autogoal.kb.PipelineBuilder)
 ### [`Postag`](../autogoal.kb.Postag)
 ### [`Sentence`](../autogoal.kb.Sentence)
 ### [`Sentiment`](../autogoal.kb.Sentiment)
@@ -25,6 +29,7 @@
 ### [`Summary`](../autogoal.kb.Summary)
 ### [`Synset`](../autogoal.kb.Synset)
 ### [`Tensor3`](../autogoal.kb.Tensor3)
+### [`Tensor4`](../autogoal.kb.Tensor4)
 ### [`Text`](../autogoal.kb.Text)
 ### [`Tuple`](../autogoal.kb.Tuple)
 ### [`Vector`](../autogoal.kb.Vector)
@@ -37,6 +42,9 @@
 ### [`build_composite_tuple`](../autogoal.kb.build_composite_tuple)
 > Dynamically generate a class `CompositeAlgorithm` that wraps
 
+### [`build_pipeline_graph`](../autogoal.kb.build_pipeline_graph)
+> Creates a `PipelineBuilder` instance that generates all pipelines
+
 ### [`build_pipelines`](../autogoal.kb.build_pipelines)
 > Creates a `PipelineBuilder` instance that generates all pipelines
 
@@ -47,3 +55,4 @@
 ### [`infer_type`](../autogoal.kb.infer_type)
 > Attempts to automatically infer the most precise semantic type for `obj`.
 
+### [`make_list_wrapper`](../autogoal.kb.make_list_wrapper)

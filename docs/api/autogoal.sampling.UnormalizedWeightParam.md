@@ -1,10 +1,20 @@
 # `autogoal.sampling.UnormalizedWeightParam`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/sampling/__init__.py#L395)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L405)
 > `UnormalizedWeightParam(self, value)`
+
+### `repr_method`
+
+> [📝](/usr/lib/python3/dist-packages/autogoal/utils/__init__.py#L87)
+> `repr_method(self)`
 
 ### `update`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L399)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L409)
 > `update(self, alpha, updates)`
+
+### `weighted`
+
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L412)
+> `weighted(self, solutions)`
 

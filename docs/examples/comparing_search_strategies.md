@@ -4,7 +4,7 @@ This example compares the performance of [RandomSearch](/api/autogoal.search/#Ra
 and [PESearch](/api/autogoal.search/#PESearch) on a toy problem.
 
 ```python
-from autogoal.search import RandomSearch, PESearch, ConsoleLogger
+from autogoal.search import RandomSearch, PESearch, ConsoleLogger, ProgressLogger
 ```
 
 The problem to solve consists of a simple puzzle:
@@ -92,10 +92,10 @@ We will run 1000 iterations of each search strategy to compare their long-term p
 
 ```python
 search_rand = RandomSearch(grammar, evaluate, errors='ignore')
-best_rand, best_fn_rand = search_rand.run(1000, logger=ConsoleLogger())
+best_rand, best_fn_rand = search_rand.run(1000, logger=[ConsoleLogger(), ProgressLogger()])
 
 search_pe = PESearch(grammar, evaluate, pop_size=10, errors='ignore')
-best_pe, best_fn_pe = search_pe.run(1000, logger=ConsoleLogger())
+best_pe, best_fn_pe = search_pe.run(1000, logger=[ConsoleLogger(), ProgressLogger()])
 ```
 
 And here are the results.

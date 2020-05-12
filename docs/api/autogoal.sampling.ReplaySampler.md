@@ -1,6 +1,6 @@
 # `autogoal.sampling.ReplaySampler`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/sampling/__init__.py#L206)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L210)
 > `ReplaySampler(self, sampler)`
 
 A sampler that records the generated values and then can replay the
@@ -52,37 +52,37 @@ TypeError: Invalid invocation of `boolean`, replay history says discrete comes n
 ```
 ### `boolean`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L382)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L388)
 > `boolean(self, *args, **kwargs)`
 
 ### `categorical`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L385)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L391)
 > `categorical(self, *args, **kwargs)`
 
 ### `choice`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L370)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L376)
 > `choice(self, *args, **kwargs)`
 
 ### `continuous`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L379)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L385)
 > `continuous(self, *args, **kwargs)`
 
 ### `discrete`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L376)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L382)
 > `discrete(self, *args, **kwargs)`
 
 ### `distribution`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L373)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L379)
 > `distribution(self, *args, **kwargs)`
 
 ### `load`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L338)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L344)
 > `load(fp)`
 
 Creates a `ReplaySampler` from a stream and returns it already in
@@ -109,12 +109,12 @@ You are responsible for opening and closing the stream yourself.
 [7, 7, 7, 10, 6]
 ### `replay`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L304)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L308)
 > `replay(self)`
 
 ### `save`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L309)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L313)
 > `save(self, fp)`
 
 Saves the state of a `ReplaySampler` to a stream. It must be in replay mode.

@@ -1,5 +1,5 @@
 # `autogoal.datasets.unpack`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/datasets/__init__.py#L36)
+> [📝](/usr/lib/python3/dist-packages/autogoal/datasets/__init__.py#L36)
 > `unpack(zipfile)`
 

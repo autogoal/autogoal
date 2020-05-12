@@ -76,6 +76,9 @@
 | TheilSenRegressor | sklearn | Tuple(MatrixContinuousDense(), ContinuousVector()) | ContinuousVector() | 
 | TruncatedSVD | sklearn | MatrixContinuous() | MatrixContinuousDense() | 
 | CountVectorizerNoTokenize | sklearn | List(Sentence()) | MatrixContinuousSparse() | 
+| FlagsDenseVectorizer | sklearn | List(Flags()) | MatrixContinuousDense() | 
+| FlagsSparseVectorizer | sklearn | List(Flags()) | MatrixContinuousSparse() | 
+| _FlagsVectorizer | sklearn | <class 'inspect._empty'> | <class 'inspect._empty'> | 
 | AffixTagger | nltk | Tuple(List(List(Word())), List(List(Postag()))) | List(List(Postag())) | 
 | BigramTagger | nltk | Tuple(List(List(Word())), List(List(Postag()))) | List(List(Postag())) | 
 | BlanklineTokenizer | nltk | Document() | List(Sentence()) | 
@@ -108,13 +111,26 @@
 | SentimentWord | nltk | Synset(domain=general, language=english) | Sentiment() | 
 | StopwordRemover | nltk | List(Word()) | List(Word()) | 
 | WordnetConcept | nltk | Word(domain=general, language=english) | Synset() | 
+| FastTextEmbeddingSpanishSUC | gensim | Word(domain=general, language=spanish) | ContinuousVector() | 
+| FastTextEmbeddingSpanishSWBC | gensim | Word(domain=general, language=spanish) | ContinuousVector() | 
+| GloveEmbeddingSpanishSWBC | gensim | Word(domain=general, language=spanish) | ContinuousVector() | 
 | Word2VecEmbedding | gensim | Word(domain=general, language=english) | ContinuousVector() | 
 | Word2VecEmbeddingSpanish | gensim | Word(domain=general, language=spanish) | ContinuousVector() | 
 | KerasSequenceClassifier | keras | Tuple(Tensor3(), CategoricalVector()) | CategoricalVector() | 
 | KerasClassifier | keras | Tuple(MatrixContinuousDense(), CategoricalVector()) | CategoricalVector() | 
 | KerasSequenceTagger | keras | Tuple(List(MatrixContinuousDense()), List(List(Postag()))) | List(List(Postag())) | 
+| KerasImageClassifier | keras | Tuple(Tensor4(), CategoricalVector()) | CategoricalVector() | 
 | BertEmbedding | torch | List(Word(language=english)) | MatrixContinuousDense() | 
 | BertTokenizeEmbedding | torch | List(Sentence(language=english)) | Tensor3() | 
+| SpacyNLP | spacy | Sentence() | Tuple(List(Word()), List(Flags())) | 
+| WikipediaContainsWord | wikipedia | Word(domain=general, language=english) | Flags() | 
+| WikipediaContainsWordSpanish | wikipedia | Word(domain=general, language=spanish) | Flags() | 
+| WikipediaSummary | wikipedia | Word(domain=general, language=english) | Summary() | 
+| WikipediaSummarySpanish | wikipedia | Word(domain=general, language=spanish) | Summary() | 
 | MatrixBuilder |  | List(ContinuousVector()) | MatrixContinuousDense() | 
 | VectorAggregator |  | List(ContinuousVector()) | ContinuousVector() | 
 | TensorBuilder |  | List(MatrixContinuousDense()) | Tensor3() | 
+| FlagsMerger |  | List(Flags()) | Flags() | 
+| SentenceFeatureExtractor |  | Sentence() | Flags() | 
+| DocumentFeatureExtractor |  | Document() | List(Flags()) | 
+| MultipleFeatureExtractor |  | Word() | Flags() | 

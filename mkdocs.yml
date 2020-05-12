@@ -45,6 +45,8 @@ nav:
         - autogoal.contrib.keras:
           - Index: api/autogoal.contrib.keras.md
           - KerasClassifier: api/autogoal.contrib.keras.KerasClassifier.md
+          - KerasImageClassifier: api/autogoal.contrib.keras.KerasImageClassifier.md
+          - KerasImagePreprocessor: api/autogoal.contrib.keras.KerasImagePreprocessor.md
           - KerasNeuralNetwork: api/autogoal.contrib.keras.KerasNeuralNetwork.md
           - KerasSequenceClassifier: api/autogoal.contrib.keras.KerasSequenceClassifier.md
           - KerasSequenceTagger: api/autogoal.contrib.keras.KerasSequenceTagger.md
@@ -56,11 +58,22 @@ nav:
         - autogoal.contrib.sklearn:
           - Index: api/autogoal.contrib.sklearn.md
           - find_classes: api/autogoal.contrib.sklearn.find_classes.md
+        - autogoal.contrib.spacy:
+          - Index: api/autogoal.contrib.spacy.md
+          - SpacyNLP: api/autogoal.contrib.spacy.SpacyNLP.md
+          - find_classes: api/autogoal.contrib.spacy.find_classes.md
         - autogoal.contrib.torch:
           - Index: api/autogoal.contrib.torch.md
           - BertEmbedding: api/autogoal.contrib.torch.BertEmbedding.md
           - BertTokenizeEmbedding: api/autogoal.contrib.torch.BertTokenizeEmbedding.md
           - find_classes: api/autogoal.contrib.torch.find_classes.md
+        - autogoal.contrib.wikipedia:
+          - Index: api/autogoal.contrib.wikipedia.md
+          - WikipediaContainsWord: api/autogoal.contrib.wikipedia.WikipediaContainsWord.md
+          - WikipediaContainsWordSpanish: api/autogoal.contrib.wikipedia.WikipediaContainsWordSpanish.md
+          - WikipediaSummary: api/autogoal.contrib.wikipedia.WikipediaSummary.md
+          - WikipediaSummarySpanish: api/autogoal.contrib.wikipedia.WikipediaSummarySpanish.md
+          - find_classes: api/autogoal.contrib.wikipedia.find_classes.md
         - autogoal.datasets:
           - Index: api/autogoal.datasets.md
           - datapath: api/autogoal.datasets.datapath.md
@@ -84,6 +97,7 @@ nav:
           - GraphGrammar: api/autogoal.grammar.GraphGrammar.md
           - GraphSpace: api/autogoal.grammar.GraphSpace.md
           - Path: api/autogoal.grammar.Path.md
+          - Subset: api/autogoal.grammar.Subset.md
           - Symbol: api/autogoal.grammar.Symbol.md
           - Union: api/autogoal.grammar.Union.md
           - generate_cfg: api/autogoal.grammar.generate_cfg.md
@@ -96,14 +110,18 @@ nav:
           - DataType: api/autogoal.kb.DataType.md
           - DenseMatrix: api/autogoal.kb.DenseMatrix.md
           - DiscreteVector: api/autogoal.kb.DiscreteVector.md
+          - Distinct: api/autogoal.kb.Distinct.md
           - Document: api/autogoal.kb.Document.md
           - Entity: api/autogoal.kb.Entity.md
+          - Flags: api/autogoal.kb.Flags.md
           - Interface: api/autogoal.kb.Interface.md
           - List: api/autogoal.kb.List.md
           - Matrix: api/autogoal.kb.Matrix.md
           - MatrixContinuous: api/autogoal.kb.MatrixContinuous.md
           - MatrixContinuousDense: api/autogoal.kb.MatrixContinuousDense.md
           - MatrixContinuousSparse: api/autogoal.kb.MatrixContinuousSparse.md
+          - Pipeline: api/autogoal.kb.Pipeline.md
+          - PipelineBuilder: api/autogoal.kb.PipelineBuilder.md
           - Postag: api/autogoal.kb.Postag.md
           - Sentence: api/autogoal.kb.Sentence.md
           - Sentiment: api/autogoal.kb.Sentiment.md
@@ -112,6 +130,7 @@ nav:
           - Summary: api/autogoal.kb.Summary.md
           - Synset: api/autogoal.kb.Synset.md
           - Tensor3: api/autogoal.kb.Tensor3.md
+          - Tensor4: api/autogoal.kb.Tensor4.md
           - Text: api/autogoal.kb.Text.md
           - Tuple: api/autogoal.kb.Tuple.md
           - Vector: api/autogoal.kb.Vector.md
@@ -119,14 +138,18 @@ nav:
           - algorithm: api/autogoal.kb.algorithm.md
           - build_composite_list: api/autogoal.kb.build_composite_list.md
           - build_composite_tuple: api/autogoal.kb.build_composite_tuple.md
+          - build_pipeline_graph: api/autogoal.kb.build_pipeline_graph.md
           - build_pipelines: api/autogoal.kb.build_pipelines.md
           - conforms: api/autogoal.kb.conforms.md
           - draw_data_hierarchy: api/autogoal.kb.draw_data_hierarchy.md
           - infer_type: api/autogoal.kb.infer_type.md
+          - make_list_wrapper: api/autogoal.kb.make_list_wrapper.md
         - autogoal.ml:
           - Index: api/autogoal.ml.md
           - AutoML: api/autogoal.ml.AutoML.md
-          - accuracy: api/autogoal.ml.accuracy.md
+          - DatasetFeatureExtractor: api/autogoal.ml.DatasetFeatureExtractor.md
+          - DatasetFeatureLogger: api/autogoal.ml.DatasetFeatureLogger.md
+          - LearnerMedia: api/autogoal.ml.LearnerMedia.md
         - autogoal.ml.metrics:
           - Index: api/autogoal.ml.metrics.md
           - accuracy: api/autogoal.ml.metrics.accuracy.md

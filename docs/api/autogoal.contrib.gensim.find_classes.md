@@ -1,6 +1,6 @@
 # `autogoal.contrib.gensim.find_classes`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/gensim/__init__.py#L15)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/gensim/__init__.py#L15)
 > `find_classes(include='.*', exclude=None)`
 
 Returns the list of all `gensim` wrappers in `autogoal`.

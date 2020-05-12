@@ -1,35 +1,40 @@
 # `autogoal.contrib.keras.KerasClassifier`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L131)
-> `KerasClassifier(self, grammar=None, **kwargs)`
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L156)
+> `KerasClassifier(self, optimizer, grammar=None, **kwargs)`
+
+### `repr_method`
+
+> [📝](/usr/lib/python3/dist-packages/autogoal/utils/__init__.py#L87)
+> `repr_method(self)`
 
 ### `eval`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L43)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L59)
 > `eval(self)`
 
 ### `fit`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L159)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L189)
 > `fit(self, X, y)`
 
 ### `predict`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L166)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L196)
 > `predict(self, X)`
 
 ### `run`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L176)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L206)
 > `run(self, input)`
 
 ### `sample`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L67)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L93)
 > `sample(self, sampler=None, max_iterations=100)`
 
 ### `train`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L40)
+> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L56)
 > `train(self)`
 

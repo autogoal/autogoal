@@ -1,6 +1,6 @@
 # `autogoal.sampling.best_indices`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L460)
+> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L515)
 > `best_indices(values, k=1, maximize=False)`
 
 Computes the `k` best indices from values, i.e., the indices of the values
