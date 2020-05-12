@@ -1,3 +1,6 @@
+from autogoal.datasets.ehealthkd20._utils import Collection, Sentence
+
+
 def to_biluov(tokensxsentence, entitiesxsentence):
     labelsxsentence = []
     for tokens, entities in zip(tokensxsentence, entitiesxsentence):

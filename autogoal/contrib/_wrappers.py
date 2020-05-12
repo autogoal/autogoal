@@ -9,6 +9,8 @@ from autogoal.kb import (
     Flags,
     Document,
     Distinct,
+    Entity,
+    Category,
 )
 from autogoal.grammar import Categorical, Boolean
 from autogoal.utils import nice_repr
@@ -100,8 +102,10 @@ class FlagsMerger:
 class MultipleFeatureExtractor:
     def __init__(
         self,
-        extractors: Distinct(algorithm(Word(), Flags()), exceptions=["MultipleFeatureExtractor"]),
-        merger: algorithm(List(Flags()), Flags())
+        extractors: Distinct(
+            algorithm(Word(), Flags()), exceptions=["MultipleFeatureExtractor"]
+        ),
+        merger: algorithm(List(Flags()), Flags()),
     ):
         self.extractors = extractors
         self.merger = merger
@@ -132,9 +136,7 @@ class SentenceFeatureExtractor:
                 f"{w}|{f}": v for w, flag in zip(tokens, flags) for f, v in flag.items()
             }
         else:
-            return {
-                f: v for flag in flags for f, v in flag.items()
-            }
+            return {f: v for flag in flags for f, v in flag.items()}
 
 
 @nice_repr
@@ -151,3 +153,41 @@ class DocumentFeatureExtractor:
         tokens = self.tokenizer.run(input)
         flags = [self.feature_extractor(w) for w in tokens]
         return
+
+
+@nice_repr
+class TextEntityEncoder:
+    """
+    Convierte una oración en texto plano más la lista de entidades
+    reconocidas en la oración, en una lista de tokens con sus respectivas
+    categorias BILOUV.
+    """
+
+    def __init__(self, tokenizer: algorithm(Sentence(), List(Token()))):
+        self.tokenizer = tokenizer
+
+    def run(
+        self, input: Tuple(Sentence(), List(Entity()))
+    ) -> Tuple(List(Token()), List(Postag())):
+        pass
+
+
+@nice_repr
+class TextRelationEncoder:
+    """
+    Convierte una oración en texto plano y una lista de relaciones 
+    que se cumplen entre entidades, en una lista de ejemplos
+    por cada oración.
+    """
+
+    def __init__(self,
+        tokenizer: algorithm(Sentence(), List(Token())),
+        token_feature_extractor: algorithm(Token(), Flags()),
+        # token_sentence_encoder: algorithm(Token(), )
+    ):
+        pass
+
+    def run(
+        self, input: Tuple(Sentence(), List(Tuple(Entity(), Entity(), Category())))
+    ) -> Tuple(List(Vector(), CategoricalVector())):
+        pass
