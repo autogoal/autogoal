@@ -31,4 +31,4 @@ def load(max_examples=None):
         X.append(line)
         y.append(int(clean_line[-1]) == 2)
 
-    return DictVectorizer().fit_transform(X), np.asarray(y)
+    return DictVectorizer(sparse=False).fit_transform(X), np.asarray(y)

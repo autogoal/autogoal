@@ -10,7 +10,7 @@ def load(max_examples=None):
     ##### Examples
 
     ```python
-    >>> X_train, X_valid, y_train, y_valid = load()
+    >>> X_train, y_train, X_valid, y_valid = load()
     >>> len(X_train), len(X_valid)
     (25622, 8432)
     >>> len(y_train), len(y_valid)
@@ -74,7 +74,7 @@ def load(max_examples=None):
         y_train = y_train[:max_examples]
         y_test = y_test[:max_examples]
 
-    return X_train, X_test, y_train, y_test
+    return X_train, y_train, X_test, y_test
 
 
 def parse_text_and_tags(file_name=None):

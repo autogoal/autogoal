@@ -11,7 +11,7 @@ def load(max_examples=None):
     ##### Examples
 
     ```python
-    >>> X_train, X_valid, y_train, y_valid = load()
+    >>> X_train, y_train, X_valid, y_valid = load()
     >>> X_train.shape, X_valid.shape
     ((43500, 9), (14500, 9))
     >>> len(y_train), len(y_valid)
@@ -78,10 +78,10 @@ def load(max_examples=None):
     X_train, y_train = _load_onehot(X_train, y_train)
     X_test, y_test = _load_onehot(X_test, y_test)
 
-    return X_train, X_test, y_train, y_test
+    return X_train, y_train, X_test, y_test
 
 
 def _load_onehot(X, y):
     vec = DictVectorizer(sparse=False)
 
-    return vec.fit_transform(X), y
+    return vec.fit_transform(X), np.asarray(y)

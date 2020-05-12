@@ -52,4 +52,4 @@ def load():
 def _load_onehot(X, y):
     vec = DictVectorizer(sparse=False)
 
-    return vec.fit_transform(X), y
+    return vec.fit_transform(X), np.asarray(y)

@@ -12,7 +12,7 @@ def load():
     ##### Examples
 
     ```python
-    >>> X_train, X_valid, y_train, y_valid = load()
+    >>> X_train, y_train, X_valid, y_valid = load()
     >>> X_train.shape, X_valid.shape
     ((6000, 5000), (1000, 5000))
     >>> len(y_train), len(y_valid)
@@ -57,4 +57,4 @@ def load():
     for line in valid_labels:
         yvalid.append(int(line) > 0)
 
-    return Xtrain.tocsr(), Xvalid.tocsr(), np.asarray(ytrain), np.asarray(yvalid)
+    return Xtrain.tocsr(), np.asarray(ytrain), Xvalid.tocsr(), np.asarray(yvalid)

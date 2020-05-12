@@ -11,6 +11,10 @@ from autogoal.kb import (
     Distinct,
     Entity,
     Category,
+    Tuple,
+    Postag,
+    Vector,
+    CategoricalVector,
 )
 from autogoal.grammar import Categorical, Boolean
 from autogoal.utils import nice_repr
@@ -163,12 +167,12 @@ class TextEntityEncoder:
     categorias BILOUV.
     """
 
-    def __init__(self, tokenizer: algorithm(Sentence(), List(Token()))):
+    def __init__(self, tokenizer: algorithm(Sentence(), List(Word()))):
         self.tokenizer = tokenizer
 
     def run(
         self, input: Tuple(Sentence(), List(Entity()))
-    ) -> Tuple(List(Token()), List(Postag())):
+    ) -> Tuple(List(Word()), List(Postag())):
         pass
 
 
@@ -181,13 +185,13 @@ class TextRelationEncoder:
     """
 
     def __init__(self,
-        tokenizer: algorithm(Sentence(), List(Token())),
-        token_feature_extractor: algorithm(Token(), Flags()),
-        # token_sentence_encoder: algorithm(Token(), )
+        tokenizer: algorithm(Sentence(), List(Word())),
+        token_feature_extractor: algorithm(Word(), Flags()),
+        # token_sentence_encoder: algorithm(Word(), )
     ):
         pass
 
     def run(
         self, input: Tuple(Sentence(), List(Tuple(Entity(), Entity(), Category())))
-    ) -> Tuple(List(Vector(), CategoricalVector())):
+    ) -> Tuple(List(Vector()), CategoricalVector()):
         pass

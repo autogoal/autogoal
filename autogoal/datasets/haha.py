@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 from autogoal.datasets import datapath, download
 
@@ -52,7 +53,7 @@ def load(target='is_humor', max_examples=None):
     Loading with classification targets:
 
     ```python
-    >>> X_train, X_test, y_train, y_test = load()
+    >>> X_train, y_train, X_test, y_test = load()
     >>> print(X_train[13])
     Leí que la falta de sexo trae consigo una notable mejora en el léxico. Me quedo absorto ante tal afirmación carente de raciocinio.
     >>> y_train[13]
@@ -63,7 +64,7 @@ def load(target='is_humor', max_examples=None):
     Loading with regression targets:
 
     ```python
-    >>> X_train, X_test, y_train, y_test = load(target="funniness_average")
+    >>> X_train, y_train, X_test, y_test = load(target="funniness_average")
     >>> print(X_train[13])
     Leí que la falta de sexo trae consigo una notable mejora en el léxico. Me quedo absorto ante tal afirmación carente de raciocinio.
     >>> y_train[13]
@@ -88,4 +89,4 @@ def load(target='is_humor', max_examples=None):
     X_test = list(test_df['text'])
     y_test = list(test_df[target])
 
-    return (X_train, X_test, y_train, y_test)
+    return X_train, np.asarray(y_train),  X_test, np.asarray(y_test)
