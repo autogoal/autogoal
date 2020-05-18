@@ -1,7 +1,7 @@
 .PHONY: build
 build:
-	docker build -t autogoal/autogoal:3.6-cpu -f dockerfile .
-	docker build -t autogoal/autogoal:3.6-gpu -f gpu.dockerfile .
+	docker build -t autogoal/autogoal:3.6-cpu --build-arg BACKEND=cpu .
+	docker build -t autogoal/autogoal:3.6-gpu --build-arg BACKEND=gpu .
 
 # .PHONY: test-fast
 # test-fast:
