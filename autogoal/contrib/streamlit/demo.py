@@ -141,6 +141,7 @@ class Demo:
         }
 
         override_types = {
+            'german_credit': ("MatrixContinuousDense()", "CategoricalVector()"),
             'dorothea': ("MatrixContinuousSparse()", "CategoricalVector()"),
             'gisette': ("MatrixContinuousSparse()", "CategoricalVector()"),
             'haha': ("List(Sentence())", "CategoricalVector()"),
