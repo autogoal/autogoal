@@ -38,7 +38,7 @@ class KerasNeuralNetwork:
         self,
         grammar: GraphGrammar,
         optimizer: Categorical("sgd", "adam", "rmsprop"),
-        epochs=100,
+        epochs=10,
         early_stop=3,
         validation_split=0.1,
         **compile_kwargs,

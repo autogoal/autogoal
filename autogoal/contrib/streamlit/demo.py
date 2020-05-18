@@ -5,6 +5,7 @@ import networkx as nx
 import pandas as pd
 import altair as alt
 import nx_altair as nxa
+import inspect
 
 from autogoal.kb import build_pipeline_graph
 from matplotlib import pyplot as plt
@@ -28,7 +29,7 @@ class Demo:
         self.main_sections = {
             "Intro": self.intro,
             "High-Level API": self.high_level,
-            "Automatic pipelines": self.build_pipelines,
+            "Pipelines": self.build_pipelines,
         }
 
     def intro(self):
@@ -55,11 +56,40 @@ class Demo:
         Keep in mind that AutoGOAL is a software library, i.e., meant to be used from source code.
         This demo serves as an interactive and user-friendly introduction to the library, but it
         is in no case a full-featured AutoML application.
+
+        There are two sections to showcase different components of AutoGOAL.
+        You can switch sections in the left sidebar.
+        
+        * The **High-Level API** section presents the public interface of AutoGOAL
+        in several datasets.
+        * The **Pipelines** section shows the internal components of AutoGOAL and allows
+        to explore the possible pipelines.
         """
         )
 
-    def high_level(self):
+        st.write("""
+        ## Running the code
 
+        To execute this demo on your own infrastructure, you need AutoGOAL's docker image.
+        There are two images available, without and without GPU support.
+
+        Download the corresponding Docker image:
+
+            docker pull autogoal/autogoal:[cpu|gpu]
+
+        """)
+
+        st.write(
+            """
+            Launch a Docker container.
+
+                docker run --rm -p 8501:8501 autogoal/autogoal
+
+            Navigate to <http://localhost:8501>.
+            """
+        )
+
+    def high_level(self):
         st.write("# High-Level API")
         st.write(
             """
@@ -231,17 +261,115 @@ class Demo:
         )
 
     def build_pipelines(self):
-        st.write("# Building automatic pipelines")
+        st.write("# Pipelines")
 
         st.write(
             "This example illustrates how AutoGOAL automatically builds "
             "a graph of pipelines for different problems settings."
         )
 
-        input_type = st.text_input(
-            "Input type", "Tuple(Document(), CategoricalVector())"
+        from autogoal.kb._data import DATA_TYPES
+
+        types_str = [cls.__name__ for cls in DATA_TYPES]
+
+        st.write(
+            """
+            AutoGOAL pipeline discovery is based on a hierarchy of semantic datatypes.
+            Each type represents a semantic datum that can be used in a machine learning algorithm,
+            from matrices and vectors to sentences, entities and and images.
+
+            The following picture shows all available semantic data types.
+            You can click the top right corner to enlarge.
+            """
         )
-        output_type = st.text_input("Output type", "CategoricalVector()")
+
+        st.image("/code/docs/guide/datatypes.png", use_column_width=True)
+
+        from autogoal.contrib import find_classes
+
+        all_classes = {k.__name__: k for k in find_classes()}
+
+        st.write(
+            f"""
+            ## Algorithm Library
+
+            AutoGOAL automatically builds pipelines by selecting from a wide range of algorithms
+            implemented in `contrib` modules.
+            The list of all available algorithms is shown here.
+
+            There are a total of **{len(all_classes)}** algorithms implemented.
+            Select one to display some information.
+            """)
+
+
+        class_name = st.selectbox("Select an algorithm", list(all_classes))
+        class_type = all_classes[class_name]
+
+        st.write(f"### {class_type.__module__}.{class_name}")
+
+        run_signature = inspect.signature(class_type.run)
+        st.write(f"**Input type**: {run_signature.parameters['input'].annotation}")
+        st.write(f"**Output type**: {run_signature.return_annotation}")
+        
+        st.write("#### Parameters")
+        params = []
+        for name, param in inspect.signature(class_type.__init__).parameters.items():
+            if name == 'self':
+                continue
+
+            params.append(f"* **{name}**: {param.annotation}")
+        st.write("\n".join(params))
+
+        st.write("## Pipeline Builder")
+
+        st.write(
+            """
+            AutoGOAL can automatically build pipelines given a desired input and output
+            value. It uses the annotations of the `run` method of each algorithm to detect
+            which algorithms can be connected.
+
+            In the following section, you can select a desired input and output types and 
+            explore the pipelines that AutoGOAL discovers.
+            In the left sidebar you can fine-tune the input value, e.g., make it a list
+            of elements instead of a single element.
+            """
+        )
+
+
+        st.sidebar.markdown("### Configure input and output types")
+        list_input = st.sidebar.number_input("Input list (level)", 0, 3, 1)
+        list_output = st.sidebar.number_input("Output list (level)", 0, 3, 0)
+        tuples = st.sidebar.checkbox("Is supervised (use Tuple in input)", True)
+        
+        input_type = st.selectbox(
+            "Select an input type", types_str, types_str.index('Sentence')
+        )
+
+        output_type = st.selectbox(
+            "Select and output type", types_str, types_str.index('CategoricalVector')
+        )
+
+        input_type = input_type + "()"
+        for i in range(list_input):
+            input_type = f"List({input_type})"
+
+        output_type = output_type + "()"
+        for i in range(list_output):
+            input_type = f"List({output_type})"
+
+        if tuples:
+            input_type = f"Tuple({input_type}, {output_type})"
+
+        st.write(f"#### Defined input type:  `{input_type}`")
+        st.write(f"#### Defined output type: `{output_type}`")
+
+        st.write(
+            """
+            The following code uses explicitely AutoGOAL's pipeline discovery engine
+            to find all the pipelines that can be constructed from the desired
+            input to the desired output.
+            """
+        )
 
         code = textwrap.dedent(
             f"""
@@ -260,9 +388,26 @@ class Demo:
 
         st.code(code)
 
-        space = eval_code(code, "space")
+        try:
+            space = eval_code(code, "space")
+        except Exception as e:
+            if "No pipelines can be constructed" in str(e):
+                st.error(str(e))
+                st.info("Try changing the input and output type or select **Is supervised** in the left sidebar.")
+                return
+            
+            raise
 
-        st.write("#### Pipelines graph")
+        st.write(
+            """
+            ### The Pipelines Graph
+            
+            This is the graph that represents all the posible pipelines find by AutoGOAL.
+            Each node in this graph is an algorithm from the _Algorithm Library_ that is
+            compatible with the input and output types of its neighbors.
+            Any path from the top to the bottom of the graph represents a valid pipeline.
+            """)
+            
         graph = nx.DiGraph()
 
         def get_node_repr(node):
@@ -289,9 +434,23 @@ class Demo:
 
         st.altair_chart(chart, use_container_width=True)
 
-        st.write("#### Example pipeline")
-        st.button("Sample another pipeline")
+        st.write(
+            """
+            ### Example Pipeline
+            
+            Here is an example pipeline that has been randomly sampled from the previous graph.
+            You can try different samples. Notice how not only the nodes (algorithms) that participate
+            in the pipeline are different each time, but also their internal hyperparameters change.
+            
+            When sampling a pipeline from the graph AutoGOAL samples all the internal
+            hyperparameters as defined by the constructor.
+            When these hyperparameters have complex values (e.g., an algorithm per-se), AutoGOAL
+            recursively samples instances of the internal algorithms, and so on.
+            """)
+
         st.code(space.sample())
+
+        st.button("Sample another pipeline")
 
     def run(self):
         main_section = st.sidebar.selectbox("Section", list(self.main_sections))

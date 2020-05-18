@@ -87,8 +87,8 @@ classifier = AutoML(
     search_iterations=args.iterations,
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
-    # exclude_filter=".*Word2Vec.*",
-    # include_filter=".*(Bert|Keras).*",
+    exclude_filter=".*Word2Vec.*",
+    include_filter=".*(Bert|Keras).*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
@@ -128,7 +128,7 @@ if args.token:
 # Finally, loading the MEDDOCAN dataset, running the `AutoML` instance,
 # and printing the results.
 
-X_train, X_test, y_train, y_test = meddocan.load(max_examples=args.examples)
+X_train, y_train, X_test, y_test = meddocan.load(max_examples=args.examples)
 
 classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)

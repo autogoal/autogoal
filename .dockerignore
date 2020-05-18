@@ -145,5 +145,6 @@ dask-worker-space/*
 .env
 **/*.npy
 **/*.pickle
+**/*.zip
 autogoal/datasets/data/*
 !autogoal/datasets/data/.gitignore

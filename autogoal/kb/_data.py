@@ -529,7 +529,6 @@ class Tuple(DataType):
 
 DATA_TYPES = frozenset(
     [
-        DataType,
         Text,
         Word,
         Stem,
