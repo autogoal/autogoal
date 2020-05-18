@@ -1,32 +1,9 @@
 version: "2.3"
 
 services:
-  autogoal-tester-cpu:
-    container_name: autogoal-dev-${PYTHON_VERSION}-cpu
-    image: autogoal/autogoal:latest
-    build:
-      context: "."
-      args:
-        PYTHON_VERSION: ${PYTHON_VERSION}
-    volumes:
-      - "./:/code"
-      - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
-      - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
-    network_mode: host
-
-  # autogoal-tester-gpu:
-  #   container_name: autogoal-dev-${PYTHON_VERSION}-gpu
-  #   image: autogoal/autogoal-dev:${PYTHON_VERSION}-gpu
-  #   build:
-  #     dockerfile: gpu.dockerfile
-  #     context: "."
-  #     args:
-  #       PYTHON_VERSION: ${PYTHON_VERSION}
-  #   volumes:
-  #     - "./:/code"
-  #     - "./autogoal:/usr/local/lib/python3.6/site-packages/autogoal"
-  #     - "~/nltk_data:/root/nltk_data"
-  #     - "~/.ssh/id_rsa:/root/.ssh/id_rsa"
-  #   command: ["jupyter", "lab", "--allow-root", "--NotebookApp.password=", "--NotebookApp.token=", "--ip=0.0.0.0"]
-  #   network_mode: host
-  #   runtime: nvidia
+  autogoal-demo:
+    container_name: autogoal-demo
+    image: autogoal/autogoal:3.6-cpu
+    ports:
+      - 8501:8501
+    command: python -m autogoal demo

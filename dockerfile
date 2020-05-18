@@ -2,9 +2,7 @@
 # Generic build system
 # ---------------------
 
-ARG PYTHON_VERSION
-
-FROM python:${PYTHON_VERSION}
+FROM python:3.6 
 
 # ==========================================
 # Project-specific installation instruction
@@ -29,5 +27,7 @@ EXPOSE 8501
 EXPOSE 8000
 
 COPY ./ /code
+
+RUN ln -s /code/autogoal /usr/lib/python3/dist-packages/
 
 CMD [ "python", "-m", "autogoal", "demo" ]
