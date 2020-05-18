@@ -3,7 +3,7 @@ version: "2.3"
 services:
   autogoal-demo:
     container_name: autogoal-demo
-    image: autogoal/autogoal:3.6-cpu
+    image: autogoal/autogoal
     ports:
       - 8501:8501
     command: python -m autogoal demo

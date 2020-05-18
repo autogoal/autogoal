@@ -75,7 +75,7 @@ class Demo:
 
         Download the corresponding Docker image:
 
-            docker pull autogoal/autogoal:3.6-[cpu|gpu]
+            docker pull autogoal/autogoal
 
         """)
 
@@ -83,7 +83,7 @@ class Demo:
             """
             Launch a Docker container.
 
-                docker run --rm -p 8501:8501 autogoal/autogoal:3.6-[cpu|gpu]
+                docker run --rm -p 8501:8501 autogoal/autogoal
 
             Navigate to <http://localhost:8501>.
             """
