@@ -21,11 +21,11 @@ build:
 
 .PHONY: shell
 shell:
-	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/lib/python3/dist-packages/autogoal --network host autogoal/autogoal:latest bash
+	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:latest bash
 
 .PHONY: shell-gpu
 shell-gpu:
-	docker run --rm --gpus all -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/lib/python3/dist-packages/autogoal --network host autogoal/autogoal:gpu bash
+	docker run --rm --gpus all -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:gpu bash
 
 # Below are the commands that will be run INSIDE the development environment, i.e., inside Docker or Travis
 # These commands are NOT supposed to be run by the developer directly, and will fail to do so.

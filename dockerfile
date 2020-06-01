@@ -43,6 +43,6 @@ EXPOSE 8000
 
 COPY ./ /code
 
-RUN ln -s /code/autogoal /usr/lib/python3/dist-packages/
+RUN ln -s /code/autogoal /usr/local/lib/python3.6/site-packages/
 
 CMD [ "python", "-m", "autogoal", "demo" ]
