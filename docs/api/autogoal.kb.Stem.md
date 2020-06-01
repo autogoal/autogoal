@@ -1,10 +1,10 @@
 # `autogoal.kb.Stem`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L397)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L397)
 > `Stem(self, **tags)`
 
 ### `get_tag`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L283)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L283)
 > `get_tag(self, tag)`
 

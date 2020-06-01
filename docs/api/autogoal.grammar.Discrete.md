@@ -1,10 +1,10 @@
 # `autogoal.grammar.Discrete`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/grammar/_cfg.py#L339)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_cfg.py#L339)
 > `Discrete(self, min, max)`
 
 ### `generate_cfg`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/grammar/_cfg.py#L347)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_cfg.py#L347)
 > `generate_cfg(self, grammar, head)`
 

@@ -1,8 +1,8 @@
-# # ICML 2020 UCI datasets
+# # EMNLP 2020 UCI datasets
 
 # This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 # in anyone of the UCI datasets available.
-# The results obtained were published in the paper presented at ICML 2020.
+# The results obtained were published in the paper presented at EMNLP 2020.
 
 # The datasets used in this experimentation are taken from the [UCI repository](https://archive.ics.uci.edu/ml/index.php).
 # Concretely, the following datasets are used:
@@ -181,7 +181,7 @@ for epoch in range(args.epochs):
 
             telegram = TelegramLogger(
                 token=args.token,
-                name=f"ICML UCI dataset=`{dataset}` run=`{epoch}`",
+                name=f"EMNLP UCI dataset=`{dataset}` run=`{epoch}`",
                 channel=args.channel,
             )
             loggers.append(telegram)

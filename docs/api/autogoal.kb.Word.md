@@ -1,10 +1,10 @@
 # `autogoal.kb.Word`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L393)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_data.py#L393)
 > `Word(self, **tags)`
 
 ### `get_tag`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_data.py#L283)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L283)
 > `get_tag(self, tag)`
 

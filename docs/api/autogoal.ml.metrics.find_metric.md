@@ -1,5 +1,5 @@
 # `autogoal.ml.metrics.find_metric`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/ml/metrics.py#L16)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/ml/metrics.py#L16)
 > `find_metric(*types)`
 

@@ -1,6 +1,6 @@
 # `autogoal.contrib.keras.KerasImagePreprocessor`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/keras/_base.py#L213)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L213)
 > `KerasImagePreprocessor(self, featurewise_center, samplewise_center, featurewise_std_normalization, samplewise_std_normalization, rotation_range, width_shift_range, height_shift_range, shear_range, zoom_range, horizontal_flip, vertical_flip)`
 
 Augment a dataset of images by making changes to the original training set.
@@ -13,12 +13,12 @@ The parameter `grow_size` determines how many new images will be created for eac
 The remaining parameters are passed to `ImageDataGenerator`.
 ### `repr_method`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/__init__.py#L87)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L87)
 > `repr_method(self)`
 
 ### `apply_transform`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L831)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L835)
 > `apply_transform(self, x, transform_parameters)`
 
 Applies a transformation to an image according to given parameters.
@@ -37,14 +37,14 @@ Applies a transformation to an image according to given parameters.
         - `'zy'`: Float. Zoom in the y direction.
         - `'flip_horizontal'`: Boolean. Horizontal flip.
         - `'flip_vertical'`: Boolean. Vertical flip.
-        - `'channel_shift_intencity'`: Float. Channel shift intensity.
+        - `'channel_shift_intensity'`: Float. Channel shift intensity.
         - `'brightness'`: Float. Brightness shift intensity.
 
 # Returns
     A transformed version of the input (same shape).
 ### `fit`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L901)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L905)
 > `fit(self, x, augment=False, rounds=1, seed=None)`
 
 Fits the data generator to some sample data.
@@ -54,6 +54,9 @@ data-dependent transformations, based on an array of sample data.
 
 Only required if `featurewise_center` or
 `featurewise_std_normalization` or `zca_whitening` are set to True.
+
+When `rescale` is set to a value, rescaling is applied to
+sample data before computing the internal data stats.
 
 # Arguments
     x: Sample data. Should have rank 4.
@@ -69,16 +72,16 @@ Only required if `featurewise_center` or
     seed: Int (default: None). Random seed.
 ### `flow`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L367)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L368)
 > `flow(self, x, y=None, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)`
 
 Takes data & label arrays, generates batches of augmented data.
 
 # Arguments
-    x: Input data. Numpy array of rank 4 or a tuple.
+    x: Input data. NumPy array of rank 4 or a tuple.
         If tuple, the first element
         should contain the images and the second element
-        another numpy array or a list of numpy arrays
+        another NumPy array or a list of NumPy arrays
         that gets passed to the output
         without any modifications.
         Can be used to feed the model miscellaneous data
@@ -106,16 +109,16 @@ Takes data & label arrays, generates batches of augmented data.
 
 # Returns
     An `Iterator` yielding tuples of `(x, y)`
-        where `x` is a numpy array of image data
+        where `x` is a NumPy array of image data
         (in the case of a single image input) or a list
-        of numpy arrays (in the case with
-        additional inputs) and `y` is a numpy array
+        of NumPy arrays (in the case with
+        additional inputs) and `y` is a NumPy array
         of corresponding labels. If 'sample_weight' is not None,
         the yielded tuples are of the form `(x, y, sample_weight)`.
-        If `y` is None, only the numpy array `x` is returned.
+        If `y` is None, only the NumPy array `x` is returned.
 ### `flow_from_dataframe`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L543)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L546)
 > `flow_from_dataframe(self, dataframe, directory=None, x_col='filename', y_col='class', weight_col=None, target_size=(256, 256), color_mode='rgb', classes=None, class_mode='categorical', batch_size=32, shuffle=True, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None, interpolation='nearest', validate_filenames=True, **kwargs)`
 
 Takes the dataframe and the path to a directory
@@ -158,14 +161,14 @@ Takes the dataframe and the path to a directory
     class_mode: one of "binary", "categorical", "input", "multi_output",
         "raw", sparse" or None. Default: "categorical".
         Mode for yielding the targets:
-        - `"binary"`: 1D numpy array of binary labels,
-        - `"categorical"`: 2D numpy array of one-hot encoded labels.
+        - `"binary"`: 1D NumPy array of binary labels,
+        - `"categorical"`: 2D NumPy array of one-hot encoded labels.
             Supports multi-label output.
         - `"input"`: images identical to input images (mainly used to
             work with autoencoders),
         - `"multi_output"`: list with the values of the different columns,
-        - `"raw"`: numpy array of values in `y_col` column(s),
-        - `"sparse"`: 1D numpy array of integer labels,
+        - `"raw"`: NumPy array of values in `y_col` column(s),
+        - `"sparse"`: 1D NumPy array of integer labels,
         - `None`, no targets are returned (the generator will only yield
             batches of image data, which is useful to use in
             `model.predict_generator()`).
@@ -197,12 +200,12 @@ Takes the dataframe and the path to a directory
 
 # Returns
     A `DataFrameIterator` yielding tuples of `(x, y)`
-    where `x` is a numpy array containing a batch
+    where `x` is a NumPy array containing a batch
     of images with shape `(batch_size, *target_size, channels)`
-    and `y` is a numpy array of corresponding labels.
+    and `y` is a NumPy array of corresponding labels.
 ### `flow_from_directory`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L435)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L437)
 > `flow_from_directory(self, directory, target_size=(256, 256), color_mode='rgb', classes=None, class_mode='categorical', batch_size=32, shuffle=True, seed=None, save_to_dir=None, save_prefix='', save_format='png', follow_links=False, subset=None, interpolation='nearest')`
 
 Takes the path to a directory & generates batches of augmented data.
@@ -275,12 +278,12 @@ Takes the path to a directory & generates batches of augmented data.
 
 # Returns
     A `DirectoryIterator` yielding tuples of `(x, y)`
-        where `x` is a numpy array containing a batch
+        where `x` is a NumPy array containing a batch
         of images with shape `(batch_size, *target_size, channels)`
-        and `y` is a numpy array of corresponding labels.
+        and `y` is a NumPy array of corresponding labels.
 ### `get_random_transform`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L741)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L745)
 > `get_random_transform(self, img_shape, seed=None)`
 
 Generates random parameters for a transformation.
@@ -295,7 +298,7 @@ Generates random parameters for a transformation.
     transformation.
 ### `random_transform`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L888)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L892)
 > `random_transform(self, x, seed=None)`
 
 Applies a random transformation to an image.
@@ -308,18 +311,18 @@ Applies a random transformation to an image.
     A randomly transformed version of the input (same shape).
 ### `standardize`
 
-> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L686)
+> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L690)
 > `standardize(self, x)`
 
 Applies the normalization configuration in-place to a batch of inputs.
 
 `x` is changed in-place since the function is mainly used internally
-to standarize images and feed them to your network. If a copy of `x`
+to standardize images and feed them to your network. If a copy of `x`
 would be created instead it would have a significant performance cost.
 If you want to apply this method without changing the input in-place
 you can call the method creating a copy before:
 
-standarize(np.copy(x))
+standardize(np.copy(x))
 
 # Arguments
     x: Batch of inputs to be normalized.

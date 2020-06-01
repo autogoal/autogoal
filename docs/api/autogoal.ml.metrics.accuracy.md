@@ -1,5 +1,5 @@
 # `autogoal.ml.metrics.accuracy`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/ml/metrics.py#L32)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/ml/metrics.py#L32)
 > `accuracy(ytrue, ypred)`
 

@@ -1,8 +1,8 @@
-# # ICML 2020 example in the HAHA challenge
+# # EMNLP 2020 example in the HAHA challenge
 
 # This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 # in the [HAHA 2019 challenge](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data).
-# The results obtained were published in the paper presented at ICML 2020.
+# The results obtained were published in the paper presented at EMNLP 2020.
 
 # The dataset used is:
 
@@ -39,7 +39,7 @@
 
 # ## Relevant imports
 
-# Most of this example follows the same logic as the [ICML UCI example](/examples/solving_uci_datasets).
+# Most of this example follows the same logic as the [EMNLP UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
 from autogoal.ml import AutoML
@@ -97,7 +97,6 @@ classifier = AutoML(
     output=CategoricalVector(),
     search_iterations=args.iterations,
     score_metric=f1_score,
-    include_filter=".*(Bert|Keras).*",
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,

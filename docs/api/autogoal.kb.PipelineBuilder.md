@@ -1,10 +1,10 @@
 # `autogoal.kb.PipelineBuilder`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_algorithm.py#L444)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/kb/_algorithm.py#L444)
 > `PipelineBuilder(self, graph, registry)`
 
 ### `sample`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/kb/_algorithm.py#L448)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_algorithm.py#L448)
 > `sample(self, *args, **kwargs)`
 

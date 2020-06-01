@@ -1,5 +1,5 @@
 # `autogoal.contrib.spacy.find_classes`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/contrib/spacy/__init__.py#L12)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/contrib/spacy/__init__.py#L12)
 > `find_classes(include='.*', exclude=None)`
 

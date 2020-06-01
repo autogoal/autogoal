@@ -43,6 +43,7 @@ EXPOSE 8000
 
 COPY ./ /code
 
-RUN ln -s /code/autogoal /usr/local/lib/python3.6/site-packages/
+RUN if [ -d /usr/local/lib/python3.6/site-packages/ ]; then ln -s /code/autogoal /usr/local/lib/python3.6/site-packages/; fi
+RUN if [ -d /usr/lib/python3/dist-packages/ ]; then ln -s /code/autogoal /usr/lib/python3/dist-packages/; fi
 
 CMD [ "python", "-m", "autogoal", "demo" ]

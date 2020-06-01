@@ -6,10 +6,10 @@ AutoGOAL is a Python library for automatically finding the best way to solve a g
 It has been designed mainly for Automatic Machine Learning (aka [AutoML](https://www.automl.org))
 but it can be used in any scenario where you have several possible ways (i.e., programs) to solve a given task.
 
-## Notes for ICML reviewers
+## Notes for EMNLP reviewers
 
 The following documentation has been modified and anonymized to serve as complementary resources
-for the review of the paper `AutoGOAL: Automatic Discovery of Heterogeneous Machine Learning Pipelines`.
+for the review of the paper `Automatic Discovery of Heterogeneous Machine Learning Pipelines with Probabilistic Grammars`.
 
 These materials show additional information about the use of AutoGOAL, implementation details such
 as the class hierarchy of data types and the list of available algorithms, and experimentation details.
@@ -27,13 +27,13 @@ Instructions for setting up Docker are available [here](https://www.docker.com/g
 
 !!! note
     A proper Python package is in the making. However, for anonymity reasons
-    this package will not published until the anonymity period for ICML 2020 ends.
+    this package will not published until the anonymity period for EMNLP 2020 ends.
 
 ### Installing from source
 
 To install AutoGOAL from the source code, simply navigate to the root folder and run:
 
-    make docker-build
+    make build
 
 This command will create the Docker image necessary to run AutoGOAL with all its dependencies.
 Alternatively, you can install on a bare Python virtual environment, using [Poetry](https://python-poetry.org/):
@@ -83,7 +83,7 @@ The HTML version can be deployed by downloading the AutoGOAL Docker image and ru
 And navigating to [localhost:8000](http://localhost:8000).
 
 !!! note
-    This documentation will be publicly hosted online once the anonymity period for ICML 2020 ends.
+    This documentation will be publicly hosted online once the anonymity period for EMNLP 2020 ends.
 
 ### User Guide
 

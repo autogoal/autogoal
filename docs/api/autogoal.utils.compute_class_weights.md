@@ -1,6 +1,6 @@
 # `autogoal.utils.compute_class_weights`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/__init__.py#L144)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L144)
 > `compute_class_weights(y)`
 
 Computes relative class weights for imbalanced datasets. Works with nested input.

@@ -1,6 +1,6 @@
 # `autogoal.optimize`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/_helpers.py#L46)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_helpers.py#L46)
 > `optimize(fn, search_strategy=<class 'autogoal.search._pge.PESearch'>, generations=100, pop_size=10, allow_duplicates=False, logger=None, **kwargs)`
 
 A general-purpose optimization function.

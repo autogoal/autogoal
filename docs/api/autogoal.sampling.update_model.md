@@ -1,5 +1,5 @@
 # `autogoal.sampling.update_model`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L496)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L496)
 > `update_model(model, updates, alpha=1)`
 

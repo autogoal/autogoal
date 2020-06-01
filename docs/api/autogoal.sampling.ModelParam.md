@@ -1,10 +1,10 @@
 # `autogoal.sampling.ModelParam`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L398)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/sampling/__init__.py#L398)
 > `ModelParam(self, *args, **kwargs)`
 
 ### `update`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/sampling/__init__.py#L399)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L399)
 > `update(self, alpha, updates)`
 

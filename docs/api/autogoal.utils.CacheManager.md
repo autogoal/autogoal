@@ -1,15 +1,15 @@
 # `autogoal.utils.CacheManager`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/_cache.py#L87)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/utils/_cache.py#L87)
 > `CacheManager(self)`
 
 ### `get`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/_cache.py#L93)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_cache.py#L93)
 > `get(name, func)`
 
 ### `instance`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/utils/_cache.py#L104)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/_cache.py#L104)
 > `instance()`
 

@@ -2,11 +2,11 @@
 
 The following examples illustrate the use of AutoGOAL is more practical scenarios.
 
-## ICML paper examples
+## EMNLP paper examples
 
 These three examples conform the actual experimentation for the paper
 `AutoGOAL: Automatic Discovery of Heterogeneous Machine Learning Pipelines` submitted for review
-at ICML 2020.
+at EMNLP 2020.
 
 * [Optimizing seven UCI repository datasets](./solving_uci_datasets)
 * [Optimizing the HAHA 2019 challenge](./solving_haha_2019)

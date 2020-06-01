@@ -1,11 +1,11 @@
 # `autogoal.search.RandomSearch`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/search/_random.py#L7)
+> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/search/_random.py#L7)
 > `RandomSearch(self, *args, random_state=None, **kwargs)`
 
 ### `run`
 
-> [📝](/usr/lib/python3/dist-packages/autogoal/search/_base.py#L50)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/search/_base.py#L50)
 > `run(self, generations=None, logger=None)`
 
 Runs the search performing at most `generations` of `fitness_fn`.
