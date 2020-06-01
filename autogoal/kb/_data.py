@@ -566,9 +566,9 @@ def draw_data_hierarchy(output_file):
     """
     import pydot
 
-    classes = DATA_TYPES
+    classes = list(DATA_TYPES) + [DataType]
 
-    graph = pydot.Dot(direction="LR")
+    graph = pydot.Dot(direction="TB")
 
     for clss in classes:
         graph.add_node(pydot.Node(clss.__name__))
