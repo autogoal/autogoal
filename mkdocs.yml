@@ -1,4 +1,8 @@
 site_name: AutoGOAL
+site_url: https://autogoal.github.io
+repo_url: https://github.com/autogoal/autogoal.github.io
+remote_branch: master
+remote_name: docs
 
 theme:
     name: material
