@@ -6,17 +6,6 @@ AutoGOAL is a Python library for automatically finding the best way to solve a g
 It has been designed mainly for Automatic Machine Learning (aka [AutoML](https://www.automl.org))
 but it can be used in any scenario where you have several possible ways (i.e., programs) to solve a given task.
 
-## Notes for EMNLP reviewers
-
-The following documentation has been modified and anonymized to serve as complementary resources
-for the review of the paper `Automatic Discovery of Heterogeneous Machine Learning Pipelines with Probabilistic Grammars`.
-
-These materials show additional information about the use of AutoGOAL, implementation details such
-as the class hierarchy of data types and the list of available algorithms, and experimentation details.
-A simplified PDF version is bundled along with the source code for AutoGOAL.
-This version only contains the most relevant part of the documentation for the conference purposes.
-Additionally, a video of a Streamlit-based demo for AutoGOAL is also provided to illustrate a very simplified use case.
-
 ## Installation
 
 The easiest way to get AutoGOAL up and running right now is to pull the development Docker image:
