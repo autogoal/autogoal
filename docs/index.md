@@ -8,15 +8,21 @@ but it can be used in any scenario where you have several possible ways (i.e., p
 
 ## Installation
 
-The easiest way to get AutoGOAL up and running right now is to pull the development Docker image:
+Installation is very simple:
+
+    pip install autogoal
+
+However, `autogoal` comes with a bunch of optional dependencies. You can install them all with:
+
+    pip install autogoal[all]
+
+To fine-pick which dependencies you want, read the [dependencies section](/dependencies/).
+
+The easiest way to get AutoGOAL up and running with all the dependencies to pull the development Docker image, which is somewhat big (~4.8 GB):
 
     docker pull autogoal/autogoal
 
 Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
-
-!!! note
-    A proper Python package is in the making. However, for anonymity reasons
-    this package will not published until the anonymity period for EMNLP 2020 ends.
 
 ### Installing from source
 
@@ -84,7 +90,7 @@ Looking at the [examples](./examples/) is the best way to learn how to use AutoG
 
 ### API
 
-The [API documentation](./api) details the public API for AutoGOAL.
+The [API documentation](./api/autogoal) details the public API for AutoGOAL.
 
 ## Contribution
 
