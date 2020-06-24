@@ -40,7 +40,10 @@ Alternatively, you can install on a bare Python virtual environment, using [Poet
 
 ## Demo
 
-To quickly see AutoGOAL in action, simply run:
+An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
+This app showcases the main features of AutoGOAL in interactive case studies.
+
+To run the demo locally, simply type:
 
     docker run -p 8501:8501 autogoal/autogoal
 
