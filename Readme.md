@@ -79,9 +79,6 @@ The HTML version can be deployed by downloading the AutoGOAL Docker image and ru
 
 And navigating to [localhost:8000](http://localhost:8000).
 
-!!! note
-    This documentation will be publicly hosted online once the anonymity period for EMNLP 2020 ends.
-
 ### User Guide
 
 The step-by-step [User Guide](https://autogoal.github.io/guide/) will show you everything you need to know to use AuoGOAL.

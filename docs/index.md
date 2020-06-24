@@ -80,7 +80,7 @@ The HTML version can be deployed by downloading the AutoGOAL Docker image and ru
 And navigating to [localhost:8000](http://localhost:8000).
 
 !!! note
-    This documentation will be publicly hosted online once the anonymity period for EMNLP 2020 ends.
+    This documentation will be publicly hosted online once the anonymity period for COLING 2020 ends.
 
 ### User Guide
 
