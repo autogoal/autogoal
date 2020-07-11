@@ -1,4 +1,4 @@
-![AutoGOAL Logo](autogoal-logo.png)
+![AutoGOAL Logo](autogoal-banner.png)
 
 <img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal"> <img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal"> <img alt="Docker Image Size (tag)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">
 
