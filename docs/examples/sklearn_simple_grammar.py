@@ -41,7 +41,7 @@ from autogoal.grammar import (
     Categorical,
     Union,
     Boolean,
-     generate_cfg,
+    generate_cfg,
     Sampler,
 )
 
