@@ -12,10 +12,11 @@ automl = AutoML(
     output=CategoricalVector(),
     registry=[KerasImageClassifier],
     cross_validation_steps=1,
+    errors="raise",
     search_kwargs=dict(
         pop_size=30,
         search_timeout= 3 * 24 * Hour,
-        evaluation_timeout=0,
+        evaluation_timeout=1 * Hour,
         memory_limit=60 * Gb,
         save=False,
     ),

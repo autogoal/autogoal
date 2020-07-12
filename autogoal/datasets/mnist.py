@@ -50,10 +50,8 @@ def load(unrolled=True):
     """
     download("mnist")
 
-    X_train_data = pd.read_csv(datapath('mnist') / 'train_images.csv')
-    y_train_data = pd.read_csv(datapath('mnist') / 'train_labels.csv')
-    X_test_data = pd.read_csv(datapath('mnist') / 'test_images.csv')
-    y_test_data = pd.read_csv(datapath('mnist') / 'test_labels.csv')
+    X_train_data = pd.read_csv(datapath('mnist') / 'mnist_train.csv')
+    X_test_data = pd.read_csv(datapath('mnist') / 'mnist_test.csv')
     
     X_train = [] 
     y_train = []
@@ -62,16 +60,16 @@ def load(unrolled=True):
 
     for i in range(len(X_train_data)):
         if unrolled:
-            X_train.append(X_train_data.iloc[i,])
+            X_train.append(X_train_data.iloc[i,1:])
         else:
-            X_train.append(X_train_data.iloc[i,].values.reshape((28,28,1)))
-        y_train.append(y_train_data.iloc[i,0])
+            X_train.append(X_train_data.iloc[i,1:].values.reshape((28,28,1)))
+        y_train.append(X_train_data.iloc[i,0])
 
     for i in range(len(X_test_data)):
         if unrolled:
-            X_test.append(X_test_data.iloc[i,])
+            X_test.append(X_test_data.iloc[i,1:])
         else:
-            X_test.append(X_test_data.iloc[i,].values.reshape((28,28,1)))
-        y_test.append(y_test_data.iloc[i,0])
+            X_test.append(X_test_data.iloc[i,1:].values.reshape((28,28,1)))
+        y_test.append(X_test_data.iloc[i,0])
 
     return np.array(X_train), np.array(y_train), np.array(X_test), np.array(y_test)
