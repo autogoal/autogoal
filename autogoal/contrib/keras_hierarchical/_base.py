@@ -305,12 +305,12 @@ class KerasSequenceClassifier(KerasClassifier):
         return super().run(input)
 
 
-# !!! warning
-# These imports are taken from <https://github.com/tensorflow/addons/pull/377>
-# since the CRF layer has not yet landed in tensorflow
-# TODO: Make sure to replace this when tensorflow merges this commit
-from autogoal.contrib.keras._crf import CRF
-from autogoal.contrib.keras._crf import crf_loss
+# # !!! warning
+# # These imports are taken from <https://github.com/tensorflow/addons/pull/377>
+# # since the CRF layer has not yet landed in tensorflow
+# # TODO: Make sure to replace this when tensorflow merges this commit
+# from autogoal.contrib.keras._crf import CRF
+# from autogoal.contrib.keras._crf import crf_loss
 
 
 class KerasSequenceTagger(KerasNeuralNetwork):
