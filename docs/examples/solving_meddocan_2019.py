@@ -1,8 +1,7 @@
-# # COLING 2020 example in the MEDDOCAN challenge
+# # Solving the MEDDOCAN challenge
 
 # This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 # in the [MEDDOCAN 2019 challenge](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
-# The results obtained were published in the paper presented at COLING 2020.
 
 # | Dataset | URL |
 # |--|--|
@@ -37,7 +36,7 @@
 
 # ## Relevant imports
 
-# Most of this example follows the same logic as the [COLING UCI example](/examples/solving_uci_datasets).
+# Most of this example follows the same logic as the [UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
 from autogoal.ml import AutoML

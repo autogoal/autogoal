@@ -2,17 +2,12 @@
 
 The following examples illustrate the use of AutoGOAL is more practical scenarios.
 
-## COLING paper examples
-
-These three examples conform the actual experimentation for the paper
-`Automatic Discovery of Heterogeneous Machine Learning Pipelines: An Application to Natural Language Processing` submitted for review
-at COLING 2020.
+These three examples conform the experimentation for the paper
+`Solving Heterogenous AutoML Problems with AutoGOAL` presented at the 7th Workshop on AutoML in ICML 2020.
 
 * [Optimizing seven UCI repository datasets](./solving_uci_datasets)
 * [Optimizing the HAHA 2019 challenge](./solving_haha_2019)
 * [Optimizing the MEDDOCAN 2019 challenge](./solving_meddocan_2019)
-
-## Other examples
 
 These are other examples focusing on distinct features of AutoGOAL.
 

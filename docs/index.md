@@ -1,12 +1,36 @@
-# AutoGOAL
+![AutoGOAL Logo](autogoal-banner.png)
 
 <img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal"> <img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal"> <img alt="Docker Image Size (tag)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">
 
-> Automatic Generation, Optimization And Learning
+# AutoGOAL
+
+> Automatic Generation, Optimization And Artificial Learning
 
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
-It has been designed mainly for Automatic Machine Learning (aka [AutoML](https://www.automl.org))
+It has been designed mainly for _Automated Machine Learning_ (aka [AutoML](https://www.automl.org))
 but it can be used in any scenario where you have several possible ways (i.e., programs) to solve a given task.
+
+## Quickstart
+
+AutoGOAL is first and foremost a framework for Automatic Machine Learning.
+As such, it comes pre-packaged with hundreds of low-level machine learning
+algorithms that can be automatically assembled into pipelines for different problems.
+
+The core of this functionality lies in the [`AutoML`](./api/autogoal.ml#automl) class.
+
+To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
+
+```python
+from autogoal.datasets import cars
+from autogoal.ml import AutoML
+
+X, y = cars.load()
+automl = AutoML()
+automl.fit(X, y)
+```
+
+Sensible defaults are defined for each of the many parameters of `AutoML`.
+Make sure to [read the documentation](./guide/) for more information on the parameters.
 
 ## Installation
 
@@ -18,11 +42,17 @@ However, `autogoal` comes with a bunch of optional dependencies. You can install
 
     pip install autogoal[all]
 
-To fine-pick which dependencies you want, read the [dependencies section](/dependencies/).
+To fine-pick which dependencies you want, read the [dependencies section](./dependencies/).
+
+### Using Docker
 
 The easiest way to get AutoGOAL up and running with all the dependencies to pull the development Docker image, which is somewhat big (~4.8 GB):
 
     docker pull autogoal/autogoal
+
+If you want GPU support, pull this image instead:
+
+    docker pull autogoal/autogoal:gpu
 
 Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
 
@@ -40,7 +70,7 @@ Alternatively, you can install on a bare Python virtual environment, using [Poet
 
 ## Demo
 
-An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
+An online demo app is available at [autogoal.github.io/demo](./demo).
 This app showcases the main features of AutoGOAL in interactive case studies.
 
 To run the demo locally, simply type:
@@ -49,41 +79,15 @@ To run the demo locally, simply type:
 
 And navigate to [localhost:8501](http://localhost:8501).
 
-## Quickstart
-
-AutoGOAL is first and foremost a framework for Automatic Machine Learning.
-As such, it comes pre-packaged with hundreds of low-level machine learning
-algorithms that can be automatically assembled into pipelines for different problems.
-
-The core of this functionality lies in the [`AutoML`](./api/autogoal.ml#automl) class.
-
-To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
-
-```python
-from autogoal.datasets import cars
-from autogoal.ml import AutoML
-
-X, y = cars.load()
-automl = AutoML(errors='ignore')
-automl.fit(X, y)
-```
-
-Sensible defaults are defined for each of the many parameters of `AutoML`.
-Make sure to read the documentation for more information on the parameters.
-
 ## Documentation
 
-This documentation is available in HTML and PDF versions. If you are reading the PDF version, some
-features like search and navigation are unfortunately not available.
+This documentation is available online at [autogoal.github.io](https://autogoal.github.io).
 
-The HTML version can be deployed by downloading the AutoGOAL Docker image and running:
+The HTML version can be deployed offline by downloading the AutoGOAL Docker image and running:
 
     docker run -p 8000:8000 autogoal/autogoal mkdocs serve -a 0.0.0.0:8000
 
 And navigating to [localhost:8000](http://localhost:8000).
-
-!!! note
-    This documentation will be publicly hosted online once the anonymity period for COLING 2020 ends.
 
 ### User Guide
 

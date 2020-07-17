@@ -1,15 +1,16 @@
 site_name: AutoGOAL
 site_url: https://autogoal.github.io
 repo_url: https://github.com/autogoal/autogoal
-google_analytics: ['UA-172957751-1', 'autogoal.github.io']
+google_analytics: 
+  - UA-172957751-1
+  - auto
 
 theme:
     name: material
+    logo: autogoal-logo.png
+    favicon: autogoal-logo.png
     feature:
         tabs: true
-
-plugins:
-    - search
 
 markdown_extensions:
     - codehilite
@@ -30,8 +31,8 @@ nav:
         - Functional API: guide/functional.md
     - Examples:
         - Home: examples/index.md
-        - COLING UCI datasets: examples/solving_uci_datasets.md
-        - COLING HAHA 2019: examples/solving_haha_2019.md
-        - COLING MEDDOCAN 2019: examples/solving_meddocan_2019.md
+        - Solving UCI datasets: examples/solving_uci_datasets.md
+        - Solving HAHA 2019: examples/solving_haha_2019.md
+        - Solving MEDDOCAN 2019: examples/solving_meddocan_2019.md
         - Sklearn integration: examples/sklearn_simple_grammar.md
         - Search strategies: examples/comparing_search_strategies.md
