@@ -48,7 +48,7 @@ from autogoal.grammar import (
     Categorical,
     Union,
     Boolean,
-     generate_cfg,
+    generate_cfg,
     Sampler,
 )
 ```
@@ -212,9 +212,9 @@ class Pipeline(SkPipeline):
 ## Creating the grammar
 
 Once everything is in place, we can tell `autogoal` to automatically infer a grammar
-for all the possible combinations of parameters and classes that we can use.
+for all the possible combinations of parameters and clases that we can use.
 The root of our grammar is the `Pipeline` class we just defined. The method `generate_cfg`
-does exactly that, taking a class and building a context-free grammar to construct
+does exactly that, taking a class and building a context free grammar to construct
 that class, based on the parameters' annotations and recursively building the corresponding
 rules for all classes down to basic parameter types.
 
