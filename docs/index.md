@@ -1,6 +1,6 @@
 ![AutoGOAL Logo](autogoal-banner.png)
 
-[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contribute) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Follow%20us%20in%20Twitter%21&style=social">](https://twitter.com/auto_goal)
+[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Follow%20us%20in%20Twitter%21&style=social">](https://twitter.com/auto_goal)
 
 # AutoGOAL
 
