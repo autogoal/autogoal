@@ -361,8 +361,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748738"
-     inkscape:cx="2367.0158"
-     inkscape:cy="793.73088"
+     inkscape:cx="1623.5435"
+     inkscape:cy="505.52594"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -385,7 +385,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -395,17 +395,14 @@
      id="layer1"
      transform="translate(463.39141,1505.5067)"
      style="display:inline">
-    <g
-       inkscape:groupmode="layer"
-       id="layer2"
-       inkscape:label="Layer 2"
-       style="display:inline" />
     <circle
        style="display:inline;opacity:1;fill:#ff6151;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.30130664;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path815-9-1-4"
        cx="-323.90897"
        cy="-1366.0243"
-       r="132.86786" />
+       r="132.86786"
+       inkscape:export-xdpi="95.583687"
+       inkscape:export-ydpi="95.583687" />
     <path
        style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#ff6151;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:22.23457336;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        d="m -36.854047,-1490.7885 -83.627763,132.8977 h 65.875363 v -22.3391 h -26.09 l 32.5374,-52.5403 v 186.2958 h 22.2335 v -51.4254 l 99.9772,-18.9306 -40.37,-63.3995 h -53.80615 v 22.3391 h 43.01265 l 17.9304,26.8193 -66.7441,10.5344 v -112.2331 l 27.2290972,45.6119 H 29.320453 Z m -87.703563,139.9631 -21.283,33.8466 26.8947,5.2557 23.183535,-39.1023 z"
@@ -446,7 +443,7 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccccccccccccccccccc"
        inkscape:export-filename="/home/apiad/ag-blueprint.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-xdpi="95.583687"
+       inkscape:export-ydpi="95.583687" />
   </g>
 </svg>
