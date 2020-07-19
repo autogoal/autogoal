@@ -7,10 +7,13 @@ google_analytics:
 
 theme:
     name: material
-    logo: autogoal-logo.png
-    favicon: autogoal-logo.png
+    logo: autogoal-logo.svg
+    favicon: autogoal-logo-embedded.png
     feature:
         tabs: true
+    palette:
+        primary: deep orange
+        accent: deep orange
 
 markdown_extensions:
     - codehilite
