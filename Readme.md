@@ -120,6 +120,10 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 
 - [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
 
+## Frequently Asked Questions
+
+
+
 ## Contribution
 
 Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.github.io/contributing).

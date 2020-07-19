@@ -6,10 +6,10 @@
 ### `build`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L215)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f158b487048>)`
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f3a6ccc8048>)`
 
 ### `make`
 
 > [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L161)
-> `make(self, initializer=<function default_initializer at 0x7f158b487048>)`
+> `make(self, initializer=<function default_initializer at 0x7f3a6ccc8048>)`
 
