@@ -1,4 +1,4 @@
-![AutoGOAL Logo](docs/autogoal-banner.png)
+![AutoGOAL Logo](autogoal-banner.png)
 
 <img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal"> <img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal"> <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Follow%20us%20in%20Twitter%21&style=social">
 
@@ -100,16 +100,6 @@ And navigating to [localhost:8000](http://localhost:8000).
 
 ## Academic Papers
 
-The technologies and theoretical results leading up to AutoGOAL have been presented at different venues:
-
-- [Optimizing Natural Language Processing Pipelines: Opinion Mining Case Study](https://link.springer.com/chapter/10.1007/978-3-030-33904-3_15) marks the inception of the idea of using evolutionary optimization with a probabilistic search space for pipeline optimization.
-
-- [AutoML Strategy Based on Grammatical Evolution: A Case Study about Knowledge Discovery from Text](https://www.aclweb.org/anthology/P19-1428/) applied probabilistic grammatical evolution with a custom-made grammar in the context of entity recognition in medical text.
-
-- [General-purpose Hierarchical Optimisation of Machine Learning Pipelines with Grammatical Evolution]() (to appear) presents a more uniform framework with different grammars in different problems, from tabular datasets to natural language processing.
-
-- [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
-
 If you use AutoGOAL in academic research, please cite the following paper (to appear):
 
 ```bibtex
@@ -119,6 +109,16 @@ If you use AutoGOAL in academic research, please cite the following paper (to ap
     journal="Information Sciences"
 }
 ```
+
+The technologies and theoretical results leading up to AutoGOAL have been presented at different venues:
+
+- [Optimizing Natural Language Processing Pipelines: Opinion Mining Case Study](https://link.springer.com/chapter/10.1007/978-3-030-33904-3_15) marks the inception of the idea of using evolutionary optimization with a probabilistic search space for pipeline optimization.
+
+- [AutoML Strategy Based on Grammatical Evolution: A Case Study about Knowledge Discovery from Text](https://www.aclweb.org/anthology/P19-1428/) applied probabilistic grammatical evolution with a custom-made grammar in the context of entity recognition in medical text.
+
+- [General-purpose Hierarchical Optimisation of Machine Learning Pipelines with Grammatical Evolution]() (to appear) presents a more uniform framework with different grammars in different problems, from tabular datasets to natural language processing.
+
+- [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
 
 ## Contribution
 
