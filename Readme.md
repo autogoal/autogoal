@@ -56,8 +56,8 @@ If you want GPU support, pull this image instead:
 
 |  |  |
 |--|--|
-**CPU image** | [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
-|**GPU image:** | [<img alt="Docker Image Size (GPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/gpu">](https://hub.docker.com/r/autogoal/autogoal)
+**CPU image:** | [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
+**GPU image:** | [<img alt="Docker Image Size (GPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/gpu">](https://hub.docker.com/r/autogoal/autogoal)
 
 Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
 
