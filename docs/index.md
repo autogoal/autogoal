@@ -8,11 +8,16 @@
 
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
 It has been designed mainly for _Automated Machine Learning_ (aka [AutoML](https://www.automl.org))
-but it can be used in any scenario where you have several possible ways (i.e., programs) to solve a given task.
+but it can be used in any scenario where you have several possible ways to solve a given task.
+
+Technically speaking, AutoGOAL is a framework for program synthesis, i.e., finding the best program to solve
+a given problem, provided that the user can describe the space of all possible programs.
+AutoGOAL provides a set of low-level components to define different spaces and efficiently search in them.
+In the specific context of machine learning, AutoGOAL also provides high-level components that can be used as a black-box in almost any type of problem and dataset format.
 
 ## Quickstart
 
-AutoGOAL is first and foremost a framework for Automatic Machine Learning.
+AutoGOAL is first and foremost a framework for Automated Machine Learning.
 As such, it comes pre-packaged with hundreds of low-level machine learning
 algorithms that can be automatically assembled into pipelines for different problems.
 
@@ -30,7 +35,7 @@ automl.fit(X, y)
 ```
 
 Sensible defaults are defined for each of the many parameters of `AutoML`.
-Make sure to [read the documentation](https://autogoal.github.io/guide/) for more information on the parameters.
+Make sure to [read the documentation](https://autogoal.github.io/guide/) for more information.
 
 ## Installation
 
@@ -89,8 +94,8 @@ And navigate to [localhost:8501](http://localhost:8501).
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
 
 - [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
-- [**Examples**](https://autogoal.github.io/examples/): the best way to learn how to use AutoGOAL by practice.
-- [**API**](https://autogoal.github.io/api/autogoal): details about the public API for AutoGOAL.
+- [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
+- [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
 The HTML version can be deployed offline by downloading the AutoGOAL Docker image and running:
 
@@ -98,7 +103,7 @@ The HTML version can be deployed offline by downloading the AutoGOAL Docker imag
 
 And navigating to [localhost:8000](http://localhost:8000).
 
-## Academic Papers
+## Publications
 
 If you use AutoGOAL in academic research, please cite the following paper (to appear):
 

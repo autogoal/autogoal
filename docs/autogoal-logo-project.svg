@@ -9,14 +9,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1054.3555"
-   height="1054.3555"
-   viewBox="0 0 278.96476 278.96489"
+   width="3854.9539"
+   height="973.39185"
+   viewBox="0 0 1019.9561 257.54326"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="autogoal-logo-project.svg"
-   inkscape:export-filename="/home/apiad/Projects/autogoal/docs/autogoal-logo.png"
+   inkscape:export-filename="/home/apiad/Projects/autogoal/docs/autogoal-banner.png"
    inkscape:export-xdpi="98.620003"
    inkscape:export-ydpi="98.620003">
   <defs
@@ -155,10 +155,10 @@
        simplifyJustCoalesce="false" />
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="-169.33322 : 31.750002 : 0"
-       inkscape:vp_y="6.1232302e-14 : 999.99997 : 0"
-       inkscape:vp_z="428.62463 : 131.53571 : 1"
-       inkscape:persp3d-origin="169.33322 : 63.5 : 1"
+       inkscape:vp_x="-169.33322 : 31.750001 : 0"
+       inkscape:vp_y="6.1232303e-14 : 999.99995 : 0"
+       inkscape:vp_z="428.62464 : 131.53571 : 1"
+       inkscape:persp3d-origin="169.33322 : 63.499999 : 1"
        id="perspective938" />
     <inkscape:path-effect
        effect="simplify"
@@ -360,9 +360,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.24748738"
-     inkscape:cx="1623.5435"
-     inkscape:cy="505.52594"
+     inkscape:zoom="0.17500001"
+     inkscape:cx="2676.9257"
+     inkscape:cy="801.44095"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -385,7 +385,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -393,7 +393,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(463.39141,1505.5067)"
+     transform="translate(152.45519,1497.4031)"
      style="display:inline">
     <circle
        style="display:inline;opacity:1;fill:#ff6151;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.30130664;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -412,19 +412,62 @@
        inkscape:export-filename="/home/apiad/ag-blueprint.png"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
-    <text
-       xml:space="preserve"
+    <g
+       aria-label="AutoGOAL"
        style="font-style:normal;font-weight:normal;font-size:151.26686096px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ff6151;fill-opacity:1;stroke:none;stroke-width:3.78167129"
-       x="113.96341"
-       y="-1330.2938"
-       id="text1198-5-5"><tspan
-         sodipodi:role="line"
-         id="tspan1196-6-4"
-         x="113.96341"
-         y="-1330.2938"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6151;fill-opacity:1;stroke-width:3.78167129">Auto<tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';stroke-width:3.78167129"
-   id="tspan1616">GOAL</tspan></tspan></text>
+       id="text1198-5-5">
+      <path
+         d="m 127.66729,-1357.4485 36.44108,-80.6932 48.93483,107.8479 h -16.03428 l -33.27871,-82.7456 -19.51343,43.87 h 30.6744 l 4.65573,11.7209 m -41.48913,5.4621 -7.60628,21.6926 h -15.27796 l 10.46289,-21.6926"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6151;fill-opacity:1;stroke-width:3.78167129"
+         id="path848"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccccccccc" />
+      <path
+         d="m 286.4809,-1332.5628 q -4.84054,1.2101 -12.85768,2.5715 -7.86588,1.3614 -18.30329,1.3614 -9.07601,0 -15.27795,-2.5715 -6.20194,-2.7228 -9.98362,-7.5634 -3.78167,-4.8405 -5.4456,-11.345 -1.66394,-6.6557 -1.66394,-14.6729 v -44.1699 h 14.06782 v 41.1446 q 0,14.3703 4.53801,20.5723 4.538,6.2019 15.27795,6.2019 2.269,0 4.68927,-0.1512 2.42027,-0.1513 4.53801,-0.3026 2.11773,-0.3025 3.78167,-0.4538 1.8152,-0.3025 2.57153,-0.605 v -66.4062 h 14.06782 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6151;fill-opacity:1;stroke-width:3.78167129"
+         id="path850"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 327.77707,-1408.9526 h 25.89941 v 11.7988 h -25.89941 m -3.90016,36.3041 c 0,3.9329 0.30253,7.2104 0.9076,9.8323 0.60507,2.5211 1.51267,4.538 2.7228,6.0507 1.21013,1.4118 2.7228,2.4202 4.53801,3.0253 1.8152,0.6051 3.93294,0.9076 6.35321,0.9076 4.23547,0 7.61376,-0.4538 10.13488,-1.3614 2.62195,-1.0084 4.43715,-1.7143 5.4456,-2.1177 l 2.72281,11.6475 c -1.41183,0.7059 -3.88252,1.5631 -7.41208,2.5716 -3.52956,1.1093 -7.56334,1.6639 -12.10135,1.6639 -5.34476,0 -9.78192,-0.6555 -13.31148,-1.9665 -3.42872,-1.4118 -6.20195,-3.4791 -8.31968,-6.2019 -2.11773,-2.7228 -3.6304,-6.0507 -4.53801,-9.9836 -0.80675,-4.0338 -1.21013,-8.6727 -1.21013,-13.9166 v -70.1878 l 14.06782,-2.4203"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6151;fill-opacity:1;stroke-width:3.78167129"
+         id="path852"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccccsccccscscscc" />
+      <path
+         d="m 438.94135,-1369.6232 q 0,9.3785 -2.72281,16.9419 -2.7228,7.5633 -7.71461,13.0089 -4.84054,5.4456 -11.64755,8.471 -6.807,2.874 -14.82415,2.874 -8.01714,0 -14.82415,-2.874 -6.80701,-3.0254 -11.79882,-8.471 -4.84053,-5.4456 -7.56334,-13.0089 -2.7228,-7.5634 -2.7228,-16.9419 0,-9.2273 2.7228,-16.7906 2.72281,-7.7146 7.56334,-13.1602 4.99181,-5.4457 11.79882,-8.3197 6.80701,-3.0254 14.82415,-3.0254 8.01715,0 14.82415,3.0254 6.80701,2.874 11.64755,8.3197 4.99181,5.4456 7.71461,13.1602 2.72281,7.5633 2.72281,16.7906 z m -14.67289,0 q 0,-13.3115 -6.05067,-21.0261 -5.89941,-7.8659 -16.18556,-7.8659 -10.28614,0 -16.33682,7.8659 -5.89941,7.7146 -5.89941,21.0261 0,13.3115 5.89941,21.1774 6.05068,7.7146 16.33682,7.7146 10.28615,0 16.18556,-7.7146 6.05067,-7.8659 6.05067,-21.1774 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6151;fill-opacity:1;stroke-width:3.78167129"
+         id="path854"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 513.65411,-1416.9697 c -11.32292,0 -19.52944,3.0757 -24.61956,9.2272 -4.98624,6.0507 -7.47936,14.3704 -7.47936,24.9591 0,5.1431 0.62328,9.8323 1.86984,14.0678 1.24655,4.1346 3.1164,7.7146 5.60952,10.7399 2.49312,3.0253 5.60951,5.3952 9.3492,7.1096 3.73968,1.6135 8.10264,2.4203 13.08888,2.4203 2.70087,0 4.98623,-0.05 6.85608,-0.1513 1.97373,-0.1009 3.68774,-0.3026 5.14206,-0.6051 v -31.2447 h -33.36328 c -2.46629,-0.7997 -2.31709,-11.956 0.0346,-13.6242 h 53.60901 c 4.09567,0.3058 3.92395,4.6333 4.02756,8.4136 v 51.8845 c -2.90865,1.1093 -7.58324,2.2691 -14.0238,3.4792 -6.44056,1.3109 -14.38738,1.9664 -23.84046,1.9664 -8.10264,0 -15.47813,-1.2101 -22.12645,-3.6304 -6.54444,-2.4203 -12.15395,-5.9498 -16.82855,-10.5886 -4.67461,-4.6389 -8.31041,-10.3366 -10.9074,-17.0932 -2.49312,-6.7566 -3.73968,-14.4712 -3.73968,-23.1438 0,-8.7735 1.40238,-16.5385 4.20713,-23.2951 2.80477,-6.7566 6.64833,-12.4543 11.53069,-17.0932 4.88235,-4.7397 10.59575,-8.3196 17.14019,-10.7399 6.64832,-2.4203 13.71217,-3.6304 21.19153,-3.6304 5.09012,0 9.66084,0.3529 13.71216,1.0588 4.1552,0.6051 7.68712,1.3614 10.59576,2.269 13.54689,3.8043 12.80319,22.2386 12.53477,33.1731 H 532.5117 c -0.0146,-4.5492 -0.47085,-12.7521 -4.83381,-13.9622 -4.25908,-1.3109 -8.93368,-1.9664 -14.0238,-1.9664 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';stroke-width:3.83816361"
+         id="path856"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccscccscccccccccscccssccscccccsc" />
+      <path
+         d="m 585.67206,-1382.7834 q 0,7.7146 1.8152,13.9165 1.96647,6.202 5.44561,10.74 3.6304,4.3867 8.77348,6.807 5.14307,2.4203 11.79881,2.4203 6.50448,0 11.64755,-2.4203 5.29434,-2.4203 8.77348,-6.807 3.6304,-4.538 5.4456,-10.74 1.96647,-6.2019 1.96647,-13.9165 0,-7.7146 -1.96647,-13.9166 -1.8152,-6.3532 -5.4456,-10.7399 -3.47914,-4.538 -8.77348,-6.9583 -5.14307,-2.4203 -11.64755,-2.4203 -6.65574,0 -11.79881,2.5716 -5.14308,2.4202 -8.77348,6.9582 -3.47914,4.3868 -5.44561,10.74 -1.8152,6.2019 -1.8152,13.7653 z m 80.02017,0 q 0,13.4627 -4.08421,23.7489 -3.93294,10.1349 -10.89121,17.0931 -6.95828,6.807 -16.63936,10.2862 -9.52981,3.4791 -20.57229,3.4791 -10.73995,0 -20.26976,-3.4791 -9.52981,-3.4792 -16.63935,-10.2862 -7.10955,-6.9582 -11.19375,-17.0931 -4.08421,-10.2862 -4.08421,-23.7489 0,-13.4628 4.23548,-23.5977 4.23547,-10.2861 11.34501,-17.2444 7.26081,-6.9583 16.63936,-10.4374 9.52981,-3.4791 19.96722,-3.4791 10.73995,0 20.26976,3.4791 9.52981,3.4791 16.63936,10.4374 7.10954,6.9583 11.19374,17.2444 4.08421,10.1349 4.08421,23.5977 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold'"
+         id="path858"
+         inkscape:connector-curvature="0" />
+      <path
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';stroke-width:14.2929306"
+         d="m 4481.377,210.54883 -161.254,366.21289 h 213.7344 l -25.0722,-71.18945 h -83.7735 l 56.0274,-139.79102 106.9121,296.44141 h 95.4765 z"
+         id="path860"
+         inkscape:connector-curvature="0"
+         transform="matrix(0.26458333,0,0,0.26458333,-463.39141,-1505.5067)"
+         sodipodi:nodetypes="ccccccccc" />
+      <path
+         d="m 859.37109,-1350.5636 v 20.2698 h -70.03656 v -104.828 h 23.59763 v 84.5582 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold'"
+         id="path862"
+         inkscape:connector-curvature="0" />
+      <path
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:151.26686096px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';letter-spacing:0px;word-spacing:0px;display:inline;fill:#ff6151;fill-opacity:1;stroke:none;stroke-width:3.78167129"
+         d="m 677.52445,-1348.0641 -7.79745,17.7705 h 24.50549 l 5.54434,-17.7705 z"
+         id="path860-0"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccc" />
+    </g>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:29.36305809px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#7e251b;fill-opacity:1;stroke:none;stroke-width:0.73407644"
