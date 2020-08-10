@@ -153,9 +153,6 @@ class AutoML:
         return self.output or infer_type(y)
 
     def _make_fitness_fn(self, X, y):
-        if isinstance(X, list):
-            X = np.asarray(X)
-
         y = np.asarray(y)
 
         def fitness_fn(pipeline):
@@ -168,12 +165,20 @@ class AutoML:
                 train_indices = indices[:-split_index]
                 test_indices = indices[-split_index:]
 
-                X_train, y_train, X_test, y_test = (
-                    X[train_indices],
-                    y[train_indices],
-                    X[test_indices],
-                    y[test_indices],
-                )
+                if isinstance(X, list):
+                    X_train, y_train, X_test, y_test = (
+                        [X[i] for i in train_indices],
+                        y[train_indices],
+                        [X[i] for i in test_indices],
+                        y[test_indices],
+                    )
+                else:
+                    X_train, y_train, X_test, y_test = (
+                        X[train_indices],
+                        y[train_indices],
+                        X[test_indices],
+                        y[test_indices],
+                    )
 
                 pipeline.send("train")
                 pipeline.run((X_train, y_train))

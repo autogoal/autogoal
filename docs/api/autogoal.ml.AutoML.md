@@ -29,7 +29,7 @@ After calling load, the best pipeline is **not** trained.
 You need to retrain it by calling `fit_pipeline(X, y)`.
 ### `predict`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/ml/_automl.py#L188)
+> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/ml/_automl.py#L193)
 > `predict(self, X)`
 
 ### `save_pipeline`
