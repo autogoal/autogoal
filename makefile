@@ -15,7 +15,7 @@ help:
 docker:
 	docker build -t autogoal/autogoal:latest .
 
-# hub    Push the development image to Docker Hub.
+# hub          Push the development image to Docker Hub.
 .PHONY: hub
 hub:
 	docker push autogoal/autogoal:latest
@@ -25,12 +25,6 @@ hub:
 shell:
 	docker-compose run autogoal bash
 
-# docs         Compile and publish the documentation to Github.
-.PHONY: docs
-docs:
-	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:latest bash -c "python /code/docs/make_docs.py && mkdocs build"
-	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
-
 # ---------------------------------------------------------------------------
 # The following commands must be run INSIDE the development environment.
 # ---------------------------------------------------------------------------
@@ -38,6 +32,12 @@ docs:
 .PHONY: ensure-dev
 ensure-dev:
 	echo ${BUILD_ENVIRONMENT} | grep "development" >> /dev/null
+
+# docs         Compile and publish the documentation to Github.
+.PHONY: docs
+docs: ensure-dev
+	python docs/make_docs.py && mkdocs build
+	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
 # env          Setup the development environment.
 .PHONY: env
