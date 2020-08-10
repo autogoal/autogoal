@@ -76,7 +76,7 @@ This documentation is available online at [autogoal.github.io](https://autogoal.
 - [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
 - [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
-The HTML version can be deployed offline by downloading the AutoGOAL Docker image and running:
+The HTML version can be deployed offline by downloading the [AutoGOAL Docker image](https://hub.docker.com/autogoal/autogoal) and running:
 
     docker run -p 8000:8000 autogoal/autogoal mkdocs serve -a 0.0.0.0:8000
 
