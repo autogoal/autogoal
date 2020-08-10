@@ -10,4 +10,5 @@ services:
     volumes: 
       - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
       - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
     user: "1000:1000"
