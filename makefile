@@ -15,6 +15,11 @@ help:
 docker:
 	docker build -t autogoal/autogoal:latest .
 
+# pull         Pull the development image.
+.PHONY: pull
+pull:
+	docker pull autogoal/autogoal:latest
+
 # hub          Push the development image to Docker Hub.
 .PHONY: hub
 hub:
