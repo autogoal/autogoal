@@ -20,9 +20,9 @@ docker:
 pull:
 	docker pull autogoal/autogoal:latest
 
-# hub          Push the development image to Docker Hub.
-.PHONY: hub
-hub:
+# push         Push the development image to Docker Hub.
+.PHONY: push
+push:
 	docker push autogoal/autogoal:latest
 
 # shell        Opens a shell in the development image.
