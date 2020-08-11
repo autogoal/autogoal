@@ -148,3 +148,4 @@ dask-worker-space/*
 **/*.zip
 autogoal/datasets/data/*
 !autogoal/datasets/data/.gitignore
+**/*.bin

@@ -1,112 +1,111 @@
-import warnings
-import re
+def find_classes(include=".*", exclude=None, modules=None):
+    import inspect
+    import warnings
+    import re
 
-
-def find_classes(include=".*", exclude=None):
     result = []
 
-    try:
-        from autogoal.contrib.sklearn import find_classes as f
+    if include:
+        include = f".*({include}).*"
+    else:
+        include = r".*"
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `scikit-learn`. Run `pip install autogoal[sklearn]` to include it."
-        )
-        pass
+    if exclude:
+        exclude = f".*({exclude}).*"
 
-    try:
-        from autogoal.contrib.nltk import find_classes as f
+    if modules is None:
+        modules = []
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `nltk`. Run `pip install autogoal[nltk]` to include it."
-        )
-        pass
+        try:
+            from autogoal.contrib import sklearn
+            modules.append(sklearn)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `scikit-learn`. Run `pip install autogoal[sklearn]` to include it."
+            )
+            pass
 
-    try:
-        from autogoal.contrib.gensim import find_classes as f
+        try:
+            from autogoal.contrib import nltk
+            modules.append(nltk)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `nltk`. Run `pip install autogoal[nltk]` to include it."
+            )
+            pass
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `gensim`. Run `pip install autogoal[gensim]` to include it."
-        )
-        pass
+        try:
+            from autogoal.contrib import gensim
+            modules.append(gensim)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `gensim`. Run `pip install autogoal[gensim]` to include it."
+            )
+            pass
 
-    try:
-        from autogoal.contrib.keras import find_classes as f
+        try:
+            from autogoal.contrib import keras
+            modules.append(keras)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `keras`. Run `pip install autogoal[keras]` to include it."
+            )
+            pass
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `keras`. Run `pip install autogoal[keras]` to include it."
-        )
-        pass
+        try:
+            from autogoal.contrib import torch
+            modules.append(torch)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `torch`. Run `pip install autogoal[torch]` to include it."
+            )
+            pass
 
-    try:
-        from autogoal.contrib.torch import find_classes as f
+        try:
+            from autogoal.contrib import spacy
+            modules.append(spacy)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `spacy`. Run `pip install autogoal[spacy]` to include it."
+            )
+            pass
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `torch`. Run `pip install autogoal[torch]` to include it."
-        )
-        pass
+        try:
+            from autogoal.contrib import wikipedia
+            modules.append(wikipedia)
+        except ImportError as e:
+            warnings.warn(repr(e))
+            warnings.warn(
+                "Skipping `wikipedia`. Run `pip install autogoal[wikipedia]` to include it."
+            )
+            pass
 
-    try:
-        from autogoal.contrib.spacy import find_classes as f
+        from autogoal.contrib import _wrappers
+        modules.append(_wrappers)
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `spacy`. Run `pip install autogoal[spacy]` to include it."
-        )
-        pass
+        from autogoal.contrib import regex
+        modules.append(regex)
 
-    try:
-        from autogoal.contrib.wikipedia import find_classes as f
+    for module in modules:
+        for _, cls in inspect.getmembers(module, inspect.isclass):
+            if not hasattr(cls, 'run'):
+                continue
 
-        result.extend(f(include, exclude))
-    except ImportError as e:
-        warnings.warn(repr(e))
-        warnings.warn(
-            "Skipping `wikipedia`. Run `pip install autogoal[wikipedia]` to include it."
-        )
-        pass
+            if not re.match(include, repr(cls)):
+                continue
 
-    from autogoal.contrib._wrappers import (
-        MatrixBuilder,
-        VectorAggregator,
-        TensorBuilder,
-        FlagsMerger,
-        SentenceFeatureExtractor,
-        DocumentFeatureExtractor,
-        MultipleFeatureExtractor,
-    )
+            if exclude is not None and re.match(exclude, repr(cls)):
+                continue
+            
+            result.append(cls)
 
-    result.extend(
-        [
-            MatrixBuilder,
-            VectorAggregator,
-            TensorBuilder,
-            FlagsMerger,
-            SentenceFeatureExtractor,
-            DocumentFeatureExtractor,
-            MultipleFeatureExtractor,
-        ]
-    )
+    return result
 
-    return [
-        cls
-        for cls in result
-        if re.match(include, repr(cls))
-        and (exclude is None or not re.match(exclude, repr(cls)))
-    ]
+
+__all__ = ['find_classes']

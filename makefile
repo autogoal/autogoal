@@ -59,12 +59,12 @@ install: ensure-dev
 # test         Run the minimal unit tests (not marked slow).
 .PHONY: test
 test: ensure-dev
-	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
 
-# test-full    Run all unit tests including the slow ones.
+# test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full
 test-full: ensure-dev
-	python -m pytest autogoal tests --doctest-modules --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests --doctest-modules --cov=autogoal --cov-report=term-missing -v
 
 # cov          Run the coverage analysis.
 .PHONY: cov

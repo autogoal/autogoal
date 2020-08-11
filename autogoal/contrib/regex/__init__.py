@@ -1,17 +1,19 @@
 import re
+import abc
 
 from autogoal.utils import nice_repr
 from autogoal.kb import Word, Flags
 from autogoal.grammar import Boolean
 
 
-class _Regex:
+class _Regex(abc.ABC):
     def __init__(self, full: Boolean):
         self.full = full
         self._name = self.__class__.__name__[:-len("Regex")].lower()
 
+    @abc.abstractmethod
     def _regex(self):
-        raise NotImplementedError()
+        pass
 
     def run(self, input: Word()) -> Flags():
         r_exp = self._regex()

@@ -9,7 +9,6 @@ except:
 
 
 from ._base import (
-    KerasNeuralNetwork,
     KerasClassifier,
     KerasSequenceClassifier,
     KerasSequenceTagger,
@@ -17,12 +16,3 @@ from ._base import (
     KerasImagePreprocessor,
 )
 from ._grammars import build_grammar
-
-
-def find_classes(self, include=None, exclude=None):
-    return [
-        KerasSequenceClassifier,
-        KerasClassifier,
-        KerasSequenceTagger,
-        KerasImageClassifier,
-    ]

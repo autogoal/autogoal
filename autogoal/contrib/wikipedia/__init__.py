@@ -14,12 +14,3 @@ from ._base import (
     WikipediaSummary,
     WikipediaSummarySpanish,
 )
-
-
-def find_classes(self, include=None, exclude=None):
-    return [
-        WikipediaContainsWord,
-        WikipediaContainsWordSpanish,
-        WikipediaSummary,
-        WikipediaSummarySpanish,
-    ]

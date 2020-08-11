@@ -151,3 +151,4 @@ dask-worker-space/*
 demo-long.webm
 demo-short.webm
 metalearning.json
+*.bin

@@ -1,4 +1,4 @@
-from autogoal.utils import RestrictedWorkerByJoin
+from autogoal.utils import RestrictedWorkerByJoin, Gb, Mb
 import time
 import numpy as np
 import pytest
@@ -33,18 +33,18 @@ def test_handles_exc():
     with pytest.raises(Exception) as e:
         fn(0, 0, True)
 
-    assert str(e.value) == "You asked for it."
+    assert str(e.value).startswith("You asked for it.")
 
 
 def test_restrict_memory():
-    fn = RestrictedWorkerByJoin(func, timeout=None, memory=10 ** 8)
+    fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Gb)
 
     with pytest.raises(MemoryError):
         fn(0, 10 ** 8)
 
 
 def test_restrict_memory_fails():
-    fn = RestrictedWorkerByJoin(func, timeout=None, memory=10 ** 3)
+    fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Mb)
 
     with pytest.raises(ValueError) as e:
         fn(0, 10 ** 8)

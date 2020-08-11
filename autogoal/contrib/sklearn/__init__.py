@@ -30,52 +30,5 @@ except:
     raise ImportError()
 
 
-import inspect
-import re
-
-
-def find_classes(include=".*", exclude=None):
-    """
-    Returns the list of all `scikit-learn` wrappers in `autogoal`.
-
-    You can pass filters to include or exclude specific classes.
-    The filters are regular expressions that are matched against
-    the names of the classes. Only classes that pass the `include` filter
-    and not the `exclude` filter will be returned.
-    By default all classes are returned.
-
-    ##### Parameters
-
-    - `include`: regular expression to match for including classes. Defaults to `".*"`, i.e., all classes.
-    - `exclude`: regular expression to match for excluding classes. Defaults to `None`.
-
-    ##### Examples
-
-    ```python
-    >>> from pprint import pprint
-    >>> pprint(find_classes(include='.*Classifier', exclude='.*Tree.*'))
-    [<class 'autogoal.contrib.sklearn._generated.KNeighborsClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.PassiveAggressiveClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.RidgeClassifier'>,
-     <class 'autogoal.contrib.sklearn._generated.SGDClassifier'>]
-
-    ```
-    """
-    import autogoal.contrib.sklearn._generated as generated
-    import autogoal.contrib.sklearn._manual as manual
-    from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
-
-    def is_sklearn_class(c):
-        return (
-            inspect.isclass(c)
-            and issubclass(c, (SklearnEstimator, SklearnTransformer))
-            and c not in (SklearnEstimator, SklearnTransformer)
-            and re.match(include, c.__name__)
-            and (exclude is None or not re.match(exclude, c.__name__))
-        )
-
-    return [
-        c
-        for n, c in inspect.getmembers(generated, is_sklearn_class)
-        + inspect.getmembers(manual, is_sklearn_class)
-    ]
+from ._generated import *
+from ._manual import *

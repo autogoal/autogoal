@@ -7,7 +7,3 @@ except:
 
 
 from autogoal.contrib.spacy._base import SpacyNLP
-
-
-def find_classes(include=".*", exclude=None):
-    return [SpacyNLP]
