@@ -9,7 +9,6 @@ except:
 
 
 from ._base import (
-    KerasNeuralNetwork,
     KerasClassifier,
     KerasSequenceClassifier,
     KerasSequenceTagger,

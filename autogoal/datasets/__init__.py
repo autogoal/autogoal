@@ -20,7 +20,7 @@ def datapath(path: str) -> Path:
 
     ```python
     >>> datapath("movie_reviews")
-    PosixPath('/code/autogoal/datasets/data/movie_reviews')
+    PosixPath('/home/coder/autogoal/autogoal/datasets/data/movie_reviews')
 
     ```
     """
