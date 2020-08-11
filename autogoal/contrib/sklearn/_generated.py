@@ -6,12 +6,14 @@ from numpy import inf, nan
 from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
 from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
 from autogoal.kb import *
+from autogoal.utils import nice_repr
 
 from sklearn.cluster._affinity_propagation import (
     AffinityPropagation as _AffinityPropagation,
 )
 
 
+@nice_repr
 class AffinityPropagation(_AffinityPropagation, SklearnEstimator):
     def __init__(
         self,
@@ -32,6 +34,7 @@ class AffinityPropagation(_AffinityPropagation, SklearnEstimator):
 from sklearn.cluster._agglomerative import FeatureAgglomeration as _FeatureAgglomeration
 
 
+@nice_repr
 class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
     def __init__(
         self,
@@ -56,6 +59,7 @@ class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
 from sklearn.cluster._birch import Birch as _Birch
 
 
+@nice_repr
 class Birch(_Birch, SklearnEstimator):
     def __init__(
         self,
@@ -82,6 +86,7 @@ class Birch(_Birch, SklearnEstimator):
 from sklearn.cluster._kmeans import KMeans as _KMeans
 
 
+@nice_repr
 class KMeans(_KMeans, SklearnEstimator):
     def __init__(
         self,
@@ -106,6 +111,7 @@ class KMeans(_KMeans, SklearnEstimator):
 from sklearn.cluster._kmeans import MiniBatchKMeans as _MiniBatchKMeans
 
 
+@nice_repr
 class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
     def __init__(
         self,
@@ -136,6 +142,7 @@ class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
 from sklearn.cluster._mean_shift import MeanShift as _MeanShift
 
 
+@nice_repr
 class MeanShift(_MeanShift, SklearnEstimator):
     def __init__(self, bin_seeding: Boolean(), cluster_all: Boolean()):
         SklearnEstimator.__init__(self)
@@ -150,6 +157,7 @@ class MeanShift(_MeanShift, SklearnEstimator):
 from sklearn.decomposition._factor_analysis import FactorAnalysis as _FactorAnalysis
 
 
+@nice_repr
 class FactorAnalysis(_FactorAnalysis, SklearnTransformer):
     def __init__(
         self,
@@ -169,6 +177,7 @@ class FactorAnalysis(_FactorAnalysis, SklearnTransformer):
 from sklearn.decomposition._fastica import FastICA as _FastICA
 
 
+@nice_repr
 class FastICA(_FastICA, SklearnTransformer):
     def __init__(
         self,
@@ -186,6 +195,7 @@ class FastICA(_FastICA, SklearnTransformer):
 from sklearn.decomposition._incremental_pca import IncrementalPCA as _IncrementalPCA
 
 
+@nice_repr
 class IncrementalPCA(_IncrementalPCA, SklearnTransformer):
     def __init__(self, whiten: Boolean()):
         SklearnTransformer.__init__(self)
@@ -198,6 +208,7 @@ class IncrementalPCA(_IncrementalPCA, SklearnTransformer):
 from sklearn.decomposition._kernel_pca import KernelPCA as _KernelPCA
 
 
+@nice_repr
 class KernelPCA(_KernelPCA, SklearnTransformer):
     def __init__(
         self,
@@ -228,6 +239,7 @@ from sklearn.decomposition._lda import (
 )
 
 
+@nice_repr
 class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
     def __init__(self,):
         SklearnTransformer.__init__(self)
@@ -240,6 +252,7 @@ class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
 from sklearn.decomposition._nmf import NMF as _NMF
 
 
+@nice_repr
 class NMF(_NMF, SklearnTransformer):
     def __init__(
         self,
@@ -257,6 +270,7 @@ class NMF(_NMF, SklearnTransformer):
 from sklearn.decomposition._pca import PCA as _PCA
 
 
+@nice_repr
 class PCA(_PCA, SklearnTransformer):
     def __init__(
         self,
@@ -281,6 +295,7 @@ class PCA(_PCA, SklearnTransformer):
 from sklearn.decomposition._sparse_pca import MiniBatchSparsePCA as _MiniBatchSparsePCA
 
 
+@nice_repr
 class MiniBatchSparsePCA(_MiniBatchSparsePCA, SklearnTransformer):
     def __init__(
         self,
@@ -307,6 +322,7 @@ class MiniBatchSparsePCA(_MiniBatchSparsePCA, SklearnTransformer):
 from sklearn.decomposition._sparse_pca import SparsePCA as _SparsePCA
 
 
+@nice_repr
 class SparsePCA(_SparsePCA, SklearnTransformer):
     def __init__(
         self,
@@ -323,6 +339,7 @@ class SparsePCA(_SparsePCA, SklearnTransformer):
 from sklearn.decomposition._truncated_svd import TruncatedSVD as _TruncatedSVD
 
 
+@nice_repr
 class TruncatedSVD(_TruncatedSVD, SklearnTransformer):
     def __init__(
         self,
@@ -340,6 +357,7 @@ class TruncatedSVD(_TruncatedSVD, SklearnTransformer):
 from sklearn.feature_extraction.text import CountVectorizer as _CountVectorizer
 
 
+@nice_repr
 class CountVectorizer(_CountVectorizer, SklearnTransformer):
     def __init__(self, lowercase: Boolean(), binary: Boolean()):
         SklearnTransformer.__init__(self)
@@ -352,6 +370,7 @@ class CountVectorizer(_CountVectorizer, SklearnTransformer):
 from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectorizer
 
 
+@nice_repr
 class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
     def __init__(
         self,
@@ -378,6 +397,7 @@ class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
 from sklearn.feature_extraction.text import TfidfTransformer as _TfidfTransformer
 
 
+@nice_repr
 class TfidfTransformer(_TfidfTransformer, SklearnTransformer):
     def __init__(
         self,
@@ -402,6 +422,7 @@ class TfidfTransformer(_TfidfTransformer, SklearnTransformer):
 from sklearn.feature_extraction.text import TfidfVectorizer as _TfidfVectorizer
 
 
+@nice_repr
 class TfidfVectorizer(_TfidfVectorizer, SklearnTransformer):
     def __init__(
         self,
@@ -428,6 +449,7 @@ class TfidfVectorizer(_TfidfVectorizer, SklearnTransformer):
 from sklearn.impute._knn import KNNImputer as _KNNImputer
 
 
+@nice_repr
 class KNNImputer(_KNNImputer, SklearnTransformer):
     def __init__(
         self,
@@ -452,6 +474,7 @@ class KNNImputer(_KNNImputer, SklearnTransformer):
 from sklearn.linear_model._base import LinearRegression as _LinearRegression
 
 
+@nice_repr
 class LinearRegression(_LinearRegression, SklearnEstimator):
     def __init__(self, fit_intercept: Boolean(), normalize: Boolean()):
         SklearnEstimator.__init__(self)
@@ -468,6 +491,7 @@ class LinearRegression(_LinearRegression, SklearnEstimator):
 from sklearn.linear_model._bayes import ARDRegression as _ARDRegression
 
 
+@nice_repr
 class ARDRegression(_ARDRegression, SklearnEstimator):
     def __init__(
         self,
@@ -498,6 +522,7 @@ class ARDRegression(_ARDRegression, SklearnEstimator):
 from sklearn.linear_model._bayes import BayesianRidge as _BayesianRidge
 
 
+@nice_repr
 class BayesianRidge(_BayesianRidge, SklearnEstimator):
     def __init__(
         self,
@@ -526,6 +551,7 @@ class BayesianRidge(_BayesianRidge, SklearnEstimator):
 from sklearn.linear_model._coordinate_descent import ElasticNet as _ElasticNet
 
 
+@nice_repr
 class ElasticNet(_ElasticNet, SklearnEstimator):
     def __init__(
         self,
@@ -558,6 +584,7 @@ class ElasticNet(_ElasticNet, SklearnEstimator):
 from sklearn.linear_model._coordinate_descent import Lasso as _Lasso
 
 
+@nice_repr
 class Lasso(_Lasso, SklearnEstimator):
     def __init__(
         self,
@@ -588,6 +615,7 @@ class Lasso(_Lasso, SklearnEstimator):
 from sklearn.linear_model._huber import HuberRegressor as _HuberRegressor
 
 
+@nice_repr
 class HuberRegressor(_HuberRegressor, SklearnEstimator):
     def __init__(
         self, epsilon: Continuous(min=1.002, max=13.494), fit_intercept: Boolean()
@@ -604,6 +632,7 @@ class HuberRegressor(_HuberRegressor, SklearnEstimator):
 from sklearn.linear_model._least_angle import Lars as _Lars
 
 
+@nice_repr
 class Lars(_Lars, SklearnEstimator):
     def __init__(
         self,
@@ -632,6 +661,7 @@ class Lars(_Lars, SklearnEstimator):
 from sklearn.linear_model._least_angle import LassoLars as _LassoLars
 
 
+@nice_repr
 class LassoLars(_LassoLars, SklearnEstimator):
     def __init__(
         self,
@@ -660,6 +690,7 @@ class LassoLars(_LassoLars, SklearnEstimator):
 from sklearn.linear_model._least_angle import LassoLarsIC as _LassoLarsIC
 
 
+@nice_repr
 class LassoLarsIC(_LassoLarsIC, SklearnEstimator):
     def __init__(
         self,
@@ -688,6 +719,7 @@ class LassoLarsIC(_LassoLarsIC, SklearnEstimator):
 from sklearn.linear_model._logistic import LogisticRegression as _LogisticRegression
 
 
+@nice_repr
 class LogisticRegression(_LogisticRegression, SklearnEstimator):
     def __init__(
         self,
@@ -720,6 +752,7 @@ from sklearn.linear_model._omp import (
 )
 
 
+@nice_repr
 class OrthogonalMatchingPursuit(_OrthogonalMatchingPursuit, SklearnEstimator):
     def __init__(
         self,
@@ -746,6 +779,7 @@ from sklearn.linear_model._passive_aggressive import (
 )
 
 
+@nice_repr
 class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -782,6 +816,7 @@ from sklearn.linear_model._passive_aggressive import (
 )
 
 
+@nice_repr
 class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -818,6 +853,7 @@ class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
 from sklearn.linear_model._perceptron import Perceptron as _Perceptron
 
 
+@nice_repr
 class Perceptron(_Perceptron, SklearnEstimator):
     def __init__(
         self,
@@ -850,6 +886,7 @@ class Perceptron(_Perceptron, SklearnEstimator):
 from sklearn.linear_model._ridge import Ridge as _Ridge
 
 
+@nice_repr
 class Ridge(_Ridge, SklearnEstimator):
     def __init__(
         self,
@@ -880,6 +917,7 @@ class Ridge(_Ridge, SklearnEstimator):
 from sklearn.linear_model._ridge import RidgeClassifier as _RidgeClassifier
 
 
+@nice_repr
 class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -910,6 +948,7 @@ class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
 from sklearn.linear_model._stochastic_gradient import SGDClassifier as _SGDClassifier
 
 
+@nice_repr
 class SGDClassifier(_SGDClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -966,6 +1005,7 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
 from sklearn.linear_model._stochastic_gradient import SGDRegressor as _SGDRegressor
 
 
+@nice_repr
 class SGDRegressor(_SGDRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -1017,6 +1057,7 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
 from sklearn.linear_model._theil_sen import TheilSenRegressor as _TheilSenRegressor
 
 
+@nice_repr
 class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def __init__(
         self, fit_intercept: Boolean(), tol: Continuous(min=-0.005, max=0.001)
@@ -1033,6 +1074,7 @@ class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
 from sklearn.manifold._isomap import Isomap as _Isomap
 
 
+@nice_repr
 class Isomap(_Isomap, SklearnTransformer):
     def __init__(
         self,
@@ -1065,6 +1107,7 @@ from sklearn.manifold._locally_linear import (
 )
 
 
+@nice_repr
 class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
     def __init__(
         self,
@@ -1093,6 +1136,7 @@ class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
 from sklearn.naive_bayes import BernoulliNB as _BernoulliNB
 
 
+@nice_repr
 class BernoulliNB(_BernoulliNB, SklearnEstimator):
     def __init__(
         self,
@@ -1112,6 +1156,7 @@ class BernoulliNB(_BernoulliNB, SklearnEstimator):
 from sklearn.naive_bayes import CategoricalNB as _CategoricalNB
 
 
+@nice_repr
 class CategoricalNB(_CategoricalNB, SklearnEstimator):
     def __init__(self, fit_prior: Boolean()):
         SklearnEstimator.__init__(self)
@@ -1126,6 +1171,7 @@ class CategoricalNB(_CategoricalNB, SklearnEstimator):
 from sklearn.naive_bayes import ComplementNB as _ComplementNB
 
 
+@nice_repr
 class ComplementNB(_ComplementNB, SklearnEstimator):
     def __init__(self, fit_prior: Boolean(), norm: Boolean()):
         SklearnEstimator.__init__(self)
@@ -1140,6 +1186,7 @@ class ComplementNB(_ComplementNB, SklearnEstimator):
 from sklearn.naive_bayes import GaussianNB as _GaussianNB
 
 
+@nice_repr
 class GaussianNB(_GaussianNB, SklearnEstimator):
     def __init__(self,):
         SklearnEstimator.__init__(self)
@@ -1154,6 +1201,7 @@ class GaussianNB(_GaussianNB, SklearnEstimator):
 from sklearn.naive_bayes import MultinomialNB as _MultinomialNB
 
 
+@nice_repr
 class MultinomialNB(_MultinomialNB, SklearnEstimator):
     def __init__(self, fit_prior: Boolean()):
         SklearnEstimator.__init__(self)
@@ -1170,6 +1218,7 @@ from sklearn.neighbors._classification import (
 )
 
 
+@nice_repr
 class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -1200,6 +1249,7 @@ class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
 from sklearn.neighbors._graph import KNeighborsTransformer as _KNeighborsTransformer
 
 
+@nice_repr
 class KNeighborsTransformer(_KNeighborsTransformer, SklearnTransformer):
     def __init__(
         self,
@@ -1228,6 +1278,7 @@ from sklearn.neighbors._graph import (
 )
 
 
+@nice_repr
 class RadiusNeighborsTransformer(_RadiusNeighborsTransformer, SklearnTransformer):
     def __init__(
         self,
@@ -1254,6 +1305,7 @@ class RadiusNeighborsTransformer(_RadiusNeighborsTransformer, SklearnTransformer
 from sklearn.neighbors._lof import LocalOutlierFactor as _LocalOutlierFactor
 
 
+@nice_repr
 class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
     def __init__(
         self,
@@ -1282,6 +1334,7 @@ class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
 from sklearn.neighbors._nearest_centroid import NearestCentroid as _NearestCentroid
 
 
+@nice_repr
 class NearestCentroid(_NearestCentroid, SklearnEstimator):
     def __init__(self,):
         SklearnEstimator.__init__(self)
@@ -1296,6 +1349,7 @@ class NearestCentroid(_NearestCentroid, SklearnEstimator):
 from sklearn.neighbors._regression import KNeighborsRegressor as _KNeighborsRegressor
 
 
+@nice_repr
 class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -1328,6 +1382,7 @@ from sklearn.neighbors._regression import (
 )
 
 
+@nice_repr
 class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -1356,6 +1411,7 @@ class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
 from sklearn.preprocessing._data import KernelCenterer as _KernelCenterer
 
 
+@nice_repr
 class KernelCenterer(_KernelCenterer, SklearnTransformer):
     def __init__(self,):
         SklearnTransformer.__init__(self)
@@ -1368,6 +1424,7 @@ class KernelCenterer(_KernelCenterer, SklearnTransformer):
 from sklearn.preprocessing._data import MinMaxScaler as _MinMaxScaler
 
 
+@nice_repr
 class MinMaxScaler(_MinMaxScaler, SklearnTransformer):
     def __init__(self,):
         SklearnTransformer.__init__(self)
@@ -1380,6 +1437,7 @@ class MinMaxScaler(_MinMaxScaler, SklearnTransformer):
 from sklearn.preprocessing._data import PowerTransformer as _PowerTransformer
 
 
+@nice_repr
 class PowerTransformer(_PowerTransformer, SklearnTransformer):
     def __init__(self, standardize: Boolean()):
         SklearnTransformer.__init__(self)
@@ -1392,6 +1450,7 @@ class PowerTransformer(_PowerTransformer, SklearnTransformer):
 from sklearn.preprocessing._data import RobustScaler as _RobustScaler
 
 
+@nice_repr
 class RobustScaler(_RobustScaler, SklearnTransformer):
     def __init__(self, with_centering: Boolean(), with_scaling: Boolean()):
         SklearnTransformer.__init__(self)
@@ -1406,6 +1465,7 @@ class RobustScaler(_RobustScaler, SklearnTransformer):
 from sklearn.preprocessing._data import StandardScaler as _StandardScaler
 
 
+@nice_repr
 class StandardScaler(_StandardScaler, SklearnTransformer):
     def __init__(self, with_mean: Boolean(), with_std: Boolean()):
         SklearnTransformer.__init__(self)
@@ -1418,6 +1478,7 @@ class StandardScaler(_StandardScaler, SklearnTransformer):
 from sklearn.preprocessing._discretization import KBinsDiscretizer as _KBinsDiscretizer
 
 
+@nice_repr
 class KBinsDiscretizer(_KBinsDiscretizer, SklearnTransformer):
     def __init__(
         self,
@@ -1437,6 +1498,7 @@ class KBinsDiscretizer(_KBinsDiscretizer, SklearnTransformer):
 from sklearn.preprocessing._encoders import OneHotEncoder as _OneHotEncoder
 
 
+@nice_repr
 class OneHotEncoder(_OneHotEncoder, SklearnTransformer):
     def __init__(
         self,
@@ -1456,6 +1518,7 @@ class OneHotEncoder(_OneHotEncoder, SklearnTransformer):
 from sklearn.preprocessing._encoders import OrdinalEncoder as _OrdinalEncoder
 
 
+@nice_repr
 class OrdinalEncoder(_OrdinalEncoder, SklearnTransformer):
     def __init__(self, categories: Categorical("auto")):
         SklearnTransformer.__init__(self)
@@ -1468,6 +1531,7 @@ class OrdinalEncoder(_OrdinalEncoder, SklearnTransformer):
 from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
 
 
+@nice_repr
 class LabelBinarizer(_LabelBinarizer, SklearnTransformer):
     def __init__(self, sparse_output: Boolean()):
         SklearnTransformer.__init__(self)
@@ -1480,6 +1544,7 @@ class LabelBinarizer(_LabelBinarizer, SklearnTransformer):
 from sklearn.svm._classes import LinearSVC as _LinearSVC
 
 
+@nice_repr
 class LinearSVC(_LinearSVC, SklearnEstimator):
     def __init__(
         self,
@@ -1510,6 +1575,7 @@ class LinearSVC(_LinearSVC, SklearnEstimator):
 from sklearn.svm._classes import LinearSVR as _LinearSVR
 
 
+@nice_repr
 class LinearSVR(_LinearSVR, SklearnEstimator):
     def __init__(
         self,
@@ -1540,6 +1606,7 @@ class LinearSVR(_LinearSVR, SklearnEstimator):
 from sklearn.svm._classes import NuSVC as _NuSVC
 
 
+@nice_repr
 class NuSVC(_NuSVC, SklearnEstimator):
     def __init__(
         self,
@@ -1576,6 +1643,7 @@ class NuSVC(_NuSVC, SklearnEstimator):
 from sklearn.svm._classes import NuSVR as _NuSVR
 
 
+@nice_repr
 class NuSVR(_NuSVR, SklearnEstimator):
     def __init__(
         self,
@@ -1608,6 +1676,7 @@ class NuSVR(_NuSVR, SklearnEstimator):
 from sklearn.svm._classes import OneClassSVM as _OneClassSVM
 
 
+@nice_repr
 class OneClassSVM(_OneClassSVM, SklearnEstimator):
     def __init__(
         self,
@@ -1638,6 +1707,7 @@ class OneClassSVM(_OneClassSVM, SklearnEstimator):
 from sklearn.svm._classes import SVC as _SVC
 
 
+@nice_repr
 class SVC(_SVC, SklearnEstimator):
     def __init__(
         self,
@@ -1674,6 +1744,7 @@ class SVC(_SVC, SklearnEstimator):
 from sklearn.svm._classes import SVR as _SVR
 
 
+@nice_repr
 class SVR(_SVR, SklearnEstimator):
     def __init__(
         self,
@@ -1708,6 +1779,7 @@ class SVR(_SVR, SklearnEstimator):
 from sklearn.tree._classes import DecisionTreeClassifier as _DecisionTreeClassifier
 
 
+@nice_repr
 class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -1734,6 +1806,7 @@ class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
 from sklearn.tree._classes import DecisionTreeRegressor as _DecisionTreeRegressor
 
 
+@nice_repr
 class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -1760,6 +1833,7 @@ class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
 from sklearn.tree._classes import ExtraTreeClassifier as _ExtraTreeClassifier
 
 
+@nice_repr
 class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
     def __init__(
         self,
@@ -1786,6 +1860,7 @@ class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
 from sklearn.tree._classes import ExtraTreeRegressor as _ExtraTreeRegressor
 
 
+@nice_repr
 class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
     def __init__(
         self,
@@ -1807,3 +1882,81 @@ class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
         self, input: Tuple(MatrixContinuous(), ContinuousVector())
     ) -> ContinuousVector():
         return SklearnEstimator.run(self, input)
+
+
+__all__ = [
+    "AffinityPropagation",
+    "FeatureAgglomeration",
+    "Birch",
+    "KMeans",
+    "MiniBatchKMeans",
+    "MeanShift",
+    "FactorAnalysis",
+    "FastICA",
+    "IncrementalPCA",
+    "KernelPCA",
+    "LatentDirichletAllocation",
+    "NMF",
+    "PCA",
+    "MiniBatchSparsePCA",
+    "SparsePCA",
+    "TruncatedSVD",
+    "CountVectorizer",
+    "HashingVectorizer",
+    "TfidfTransformer",
+    "TfidfVectorizer",
+    "KNNImputer",
+    "LinearRegression",
+    "ARDRegression",
+    "BayesianRidge",
+    "ElasticNet",
+    "Lasso",
+    "HuberRegressor",
+    "Lars",
+    "LassoLars",
+    "LassoLarsIC",
+    "LogisticRegression",
+    "OrthogonalMatchingPursuit",
+    "PassiveAggressiveClassifier",
+    "PassiveAggressiveRegressor",
+    "Perceptron",
+    "Ridge",
+    "RidgeClassifier",
+    "SGDClassifier",
+    "SGDRegressor",
+    "TheilSenRegressor",
+    "Isomap",
+    "LocallyLinearEmbedding",
+    "BernoulliNB",
+    "CategoricalNB",
+    "ComplementNB",
+    "GaussianNB",
+    "MultinomialNB",
+    "KNeighborsClassifier",
+    "KNeighborsTransformer",
+    "RadiusNeighborsTransformer",
+    "LocalOutlierFactor",
+    "NearestCentroid",
+    "KNeighborsRegressor",
+    "RadiusNeighborsRegressor",
+    "KernelCenterer",
+    "MinMaxScaler",
+    "PowerTransformer",
+    "RobustScaler",
+    "StandardScaler",
+    "KBinsDiscretizer",
+    "OneHotEncoder",
+    "OrdinalEncoder",
+    "LabelBinarizer",
+    "LinearSVC",
+    "LinearSVR",
+    "NuSVC",
+    "NuSVR",
+    "OneClassSVM",
+    "SVC",
+    "SVR",
+    "DecisionTreeClassifier",
+    "DecisionTreeRegressor",
+    "ExtraTreeClassifier",
+    "ExtraTreeRegressor",
+]

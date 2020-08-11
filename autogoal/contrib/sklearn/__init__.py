@@ -29,3 +29,6 @@ except:
     print("(!) You can install it with `pip install autogoal[sklearn]`.")
     raise ImportError()
 
+
+from ._generated import *
+from ._manual import *

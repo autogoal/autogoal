@@ -89,6 +89,9 @@ def find_classes(include=".*", exclude=None, modules=None):
         from autogoal.contrib import _wrappers
         modules.append(_wrappers)
 
+        from autogoal.contrib import re
+        modules.append(re)
+
     for module in modules:
         for _, cls in inspect.getmembers(module, inspect.isclass):
             if not hasattr(cls, 'run'):

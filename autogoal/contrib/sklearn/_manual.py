@@ -77,3 +77,10 @@ class FlagsDenseVectorizer(_FlagsVectorizer):
 
     def run(self, input: List(Flags())) -> MatrixContinuousDense():
         return super().run(input)
+
+
+__all__ = [
+    "CountVectorizerNoTokenize",
+    "FlagsSparseVectorizer",
+    "FlagsDenseVectorizer",
+]
