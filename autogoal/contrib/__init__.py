@@ -89,8 +89,8 @@ def find_classes(include=".*", exclude=None, modules=None):
         from autogoal.contrib import _wrappers
         modules.append(_wrappers)
 
-        from autogoal.contrib import re
-        modules.append(re)
+        from autogoal.contrib import regex
+        modules.append(regex)
 
     for module in modules:
         for _, cls in inspect.getmembers(module, inspect.isclass):
