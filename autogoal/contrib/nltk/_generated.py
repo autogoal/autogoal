@@ -560,3 +560,38 @@ class TnT(_TnT, NltkTrainedTagger):
 
     def run(self, input: List(Word())) -> List(Postag()):
         return NltkTrainedTagger.run(self, input)
+
+
+__all__ = [
+    "Cistem",
+    "ISRIStemmer",
+    "LancasterStemmer",
+    "PorterStemmer",
+    "RSLPStemmer",
+    "SnowballStemmer",
+    "WordNetLemmatizer",
+    "PerceptronTagger",
+    "AffixTagger",
+    "BigramTagger",
+    "ClassifierBasedPOSTagger",
+    "TrigramTagger",
+    "UnigramTagger",
+    "TweetTokenizer",
+    "MWETokenizer",
+    "PunktSentenceTokenizer",
+    "BlanklineTokenizer",
+    "WhitespaceTokenizer",
+    "WordPunctTokenizer",
+    "SExprTokenizer",
+    "LineTokenizer",
+    "SpaceTokenizer",
+    "TabTokenizer",
+    "ToktokTokenizer",
+    "TreebankWordTokenizer",
+    "PerceptronTagger",
+    "BigramTagger",
+    "ClassifierBasedPOSTagger",
+    "TrigramTagger",
+    "UnigramTagger",
+    "TnT",
+]

@@ -7,5 +7,13 @@ With AutoGOAL you can define a pipeline in many different ways, such that certai
 tunable, and then use search algorithms to find the best way to tune or configure it for a given problem.
 """
 
+import autogoal.contrib
+import autogoal.datasets
+import autogoal.grammar
+import autogoal.kb
+import autogoal.ml
+import autogoal.sampling
+import autogoal.search
+import autogoal.utils
 
 from autogoal.utils._helpers import optimize
