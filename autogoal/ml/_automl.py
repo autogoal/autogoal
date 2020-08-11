@@ -159,7 +159,8 @@ class AutoML:
             scores = []
 
             for _ in range(self.cross_validation_steps):
-                indices = np.arange(0, X.shape[0])
+                len_x = len(X) if isinstance(X, list) else X.shape[0]
+                indices = np.arange(0, len_x)
                 np.random.shuffle(indices)
                 split_index = int(self.validation_split * len(indices))
                 train_indices = indices[:-split_index]
