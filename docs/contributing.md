@@ -2,20 +2,22 @@
 
 This project uses a novel methodology for development, in which you only need [Docker installed](https://docs.docker.com/install/).
 Fork the project, clone, and you'll find a `docker` folder and a `docker-compose.yml` file in the project root.
-We provided [packaged testing environments](https://hub.docker.com/orgs/autogoal) (in the form of Docker images) for all the Python versions we target.
+We provide a [packaged testing environment](https://hub.docker.com/autogoal/autogoal) in the form of a Docker image with all the development tools installed and configured, e.g., testing libraries, etc.
 There is also a `makefile` with all the necessary commands.
 
 The workflow is something like this:
 
-* Fork, clone, and make some changes.
-* Run `make` to run the local, fast tests. The first time this will download the corresponding image.
-* Fix errors (if any) and watch the testing coverage. Make sure to at least cover the newly added features.
-* Run `make test-full` to run the local but long tests. This will download all the remaining images for each Python environment.
-* If all worked, push and pull-request.
+1. Fork and clone the project.
+2. Run `make pull` to get the development image.
+3. Develop:
+    - If you are using Visual Studio Code with Remote Extensions (recommended) when you open the project it will recommend you to launch the remote container. This is the most comfortable environment to develop for AutoGOAL since everything is preconfigured.
+    - Otherwise, pick your poisson (ehem, editor) and edit.
+4. Run `make shell` to open a local shell inside the development container at any moment.
+5. Run `make test` inside the development shell and make sure everything passes.
+    - Remember to add new tests if necessary.
+6. If all worked, push and open a pull-request. 
 
-If you need to tinker with the dev environment, `make shell` will open a shell inside the latest Python environment where you can run and test commands.
-
-This project uses [poetry](https://python-poetry.org/) for package management. If you need to install new dependencies, run `make shell` and then `poetry add ...` inside the dockerized environment. Finally, don't forget to `poetry lock` and commit the changes to `pyproject.toml` and `poetry.lock` files.
+This project uses [poetry](https://python-poetry.org/) for package management. If you need to install new dependencies, run `make shell` and then `sudo poetry ...` inside the dockerized environment. Finally, don't forget to `sudo poetry lock` and commit the changes to `pyproject.toml` and `poetry.lock` files.
 
 ## License
 

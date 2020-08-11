@@ -1,58 +1,72 @@
-.PHONY: build
-build:
-	docker build -t autogoal/autogoal:latest --build-arg BACKEND=cpu .
-	docker build -t autogoal/autogoal:gpu --build-arg BACKEND=gpu .
+# .
+# Usage: make [command]
 
-# .PHONY: test-fast
-# test-fast:
-# 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} make dev-test-fast
+# ---------------------------------------------------------------------------
+# The following commands must be run OUTSIDE the development environment.
+# ---------------------------------------------------------------------------
 
-# .PHONY: notebook
-# notebook:
-# 	PYTHON_VERSION=${BASE_VERSION} docker-compose up
+# help         Show this information.
+.PHONY: help
+help:
+	cat makefile | grep -oP "^# \K(.*)"
 
-.PHONY: docs
-docs:
-	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:latest bash -c "python /code/docs/make_docs.py && mkdocs build"
-	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
+# docker       Builds the development image from scratch.
+.PHONY: docker
+docker:
+	docker build -t autogoal/autogoal:latest .
 
-# .PHONY: docs-deploy
-# docs-deploy:
-# 	PYTHON_VERSION=${BASE_VERSION} docker-compose run autogoal-tester-${ENVIRONMENT} python /code/docs/make_docs.py && cp docs/index.md Readme.md && mkdocs gh-deploy
+# pull         Pull the development image.
+.PHONY: pull
+pull:
+	docker pull autogoal/autogoal:latest
 
+# push         Push the development image to Docker Hub.
+.PHONY: push
+push:
+	docker push autogoal/autogoal:latest
+
+# shell        Opens a shell in the development image.
 .PHONY: shell
 shell:
-	docker run --rm -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:latest bash
+	docker-compose run autogoal bash
 
-.PHONY: shell-gpu
-shell-gpu:
-	docker run --rm --gpus all -it -u $(id -u):$(id -g) -v `pwd`:/code -v `pwd`/autogoal:/usr/local/lib/python3.6/site-packages/autogoal --network host autogoal/autogoal:gpu bash
+# ---------------------------------------------------------------------------
+# The following commands must be run INSIDE the development environment.
+# ---------------------------------------------------------------------------
 
-# Below are the commands that will be run INSIDE the development environment, i.e., inside Docker or Travis
-# These commands are NOT supposed to be run by the developer directly, and will fail to do so.
-
-.PHONY: dev-ensure
-dev-ensure:
-	# Check if you are inside a development environment
+.PHONY: ensure-dev
+ensure-dev:
 	echo ${BUILD_ENVIRONMENT} | grep "development" >> /dev/null
 
-.PHONY: dev-install
-dev-install: dev-ensure
+# docs         Compile and publish the documentation to Github.
+.PHONY: docs
+docs: ensure-dev
+	python docs/make_docs.py && mkdocs build
+	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
+
+# env          Setup the development environment.
+.PHONY: env
+env: ensure-dev
 	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
 	ln -s ${HOME}/.poetry/bin/poetry /usr/bin/poetry
 	poetry config virtualenvs.create false
+
+# install      Install all the development dependencies.
+.PHONY: install
+install: ensure-dev
 	poetry install
 
-.PHONY: dev-test-fast
-dev-test-fast: dev-ensure
-	# python -m mypy -p autogoal --ignore-missing-imports
+# test         Run the minimal unit tests (not marked slow).
+.PHONY: test
+test: ensure-dev
 	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
-.PHONY: dev-test-full
-dev-test-full: dev-ensure
-	# python -m mypy -p autogoal --ignore-missing-imports
+# test-full    Run all unit tests including the slow ones.
+.PHONY: test-full
+test-full: ensure-dev
 	python -m pytest autogoal tests --doctest-modules --ignore=autogoal/contrib/torch --ignore=autogoal/_old --cov=autogoal --cov-report=term-missing -v
 
-.PHONY: dev-cov
-dev-cov: dev-ensure
+# cov          Run the coverage analysis.
+.PHONY: cov
+cov: ensure-dev
 	python -m codecov

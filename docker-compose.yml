@@ -1,9 +1,14 @@
 version: "2.3"
 
 services:
-  autogoal-demo:
-    container_name: autogoal-demo
+  autogoal:
+    container_name: autogoal
     image: autogoal/autogoal
     ports:
       - 8501:8501
-    command: python -m autogoal demo
+      - 8000:8000
+    volumes: 
+      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+    user: "1000:1000"
