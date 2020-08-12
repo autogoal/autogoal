@@ -1,12 +1,12 @@
 # `autogoal.grammar.Graph`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L11)
+> [📝](https://github.com/autogal/autogoal/blob/main/autogoal/grammar/_graph.py#L11)
 > `Graph(self, **attrs)`
 
 Represents a graph in AutoGOAL that can be expanded with graph grammars.
 ### `add_edge`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L577)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L577)
 > `add_edge(self, u_of_edge, v_of_edge, **attr)`
 
 Add an edge between u and v.
@@ -59,7 +59,7 @@ For non-string attribute keys, use subscript notation.
 >>> G.edges[1, 2].update({0: 5})
 ### `add_edges_from`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L643)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L643)
 > `add_edges_from(self, ebunch_to_add, **attr)`
 
 Add all the edges in ebunch_to_add.
@@ -100,7 +100,7 @@ Associate data to edges
 >>> G.add_edges_from([(3, 4), (1, 4)], label='WN2898')
 ### `add_node`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L381)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L381)
 > `add_node(self, node_for_adding, **attr)`
 
 Add a single node `node_for_adding` and update node attributes.
@@ -142,7 +142,7 @@ NetworkX Graphs, though one should be careful that the hash
 doesn't change on mutables.
 ### `add_nodes_from`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L428)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L428)
 > `add_nodes_from(self, nodes_for_adding, **attr)`
 
 Add multiple nodes.
@@ -188,7 +188,7 @@ Use (node, attrdict) tuples to update attributes for specific nodes.
 11
 ### `add_weighted_edges_from`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L954)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L954)
 > `add_weighted_edges_from(self, ebunch_to_add, weight='weight', **attr)`
 
 Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -221,7 +221,7 @@ Examples
 >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
 ### `adjacency`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1345)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1345)
 > `adjacency(self)`
 
 Returns an iterator over (node, adjacency dict) tuples for all nodes.
@@ -241,7 +241,7 @@ Examples
 [(0, {1: {}}), (1, {0: {}, 2: {}}), (2, {1: {}, 3: {}}), (3, {2: {}})]
 ### `apply`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L31)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_graph.py#L31)
 > `apply(self, function)`
 
 Applies a function to all nodes in `build_order`'s order.
@@ -255,7 +255,7 @@ The function receives the current three arguments:
 Returns the last of the values computed.
 ### `build_order`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L19)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_graph.py#L19)
 > `build_order(self)`
 
 Returns a iterable of `(node, in_nodes)` in topological order.
@@ -265,7 +265,7 @@ This way, you can call a method on each node whose args are the
 previous nodes.
 ### `clear`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L1079)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L1079)
 > `clear(self)`
 
 Remove all nodes and edges from the graph.
@@ -282,12 +282,12 @@ Examples
 []
 ### `contains_any`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L57)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_graph.py#L57)
 > `contains_any(self, *items)`
 
 ### `copy`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1432)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1432)
 > `copy(self, as_view=False)`
 
 Returns a copy of the graph.
@@ -366,7 +366,7 @@ Examples
 >>> H = G.copy()
 ### `edge_subgraph`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1692)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1692)
 > `edge_subgraph(self, edges)`
 
 Returns the subgraph induced by the specified edges.
@@ -406,7 +406,7 @@ Examples
 [(0, 1), (3, 4)]
 ### `get_edge_data`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1299)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1299)
 > `get_edge_data(self, u, v, default=None)`
 
 Returns the attribute dictionary associated with edge (u, v).
@@ -450,7 +450,7 @@ But it is safe to assign attributes `G[u][v]['foo']`
 0
 ### `has_edge`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1157)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1157)
 > `has_edge(self, u, v)`
 
 Returns True if the edge (u, v) is in the graph.
@@ -488,7 +488,7 @@ True
 True
 ### `has_node`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L804)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L804)
 > `has_node(self, n)`
 
 Returns True if the graph contains the node n.
@@ -511,7 +511,7 @@ It is more readable and simpler to use
 True
 ### `has_predecessor`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L777)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L777)
 > `has_predecessor(self, u, v)`
 
 Returns True if node u has predecessor v.
@@ -519,7 +519,7 @@ Returns True if node u has predecessor v.
 This is true if graph has the edge u<-v.
 ### `has_successor`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L770)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L770)
 > `has_successor(self, u, v)`
 
 Returns True if node u has successor v.
@@ -527,19 +527,19 @@ Returns True if node u has successor v.
 This is true if graph has the edge u->v.
 ### `is_directed`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L1102)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L1102)
 > `is_directed(self)`
 
 Returns True if graph is directed, False otherwise.
 ### `is_multigraph`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L1098)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L1098)
 > `is_multigraph(self)`
 
 Returns True if graph is a multigraph, False otherwise.
 ### `nbunch_iter`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1827)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1827)
 > `nbunch_iter(self, nbunch=None)`
 
 Returns an iterator over nodes contained in nbunch that are
@@ -582,7 +582,7 @@ or None, a :exc:`NetworkXError` is raised.  Also, if any object in
 nbunch is not hashable, a :exc:`NetworkXError` is raised.
 ### `successors`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L784)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L784)
 > `successors(self, n)`
 
 Returns an iterator over successor nodes of n.
@@ -609,7 +609,7 @@ Notes
 neighbors() and successors() are the same.
 ### `number_of_edges`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1775)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1775)
 > `number_of_edges(self, u=None, v=None)`
 
 Returns the number of edges between two nodes.
@@ -657,7 +657,7 @@ directed edges from `u` to `v`:
 1
 ### `number_of_nodes`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L764)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L764)
 > `number_of_nodes(self)`
 
 Returns the number of nodes in the graph.
@@ -678,7 +678,7 @@ Examples
 3
 ### `order`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L784)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L784)
 > `order(self)`
 
 Returns the number of nodes in the graph.
@@ -699,7 +699,7 @@ Examples
 3
 ### `predecessors`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L816)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L816)
 > `predecessors(self, n)`
 
 Returns an iterator over predecessor nodes of n.
@@ -722,7 +722,7 @@ See Also
 successors
 ### `remove_edge`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L705)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L705)
 > `remove_edge(self, u, v)`
 
 Remove the edge between u and v.
@@ -752,7 +752,7 @@ Examples
 >>> G.remove_edge(*e[:2]) # select first part of edge tuple
 ### `remove_edges_from`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L738)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L738)
 > `remove_edges_from(self, ebunch)`
 
 Remove all edges specified in ebunch.
@@ -781,7 +781,7 @@ Examples
 >>> G.remove_edges_from(ebunch)
 ### `remove_node`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L498)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L498)
 > `remove_node(self, n)`
 
 Remove node n.
@@ -813,7 +813,7 @@ Examples
 []
 ### `remove_nodes_from`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L540)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L540)
 > `remove_nodes_from(self, nodes)`
 
 Remove multiple nodes.
@@ -839,7 +839,7 @@ Examples
 []
 ### `reverse`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L1181)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L1181)
 > `reverse(self, copy=True)`
 
 Returns the reverse of the graph.
@@ -855,7 +855,7 @@ copy : bool optional (default=True)
     the original graph.
 ### `size`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1732)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1732)
 > `size(self, weight=None)`
 
 Returns the number of edges or total of all edge weights.
@@ -894,7 +894,7 @@ Examples
 6.0
 ### `subgraph`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1628)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1628)
 > `subgraph(self, nodes)`
 
 Returns a SubGraph view of the subgraph induced on `nodes`.
@@ -954,7 +954,7 @@ Examples
 [(0, 1), (1, 2)]
 ### `successors`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L784)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L784)
 > `successors(self, n)`
 
 Returns an iterator over successor nodes of n.
@@ -981,7 +981,7 @@ Notes
 neighbors() and successors() are the same.
 ### `to_directed`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1519)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1519)
 > `to_directed(self, as_view=False)`
 
 Returns a directed representation of the graph.
@@ -1026,7 +1026,7 @@ If already directed, return a (deep) copy
 [(0, 1)]
 ### `to_directed_class`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L284)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L284)
 > `to_directed_class(self)`
 
 Returns the class to use for empty directed copies.
@@ -1035,7 +1035,7 @@ If you subclass the base classes, use this to designate
 what directed class to use for `to_directed()` copies.
 ### `to_undirected`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/digraph.py#L1106)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/digraph.py#L1106)
 > `to_undirected(self, reciprocal=False, as_view=False)`
 
 Returns an undirected representation of the digraph.
@@ -1095,7 +1095,7 @@ Examples
 [(0, 1)]
 ### `to_undirected_class`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L292)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L292)
 > `to_undirected_class(self)`
 
 Returns the class to use for empty undirected copies.
@@ -1104,7 +1104,7 @@ If you subclass the base classes, use this to designate
 what directed class to use for `to_directed()` copies.
 ### `update`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/networkx/classes/graph.py#L1054)
+> [📝](/usr/local/lib/python3.6/dist-packages/networkx/classes/graph.py#L1054)
 > `update(self, edges=None, nodes=None)`
 
 Update the graph using nodes/edges/graphs as input.

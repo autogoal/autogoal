@@ -223,8 +223,8 @@ def generate_class(clss, name, fp):
     if src:
         line = inspect.getsourcelines(clss)[1]
         src = src.replace(
-            "/usr/local/lib/python3.6/site-packages/",
-            "https://github.com/autogal/autogoal/blob/master/",
+            "/usr/lib/python3/dist-packages/",
+            "https://github.com/autogal/autogoal/blob/main/",
         )
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)
@@ -261,8 +261,8 @@ def generate_func(func, name, fp, indent="###", new_file=True):
     if src:
         line = inspect.getsourcelines(func)[1]
         src = src.replace(
-            "/usr/local/lib/python3.6/site-packages/",
-            "https://github.com/autogoal/autogoal/blob/master/",
+            "/usr/lib/python3/dist-packages/",
+            "https://github.com/autogoal/autogoal/blob/main/",
         )
         src_link = f"> [📝]({src}#L{line})\n"
         fp.write(src_link)

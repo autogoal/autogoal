@@ -1,6 +1,6 @@
 # `autogoal.sampling.ModelSampler`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/sampling/__init__.py#L113)
+> [📝](https://github.com/autogal/autogoal/blob/main/autogoal/sampling/__init__.py#L113)
 > `ModelSampler(self, model=None, **kwargs)`
 
 A sampler that builds and uses an internal probabilistic model to generate
@@ -10,7 +10,7 @@ For the model to work, the `handler` parameter in each sampling method
 must be suplied, otherwise it behaves exactly as the standard `Sampler`.
 ### `boolean`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L191)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L191)
 > `boolean(self, handle=None)`
 
 Returns a boolean value.
@@ -25,7 +25,7 @@ Returns a boolean value.
 ```
 ### `categorical`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L199)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L199)
 > `categorical(self, options, handle=None)`
 
 Returns one of the options.
@@ -43,7 +43,7 @@ classes of `Sampler`. In the default implementation, their behavior is exactly t
 ```
 ### `choice`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L156)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L156)
 > `choice(self, options, handle=None)`
 
 Returns one of the options.
@@ -58,7 +58,7 @@ Returns one of the options.
 ```
 ### `continuous`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L181)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L181)
 > `continuous(self, min=0, max=1, handle=None)`
 
 Returns a continuous value between `min` and `max`.
@@ -73,7 +73,7 @@ Returns a continuous value between `min` and `max`.
 ```
 ### `discrete`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L171)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L171)
 > `discrete(self, min=0, max=10, handle=None)`
 
 Returns a discrete value between `min` and `max`.
@@ -88,7 +88,7 @@ Returns a discrete value between `min` and `max`.
 ```
 ### `distribution`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L39)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L39)
 > `distribution(self, name, handle=None, **kwargs)`
 
 Shortcut function for generating from a distribution,

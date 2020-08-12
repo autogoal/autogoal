@@ -1,6 +1,6 @@
 # `autogoal.sampling.merge_updates`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/sampling/__init__.py#L558)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/sampling/__init__.py#L558)
 > `merge_updates(*updates)`
 
 Merges a bunch of update dicts from `ModelSampler`

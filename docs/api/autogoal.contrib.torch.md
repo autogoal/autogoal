@@ -8,7 +8,3 @@
 ### [`BertTokenizeEmbedding`](../autogoal.contrib.torch.BertTokenizeEmbedding)
 > Transforms a sentence into a list of vector embeddings using a Bert pretrained English model.
 
-
-## Functions
-
-### [`find_classes`](../autogoal.contrib.torch.find_classes)

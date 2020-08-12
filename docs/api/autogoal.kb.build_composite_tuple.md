@@ -1,6 +1,6 @@
 # `autogoal.kb.build_composite_tuple`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L243)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/kb/_data.py#L243)
 > `build_composite_tuple(index, input_type, output_type)`
 
 Dynamically generate a class `CompositeAlgorithm` that wraps

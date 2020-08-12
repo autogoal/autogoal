@@ -1,6 +1,6 @@
 # `autogoal.contrib.keras.KerasImagePreprocessor`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/contrib/keras/_base.py#L213)
+> [📝](https://github.com/autogal/autogoal/blob/main/autogoal/contrib/keras/_base.py#L213)
 > `KerasImagePreprocessor(self, featurewise_center, samplewise_center, featurewise_std_normalization, samplewise_std_normalization, rotation_range, width_shift_range, height_shift_range, shear_range, zoom_range, horizontal_flip, vertical_flip)`
 
 Augment a dataset of images by making changes to the original training set.
@@ -13,12 +13,12 @@ The parameter `grow_size` determines how many new images will be created for eac
 The remaining parameters are passed to `ImageDataGenerator`.
 ### `repr_method`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/utils/__init__.py#L87)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/utils/__init__.py#L87)
 > `repr_method(self)`
 
 ### `apply_transform`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L835)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L835)
 > `apply_transform(self, x, transform_parameters)`
 
 Applies a transformation to an image according to given parameters.
@@ -44,7 +44,7 @@ Applies a transformation to an image according to given parameters.
     A transformed version of the input (same shape).
 ### `fit`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L905)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L905)
 > `fit(self, x, augment=False, rounds=1, seed=None)`
 
 Fits the data generator to some sample data.
@@ -72,7 +72,7 @@ sample data before computing the internal data stats.
     seed: Int (default: None). Random seed.
 ### `flow`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L368)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L368)
 > `flow(self, x, y=None, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)`
 
 Takes data & label arrays, generates batches of augmented data.
@@ -118,7 +118,7 @@ Takes data & label arrays, generates batches of augmented data.
         If `y` is None, only the NumPy array `x` is returned.
 ### `flow_from_dataframe`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L546)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L546)
 > `flow_from_dataframe(self, dataframe, directory=None, x_col='filename', y_col='class', weight_col=None, target_size=(256, 256), color_mode='rgb', classes=None, class_mode='categorical', batch_size=32, shuffle=True, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None, interpolation='nearest', validate_filenames=True, **kwargs)`
 
 Takes the dataframe and the path to a directory
@@ -205,7 +205,7 @@ Takes the dataframe and the path to a directory
     and `y` is a NumPy array of corresponding labels.
 ### `flow_from_directory`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L437)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L437)
 > `flow_from_directory(self, directory, target_size=(256, 256), color_mode='rgb', classes=None, class_mode='categorical', batch_size=32, shuffle=True, seed=None, save_to_dir=None, save_prefix='', save_format='png', follow_links=False, subset=None, interpolation='nearest')`
 
 Takes the path to a directory & generates batches of augmented data.
@@ -283,7 +283,7 @@ Takes the path to a directory & generates batches of augmented data.
         and `y` is a NumPy array of corresponding labels.
 ### `get_random_transform`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L745)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L745)
 > `get_random_transform(self, img_shape, seed=None)`
 
 Generates random parameters for a transformation.
@@ -298,7 +298,7 @@ Generates random parameters for a transformation.
     transformation.
 ### `random_transform`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L892)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L892)
 > `random_transform(self, x, seed=None)`
 
 Applies a random transformation to an image.
@@ -311,7 +311,7 @@ Applies a random transformation to an image.
     A randomly transformed version of the input (same shape).
 ### `standardize`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/keras_preprocessing/image/image_data_generator.py#L690)
+> [📝](/usr/local/lib/python3.6/dist-packages/keras_preprocessing/image/image_data_generator.py#L690)
 > `standardize(self, x)`
 
 Applies the normalization configuration in-place to a batch of inputs.

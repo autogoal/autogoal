@@ -14,7 +14,3 @@
 ### [`WikipediaSummarySpanish`](../autogoal.contrib.wikipedia.WikipediaSummarySpanish)
 > This class find a word in Wikipedia and return a summary in Spanish.
 
-
-## Functions
-
-### [`find_classes`](../autogoal.contrib.wikipedia.find_classes)

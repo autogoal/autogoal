@@ -1,6 +1,6 @@
 # `autogoal.grammar.generate_cfg`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_cfg.py#L244)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_cfg.py#L244)
 > `generate_cfg(cls, registry=None)`
 
 Generates a [ContextFreeGrammar](/api/autogoal.grammar/#contextfreegrammar)

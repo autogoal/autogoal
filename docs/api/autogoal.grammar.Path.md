@@ -1,15 +1,15 @@
 # `autogoal.grammar.Path`
 
-> [📝](https://github.com/autogal/autogoal/blob/master/autogoal/grammar/_graph.py#L185)
+> [📝](https://github.com/autogal/autogoal/blob/main/autogoal/grammar/_graph.py#L185)
 > `Path(self, *items)`
 
 ### `build`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L191)
-> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7fd2a84e8048>)`
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_graph.py#L191)
+> `build(self, graph, in_nodes=[], out_nodes=[], initializer=<function default_initializer at 0x7f2c1f1a11e0>)`
 
 ### `make`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/grammar/_graph.py#L161)
-> `make(self, initializer=<function default_initializer at 0x7fd2a84e8048>)`
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/grammar/_graph.py#L161)
+> `make(self, initializer=<function default_initializer at 0x7f2c1f1a11e0>)`
 

@@ -9,6 +9,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 
 ## Submodules
 
+* [autogoal](../autogoal/)
 * [autogoal.contrib](../autogoal.contrib/)
 * [autogoal.datasets](../autogoal.datasets/)
 * [autogoal.grammar](../autogoal.grammar/)

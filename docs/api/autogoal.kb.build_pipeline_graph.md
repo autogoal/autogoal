@@ -1,6 +1,6 @@
 # `autogoal.kb.build_pipeline_graph`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_algorithm.py#L74)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/kb/_algorithm.py#L74)
 > `build_pipeline_graph(input, output, registry, max_list_depth=3, max_pipeline_width=3)`
 
 Creates a `PipelineBuilder` instance that generates all pipelines

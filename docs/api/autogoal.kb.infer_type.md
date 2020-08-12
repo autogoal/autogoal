@@ -1,6 +1,6 @@
 # `autogoal.kb.infer_type`
 
-> [📝](https://github.com/autogoal/autogoal/blob/master/autogoal/kb/_data.py#L303)
+> [📝](https://github.com/autogoal/autogoal/blob/main/autogoal/kb/_data.py#L303)
 > `infer_type(obj)`
 
 Attempts to automatically infer the most precise semantic type for `obj`.

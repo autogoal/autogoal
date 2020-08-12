@@ -5,6 +5,7 @@
 * [autogoal.contrib.gensim](../autogoal.contrib.gensim/)
 * [autogoal.contrib.keras](../autogoal.contrib.keras/)
 * [autogoal.contrib.nltk](../autogoal.contrib.nltk/)
+* [autogoal.contrib.regex](../autogoal.contrib.regex/)
 * [autogoal.contrib.sklearn](../autogoal.contrib.sklearn/)
 * [autogoal.contrib.spacy](../autogoal.contrib.spacy/)
 * [autogoal.contrib.torch](../autogoal.contrib.torch/)
