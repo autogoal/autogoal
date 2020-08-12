@@ -25,7 +25,6 @@ markdown_extensions:
 
 nav:
     - Home: index.md
-    - Demo: demo/index.html
     - Dependencies: dependencies.md
     - Contributing: contributing.md
     - User Guide:
