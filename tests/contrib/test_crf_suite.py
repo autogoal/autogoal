@@ -3,7 +3,6 @@ import pytest
 from autogoal.contrib.sklearn._manual import CRFTagger
 from autogoal.kb import build_pipelines, List, Flags, Category, Tuple
 from autogoal.sampling import Sampler
-from autogoal.ml import AutoML
 
 
 def _build_pipeline():
