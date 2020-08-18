@@ -57,7 +57,8 @@ RUN make install
 EXPOSE 8501
 EXPOSE 8000
 
-USER coder
 COPY ./ /home/coder/autogoal
+RUN ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
+USER coder
 
 CMD [ "python", "-m", "autogoal", "demo" ]

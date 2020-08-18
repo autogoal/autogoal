@@ -179,9 +179,7 @@ def make_list_wrapper(algorithm):
         self.inner = inner
 
     def run_method(self, input: wrap_list(input_type)) -> wrap_list(output_type):
-        from tqdm import tqdm
-
-        return [self.inner.run(x) for x in tqdm(xs)]
+        return [self.inner.run(x) for x in xs]
 
     def repr_method(self):
         return f"{name}(inner={repr(self.inner)})"
@@ -215,13 +213,11 @@ def build_composite_list(input_type, output_type, depth=1):
         self.inner = inner
 
     def run_method(self, input: input_wrapper) -> output_wrapper:
-        from tqdm import tqdm
-
         def wrap_run(xs, d):
             if d == 0:
                 return self.inner.run(xs)
 
-            return [wrap_run(x, d - 1) for x in tqdm(xs)]
+            return [wrap_run(x, d - 1) for x in xs]
 
         return wrap_run(input, depth)
 

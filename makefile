@@ -30,6 +30,16 @@ push:
 shell:
 	docker-compose run autogoal bash
 
+# demo         Run the demo in the development image.
+.PHONY: demo
+demo:
+	docker-compose run autogoal
+
+# mkdocs       Run the docs server in the development image.
+.PHONY: mkdocs
+mkdocs:
+	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
+
 # ---------------------------------------------------------------------------
 # The following commands must be run INSIDE the development environment.
 # ---------------------------------------------------------------------------
