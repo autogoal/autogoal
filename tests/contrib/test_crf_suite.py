@@ -1,6 +1,6 @@
 import pytest
 
-from autogoal.contrib.sklearn._manual import CRFTagger
+from autogoal.contrib import find_classes
 from autogoal.kb import build_pipelines, List, Flags, Category, Tuple
 from autogoal.sampling import Sampler
 
@@ -12,7 +12,7 @@ def _build_pipeline():
             List(List(Category()))
         ),
         output=List(List(Category())),
-        registry=[CRFTagger]
+        registry=find_classes(include="CRF")
     )
 
     return builder.sample(sampler=Sampler(random_state=0))

@@ -82,13 +82,6 @@ class FlagsDenseVectorizer(_FlagsVectorizer):
         return super().run(input)
 
 
-__all__ = [
-    "CountVectorizerNoTokenize",
-    "FlagsSparseVectorizer",
-    "FlagsDenseVectorizer",
-]
-
-
 @nice_repr
 class CRFTagger(CRF, SklearnEstimator):
     def __init__(self, algorithm: Categorical('lbfgs', 'l2sgd', 'ap', 'pa', 'arow')) -> None:
@@ -97,3 +90,11 @@ class CRFTagger(CRF, SklearnEstimator):
 
     def run(self, input: Tuple(List(List(Flags())), List(List(Category())))) -> List(List(Category())):
         return SklearnEstimator.run(self, input)
+
+
+__all__ = [
+    "CountVectorizerNoTokenize",
+    "FlagsSparseVectorizer",
+    "FlagsDenseVectorizer",
+    "CRFTagger"
+]
