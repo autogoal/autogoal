@@ -1,7 +1,8 @@
 from sklearn.feature_extraction.text import CountVectorizer as _CountVectorizer
 from sklearn.feature_extraction import DictVectorizer
+from sklearn_crfsuite import CRF
 
-from autogoal.contrib.sklearn._builder import SklearnTransformer
+from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnEstimator
 from autogoal.kb import (
     List,
     Sentence,
@@ -12,8 +13,10 @@ from autogoal.kb import (
     Stem,
     Flags,
     Vector,
+    Category,
+    Tuple,
 )
-from autogoal.grammar import Boolean
+from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 from autogoal.utils import nice_repr
 
 
@@ -84,3 +87,13 @@ __all__ = [
     "FlagsSparseVectorizer",
     "FlagsDenseVectorizer",
 ]
+
+
+@nice_repr
+class CRFTagger(CRF, SklearnEstimator):
+    def __init__(self, algorithm: Categorical('lbfgs', 'l2sgd', 'ap', 'pa', 'arow')) -> None:
+        SklearnEstimator.__init__(self)
+        super().__init__(algorithm=algorithm)
+
+    def run(self, input: Tuple(List(List(Flags())), List(List(Category())))) -> List(List(Category())):
+        return SklearnEstimator.run(self, input)
