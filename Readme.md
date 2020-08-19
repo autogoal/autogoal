@@ -61,6 +61,10 @@ The easiest way to get AutoGOAL up and running with all the dependencies is to p
 
 Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
 
+Once you have the development image downloaded, you can fire up a console and use AutoGOAL interactively.
+
+![](docs/shell.svg)
+
 ## Demo
 
 An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).

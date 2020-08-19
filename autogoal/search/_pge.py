@@ -19,7 +19,7 @@ class PESearch(SearchAlgorithm):
         epsilon_greed: float = 0.1,
         random_state: Optional[int] = None,
         name: str = None,
-        save: bool = True,
+        save: bool = False,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
