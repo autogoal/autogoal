@@ -125,7 +125,7 @@ dmypy.json
 
 ### VisualStudioCode ###
 .vscode/*
-# !.vscode/settings.json
+!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -139,13 +139,17 @@ dmypy.json
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 .ipynb_checkpoints
-**/*.log
-**/*.kv
+PGE-*.json
+*.log
+*.kv
 dask-worker-space/*
 .env
-**/*.npy
-**/*.pickle
-**/*.zip
-autogoal/datasets/data/*
-!autogoal/datasets/data/.gitignore
-**/*.bin
+*.zip
+*.npy
+*.pickle
+*.pdf
+demo-long.webm
+demo-short.webm
+metalearning.json
+*.bin
+mkdocs.yml
