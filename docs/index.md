@@ -1,7 +1,11 @@
-![AutoGOAL Logo](autogoal-banner.png)
+![AutoGOAL Logo](https://autogoal.github.io/autogoal-banner.png)
 
-[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Follow%20us%20in%20Twitter%21&style=social">](https://twitter.com/auto_goal) [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
- 
+[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="GitHub stars" src="https://img.shields.io/github/stars/autogoal/autogoal?style=social">](https://github.com/autogoal/autogoal/stargazers) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Followers&style=social">](https://twitter.com/auto_goal)
+
+[<img alt="Docker Cloud Build Status" src="https://img.shields.io/docker/cloud/build/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
+[<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
+[<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
+
 # AutoGOAL
 
 > Automatic Generation, Optimization And Artificial Learning
@@ -76,7 +80,7 @@ This documentation is available online at [autogoal.github.io](https://autogoal.
 - [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
 - [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
-The HTML version can be deployed offline by downloading the AutoGOAL Docker image and running:
+The HTML version can be deployed offline by downloading the [AutoGOAL Docker image](https://hub.docker.com/autogoal/autogoal) and running:
 
     docker run -p 8000:8000 autogoal/autogoal mkdocs serve -a 0.0.0.0:8000
 
