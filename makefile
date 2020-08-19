@@ -40,6 +40,11 @@ demo:
 mkdocs:
 	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
 
+# clean        Remove (!) all untracked and ignored files.
+.PHONY: clean
+clean:
+	git clean -xdff
+
 # ---------------------------------------------------------------------------
 # The following commands must be run INSIDE the development environment.
 # ---------------------------------------------------------------------------
