@@ -1,14 +1,32 @@
-# .
+# ‎‎
+#     ^         _         ____  ___    ^    _     
+#    / \  _   _| |_ ___  / ___|/ _ \  / \  | |    
+#   / _ \| | | | __/ _ \| |_ _| | | |/ _ \ | |    
+#  / ___ \ |_| | || (_) | |_| | |_| / ___ \| |___ 
+# /_/   \_\__,_|\__\___/ \____|\___/_/   \_\_____|
+#                                                 
 # Usage: make [command]
-
+# ‎‎
 # ---------------------------------------------------------------------------
-# The following commands must be run OUTSIDE the development environment.
+# The following commands can be run anywhere.
 # ---------------------------------------------------------------------------
+# ‎‎
 
 # help         Show this information.
 .PHONY: help
 help:
 	cat makefile | grep -oP "^# \K(.*)"
+
+# clean        Remove (!) all untracked and ignored files.
+.PHONY: clean
+clean:
+	git clean -xdff
+
+# ‎‎
+# ---------------------------------------------------------------------------
+# The following commands must be run OUTSIDE the development environment.
+# ---------------------------------------------------------------------------
+# ‎‎
 
 # docker       Builds the development image from scratch.
 .PHONY: docker
@@ -40,14 +58,11 @@ demo:
 mkdocs:
 	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
 
-# clean        Remove (!) all untracked and ignored files.
-.PHONY: clean
-clean:
-	git clean -xdff
-
+# ‎‎
 # ---------------------------------------------------------------------------
 # The following commands must be run INSIDE the development environment.
 # ---------------------------------------------------------------------------
+# ‎‎
 
 .PHONY: ensure-dev
 ensure-dev:
@@ -85,3 +100,5 @@ test-full: ensure-dev
 .PHONY: cov
 cov: ensure-dev
 	python -m codecov
+
+# ‎‎
