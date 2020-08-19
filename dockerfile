@@ -58,6 +58,7 @@ EXPOSE 8501
 EXPOSE 8000
 
 COPY ./ /home/coder/autogoal
+COPY .bashrc /etc/bash.bashrc && chmod +x /etc/bash.bashrc
 RUN ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
 USER coder
 
