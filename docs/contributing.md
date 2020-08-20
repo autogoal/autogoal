@@ -8,6 +8,7 @@ There is also a `makefile` with all the necessary commands.
 The workflow is something like this:
 
 1. Fork and clone the project.
+    - If you have not already, please consider installing [Github CLI](https://cli.github.com).
 2. Run `make pull` to get the development image.
 3. Develop:
     - If you are using Visual Studio Code with Remote Extensions (recommended) when you open the project it will recommend you to launch the remote container. This is the most comfortable environment to develop for AutoGOAL since everything is preconfigured.
@@ -16,6 +17,10 @@ The workflow is something like this:
 5. Run `make test` inside the development shell and make sure everything passes.
     - Remember to add new tests if necessary.
 6. If all worked, push and open a pull-request. 
+
+Here is a quick visual summary.
+
+![](contribute.svg)
 
 This project uses [poetry](https://python-poetry.org/) for package management. If you need to install new dependencies, run `make shell` and then `sudo poetry ...` inside the dockerized environment. Finally, don't forget to `sudo poetry lock` and commit the changes to `pyproject.toml` and `poetry.lock` files.
 
