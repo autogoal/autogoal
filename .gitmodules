@@ -1,0 +1,3 @@
+[submodule "board"]
+	path = board
+	url = git@github.com:autogoal/board.git

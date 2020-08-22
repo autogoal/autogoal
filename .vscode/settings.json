@@ -1,10 +1,5 @@
 {
     "python.pythonPath": "/usr/local/bin/python",
     "python.languageServer": "Pylance",
-    "carbon.backgroundColor": "rgba(0,0,0,0)",
-    "carbon.dropShadow": false,
-    "carbon.paddingHorizontal": 4,
-    "carbon.paddingVertical": 4,
-    "carbon.autoAdjustWidth": false,
-    "carbon.theme": "vscode",
+    "python.formatting.provider": "black",
 }
