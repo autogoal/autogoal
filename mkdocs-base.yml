@@ -40,3 +40,5 @@ nav:
         - Solving MEDDOCAN 2019: examples/solving_meddocan_2019.md
         - Sklearn integration: examples/sklearn_simple_grammar.md
         - Search strategies: examples/comparing_search_strategies.md
+    - Demo: https://autogoal.github.io/demo
+    - Dashboard: https://autogoal.github.io/dashboard

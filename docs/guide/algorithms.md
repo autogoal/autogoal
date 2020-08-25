@@ -6,6 +6,7 @@
 | BayesianRidge | sklearn | Tuple(MatrixContinuousDense(), ContinuousVector()) | ContinuousVector() | 
 | BernoulliNB | sklearn | Tuple(MatrixContinuous(), CategoricalVector()) | CategoricalVector() | 
 | Birch | sklearn | Tuple(MatrixContinuous(), CategoricalVector()) | CategoricalVector() | 
+| CRFTagger | sklearn | Tuple(List(List(Flags())), List(List(Category()))) | List(List(Category())) | 
 | CategoricalNB | sklearn | Tuple(MatrixContinuousDense(), CategoricalVector()) | CategoricalVector() | 
 | ComplementNB | sklearn | Tuple(MatrixContinuous(), CategoricalVector()) | CategoricalVector() | 
 | CountVectorizer | sklearn | List(Sentence()) | MatrixContinuousSparse() | 
