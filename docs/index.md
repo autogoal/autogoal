@@ -61,6 +61,12 @@ The easiest way to get AutoGOAL up and running with all the dependencies is to p
 
 Instructions for setting up Docker are available [here](https://www.docker.com/get-started).
 
+Once you have the development image downloaded, you can fire up a console and use AutoGOAL interactively.
+
+![](https://autogoal.github.io/shell.svg)
+
+> **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
+
 ## Demo
 
 An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
@@ -91,10 +97,12 @@ And navigating to [localhost:8000](http://localhost:8000).
 If you use AutoGOAL in academic research, please cite the following paper (to appear):
 
 ```bibtex
-@article{estevez2020,
-    title="General-purpose Hierarchical Optimisation of Machine Learning Pipelines with Grammatical Evolution",
-    author="Suilan Estevez-Velarde and Yoan Gutiérrez and Yudivián Almeida-Cruz and Andrés Montoyo",
-    journal="Information Sciences"
+@article{estevez2020general,
+  title={General-purpose hierarchical optimisation of machine learning pipelines with grammatical evolution},
+  author={Est{\'e}vez-Velarde, Suilan and Guti{\'e}rrez, Yoan and Almeida-Cruz, Yudivi{\'a}n and Montoyo, Andr{\'e}s},
+  journal={Information Sciences},
+  year={2020},
+  publisher={Elsevier}
 }
 ```
 
@@ -104,7 +112,7 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 
 - [AutoML Strategy Based on Grammatical Evolution: A Case Study about Knowledge Discovery from Text](https://www.aclweb.org/anthology/P19-1428/) applied probabilistic grammatical evolution with a custom-made grammar in the context of entity recognition in medical text.
 
-- [General-purpose Hierarchical Optimisation of Machine Learning Pipelines with Grammatical Evolution]() (to appear) presents a more uniform framework with different grammars in different problems, from tabular datasets to natural language processing.
+- [General-purpose Hierarchical Optimisation of Machine Learning Pipelines with Grammatical Evolution](https://doi.org/10.1016/j.ins.2020.07.035) presents a more uniform framework with different grammars in different problems, from tabular datasets to natural language processing.
 
 - [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
 
