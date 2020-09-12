@@ -246,12 +246,12 @@ def build_pipelines(input, output, registry) -> "PipelineBuilder":
     - `registry`: list of available classes to build the pipelines.
     """
 
-    warnings.warn(
-        "This method is deprecated and not under use by AutoGOAL's"
-        " internal API anymore, use `build_pipeline_graph` instead.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
+    # warnings.warn(
+    #     "This method is deprecated and not under use by AutoGOAL's"
+    #     " internal API anymore, use `build_pipeline_graph` instead.",
+    #     category=DeprecationWarning,
+    #     stacklevel=2,
+    # )
 
     list_pairs = set()
     types_queue = []
