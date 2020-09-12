@@ -31,8 +31,10 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          make env
-          make install
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+          ln -s ${HOME}/.poetry/bin/poetry /usr/bin/poetry
+          poetry config virtualenvs.create false
+          poetry install
 
       # Runs a set of commands using the runners shell
       - name: Run core tests
