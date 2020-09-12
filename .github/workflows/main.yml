@@ -37,4 +37,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run core tests
-        run: make test-core
+        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=autogoal/contrib --ignore=autogoal/datasets
