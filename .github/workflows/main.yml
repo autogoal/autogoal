@@ -36,7 +36,7 @@ jobs:
           poetry install
 
       - name: Run core tests
-        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=autogoal/contrib --ignore=autogoal/datasets
+        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal
 
       - name: Run codecov
         run: python -m codecov
