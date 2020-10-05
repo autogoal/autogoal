@@ -16,7 +16,7 @@ AutoGOAL itself does not depends on any third-party machine learning or optimiza
 
 If you simply install with:
 
-    pip instal autogoal
+    pip install autogoal
 
 Then you will be able to run almost none of the examples, since most of them use external dependencies such as `keras` or `sklearn`. If you want to install all dependencies, use:
 
@@ -49,7 +49,7 @@ Finally, you can use AutoGOAL to optimize almost everything, not just machine le
 
 ## Then why are there optional dependencies?
 
-Since AutoGOAL requires annotations and a specific use of its API to perform its magic, we provide pre-defined wrappers for `sklearn`, `keras` and `nltk`, to easy the development in the main use case of AutoGOAL, which is AutoML. We, the developers, are ourselves researchers in the AutoML area, and as such, we use AutoGOAL for this purpose. Anytime we need a new framework in our experiments, we add the corresponding wrappers to AutoGOAL to help the next generation of machine learning researchers and practicioners.
+Since AutoGOAL requires annotations and a specific use of its API to perform its magic, we provide pre-defined wrappers for `sklearn`, `keras` and `nltk`, to ease the development in the main use case of AutoGOAL, which is AutoML. We, the developers, are ourselves researchers in the AutoML area, and as such, we use AutoGOAL for this purpose. Anytime we need a new framework in our experiments, we add the corresponding wrappers to AutoGOAL to help the next generation of machine learning researchers and practicioners.
 
 ## Will missing optional dependencies bite me?
 
@@ -68,4 +68,4 @@ You will get the following error:
 (!) Run `pip install -U autogoal[keras]` to get it.
 ```
 
-Running `pip install autogoal[keras]` install all keras-dependent third-party dependencies. Likewise, you can `pip install autogoal[module]` for every `module` in `autogoal.contrib.*`.
+Running `pip install autogoal[keras]` installs all keras-dependent third-party dependencies. Likewise, you can `pip install autogoal[module]` for every `module` in `autogoal.contrib.*`.
