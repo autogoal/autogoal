@@ -96,7 +96,7 @@ And navigating to [localhost:8000](http://localhost:8000).
 
 ## Publications
 
-If you use AutoGOAL in academic research, please cite the following paper (to appear):
+If you use AutoGOAL in academic research, please cite the following paper:
 
 ```bibtex
 @article{estevez2020general,
@@ -104,7 +104,8 @@ If you use AutoGOAL in academic research, please cite the following paper (to ap
   author={Est{\'e}vez-Velarde, Suilan and Guti{\'e}rrez, Yoan and Almeida-Cruz, Yudivi{\'a}n and Montoyo, Andr{\'e}s},
   journal={Information Sciences},
   year={2020},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  doi={10.1016/j.ins.2020.07.035}
 }
 ```
 

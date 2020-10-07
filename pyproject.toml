@@ -19,6 +19,19 @@ toml = "^0.10.0"
 nx_altair = "^0.1.4"
 pydot = "^1.4.1"
 
+# Optional dependencies
+gensim = { version = "^3.8.1", optional = true }
+keras = { version = "^2.3.1", optional = true }
+nltk = { version = "^3.4.5", optional = true }
+scikit-learn = { version = "^0.22", optional = true }
+seqlearn = { version = "^0.2", optional = true }
+sklearn_crfsuite = { version = "^0.3.6", optional = true }
+spacy = { version = "^2.2.3", optional = true}
+streamlit = { version = "^0.59.0", optional = true}
+transformers = { version = "^2.3.0", optional = true }
+wikipedia = { version = "^1.4.0", optional = true}
+python-telegram-bot = { version="^12.4.2", optional = true }
+
 [tool.poetry.dev-dependencies]
 codecov = "^2.0.15"
 cython = "^0.29.14"
@@ -33,34 +46,20 @@ mypy = "^0.761"
 pylint = "^2.4.4"
 pytest = "^5.3.2"
 pytest-cov = "^2.8.1"
-python-telegram-bot = "^12.4.2"
 markdown-include = "^0.5.1"
 mkdocs-with-pdf = "^0.2.4"
-
-gensim = { version = "^3.8.1", optional = true }
-keras = { version = "^2.3.1", optional = true }
-nltk = { version = "^3.4.5", optional = true }
-# pytorch = { version = "^0.1.4", optional = true }
-scikit-learn = { version = "^0.22", optional = true }
-seqlearn = { version = "^0.2", optional = true }
-sklearn_crfsuite = { version = "^0.3.6", optional = true }
-spacy = { version = "^2.2.3", optional = true}
-streamlit = { version = "^0.59.0", optional = true}
-transformers = { version = "^2.3.0", optional = true }
-wikipedia = { version = "^1.4.0", optional = true}
 
 [tool.poetry.extras]
 gensim = ["gensim"]
 keras = ["keras"]
 nltk = ["nltk"]
-pytorch = ["pytorch"]
-sklearn = ["scikit-learn"]
-seqlearn = ["seqlearn"]
-sklearn_crfsuite = ["sklearn_crfsuite"]
+torch = ["pytorch"]
+sklearn = ["scikit-learn", "seqlearn", "sklearn_crfsuite"]
 spacy = ["spacy"]
 streamlit = ["streamlit"]
 transformers = ["transformers"]
 wikipedia = ["wikipedia"]
+telegram = ["python-telegram-bot"]
 
 [build-system]
 requires = ["poetry>=0.12"]
