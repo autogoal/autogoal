@@ -1,6 +1,8 @@
 import fire
 
 from pathlib import Path
+from autogoal import kb
+from autogoal.contrib import find_classes
 
 
 def demo():
@@ -12,6 +14,12 @@ def demo():
         print("(!) Fix it by running `pip install streamlit`.")
 
 
+def graph(input:str, output:str):
+    input_type = eval(input, kb.__dict__)
+
+    print(input_type)
+
+
 def main():
     from autogoal.datasets import pack, unpack, download
 
@@ -20,6 +28,7 @@ def main():
         unpack=unpack,
         download=download,
         demo=demo,
+        graph=graph,
     ), name='autogoal')
 
 
