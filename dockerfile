@@ -43,6 +43,9 @@ RUN adduser --gecos '' --disabled-password coder && \
 # Project-specific installation instruction
 # ------------------------------------------
 
+COPY bash.bashrc /etc
+RUN chmod +x /etc/bash.bashrc
+
 ENV BUILD_ENVIRONMENT="development"
 ENV XDG_CACHE_HOME="/opt/dev/cache"
 
@@ -51,6 +54,7 @@ WORKDIR /home/coder/autogoal
 COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
 
 # Use system's Python for installing dev tools
+USER coder
 RUN make env
 RUN make install
 
@@ -58,9 +62,7 @@ EXPOSE 8501
 EXPOSE 8000
 
 COPY ./ /home/coder/autogoal
-COPY bash.bashrc /etc
-RUN chmod +x /etc/bash.bashrc
-RUN ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
-USER coder
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
 
 CMD [ "python", "-m", "autogoal", "demo" ]

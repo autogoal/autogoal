@@ -58,6 +58,11 @@ demo:
 mkdocs:
 	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
 
+# test-basic  Test only
+.PHONY: test-basic
+test-basic:
+	docker build -t autogoal:basic -f tests/basic.dockerfile .
+
 # ‎‎
 # ---------------------------------------------------------------------------
 # The following commands must be run INSIDE the development environment.
