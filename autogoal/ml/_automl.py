@@ -16,7 +16,7 @@ from autogoal.kb import (
 from autogoal.ml.metrics import accuracy
 from autogoal.sampling import ReplaySampler
 from autogoal.contrib import find_classes
-from autogoal.ml._metalearning import DatasetFeatureLogger
+# from autogoal.ml._metalearning import DatasetFeatureLogger
 
 import numpy as np
 import random
@@ -85,6 +85,8 @@ class AutoML:
         self.output = self._output_type(y)
 
         if self.metalearning_log:
+            raise NotImplementedError("Metalearning is not ready yet")
+
             loggers = kwargs.get('logger', [])
             loggers.append(DatasetFeatureLogger(X, y, problem_features=dict(
                 input=repr(self.input),
