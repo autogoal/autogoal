@@ -10,7 +10,7 @@ from typing import List
 from autogoal.search import Logger
 from autogoal.utils import nice_repr
 from autogoal import sampling
-from sklearn.feature_extraction import DictVectorizer
+# from sklearn.feature_extraction import DictVectorizer
 
 
 class DatasetFeatureLogger(Logger):
@@ -167,6 +167,8 @@ class LearnerMedia:
         self.beta = beta
 
     def initialize(self):
+        raise NotImplementedError("We need to refactor to not depend on DictVectorizer")
+
         self.best_fitness = collections.defaultdict(lambda: 0)
         self.all_features = {}
 

@@ -19,6 +19,7 @@ toml = "^0.10.0"
 pydot = "^1.4.1"
 scipy = "^1.5.2"
 numpy = "^1.19.2"
+tqdm = "^4.50.2"
 
 # Contrib dependencies
 gensim = { version = "^3.8.1", optional = true }
