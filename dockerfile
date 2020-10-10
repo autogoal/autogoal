@@ -54,12 +54,13 @@ WORKDIR /home/coder/autogoal
 COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
 
 # Use system's Python for installing dev tools
-USER coder
 RUN make env
-RUN make install
+RUN poetry install -E dev -E contrib
 
 EXPOSE 8501
 EXPOSE 8000
+
+USER coder
 
 COPY ./ /home/coder/autogoal
 
