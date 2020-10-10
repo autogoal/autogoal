@@ -51,7 +51,7 @@ Installation is very simple:
 
 However, `autogoal` comes with a bunch of optional dependencies. You can install them all with:
 
-    pip install autogoal[all]
+    pip install autogoal[contrib]
 
 To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.github.io/dependencies/).
 

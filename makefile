@@ -76,6 +76,7 @@ ensure-dev:
 # docs         Compile and publish the documentation to Github.
 .PHONY: docs
 docs: ensure-dev
+	cp Readme.md docs/index.md
 	python docs/make_docs.py && mkdocs build
 	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
