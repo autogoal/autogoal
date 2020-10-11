@@ -9,6 +9,7 @@ AutoGOAL itself does not depends on any third-party machine learning or optimiza
     enlighten = "^1.4.0"
     networkx = "^2.4"
     numpy = "^1.19.2"
+    pandas = "^1.1.3"
     psutil = "^5.6.7"
     pydot = "^1.4.1"
     pyyaml = "^5.2"
