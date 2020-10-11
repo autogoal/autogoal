@@ -2,6 +2,12 @@ AutoGOAL can be used directly from the CLI for some tasks. To see all available 
 
     python3 -m autogoal
 
+## Run the streamlit demo
+
+Just run:
+
+    python3 -m autogoal demo
+
 ## Inspect the contrib modules
 
 To see all the contrib modules installed and the available algorithms, run:
@@ -37,3 +43,11 @@ Use `--verbose` to actually list all the algorithms. Additionally, you can pass 
      🔹 SpacyNLP                  : Sentence() -> Tuple(List(Word()), List(Flags()))
     🛠️  wrappers: 1 algorithms.
      🔹 SentenceFeatureExtractor  : Sentence() -> Flags()
+
+## Fit and predict with an AutoML model
+
+To fit an AutoML model on a custom dataset, run:
+
+    python3 -m autogoal automl fit <INPUT>
+
+The `INPUT` parameter should be a dataset. Two options are available. 
