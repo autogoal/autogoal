@@ -1,6 +1,5 @@
-def find_classes(include=None, exclude=None, modules=None):
+def find_classes(include=None, exclude=None, modules=None, input=None, output=None):
     import inspect
-    import warnings
     import re
 
     result = []
@@ -13,6 +12,12 @@ def find_classes(include=None, exclude=None, modules=None):
     if exclude:
         exclude = f".*({exclude}).*"
 
+    if input:
+        input = f".*({input}).*"
+
+    if output:
+        output = f".*({output}).*"
+        
     if modules is None:
         modules = []
 
@@ -76,6 +81,14 @@ def find_classes(include=None, exclude=None, modules=None):
                 continue
 
             if exclude is not None and re.match(exclude, repr(cls)):
+                continue
+
+            sig = inspect.signature(cls.run)
+
+            if input and not re.match(input, str(sig.parameters["input"].annotation)):
+                continue
+
+            if output and not re.match(output, str(sig.return_annotation)):
                 continue
             
             result.append(cls)

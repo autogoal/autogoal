@@ -24,7 +24,7 @@ def demo():
     """
     Launch streamlit demo.
     """
-    
+
     try:
         from streamlit.bootstrap import run
 
@@ -42,13 +42,19 @@ def contrib_main():
 
 
 @contrib_app.command("list")
-def contrib_list(verbose: bool = False, include: str = None, exclude: str = None):
+def contrib_list(
+    verbose: bool = False,
+    include: str = None,
+    exclude: str = None,
+    input: str = None,
+    output: str = None,
+):
     """
     List all currently available contrib algorithms.
     """
     from autogoal.contrib import find_classes
 
-    classes = find_classes(include=include, exclude=exclude)
+    classes = find_classes(include=include, exclude=exclude, input=input, output=output)
     classes_by_contrib = collections.defaultdict(list)
 
     for cls in classes:
