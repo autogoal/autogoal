@@ -6,6 +6,14 @@ description = "Automatic Generation Optimization And Learning"
 license = "MIT"
 readme = "Readme.md"
 
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Code Generators",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+]
+
 [tool.poetry.dependencies]
 python = "^3.6"
 black = "^19.10b0"
