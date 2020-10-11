@@ -75,7 +75,7 @@ You can use AutoGOAL directly from the CLI. To see options just type:
 
     python -m autogoal
 
-Read more in the [CLI documentation](httsp://autogoal.github.io/cli).
+Read more in the [CLI documentation](https://autogoal.github.io/cli).
 
 ## Demo
 
