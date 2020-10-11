@@ -1,6 +1,6 @@
 import textwrap
 
-from autogoal.grammar import Discrete, generate_cfg
+from autogoal.grammar import Discrete, generate_cfg, Subset
 from autogoal.sampling import Sampler
 
 
@@ -27,6 +27,19 @@ def test_generate_from_class_with_args():
         """
         <A>   := A (x=<A_x>)
         <A_x> := discrete (min=1, max=5)
+        """,
+    )
+
+def test_subset_annotation():
+    class A:
+        def __init__(self, features: Subset('Test', "Hello", "World")):
+            pass
+
+    check_grammar(
+        generate_cfg(A),
+        """
+        <A>   := A (features=<Test>)
+        <Test> := { <Hello> , <World> }
         """,
     )
 

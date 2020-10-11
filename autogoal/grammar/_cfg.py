@@ -1,10 +1,7 @@
 import inspect
-import random
-import warnings
-import sys
 from typing import List, Dict, Set
 
-from ._base import Grammar, Sampler
+from ._base import Grammar
 
 
 class Symbol:
@@ -112,6 +109,9 @@ class SubsetOf(Production):
             if symbol in visited:
                 continue
 
+            if symbol not in self.grammar:
+                continue
+
             self.grammar[symbol].to_string(code, visited, max_symbol_length)
 
     def sample(self, sampler, namespace, max_iterations):
@@ -195,7 +195,8 @@ class Distribution(Callable):
 
 
 class ContextFreeGrammar(Grammar):
-    """Represents a CFG grammar.
+    """
+    Represents a CFG grammar.
     """
 
     def __init__(self, start: Symbol, namespace: Dict[str, type] = None):
@@ -415,9 +416,9 @@ class Union:
 
 
 class Subset:
-    def __init__(self, name, *clss, allow_empty=False):
+    def __init__(self, name, *members, allow_empty=False):
         self.__name__ = name
-        self.clss = list(clss)
+        self.members = list(members)
         self.allow_empty = allow_empty
 
     def __repr__(self):
@@ -433,10 +434,14 @@ class Subset:
         grammar.add(symbol, Empty(symbol, grammar))
         children = []
 
-        for child in self.clss:
-            child_symbol = Symbol(child.__name__)
-            children.append(child_symbol)
-            _generate_cfg(child, grammar, child_symbol)
+        for child in self.members:
+            if type(child) is Callable:
+                child_symbol = Symbol(child.__name__)
+                children.append(child_symbol)
+                _generate_cfg(child, grammar, child_symbol)
+            else:
+                child_symbol = Symbol(str(child))
+                children.append(child_symbol)
 
         grammar.replace(symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty))
         return grammar
