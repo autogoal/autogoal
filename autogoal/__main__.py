@@ -1,3 +1,4 @@
+import inspect
 import typer
 import collections
 
@@ -56,8 +57,10 @@ def contrib_list(
 
     classes = find_classes(include=include, exclude=exclude, input=input, output=output)
     classes_by_contrib = collections.defaultdict(list)
+    max_cls_name_length = 0
 
     for cls in classes:
+        max_cls_name_length = max(max_cls_name_length, len(cls.__name__))
         classes_by_contrib[str(cls).split(".")[2]].append(cls)
 
     typer.echo(
@@ -69,7 +72,8 @@ def contrib_list(
 
         if verbose:
             for cls in clss:
-                typer.echo(f" 🔹 {cls.__name__}")
+                sig = inspect.signature(cls.run)
+                typer.echo(f" 🔹 {cls.__name__.ljust(max_cls_name_length)} : {sig.parameters['input'].annotation} -> {sig.return_annotation}")
 
 
 if __name__ == "__main__":
