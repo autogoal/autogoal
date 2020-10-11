@@ -20,6 +20,8 @@ export TERM=xterm-256color
 alias grep="grep --color=auto"
 alias ls="ls --color=auto"
 alias python="ipython --nosep --no-banner --no-confirm-exit"
+alias poetry="sudo poetry"
+alias autogoal="python3 -m autogoal"
 
 echo -e "\e[1;31m"
 cat<<TF
