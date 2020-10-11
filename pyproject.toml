@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "autogoal"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Suilan Estevez-Velarde <suilanestevez@gmail.com>", "Alejandro Piad-Morffis <apiad@apiad.net>"]
 description = "Automatic Generation Optimization And Learning"
 license = "MIT"
 readme = "Readme.md"
+homepage = "https://autogoal.github.io"
+documentation = "https://autogoal.github.io"
+repository = "https://github.com/autogoal/autogoal"
 
 classifiers = [
     "Development Status :: 3 - Alpha",
