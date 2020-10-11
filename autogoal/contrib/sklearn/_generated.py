@@ -1511,7 +1511,7 @@ class OneHotEncoder(_OneHotEncoder, SklearnTransformer):
             self, categories=categories, sparse=sparse, handle_unknown=handle_unknown
         )
 
-    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousSparse():
+    def run(self, input: MatrixCategorical()) -> MatrixContinuousSparse():
         return SklearnTransformer.run(self, input)
 
 
@@ -1524,7 +1524,7 @@ class OrdinalEncoder(_OrdinalEncoder, SklearnTransformer):
         SklearnTransformer.__init__(self)
         _OrdinalEncoder.__init__(self, categories=categories)
 
-    def run(self, input: MatrixContinuousDense()) -> MatrixContinuousDense():
+    def run(self, input: MatrixCategorical()) -> MatrixContinuousDense():
         return SklearnTransformer.run(self, input)
 
 

@@ -377,7 +377,10 @@ def infer_type(obj):
             if isinstance(obj, spmatrix):
                 return MatrixContinuousSparse()
             if isinstance(obj, ndarray):
-                return MatrixContinuousDense()
+                if obj.dtype.kind == "O":
+                    return MatrixCategorical()
+                if obj.dtype.kind == "i":
+                    return MatrixContinuousDense()
 
     raise TypeError("Cannot infer type for %r" % obj)
 
@@ -435,6 +438,10 @@ class CategoricalVector(Vector):
 
 
 class MatrixContinuous(Matrix):
+    pass
+
+
+class MatrixCategorical(Matrix):
     pass
 
 
@@ -539,6 +546,7 @@ DATA_TYPES = frozenset(
         DiscreteVector,
         CategoricalVector,
         MatrixContinuous,
+        MatrixCategorical,
         MatrixContinuousDense,
         MatrixContinuousSparse,
         Entity,

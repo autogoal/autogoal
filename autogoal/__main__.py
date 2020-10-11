@@ -1,16 +1,24 @@
-import inspect
-import typer
 import collections
-
+import inspect
 from pathlib import Path
-from autogoal import kb
+
+import pandas as pd
+import typer
+
 from autogoal.contrib import find_classes
+from autogoal.ml import AutoML
+from autogoal.kb import MatrixContinuousDense, CategoricalVector, MatrixCategorical
+from autogoal.utils import Gb, Min
+from autogoal.search import ConsoleLogger, ProgressLogger
 
 
 app = typer.Typer(name="AutoGOAL")
 contrib_app = typer.Typer(name="contrib")
+automl_app = typer.Typer(name="automl")
+
 
 app.add_typer(contrib_app)
+app.add_typer(automl_app)
 
 
 @app.callback()
@@ -73,7 +81,57 @@ def contrib_list(
         if verbose:
             for cls in clss:
                 sig = inspect.signature(cls.run)
-                typer.echo(f" 🔹 {cls.__name__.ljust(max_cls_name_length)} : {sig.parameters['input'].annotation} -> {sig.return_annotation}")
+                typer.echo(
+                    f" 🔹 {cls.__name__.ljust(max_cls_name_length)} : {sig.parameters['input'].annotation} -> {sig.return_annotation}"
+                )
+
+
+@automl_app.callback()
+def automl_callback():
+    """
+    Fit and predict with an AutoML model.
+    """
+
+
+@automl_app.command("fit")
+def automl_fit(
+    input: Path,
+    target: str = None,
+    evaluation_timeout: int = 5 * Min,
+    memory_limit: int = 4 * Gb,
+    search_timeout: int = 60 * 60,
+    pop_size: int = 20,
+    iterations: int = 100,
+    format: str = None,
+):
+    if input.suffix == ".csv" or format == "csv":
+        dataset = pd.read_csv(input)
+    elif input.suffix == ".json" or format == "json":
+        dataset = pd.read_json(input)
+    else:
+        print(f"⚠️  Error: format {input.suffix} not recognized.")
+        return
+
+    if target is None:
+        target = dataset.columns[0]
+
+    columns = set(dataset.columns)
+
+    y = dataset[target].values
+    X = dataset[list(columns - {target})].values
+
+    automl = AutoML(
+        output=CategoricalVector(),
+        search_kwargs=dict(
+            evaluation_timeout=evaluation_timeout,
+            memory_limit=memory_limit,
+            search_timeout=search_timeout,
+            pop_size=pop_size,
+        ),
+        search_iterations=iterations,
+    )
+
+    automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
 
 
 if __name__ == "__main__":
