@@ -7,16 +7,16 @@ AutoGOAL itself does not depends on any third-party machine learning or optimiza
 
     black = "^19.10b0"
     enlighten = "^1.4.0"
-    fire = "^0.2.1"
     networkx = "^2.4"
+    numpy = "^1.19.2"
     psutil = "^5.6.7"
+    pydot = "^1.4.1"
     pyyaml = "^5.2"
+    scipy = "^1.5.2"
     termcolor = "^1.1.0"
     toml = "^0.10.0"
-    pydot = "^1.4.1"
-    scipy = "^1.5.2"
-    numpy = "^1.19.2"
     tqdm = "^4.50.2"
+    typer = "^0.3.2"
 
 If you simply install with:
 
@@ -29,8 +29,11 @@ Then you will be able to run almost none of the examples, since most of them use
 Currently, first level optional dependencies include:
 
     gensim = "^3.8.1"
+    jupyterlab = "^1.2.4"
     keras = "^2.3.1"
     nltk = "^3.4.5"
+    nx_altair = "^0.1.4"
+    python-telegram-bot = "^12.4.2"
     scikit-learn = "^0.22"
     seqlearn = "^0.2"
     sklearn_crfsuite = "^0.3.6"
@@ -38,13 +41,10 @@ Currently, first level optional dependencies include:
     streamlit = "^0.59.0"
     transformers = "^2.3.0"
     wikipedia = "^1.4.0"
-    python-telegram-bot = "^12.4.2"
-    jupyterlab = "^1.2.4"
-    nx_altair = "^0.1.4"
 
 You can also hand-pick which of these dependencies to install. It depends on the use you want to make of AutoGOAL.
 
-## What about development dependencies
+## What about development dependencies?
 
 If you want to develop for the project then you will need the development dependencies. The recommended way to do this is to [use Docker and use our development image](../contributing).
 

@@ -25,6 +25,7 @@ markdown_extensions:
 
 nav:
     - Home: index.md
+    - CLI: cli.md
     - FAQ: faq.md
     - Dependencies: dependencies.md
     - Contributing: contributing.md

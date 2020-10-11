@@ -1,6 +1,5 @@
-def find_classes(include=".*", exclude=None, modules=None):
+def find_classes(include=None, exclude=None, modules=None, input=None, output=None):
     import inspect
-    import warnings
     import re
 
     result = []
@@ -13,6 +12,12 @@ def find_classes(include=".*", exclude=None, modules=None):
     if exclude:
         exclude = f".*({exclude}).*"
 
+    if input:
+        input = f".*({input}).*"
+
+    if output:
+        output = f".*({output}).*"
+        
     if modules is None:
         modules = []
 
@@ -20,74 +25,46 @@ def find_classes(include=".*", exclude=None, modules=None):
             from autogoal.contrib import sklearn
             modules.append(sklearn)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `scikit-learn`. Run `pip install autogoal[sklearn]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import nltk
             modules.append(nltk)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `nltk`. Run `pip install autogoal[nltk]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import gensim
             modules.append(gensim)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `gensim`. Run `pip install autogoal[gensim]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import keras
             modules.append(keras)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `keras`. Run `pip install autogoal[keras]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import torch
             modules.append(torch)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `torch`. Run `pip install autogoal[torch]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import spacy
             modules.append(spacy)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `spacy`. Run `pip install autogoal[spacy]` to include it."
-            )
             pass
 
         try:
             from autogoal.contrib import wikipedia
             modules.append(wikipedia)
         except ImportError as e:
-            warnings.warn(repr(e))
-            warnings.warn(
-                "Skipping `wikipedia`. Run `pip install autogoal[wikipedia]` to include it."
-            )
             pass
 
-        from autogoal.contrib import _wrappers
-        modules.append(_wrappers)
+        from autogoal.contrib import wrappers
+        modules.append(wrappers)
 
         from autogoal.contrib import regex
         modules.append(regex)
@@ -97,10 +74,21 @@ def find_classes(include=".*", exclude=None, modules=None):
             if not hasattr(cls, 'run'):
                 continue
 
+            if cls.__name__.startswith("_"):
+                continue
+
             if not re.match(include, repr(cls)):
                 continue
 
             if exclude is not None and re.match(exclude, repr(cls)):
+                continue
+
+            sig = inspect.signature(cls.run)
+
+            if input and not re.match(input, str(sig.parameters["input"].annotation)):
+                continue
+
+            if output and not re.match(output, str(sig.return_annotation)):
                 continue
             
             result.append(cls)

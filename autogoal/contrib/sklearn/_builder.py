@@ -36,9 +36,6 @@ except ImportError:
     PARALLEL_BACKEND = 'loky'
 
 
-print("Using backend: %s" % PARALLEL_BACKEND)
-
-
 @nice_repr
 class SklearnWrapper(metaclass=abc.ABCMeta):
     def __init__(self):

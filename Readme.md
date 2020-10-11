@@ -69,6 +69,14 @@ Once you have the development image downloaded, you can fire up a console and us
 
 > **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
 
+## CLI
+
+You can use AutoGOAL directly from the CLI. To see options just type:
+
+    python -m autogoal
+
+Read more in the [CLI documentation](httsp://autogoal.github.io/cli).
+
 ## Demo
 
 An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
