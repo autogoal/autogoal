@@ -11,7 +11,7 @@ def demo():
         run(Path(__file__).parent / "contrib" / "streamlit" / "demo.py", "", "")
     except ImportError:
         print("(!) Too run the demo you need streamlit installed.")
-        print("(!) Fix it by running `pip install streamlit`.")
+        print("(!) Fix it by running `pip install autogoal[streamlit]`.")
 
 
 def graph(input:str, output:str):
