@@ -21,6 +21,10 @@ def main():
 
 @app.command()
 def demo():
+    """
+    Launch streamlit demo.
+    """
+    
     try:
         from streamlit.bootstrap import run
 
