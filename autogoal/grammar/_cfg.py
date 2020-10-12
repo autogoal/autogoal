@@ -100,7 +100,7 @@ class SubsetOf(Production):
         self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
-        rhs = ["<%s>" % option.name for option in self._options]
+        rhs = [("<%s>" % option.name if hasattr(option, "name") else repr(option)) for option in self._options]
 
         code.append("%s := { %s }" % (lhs, " , ".join(rhs)))
         visited.add(self.head)
@@ -440,8 +440,7 @@ class Subset:
                 children.append(child_symbol)
                 _generate_cfg(child, grammar, child_symbol)
             else:
-                child_symbol = Symbol(str(child))
-                children.append(child_symbol)
+                children.append(child)
 
         grammar.replace(symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty))
         return grammar
