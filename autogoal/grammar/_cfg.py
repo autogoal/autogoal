@@ -86,11 +86,11 @@ class OneOf(Production):
 class SubsetOf(Production):
     def __init__(self, head, grammar, *options, allow_empty=False):
         super().__init__(head, grammar)
-        self._options: List[Symbol] = list(options)
+        self._options: List[object] = list(options)
         self._allow_empty = allow_empty
 
     @property
-    def options(self) -> List[Symbol]:
+    def options(self) -> List[object]:
         return self._options
 
     def __repr__(self):
@@ -122,8 +122,15 @@ class SubsetOf(Production):
             selected = []
 
             for option in self.options:
-                if sampler.boolean(handle=self.head.name + "_" + option.name):
-                    selected.append(self.grammar[option].sample(sampler, namespace, max_iterations-1))
+                if hasattr(option, "name"):
+                    handle = self.head.name + "_" + option.name
+                    sample = self.grammar[option].sample(sampler, namespace, max_iterations-1)
+                else:
+                    handle = self.head.name + "_" + repr(option)
+                    sample = option
+
+                if sampler.boolean(handle=handle):
+                    selected.append(sample)
 
             if len(selected) > 0 or self._allow_empty:
                 break
