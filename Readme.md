@@ -134,6 +134,19 @@ Code is licensed under MIT. Read the details in the [collaboration section](http
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://apiad.net"><img src="https://avatars3.githubusercontent.com/u/1778204?v=4" width="100px;" alt=""/><br /><sub><b>Alejandro Piad</b></sub></a></td>
+    <td align="center"><a href="http://alexfertel.netlify.app"><img src="https://avatars3.githubusercontent.com/u/22298999?v=4" width="100px;" alt=""/><br /><sub><b>Alexander Gonzalez</b></sub></a></td>
+    <td align="center"><a href="https://github.com/sestevez"><img src="https://avatars3.githubusercontent.com/u/6156391?v=4" width="100px;" alt=""/><br /><sub><b>Suilan Estevez-Velarde</b></sub></a></td>
+    <td align="center"><a href="https://github.com/EEstevanell"><img src="https://avatars0.githubusercontent.com/u/45082075?v=4" width="100px;" alt=""/><br /><sub><b>Ernesto Luis Estevanell Valladares</b></sub></a></td>
+    <td align="center"><a href="https://github.com/yudivian"><img src="https://avatars1.githubusercontent.com/u/5324359?v=4" width="100px;" alt=""/><br /><sub><b>Yudivián Almeida Cruz</b></sub></a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
  
