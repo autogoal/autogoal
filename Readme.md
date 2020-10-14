@@ -146,6 +146,9 @@ Code is licensed under MIT. Read the details in the [collaboration section](http
     <td align="center"><a href="http://orcid.org/0000-0002-4052-7427"><img src="https://avatars2.githubusercontent.com/u/25705914?v=4" width="100px;" alt=""/><br /><sub><b>ygutierrez</b></sub></a><br /><a href="#ideas-joogvzz" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=joogvzz" title="Documentation">📖</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/anshu-trivedi-501a7b146/"><img src="https://avatars1.githubusercontent.com/u/47869948?v=4" width="100px;" alt=""/><br /><sub><b>Anshu Trivedi</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=AnshuTrivedi" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="http://alxrcs.github.io"><img src="https://avatars1.githubusercontent.com/u/8171561?v=4" width="100px;" alt=""/><br /><sub><b>Alex Coto</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alxrcs" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
