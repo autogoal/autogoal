@@ -80,6 +80,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "alxrcs",
+      "name": "Alex Coto",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8171561?v=4",
+      "profile": "http://alxrcs.github.io",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
