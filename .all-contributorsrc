@@ -42,6 +42,16 @@
         "ideas",
         "doc"
       ]
+    },
+    {
+      "login": "EEstevanell",
+      "name": "Ernesto Luis Estevanell Valladares",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/45082075?v=4",
+      "profile": "https://github.com/EEstevanell",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7
