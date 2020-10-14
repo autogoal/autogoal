@@ -132,3 +132,8 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.github.io/contributing).
 
 ## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+ 
