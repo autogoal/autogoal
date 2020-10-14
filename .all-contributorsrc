@@ -10,27 +10,6 @@
   "skipCi": true,
   "contributors": [
     {
-      "login": "apiad",
-      "name": "Alejandro Piad",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/1778204?v=4",
-      "profile": "https://apiad.net",
-      "contributions": [
-        "code",
-        "test",
-        "doc"
-      ]
-    },
-    {
-      "login": "alexfertel",
-      "name": "Alexander Gonzalez",
-      "avatar_url": "https://avatars3.githubusercontent.com/u/22298999?v=4",
-      "profile": "http://alexfertel.netlify.app",
-      "contributions": [
-        "code",
-        "test"
-      ]
-    },
-    {
       "login": "sestevez",
       "name": "Suilan Estevez-Velarde",
       "avatar_url": "https://avatars3.githubusercontent.com/u/6156391?v=4",
@@ -43,13 +22,14 @@
       ]
     },
     {
-      "login": "EEstevanell",
-      "name": "Ernesto Luis Estevanell Valladares",
-      "avatar_url": "https://avatars0.githubusercontent.com/u/45082075?v=4",
-      "profile": "https://github.com/EEstevanell",
+      "login": "apiad",
+      "name": "Alejandro Piad",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1778204?v=4",
+      "profile": "https://apiad.net",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "doc"
       ]
     },
     {
@@ -70,6 +50,26 @@
       "contributions": [
         "ideas",
         "doc"
+      ]
+    },
+    {
+      "login": "EEstevanell",
+      "name": "Ernesto Luis Estevanell Valladares",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/45082075?v=4",
+      "profile": "https://github.com/EEstevanell",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "alexfertel",
+      "name": "Alexander Gonzalez",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/22298999?v=4",
+      "profile": "http://alexfertel.netlify.app",
+      "contributions": [
+        "code",
+        "test"
       ]
     },
     {
