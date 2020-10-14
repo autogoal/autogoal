@@ -1,3 +1,24 @@
 {
-  "files": ["Readme.md"]
+  "files": [
+    "Readme.md"
+  ],
+  "projectName": "autogoal",
+  "projectOwner": "autogoal",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "apiad",
+      "name": "Alejandro Piad",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1778204?v=4",
+      "profile": "https://apiad.net",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
 }
