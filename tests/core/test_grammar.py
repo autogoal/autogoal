@@ -1,7 +1,6 @@
-import textwrap
-
-from autogoal.grammar import Discrete, generate_cfg
 from autogoal.sampling import Sampler
+
+from autogoal.grammar import Discrete, generate_cfg, Subset, Categorical
 
 
 def check_grammar(g, s):
@@ -29,6 +28,68 @@ def test_generate_from_class_with_args():
         <A_x> := discrete (min=1, max=5)
         """,
     )
+
+def test_subset_annotation_with_constants():
+    class A:
+        def __init__(self, features: Subset('Subset', "Hello", "World", 1)):
+            pass
+
+    check_grammar(
+        generate_cfg(A),
+        """
+        <A>      := A (features=<Subset>)
+        <Subset> := { 'Hello' , 'World' , 1 }
+        """,
+    )
+
+def test_subset_annotation_with_callables():
+    class A:
+        def __init__(self, features: Subset('Subset', Discrete(1, 5), Categorical('adam', 'sgd'))):
+            pass
+
+    check_grammar(
+        generate_cfg(A),
+        """
+        <A>      := A (features=<Subset>)
+        <Subset> := { Discrete(min=1, max=5) , Categorical('adam', 'sgd') }
+        """,
+    )
+
+def test_subset_annotation():
+    class A:
+        def __init__(self, features: Subset('Subset', Discrete(1, 5), 'Hello', 1, None)):
+            pass
+
+    check_grammar(
+        generate_cfg(A),
+        """
+        <A>      := A (features=<Subset>)
+        <Subset> := { Discrete(min=1, max=5) , 'Hello' , 1 , None }
+        """,
+    )
+
+def test_subset_annotation():
+    class A:
+        def __init__(self, features: Subset('Subset', Discrete(1, 5), 'Hello', 1, None)):
+            pass
+
+    check_grammar(
+        generate_cfg(A),
+        """
+        <A>      := A (features=<Subset>)
+        <Subset> := { Discrete(min=1, max=5) , 'Hello' , 1 , None }
+        """,
+    )
+
+def test_sample_subset():
+    class A:
+        def __init__(self, features: Subset('Subset', Discrete(1, 5), 'Hello', 1, None)):
+            self.features = features
+
+    g = generate_cfg(A)
+    selected_features = g.sample().features
+    selected = set([repr(feature) for feature in selected_features])
+    assert selected.issubset([repr(feature) for feature in [Discrete(1, 5), 'Hello', 1, None]])
 
 
 def test_generate_from_method():

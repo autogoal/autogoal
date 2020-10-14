@@ -1,10 +1,7 @@
 import inspect
-import random
-import warnings
-import sys
 from typing import List, Dict, Set
 
-from ._base import Grammar, Sampler
+from ._base import Grammar
 
 
 class Symbol:
@@ -89,11 +86,11 @@ class OneOf(Production):
 class SubsetOf(Production):
     def __init__(self, head, grammar, *options, allow_empty=False):
         super().__init__(head, grammar)
-        self._options: List[Symbol] = list(options)
+        self._options: List[object] = list(options)
         self._allow_empty = allow_empty
 
     @property
-    def options(self) -> List[Symbol]:
+    def options(self) -> List[object]:
         return self._options
 
     def __repr__(self):
@@ -103,13 +100,16 @@ class SubsetOf(Production):
         self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
-        rhs = ["<%s>" % option.name for option in self._options]
+        rhs = [("<%s>" % option.name if hasattr(option, "name") else repr(option)) for option in self._options]
 
         code.append("%s := { %s }" % (lhs, " , ".join(rhs)))
         visited.add(self.head)
 
         for symbol in self._options:
             if symbol in visited:
+                continue
+
+            if symbol not in self.grammar:
                 continue
 
             self.grammar[symbol].to_string(code, visited, max_symbol_length)
@@ -122,8 +122,15 @@ class SubsetOf(Production):
             selected = []
 
             for option in self.options:
-                if sampler.boolean(handle=self.head.name + "_" + option.name):
-                    selected.append(self.grammar[option].sample(sampler, namespace, max_iterations-1))
+                if hasattr(option, "name"):
+                    handle = self.head.name + "_" + option.name
+                    sample = self.grammar[option].sample(sampler, namespace, max_iterations-1)
+                else:
+                    handle = self.head.name + "_" + repr(option)
+                    sample = option
+
+                if sampler.boolean(handle=handle):
+                    selected.append(sample)
 
             if len(selected) > 0 or self._allow_empty:
                 break
@@ -195,7 +202,8 @@ class Distribution(Callable):
 
 
 class ContextFreeGrammar(Grammar):
-    """Represents a CFG grammar.
+    """
+    Represents a CFG grammar.
     """
 
     def __init__(self, start: Symbol, namespace: Dict[str, type] = None):
@@ -415,9 +423,9 @@ class Union:
 
 
 class Subset:
-    def __init__(self, name, *clss, allow_empty=False):
+    def __init__(self, name, *members, allow_empty=False):
         self.__name__ = name
-        self.clss = list(clss)
+        self.members = list(members)
         self.allow_empty = allow_empty
 
     def __repr__(self):
@@ -433,10 +441,13 @@ class Subset:
         grammar.add(symbol, Empty(symbol, grammar))
         children = []
 
-        for child in self.clss:
-            child_symbol = Symbol(child.__name__)
-            children.append(child_symbol)
-            _generate_cfg(child, grammar, child_symbol)
+        for child in self.members:
+            if type(child) is Callable:
+                child_symbol = Symbol(child.__name__)
+                children.append(child_symbol)
+                _generate_cfg(child, grammar, child_symbol)
+            else:
+                children.append(child)
 
         grammar.replace(symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty))
         return grammar
