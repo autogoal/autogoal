@@ -89,6 +89,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "geblanco",
+      "name": "Guillermo Blanco",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6652222?v=4",
+      "profile": "https://github.com/geblanco",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
