@@ -2,6 +2,7 @@
 
 This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 in the [MEDDOCAN 2019 challenge](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
+The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/solving_meddocan_2019.py).
 
 | Dataset | URL |
 |--|--|
