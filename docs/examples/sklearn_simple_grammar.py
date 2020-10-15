@@ -295,7 +295,7 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # of `1000` different random pipelines. To see what's actually going on we will use
 # the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
 
-logger = ProgressLogger(log_solutions=True)
+logger = ProgressLogger()
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
 best_rand, fn_rand = random_search.run(1000, logger=logger)
