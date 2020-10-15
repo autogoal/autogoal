@@ -149,6 +149,7 @@ Code is licensed under MIT. Read the details in the [collaboration section](http
   <tr>
     <td align="center"><a href="http://alxrcs.github.io"><img src="https://avatars1.githubusercontent.com/u/8171561?v=4" width="100px;" alt=""/><br /><sub><b>Alex Coto</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alxrcs" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/geblanco"><img src="https://avatars3.githubusercontent.com/u/6652222?v=4" width="100px;" alt=""/><br /><sub><b>Guillermo Blanco</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ageblanco" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
