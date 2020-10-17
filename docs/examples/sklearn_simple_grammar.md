@@ -1,7 +1,8 @@
 # Integrating with `sklearn`
 
 In this example we wil build a simple grammar based on `sklearn` classifiers
-and apply it to solve a text classification problem
+and apply it to solve a text classification problem. The full source code can
+be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/sklearn_simple_grammar.py).
 
 !!! warning
     This example requires `sklearn` and `nltk` installed, as well as the

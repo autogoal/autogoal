@@ -1,5 +1,6 @@
 # Convert examples in this folder to their corresponding .md files in docs/examples
 
+import os
 import re
 import inspect
 import textwrap
@@ -119,8 +120,13 @@ def build_api():
     generate(autogoal, index)
     lines = yaml.dump(index)
 
-    with open(Path(__file__).parent.parent / "mkdocs-base.yml", "r") as fr:
-        with open(Path(__file__).parent.parent / "mkdocs.yml", "w") as fw:
+    base_path = Path(__file__).parent.parent
+    if 'docs' in os.path.abspath(base_path):
+        # if called from docs folder, go to project root
+        base_path = Path(os.path.dirname(os.path.abspath(base_path)))
+
+    with open(os.path.abspath(base_path / "mkdocs-base.yml"), "r") as fr:
+        with open(os.path.abspath(base_path / "mkdocs.yml"), "w") as fw:
             for line in fr:
                 fw.write(line)
 

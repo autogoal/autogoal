@@ -1,0 +1,115 @@
+{
+  "files": [
+    "Readme.md"
+  ],
+  "projectName": "autogoal",
+  "projectOwner": "autogoal",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat-square)](#contributors)",
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "sestevez",
+      "name": "Suilan Estevez-Velarde",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6156391?v=4",
+      "profile": "https://github.com/sestevez",
+      "contributions": [
+        "code",
+        "test",
+        "ideas",
+        "doc"
+      ]
+    },
+    {
+      "login": "apiad",
+      "name": "Alejandro Piad",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1778204?v=4",
+      "profile": "https://apiad.net",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "yudivian",
+      "name": "Yudivián Almeida Cruz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5324359?v=4",
+      "profile": "https://github.com/yudivian",
+      "contributions": [
+        "ideas",
+        "doc"
+      ]
+    },
+    {
+      "login": "joogvzz",
+      "name": "ygutierrez",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/25705914?v=4",
+      "profile": "http://orcid.org/0000-0002-4052-7427",
+      "contributions": [
+        "ideas",
+        "doc"
+      ]
+    },
+    {
+      "login": "EEstevanell",
+      "name": "Ernesto Luis Estevanell Valladares",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/45082075?v=4",
+      "profile": "https://github.com/EEstevanell",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "alexfertel",
+      "name": "Alexander Gonzalez",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/22298999?v=4",
+      "profile": "http://alexfertel.netlify.app",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "AnshuTrivedi",
+      "name": "Anshu Trivedi",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/47869948?v=4",
+      "profile": "https://www.linkedin.com/in/anshu-trivedi-501a7b146/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "alxrcs",
+      "name": "Alex Coto",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8171561?v=4",
+      "profile": "http://alxrcs.github.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "geblanco",
+      "name": "Guillermo Blanco",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6652222?v=4",
+      "profile": "https://github.com/geblanco",
+      "contributions": [
+        "bug",
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "yacth",
+      "name": "yacth",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/71322097?v=4",
+      "profile": "https://github.com/yacth",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
