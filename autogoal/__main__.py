@@ -96,6 +96,7 @@ def automl_callback():
 @automl_app.command("fit")
 def automl_fit(
     input: Path,
+    output: Path = Path("automl.bin"),
     target: str = None,
     evaluation_timeout: int = 5 * Min,
     memory_limit: int = 4 * Gb,
@@ -104,12 +105,18 @@ def automl_fit(
     iterations: int = 100,
     format: str = None,
 ):
-    if input.suffix == ".csv" or format == "csv":
+    if format is None:
+        if input.suffix == ".csv":
+            format = "csv"
+        if input.suffix == ".json":
+            format = "json"
+
+    if format == "csv":
         dataset = pd.read_csv(input)
-    elif input.suffix == ".json" or format == "json":
+    elif format == "json":
         dataset = pd.read_json(input)
     else:
-        print(f"⚠️  Error: format {input.suffix} not recognized.")
+        print(f"⚠️  Error: Input format not recognized. Must be either CSV or JSON.")
         return
 
     if target is None:
@@ -132,6 +139,9 @@ def automl_fit(
     )
 
     automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
+
+    with output.open("wb") as fp:
+        automl.save(fp)
 
 
 if __name__ == "__main__":
