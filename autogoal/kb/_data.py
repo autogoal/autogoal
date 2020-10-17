@@ -379,7 +379,7 @@ def infer_type(obj):
             if isinstance(obj, ndarray):
                 if obj.dtype.kind == "O":
                     return MatrixCategorical()
-                if obj.dtype.kind == "i":
+                else:
                     return MatrixContinuousDense()
 
     raise TypeError("Cannot infer type for %r" % obj)
