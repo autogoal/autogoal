@@ -392,6 +392,9 @@ class ReplaySampler:
         return self._run("categorical", *args, **kwargs)
 
     def __getattr__(self, attr):
+        if attr == "sampler":
+            return self.__dict__.get('sampler')
+
         return getattr(self.sampler, attr)
 
 
