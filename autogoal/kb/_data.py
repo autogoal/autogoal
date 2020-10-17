@@ -227,13 +227,27 @@ def build_composite_list(input_type, output_type, depth=1):
     def getattr_method(self, attr):
         return getattr(self.inner, attr)
 
+    def reduce_method(self):
+        return (
+            build_composite_list_instance,
+            (input_type, output_type, self.inner)
+        )
+
     def body(ns):
         ns["__init__"] = init_method
         ns["run"] = run_method
         ns["__repr__"] = repr_method
         ns["__getattr__"] = getattr_method
+        ns["__reduce__"] = reduce_method
 
     return types.new_class(name=name, bases=(), exec_body=body)
+
+
+def build_composite_list_instance(input_type, output_type, inner_algorithm):
+    """
+    Build a ListAlgorithm[...] type and instantiate it directly on a given algorithm.
+    """
+    return build_composite_list(input_type, output_type)(inner_algorithm)
 
 
 def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
@@ -263,13 +277,28 @@ def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     def getattr_method(self, attr):
         return getattr(self.inner, attr)
 
+    def reduce_method(self):
+        return (
+            build_composite_tuple_instance,
+            (index, input_type, output_type, self.inner)
+        )
+
     def body(ns):
         ns["__init__"] = init_method
         ns["run"] = run_method
         ns["__repr__"] = repr_method
         ns["__getattr__"] = getattr_method
+        ns["__reduce__"] = reduce_method
 
     return types.new_class(name=name, bases=(), exec_body=body)
+
+
+
+def build_composite_tuple_instance(index, input_type, output_type, inner_algorithm):
+    """
+    Build a TupleAlgorithm[...] type and instantiate it directly on a given algorithm.
+    """
+    return build_composite_tuple(index, input_type, output_type)(inner_algorithm)
 
 
 class DataType:
