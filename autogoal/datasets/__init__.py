@@ -1,14 +1,20 @@
 import shutil
-import json
-import requests
-import os
-from tqdm import tqdm
-
 from pathlib import Path
+from typing import Dict
+
+import requests
+from tqdm import tqdm
+from functools import lru_cache
+
 
 DATASETS_METADATA = (
     "https://raw.githubusercontent.com/autogoal/datasets/master/datasets.json"
 )
+
+
+@lru_cache()
+def get_datasets_list() -> Dict[str, str]:
+    return requests.get(DATASETS_METADATA).json()
 
 
 def datapath(path: str) -> Path:
@@ -46,7 +52,7 @@ def download(dataset: str, unpackit: bool = True):
     if path.exists():
         return
 
-    datasets = requests.get(DATASETS_METADATA).json()
+    datasets = get_datasets_list()
     url = datasets[dataset]
 
     download_and_save(url, path, True)
@@ -57,15 +63,17 @@ def download(dataset: str, unpackit: bool = True):
 
 def download_and_save(url, path: Path, overwrite=False, data_length=None):
     stream = requests.get(url, stream=True)
-    total_size = data_length or int(stream.headers.get('content-length', 0))
+    total_size = data_length or int(stream.headers.get("content-length", 0))
 
     if path.exists() and not overwrite:
         return False
 
     try:
         with path.open("wb") as f:
-            with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                for data in stream.iter_content(32*1024):
+            with tqdm(
+                total=total_size, unit="B", unit_scale=True, unit_divisor=1024
+            ) as pbar:
+                for data in stream.iter_content(32 * 1024):
                     f.write(data)
                     pbar.update(len(data))
 

@@ -1,38 +1,56 @@
 import collections
 import inspect
+import logging
 from pathlib import Path
 from typing import List
 
 import pandas as pd
+import pandas
 import typer
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.table import Table
 
 from autogoal.contrib import find_classes
+from autogoal.kb import CategoricalVector
 from autogoal.ml import AutoML
-from autogoal.kb import MatrixContinuousDense, CategoricalVector, MatrixCategorical
-from autogoal.utils import Gb, Min
 from autogoal.search import ConsoleLogger, ProgressLogger
+from autogoal.utils import Gb, Min
+from autogoal.datasets import datapath, get_datasets_list, download
 
 
-app = typer.Typer(name="AutoGOAL")
+logging.basicConfig(
+    level="WARNING",
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)],
+)
+logger = logging.getLogger("autogoal")
+console = Console()
+
+
+app = typer.Typer(name="autogoal")
 contrib_app = typer.Typer(name="contrib")
-automl_app = typer.Typer(name="automl")
+automl_app = typer.Typer(name="ml")
+data_app = typer.Typer(name="data")
 
 
 app.add_typer(contrib_app)
 app.add_typer(automl_app)
+app.add_typer(data_app)
 
 
 @app.callback()
 def main():
     """
-    Manage AutoGOAL directly from the CLI.
+    🤩 Manage AutoGOAL directly from the CLI.
     """
 
 
 @app.command()
 def demo():
     """
-    Launch streamlit demo.
+    🌟 Launch streamlit demo.
     """
 
     try:
@@ -40,14 +58,14 @@ def demo():
 
         run(Path(__file__).parent / "contrib" / "streamlit" / "demo.py", "", "")
     except ImportError:
-        print("(!) Too run the demo you need streamlit installed.")
-        print("(!) Fix it by running `pip install autogoal[streamlit]`.")
+        console.print("(!) Too run the demo you need streamlit installed.")
+        console.print("(!) Fix it by running `pip install autogoal[streamlit]`.")
 
 
 @contrib_app.callback()
 def contrib_main():
     """
-    Inspect contrib libraries and algorithms.
+    🔍 Inspect contrib libraries and algorithms.
     """
 
 
@@ -60,10 +78,8 @@ def contrib_list(
     output: str = None,
 ):
     """
-    List all currently available contrib algorithms.
+    ⚙️ List all currently available contrib algorithms.
     """
-    from autogoal.contrib import find_classes
-
     classes = find_classes(include=include, exclude=exclude, input=input, output=output)
     classes_by_contrib = collections.defaultdict(list)
     max_cls_name_length = 0
@@ -90,7 +106,7 @@ def contrib_list(
 @automl_app.callback()
 def automl_callback():
     """
-    Fit and predict with an AutoML model.
+    🤖 Fit and predict with an AutoML model.
     """
 
 
@@ -109,7 +125,8 @@ def _load_dataset(format, input, ignore):
         raise ValueError("Input format not recognized. Must be either CSV or JSON.")
 
     if ignore:
-        dataset = dataset.drop(columns=ignore)
+        columns_to_ignore = [dataset.columns[i] for i in ignore]
+        dataset = dataset.drop(columns=columns_to_ignore)
 
     return dataset
 
@@ -119,7 +136,7 @@ def automl_fit(
     input: Path,
     output: Path = Path("automl.bin"),
     target: str = None,
-    ignore: List[str] = None,
+    ignore_cols: List[int] = typer.Option([]),
     evaluation_timeout: int = 5 * Min,
     memory_limit: int = 4 * Gb,
     search_timeout: int = 60 * 60,
@@ -127,19 +144,23 @@ def automl_fit(
     iterations: int = 100,
     format: str = None,
 ):
+    """
+    🏃 Train an AutoML instance on a dataset.
+    """
+
     try:
-        dataset = _load_dataset(format, input, ignore)
+        dataset = _load_dataset(format, input, ignore_cols)
     except ValueError as e:
-        print(f"⚠️  Error: {str(e)}")
+        logger.error(f"⚠️  Error: {str(e)}")
         return
 
     if target is None:
-        target = dataset.columns[0]
+        target = dataset.columns[-1]
 
-    columns = set(dataset.columns)
+    columns = [c for c in dataset.columns if c != target]
 
+    X = dataset[columns].values
     y = dataset[target].values
-    X = dataset[list(columns - {target})].values
 
     automl = AutoML(
         output=CategoricalVector(),
@@ -152,42 +173,124 @@ def automl_fit(
         search_iterations=iterations,
     )
 
-    print(f"🏋️  Training on {len(dataset)} items.")
+    console.print(f"🏃 Training on {len(dataset)} items.")
     automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
 
     with output.open("wb") as fp:
         automl.save(fp)
 
-    print(f"💾 Saving model to {output.absolute()}.")
-    
+    console.print(f"💾 Saving model to [green]{output.absolute()}[/].")
+
 
 @automl_app.command("predict")
 def automl_predict(
     input: Path,
+    output: Path = Path("output.csv"),
     model: Path = Path("automl.bin"),
-    output: Path = None,
-    ignore: List[str] = None,
+    ignore_cols: List[int] = typer.Option([]),
     format: str = None,
 ):
+    """
+    🔮 Predict with a previously trained AutoML instance.
+    """
+    
     try:
-        dataset = _load_dataset(format, input, ignore)
+        dataset = _load_dataset(format, input, ignore_cols)
     except ValueError as e:
-        print(f"⚠️  Error: {str(e)}")
+        logger.error(f"⚠️  Error: {str(e)}")
         return
 
     try:
         with model.open("rb") as fp:
             automl = AutoML.load(fp)
     except TypeError as e:
-        print(f"⚠️  Error: {str(e)}")
+        logger.error(f"⚠️  Error: {str(e)}")
         return
 
-    print(f"⭐ Predicting {len(dataset)} items with the pipeline:")
-    print(repr(automl.best_pipeline_))
+    console.print(f"🔮 Predicting {len(dataset)} items with the pipeline:")
+    console.print(repr(automl.best_pipeline_))
 
     X = dataset.values
     y = automl.predict(X)
 
+    with output.open("wt") as fp:
+        df = pd.DataFrame(y, columns=["y"])
+        df.to_csv(fp)
+
+    console.print(f"💾 Predictions saved to [blue]{output.absolute()}[/]")
+
+
+@automl_app.command("inspect")
+def automl_inspect(model: Path = Path("automl.bin")):
+    """
+    🔍 Inspect a trained AutoML model.
+    """
+
+    with model.open("rb") as fp:
+        automl = AutoML.load(fp)
+
+    console.print(f"🔍 Inspecting AutoML model: [green]{model.absolute()}[/]")
+
+    console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
+    console.print(repr(automl.best_pipeline_))
+
+
+@data_app.callback()
+def data_callback():
+    """
+    📚 Download, inspect, and generate training data.
+    """
+
+
+@data_app.command("list")
+def data_list():
+    """
+    🔍 List the available datasets.
+    """
+
+    datasets = get_datasets_list()
+    
+    table = Table("📚 Dataset", "💾", "🔗 URL")
+
+    for item, url in sorted(datasets.items(), key=lambda t:t[0]):
+        path = datapath(item)
+        
+        if path.exists():
+            table.add_row(item, "✔️", url)
+        else:
+            table.add_row(item, "", url)
+
+    console.print(table)
+
+
+@data_app.command("download")
+def data_download(datasets:List[str]=typer.Argument(..., help="Name of one or more specific datasets to download, or 'all'.")):
+    """
+    ⏬ Download a dataset.
+
+    Pass a name to directly download that dataset.
+    Otherwise, this command will show an interactive menu.
+    """
+
+    if 'all' in datasets:
+        datasets = get_datasets_list().keys()
+
+    for dataset in datasets:
+        download(dataset)
+
+
+@data_app.command("gen")
+def data_generate():
+    """
+    🎲 Generate a random dataset.
+    """
+
 
 if __name__ == "__main__":
-    app()
+    try:
+        app(prog_name="autogoal")
+    except Exception as e:
+        console.print(f'⚠️  The command failed with message:\n"{str(e)}".')
+
+        if console.input("❓ Do you want to inspect the traceback? \[y/N] ") == "y":
+            logger.exception("Check the traceback below.")
