@@ -1,16 +1,17 @@
+import logging
 import enlighten
-import warnings
 import time
 import datetime
 import statistics
 import math
-import traceback
-import sys
 import termcolor
 
-from autogoal.utils import ResourceManager, RestrictedWorkerByJoin, Min, Gb
-from autogoal.sampling import ReplaySampler
+import autogoal.logging
 
+from autogoal.utils import RestrictedWorkerByJoin, Min, Gb
+from autogoal.sampling import ReplaySampler
+from rich.progress import Progress
+from rich.panel import Panel
 
 class SearchAlgorithm:
     def __init__(
@@ -134,7 +135,7 @@ class SearchAlgorithm:
                     spent_time = time.time() - start_time
 
                     if self._search_timeout and spent_time > self._search_timeout:
-                        print("(!) Stopping since time spent is %.2f." % (spent_time))
+                        autogoal.logging.logger().info("(!) Stopping since time spent is %.2f." % (spent_time))
                         stop = True
                         break
 
@@ -146,12 +147,12 @@ class SearchAlgorithm:
                 generations -= 1
 
                 if generations <= 0:
-                    print("(!) Stopping since all generations are done.")
+                    autogoal.logging.logger().info("(!) Stopping since all generations are done.")
                     stop = True
                     break
 
                 if early_stop and no_improvement >= early_stop:
-                    print(
+                    autogoal.logging.logger().info(
                         "(!) Stopping since no improvement for %i generations."
                         % no_improvement
                     )
@@ -315,6 +316,47 @@ class ProgressLogger(Logger):
         self.pop_counter.close()
         self.total_counter.close()
         self.manager.stop()
+
+
+class RichLogger(Logger):
+    def __init__(self) -> None:
+        self.console = autogoal.logging.console()
+        self.logger = autogoal.logging.logger()
+
+    def begin(self, generations, pop_size):
+        self.progress = Progress(console=self.console)
+        self.pop_counter = self.progress.add_task("Generation", total=pop_size)
+        self.total_counter = self.progress.add_task("Overall", total=pop_size * generations)
+        self.progress.start()
+        self.console.rule("Search starting", style="blue")
+
+    def sample_solution(self, solution):
+        self.progress.advance(self.pop_counter)
+        self.progress.advance(self.total_counter)
+        self.console.rule("Evaluating pipeline")
+        self.console.print(repr(solution))
+
+    def eval_solution(self, solution, fitness):
+        self.console.print(Panel(f"📈 Fitness=[blue]{fitness:.3f}"))
+
+    def error(self, e: Exception, solution):
+        self.logger.error(str(e))
+
+    def start_generation(self, generations, best_fn):
+        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn:.3f}")
+
+    def start_generation(self, generations, best_fn):
+        self.progress.update(self.pop_counter, completed=0)
+
+    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+        self.console.print(Panel(f"🔥 Best improved from [red bold]{previous_fn or 0:.3f}[/] to [green bold]{new_fn:.3f}[/]"))
+
+    def end(self, best, best_fn):
+        self.console.rule(f"Search finished")
+        self.console.print(repr(best))
+        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn:.3f}"))
+        self.progress.stop()
+        self.console.rule("Search finished", style="red")
 
 
 class MemoryLogger(Logger):

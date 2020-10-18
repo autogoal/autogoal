@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-import pandas
 import typer
 from rich.console import Console
 from rich.logging import RichHandler
@@ -14,18 +13,14 @@ from rich.table import Table
 from autogoal.contrib import find_classes
 from autogoal.kb import CategoricalVector
 from autogoal.ml import AutoML
-from autogoal.search import ConsoleLogger, ProgressLogger
+from autogoal.search import RichLogger
 from autogoal.utils import Gb, Min
-from autogoal.datasets import datapath, get_datasets_list, download
+from autogoal.datasets import datapath, get_datasets_list, download, dummy
+import autogoal.logging 
 
+autogoal.logging.setup()
 
-logging.basicConfig(
-    level="WARNING",
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)],
-)
-logger = logging.getLogger("autogoal")
+logger = autogoal.logging.logger()
 console = Console()
 
 
@@ -174,7 +169,7 @@ def automl_fit(
     )
 
     console.print(f"🏃 Training on {len(dataset)} items.")
-    automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
+    automl.fit(X, y, logger=RichLogger())
 
     with output.open("wb") as fp:
         automl.save(fp)

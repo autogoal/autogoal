@@ -15,5 +15,6 @@ from autogoal import ml
 from autogoal import sampling
 from autogoal import search
 from autogoal import utils
+from autogoal import logging
 
 from autogoal.utils._helpers import optimize

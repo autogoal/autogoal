@@ -2,7 +2,8 @@ import inspect
 import warnings
 import networkx as nx
 from collections import namedtuple, defaultdict
-import logging
+
+import autogoal.logging
 
 from autogoal.grammar import GraphSpace, Graph, generate_cfg, CfgInitializer
 from autogoal.utils import nice_repr
@@ -16,6 +17,8 @@ from autogoal.kb._data import (
     DataType,
     DATA_TYPES,
 )
+
+logger = autogoal.logging.logger()
 
 
 MAX_LIST_DEPTH = 5
@@ -82,8 +85,6 @@ def build_pipeline_graph(input: DataType, output: DataType, registry, max_list_d
     - `output`: type descriptor for the desired output.
     - `registry`: list of available classes to build the pipelines.
     """
-    
-    logger = logging.getLogger("autogoal.build_pipeline_graph")
     
     # First we will unpack the input and output type and
     # store them in actual lists for easier use
@@ -307,7 +308,7 @@ def build_pipelines(input, output, registry) -> "PipelineBuilder":
             build(output_type, depth)
             types_seen.add(output_type)
 
-            print(output_type)
+            logger.debug("Output type", output_type)
 
     list_tuples = set()
 

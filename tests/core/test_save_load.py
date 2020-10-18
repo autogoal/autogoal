@@ -75,7 +75,7 @@ class DummyAlgorithm:
 
 
 def test_automl_save_load():
-    X, y = dummy.load(seed=0)
+    X, y = dummy.generate(seed=0)
     automl = AutoML(search_iterations=3, registry=[DummyAlgorithm])
     automl.fit(X, y)
     pipe = automl.best_pipeline_

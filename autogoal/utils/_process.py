@@ -1,13 +1,16 @@
+from logging import log
 import multiprocessing
 import warnings
 import resource
 import psutil
 import signal
 import os
-import sys
 import traceback
+import logging
 
 from autogoal.utils import Mb
+
+logger = logging.getLogger("autogoal")
 
 
 class RestrictedWorker:
@@ -94,7 +97,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
 
         if self.memory > (used_memory + 50 * Mb):
             # memory may be restricted
-            print("Restricting memory to %s" % self.memory, flush=True)
+            logger.info("💻 Restricting memory to %s" % self.memory)
             resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
         else:
             raise ValueError("Cannot restrict memory to %s < %i" % (self.memory, used_memory + 50 * Mb))
