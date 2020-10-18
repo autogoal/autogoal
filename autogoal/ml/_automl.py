@@ -135,7 +135,7 @@ class AutoML:
         pickle.Pickler(fp).dump(self)
 
     @classmethod
-    def load(self, fp: io.FileIO):
+    def load(self, fp: io.FileIO) -> "AutoML":
         """
         Deserializes an AutoML instance. 
         

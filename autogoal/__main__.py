@@ -1,6 +1,7 @@
 import collections
 import inspect
 from pathlib import Path
+from typing import List
 
 import pandas as pd
 import typer
@@ -93,18 +94,7 @@ def automl_callback():
     """
 
 
-@automl_app.command("fit")
-def automl_fit(
-    input: Path,
-    output: Path = Path("automl.bin"),
-    target: str = None,
-    evaluation_timeout: int = 5 * Min,
-    memory_limit: int = 4 * Gb,
-    search_timeout: int = 60 * 60,
-    pop_size: int = 20,
-    iterations: int = 100,
-    format: str = None,
-):
+def _load_dataset(format, input, ignore):
     if format is None:
         if input.suffix == ".csv":
             format = "csv"
@@ -116,7 +106,31 @@ def automl_fit(
     elif format == "json":
         dataset = pd.read_json(input)
     else:
-        print(f"⚠️  Error: Input format not recognized. Must be either CSV or JSON.")
+        raise ValueError("Input format not recognized. Must be either CSV or JSON.")
+
+    if ignore:
+        dataset = dataset.drop(columns=ignore)
+
+    return dataset
+
+
+@automl_app.command("fit")
+def automl_fit(
+    input: Path,
+    output: Path = Path("automl.bin"),
+    target: str = None,
+    ignore: List[str] = None,
+    evaluation_timeout: int = 5 * Min,
+    memory_limit: int = 4 * Gb,
+    search_timeout: int = 60 * 60,
+    pop_size: int = 20,
+    iterations: int = 100,
+    format: str = None,
+):
+    try:
+        dataset = _load_dataset(format, input, ignore)
+    except ValueError as e:
+        print(f"⚠️  Error: {str(e)}")
         return
 
     if target is None:
@@ -138,10 +152,41 @@ def automl_fit(
         search_iterations=iterations,
     )
 
+    print(f"🏋️  Training on {len(dataset)} items.")
     automl.fit(X, y, logger=[ConsoleLogger(), ProgressLogger()])
 
     with output.open("wb") as fp:
         automl.save(fp)
+
+    print(f"💾 Saving model to {output.absolute()}.")
+    
+
+@automl_app.command("predict")
+def automl_predict(
+    input: Path,
+    model: Path = Path("automl.bin"),
+    output: Path = None,
+    ignore: List[str] = None,
+    format: str = None,
+):
+    try:
+        dataset = _load_dataset(format, input, ignore)
+    except ValueError as e:
+        print(f"⚠️  Error: {str(e)}")
+        return
+
+    try:
+        with model.open("rb") as fp:
+            automl = AutoML.load(fp)
+    except TypeError as e:
+        print(f"⚠️  Error: {str(e)}")
+        return
+
+    print(f"⭐ Predicting {len(dataset)} items with the pipeline:")
+    print(repr(automl.best_pipeline_))
+
+    X = dataset.values
+    y = automl.predict(X)
 
 
 if __name__ == "__main__":
