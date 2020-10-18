@@ -59,8 +59,8 @@ mkdocs:
 	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
 
 # test-basic  Test only
-.PHONY: test-basic
-test-basic:
+.PHONY: test-ci
+test-ci:
 	docker build -t autogoal:basic -f tests/basic.dockerfile .
 
 # ‎‎
@@ -93,7 +93,7 @@ install: ensure-dev
 	poetry install
 
 # test         Run the minimal unit tests (not marked slow).
-.PHONY: test
+.PHONY: test-fast
 test: ensure-dev
 	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
 

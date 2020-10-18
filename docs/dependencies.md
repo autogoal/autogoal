@@ -1,6 +1,8 @@
 # Mandatory and optional dependencies
 
 !!! note
+    The recommended way to use AutoGOAL is by downloading the Docker development image. 
+    Installing through `pip` is only recommended if you do not intend to use the machine learning dependencies.
     This section is not relevant if you downloaded the Docker image of AutoGOAL.
 
 AutoGOAL itself does not depends on any third-party machine learning or optimization framework. The only real **mandatory** dependencies are:
@@ -18,6 +20,7 @@ AutoGOAL itself does not depends on any third-party machine learning or optimiza
     toml = "^0.10.0"
     tqdm = "^4.50.2"
     typer = "^0.3.2"
+    rich = "^8.0.0"
 
 If you simply install with:
 
