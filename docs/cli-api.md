@@ -185,6 +185,7 @@ $ autogoal ml fit [OPTIONS] INPUT
 * `--search-timeout INTEGER`: [default: 3600]
 * `--pop-size INTEGER`: [default: 20]
 * `--iterations INTEGER`: [default: 100]
+* `--random-state INTEGER`
 * `--format TEXT`
 * `--help`: Show this message and exit.
 
