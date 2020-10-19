@@ -207,7 +207,7 @@ def build_composite_list(input_type, output_type, depth=1):
     output_wrapper = wrap(output_type, depth)
 
     # name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
-    name = "ListAlgorithm[%s, %s]" % (input_wrapper, output_wrapper)
+    name = "ListAlgorithm" #[%s, %s]" % (input_wrapper, output_wrapper)
 
     def init_method(self, inner: algorithm(input_type, output_type)):
         self.inner = inner
@@ -227,18 +227,32 @@ def build_composite_list(input_type, output_type, depth=1):
     def getattr_method(self, attr):
         return getattr(self.inner, attr)
 
+    def reduce_method(self):
+        return (
+            build_composite_list_instance,
+            (input_type, output_type, self.inner)
+        )
+
     def body(ns):
         ns["__init__"] = init_method
         ns["run"] = run_method
         ns["__repr__"] = repr_method
         ns["__getattr__"] = getattr_method
+        ns["__reduce__"] = reduce_method
 
     return types.new_class(name=name, bases=(), exec_body=body)
 
 
+def build_composite_list_instance(input_type, output_type, inner_algorithm):
+    """
+    Build a ListAlgorithm[...] type and instantiate it directly on a given algorithm.
+    """
+    return build_composite_list(input_type, output_type)(inner_algorithm)
+
+
 def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     """
-    Dynamically generate a class `CompositeAlgorithm` that wraps
+    Dynamically generate a class `TupleAlgorithm` that wraps
     another algorithm to receive a Tuple but pass only one of the
     parameters to the internal algorithm.
     """
@@ -246,8 +260,7 @@ def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     internal_input = input_type.inner[index]
     internal_output = output_type.inner[index]
 
-    # name = "TupleWrapper"
-    name = "TupleWrapper[%s, %s]" % (input_type, output_type)
+    name = "TupleAlgorithm" #[%s, %s]" % (input_type, output_type)
 
     def init_method(self, inner: algorithm(internal_input, internal_output)):
         self.inner = inner
@@ -263,13 +276,28 @@ def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
     def getattr_method(self, attr):
         return getattr(self.inner, attr)
 
+    def reduce_method(self):
+        return (
+            build_composite_tuple_instance,
+            (index, input_type, output_type, self.inner)
+        )
+
     def body(ns):
         ns["__init__"] = init_method
         ns["run"] = run_method
         ns["__repr__"] = repr_method
         ns["__getattr__"] = getattr_method
+        ns["__reduce__"] = reduce_method
 
     return types.new_class(name=name, bases=(), exec_body=body)
+
+
+
+def build_composite_tuple_instance(index, input_type, output_type, inner_algorithm):
+    """
+    Build a TupleAlgorithm[...] type and instantiate it directly on a given algorithm.
+    """
+    return build_composite_tuple(index, input_type, output_type)(inner_algorithm)
 
 
 class DataType:
@@ -377,7 +405,10 @@ def infer_type(obj):
             if isinstance(obj, spmatrix):
                 return MatrixContinuousSparse()
             if isinstance(obj, ndarray):
-                return MatrixContinuousDense()
+                if obj.dtype.kind == "O":
+                    return MatrixCategorical()
+                else:
+                    return MatrixContinuousDense()
 
     raise TypeError("Cannot infer type for %r" % obj)
 
@@ -435,6 +466,10 @@ class CategoricalVector(Vector):
 
 
 class MatrixContinuous(Matrix):
+    pass
+
+
+class MatrixCategorical(Matrix):
     pass
 
 
@@ -539,6 +574,7 @@ DATA_TYPES = frozenset(
         DiscreteVector,
         CategoricalVector,
         MatrixContinuous,
+        MatrixCategorical,
         MatrixContinuousDense,
         MatrixContinuousSparse,
         Entity,

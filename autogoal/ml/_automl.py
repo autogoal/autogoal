@@ -1,16 +1,10 @@
+import io
 
-from autogoal.search import RandomSearch, PESearch
+from autogoal.search import PESearch
 from autogoal.kb import (
-    build_pipeline_graph,
     build_pipelines,
-    CategoricalVector,
-    List,
-    Word,
-    MatrixContinuous,
     Tuple,
     infer_type,
-    Postag,
-    Chunktag
 )
 
 from autogoal.ml.metrics import accuracy
@@ -22,7 +16,6 @@ import numpy as np
 import random
 import statistics
 import pickle
-
 
 
 class AutoML:
@@ -131,6 +124,30 @@ class AutoML:
 
         self.best_pipeline_.sampler_.replay().save(fp)
         pickle.Pickler(fp).dump((self.input, self.output))
+
+    def save(self, fp: io.BytesIO):
+        """
+        Serializes the AutoML instance.
+        """
+        if self.best_pipeline_ is None:
+            raise TypeError("You must call `fit` first.")
+        
+        pickle.Pickler(fp).dump(self)
+
+    @classmethod
+    def load(self, fp: io.FileIO) -> "AutoML":
+        """
+        Deserializes an AutoML instance. 
+        
+        After deserialization, the best pipeline found is ready to predict.
+        """
+        automl = pickle.Unpickler(fp).load()
+        
+        if not isinstance(automl, AutoML):
+            raise ValueError("The serialized file does not contain an AutoML instance.")
+
+        return automl
+
 
     def load_pipeline(self, fp):
         """

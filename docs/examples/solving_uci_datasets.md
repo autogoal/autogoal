@@ -1,8 +1,8 @@
 # Solving UCI datasets
 
 This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
-in anyone of the UCI datasets available. The full source code can be
-found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/solving_uci_datasets.py).
+in anyone of the UCI datasets available.
+The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/solving_uci_datasets.py).
 
 The datasets used in this experimentation are taken from the [UCI repository](https://archive.ics.uci.edu/ml/index.php).
 Concretely, the following datasets are used:

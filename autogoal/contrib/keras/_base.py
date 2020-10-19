@@ -133,7 +133,7 @@ class KerasNeuralNetwork:
             raise TypeError("You must call `sample` to generate the internal model.")
 
         self._build_nn(self._graph, X, y)
-        self.model.summary()
+        # self.model.summary()
         self._fit_model(X, y, **kwargs)
 
     def _fit_model(self, X, y, **kwargs):
@@ -146,6 +146,7 @@ class KerasNeuralNetwork:
                 TerminateOnNaN(),
             ],
             validation_split=self._validation_split,
+            verbose=0,
             **kwargs,
         )
 
@@ -283,6 +284,7 @@ class KerasImageClassifier(KerasClassifier):
                 TerminateOnNaN(),
             ],
             validation_data=(Xvalid, yvalid),
+            verbose=0,
             **kwargs,
         )
 
@@ -398,6 +400,7 @@ class KerasSequenceTagger(KerasNeuralNetwork):
                 ),
                 TerminateOnNaN(),
             ],
+            verbose=0,
             **kwargs,
         )
 

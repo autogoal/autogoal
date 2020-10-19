@@ -58,9 +58,9 @@ demo:
 mkdocs:
 	docker-compose run autogoal mkdocs serve -a 0.0.0.0:8000
 
-# test-basic  Test only
-.PHONY: test-basic
-test-basic:
+# test-ci      Test only the core code in a newly built image.
+.PHONY: test-ci
+test-ci:
 	docker build -t autogoal:basic -f tests/basic.dockerfile .
 
 # ‎‎
@@ -77,6 +77,7 @@ ensure-dev:
 .PHONY: docs
 docs: ensure-dev
 	cp Readme.md docs/index.md
+	python3 -m typer_cli autogoal/__main__.py utils docs > docs/cli-api.md
 	python docs/make_docs.py && mkdocs build
 	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
@@ -92,15 +93,15 @@ env: ensure-dev
 install: ensure-dev
 	poetry install
 
-# test         Run the minimal unit tests (not marked slow).
-.PHONY: test
-test: ensure-dev
-	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
-
-# test-core    Run the minimal unit tests (not marked slow).
+# test-core    Run the core unit tests (not contrib).
 .PHONY: test-core
 test-core: ensure-dev
 	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
+
+# test-fast    Run the minimal unit tests (not marked slow).
+.PHONY: test-fast
+test-fast: ensure-dev
+	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
 
 # test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full

@@ -1,3 +1,7 @@
+# NOTE: Reducing all the dumb tensorflow logs
+import os  
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
+
 try:
     from tensorflow import keras
 
