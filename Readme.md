@@ -21,7 +21,7 @@ a given problem, provided that the user can describe the space of all possible p
 AutoGOAL provides a set of low-level components to define different spaces and efficiently search in them.
 In the specific context of machine learning, AutoGOAL also provides high-level components that can be used as a black-box in almost any type of problem and dataset format.
 
-## Quickstart
+## ⭐ Quickstart
 
 AutoGOAL is first and foremost a framework for Automated Machine Learning.
 As such, it comes pre-packaged with hundreds of low-level machine learning
@@ -43,7 +43,7 @@ automl.fit(X, y)
 Sensible defaults are defined for each of the many parameters of `AutoML`.
 Make sure to [read the documentation](https://autogoal.github.io/guide/) for more information.
 
-## Installation
+## ⚙️ Installation
 
 The easiest way to get AutoGOAL up and running with all the dependencies is to pull the development Docker image, which is somewhat big:
 
@@ -69,7 +69,7 @@ To fine-pick which dependencies you want, read the [dependencies section](https:
 >
 > The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
 
-## CLI
+## 💻 CLI
 
 You can use AutoGOAL directly from the CLI. To see options just type:
 
