@@ -81,6 +81,11 @@ docs: ensure-dev
 	python docs/make_docs.py && mkdocs build
 	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
+# anim         Make CLI animations
+.PHONY: anim
+anim:
+	termtosvg -c "bash docs/shell/autogoal_cli.sh" docs/shell/autogoal_cli.svg -g 80x20 -m 100 -t window_frame_powershell
+
 # env          Setup the development environment.
 .PHONY: env
 env: ensure-dev

@@ -137,6 +137,7 @@ def automl_fit(
     search_timeout: int = 60 * 60,
     pop_size: int = 20,
     iterations: int = 100,
+    random_state: int = None,
     format: str = None,
 ):
     """
@@ -165,6 +166,7 @@ def automl_fit(
             search_timeout=search_timeout,
             pop_size=pop_size,
         ),
+        random_state=random_state,
         search_iterations=iterations,
     )
 
