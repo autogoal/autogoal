@@ -1,8 +1,8 @@
 # Integrating with `sklearn`
 
 In this example we wil build a simple grammar based on `sklearn` classifiers
-and apply it to solve a text classification problem. The full source code can
-be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/sklearn_simple_grammar.py).
+and apply it to solve a text classification problem.
+The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/sklearn_simple_grammar.py).
 
 !!! warning
     This example requires `sklearn` and `nltk` installed, as well as the
@@ -315,7 +315,7 @@ of `1000` different random pipelines. To see what's actually going on we will us
 the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
 
 ```python
-logger = ProgressLogger(log_solutions=True)
+logger = ProgressLogger()
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
 best_rand, fn_rand = random_search.run(1000, logger=logger)

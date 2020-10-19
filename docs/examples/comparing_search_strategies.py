@@ -2,6 +2,7 @@
 #
 # This example compares the performance of [RandomSearch](/api/autogoal.search/#RandomSearch)
 # and [PESearch](/api/autogoal.search/#PESearch) on a toy problem.
+# The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/comparing_search_strategies.py).
 
 from autogoal.search import RandomSearch, PESearch, ConsoleLogger, ProgressLogger
 

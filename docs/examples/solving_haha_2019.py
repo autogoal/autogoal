@@ -2,6 +2,7 @@
 
 # This script runs an instance of [`AutoML`](/api/autogoal.ml#automl)
 # in the [HAHA 2019 challenge](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data).
+# The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/solving_haha_2019.py).
 
 # The dataset used is:
 
