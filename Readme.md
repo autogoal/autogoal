@@ -139,7 +139,7 @@ This project follows the [all-contributors](https://allcontributors.org) specifi
 
 Here are all the current contributions. 
 
-> ### 🙏 Thank you all!
+> **🙏 Thanks!**
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->

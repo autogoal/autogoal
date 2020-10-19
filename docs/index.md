@@ -21,7 +21,7 @@ a given problem, provided that the user can describe the space of all possible p
 AutoGOAL provides a set of low-level components to define different spaces and efficiently search in them.
 In the specific context of machine learning, AutoGOAL also provides high-level components that can be used as a black-box in almost any type of problem and dataset format.
 
-## Quickstart
+## ⭐ Quickstart
 
 AutoGOAL is first and foremost a framework for Automated Machine Learning.
 As such, it comes pre-packaged with hundreds of low-level machine learning
@@ -43,19 +43,7 @@ automl.fit(X, y)
 Sensible defaults are defined for each of the many parameters of `AutoML`.
 Make sure to [read the documentation](https://autogoal.github.io/guide/) for more information.
 
-## Installation
-
-Installation is very simple:
-
-    pip install autogoal
-
-However, `autogoal` comes with a bunch of optional dependencies. You can install them all with:
-
-    pip install autogoal[contrib]
-
-To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.github.io/dependencies/).
-
-### Using Docker 
+## ⚙️ Installation
 
 The easiest way to get AutoGOAL up and running with all the dependencies is to pull the development Docker image, which is somewhat big:
 
@@ -67,17 +55,33 @@ Once you have the development image downloaded, you can fire up a console and us
 
 ![](https://autogoal.github.io/shell.svg)
 
-> **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
+If you prefer to not use Docker, or you don't want all the dependencies, you can also install AutoGOAL directly with pip:
 
-## CLI
+    pip install autogoal
+
+This will install the core library but you won't be able to use any of the underlying machine learning algorithms until you install the corresponding optional dependencies. You can install them all with:
+
+    pip install autogoal[contrib]
+
+To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.github.io/dependencies/).
+
+> ⚠️ **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. 
+>
+> The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
+
+## 💻 CLI
 
 You can use AutoGOAL directly from the CLI. To see options just type:
 
-    python -m autogoal
+    autogoal
+
+Using the CLI you can train and use AutoML models, download datasets and inspect the contrib libraries without writing a single line of code.
+
+![](https://autogoal.github.io/shell/autogoal_cli.svg)
 
 Read more in the [CLI documentation](https://autogoal.github.io/cli).
 
-## Demo
+## 🤩 Demo
 
 An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
 This app showcases the main features of AutoGOAL in interactive case studies.
@@ -88,7 +92,7 @@ To run the demo locally, simply type:
 
 And navigate to [localhost:8501](http://localhost:8501).
 
-## Documentation
+## 📚 Documentation
 
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
 
@@ -102,7 +106,7 @@ The HTML version can be deployed offline by downloading the [AutoGOAL Docker ima
 
 And navigating to [localhost:8000](http://localhost:8000).
 
-## Publications
+## 📃 Publications
 
 If you use AutoGOAL in academic research, please cite the following paper:
 
@@ -127,11 +131,15 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 
 - [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
 
-## Contribution
+## 🤝 Contribution
 
 Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.github.io/contributing).
 
-## Contributors
+This project follows the [all-contributors](https://allcontributors.org) specification. Any contribution will be given credit, from fixing typos, to reporting bugs, to implementing new core functionalities. 
+
+Here are all the current contributions. 
+
+> **🙏 Thanks!**
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
