@@ -1,3 +1,4 @@
+from autogoal.exceptions import InterfaceIncompatibleError
 import types
 import inspect
 import pprint
@@ -47,9 +48,7 @@ class Interface:
                 compatible.append(other_cls)
 
         if not compatible:
-            raise ValueError(
-                "Cannot find compatible implementations for interface %r" % cls
-            )
+            raise InterfaceIncompatibleError(cls)
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 

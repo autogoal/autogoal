@@ -8,7 +8,6 @@ import nx_altair as nxa
 import inspect
 
 from autogoal.kb import build_pipeline_graph
-from matplotlib import pyplot as plt
 
 
 @st.cache(allow_output_mutation=True)
