@@ -18,7 +18,7 @@ from autogoal.utils import Gb, Min
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
 import autogoal.logging 
 
-autogoal.logging.setup()
+autogoal.logging.setup("WARNING")
 
 logger = autogoal.logging.logger()
 console = Console()

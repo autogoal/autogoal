@@ -77,6 +77,7 @@ ensure-dev:
 .PHONY: docs
 docs: ensure-dev
 	cp Readme.md docs/index.md
+	python3 -m typer_cli autogoal/__main__.py utils docs > docs/cli-api.md
 	python docs/make_docs.py && mkdocs build
 	(cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
