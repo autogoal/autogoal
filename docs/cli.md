@@ -1,53 +1,49 @@
 AutoGOAL can be used directly from the CLI for some tasks. To see all available commands just run:
 
-    python3 -m autogoal
+    autogoal
+
+![](autogoal_cli.svg)
 
 ## Run the streamlit demo
 
 Just run:
 
-    python3 -m autogoal demo
+    autogoal demo
 
 ## Inspect the contrib modules
 
 To see all the contrib modules installed and the available algorithms, run:
 
-    python3 -m autogoal contrib list
+    autogoal contrib list
 
 A fully installed version of AutoGOAL will show something like this:
 
-    ⚙️  Found a total of 134 matching algorithms.
-    🛠️  sklearn: 78 algorithms.
-    🛠️  nltk: 26 algorithms.
-    🛠️  gensim: 5 algorithms.
-    🛠️  keras: 4 algorithms.
-    🛠️  torch: 2 algorithms.
-    🛠️  spacy: 1 algorithms.
-    🛠️  wikipedia: 4 algorithms.
-    🛠️  wrappers: 9 algorithms.
-    🛠️  regex: 5 algorithms.
+![](autogoal_cli_contrib.svg)
 
 Use `--verbose` to actually list all the algorithms. Additionally, you can pass `--include` and `--exclude` to filter by algorithm name, and `--input` and/or `--output` to filter based on the input and output of each algorithm. These four parameters accept a regular expression. For example:
 
-    $ python3 -m autogoal contrib list --exclude 'Tokenizer|Encoder' --input Sentence --verbose 
-    
-    ⚙️  Found a total of 7 matching algorithms.
-    🛠️  sklearn: 4 algorithms.
-     🔹 CountVectorizer           : List(Sentence()) -> MatrixContinuousSparse()
-     🔹 CountVectorizerNoTokenize : List(Sentence()) -> MatrixContinuousSparse()
-     🔹 HashingVectorizer         : List(Sentence()) -> MatrixContinuousSparse()
-     🔹 TfidfVectorizer           : List(Sentence()) -> MatrixContinuousSparse()
-    🛠️  torch: 1 algorithms.
-     🔹 BertTokenizeEmbedding     : List(Sentence(language=english)) -> Tensor3()
-    🛠️  spacy: 1 algorithms.
-     🔹 SpacyNLP                  : Sentence() -> Tuple(List(Word()), List(Flags()))
-    🛠️  wrappers: 1 algorithms.
-     🔹 SentenceFeatureExtractor  : Sentence() -> Flags()
+    $ autogoal contrib list --exclude 'Tokenizer|Encoder' --input Sentence --verbose 
+
+Will show all algorithms whose names don't match with `Tokenizer` or `Encoder`, and whose inputs match with `Sentence`.
+
+![](autogoal_cli_contrib_list.svg)
 
 ## Fit and predict with an AutoML model
 
 To fit an AutoML model on a custom dataset, run:
 
-    python3 -m autogoal automl fit <INPUT>
+    autogoal ml fit <INPUT>
 
-The `INPUT` parameter should be a dataset. Two options are available. 
+The `INPUT` parameter should be a dataset. Two options are available, CSV and JSON files. You can also configure several search parameters, including the total search time, the available memory, the number of iterations, etc. For example:
+
+    autogoal ml fit autogoal/datasets/data/uci_cars/car.data --iterations 3 --pop-size 5 --format csv
+
+![](autogoal_cli_ml_fit.svg)
+
+Once a model has been trained, you can use it to predict another set. If you are predicting in training data, don't forget to use `--ignore-cols` to ignore the target column.
+
+    autogoal ml predict autogoal/datasets/data/uci_cars/car.data --ignore-cols -1 --format csv
+
+![](autogoal_cli_ml_predict.svg)
+
+The results are stored in `output.csv`. You can change it with `--output <FILENAME>`.
