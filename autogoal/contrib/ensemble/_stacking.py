@@ -1,42 +1,39 @@
+# from autogoal.contrib import ensemble
 import numpy as np
-from sklearn import svm
+from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 
 class StackingEnsemble:
 
-    def __init__(self, X, y):
+    def __init__(self, 
+    layers = [
+        [SVC(), LogisticRegression()],
+        [DecisionTreeClassifier()]
+    ],
+    final = GaussianNB()):
        self.network = []
-       self.X = X
-       self.y = y
-
-    def layer_constructor(self,  estimators = ['svm', 'gnb']):
-        """
-        Creates a layer containing the different estimators in use.
-        """
-        layer = []
-        for estimator in estimators:
-            if estimator == 'svm':
-               layer.append(svm.SVC()) 
-            elif estimator == 'gnb':
-                layer.append(GaussianNB())
-        return layer
+       self.layers = layers
+       self.final = final
     
-    def network_constructor(self, layer): 
+    def network_constructor(self): 
         """
         Creates a network containing layers of estimators.
         """
         network = self.network
-        network.append(layer)
+        layers = self.layers
+        final = self.final 
+        network.append(layers)
+        network.append(final)
         return network
 
-    def forward_pass(self):
+    def forward_pass(self, X, y):
         """
         Do a forward pass of the stacked network
         """
-        X = self.X
-        y = self.y
-        network = self.network
+
+        network = self.network_constructor()
 
         output = y
         input_current_layer = []
@@ -87,10 +84,6 @@ if __name__ == '__main__':
     X_train = [[0, 0], [1, 1]]
     y_train = [0, 1]
     X_test = [[2.,2.]]
-    se = StackingEnsemble(X_train, y_train)
-    layer1 = se.layer_constructor()
-    layer2 = se.layer_constructor(['svm'])
-    network = se.network_constructor(layer1)
-    network = se.network_constructor(layer2)
-    trained_network = se.forward_pass()
-    print(se.predict(X_test))
+    ensemble = StackingEnsemble([SVC(),GaussianNB()], [SVC()])
+    print(ensemble.forward_pass(X_train, y_train))
+    print(ensemble.predict(X_test))
