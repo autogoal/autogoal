@@ -1,1 +1,1 @@
-from autogoal.contrib.ensemble.stacking import StackingEnsemble
+from autogoal.contrib.ensemble._stacking import StackingEnsemble
