@@ -7,7 +7,7 @@ def test_stacking():
     y_train = [0, 1]
     X_test = [[2.,2.]]
     ensemble = StackingEnsemble([SVC(),GaussianNB()], [SVC()])
-    print(ensemble.forward_pass(X_train, y_train))
+    print(ensemble.fit(X_train, y_train))
     print(ensemble.predict(X_test))
 
 

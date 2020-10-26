@@ -55,6 +55,17 @@ class StackingEnsemble:
         
         return network
     
+    def fit(self, X, y): 
+        input_length = len(X)
+        target_lenght = len(y)
+        if input_length == target_lenght:
+            return self.forward_pass(X, y)
+        elif input_length > target_lenght: 
+            return("The input data is greater than the output data.")
+        elif input_length < target_lenght:
+            return("The ouptut data is greater than the input data.")
+
+    
     def predict(self, X):
         """
         Do a prediction for a test data
@@ -84,6 +95,6 @@ if __name__ == '__main__':
     X_train = [[0, 0], [1, 1]]
     y_train = [0, 1]
     X_test = [[2.,2.]]
-    ensemble = StackingEnsemble([SVC(),GaussianNB()], [SVC()])
-    print(ensemble.forward_pass(X_train, y_train))
+    ensemble = StackingEnsemble([SVC(), DecisionTreeClassifier()], [SVC()])
+    print(ensemble.fit(X_train, y_train))
     print(ensemble.predict(X_test))
