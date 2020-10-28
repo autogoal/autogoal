@@ -60,10 +60,8 @@ class StackingEnsemble:
         target_lenght = len(y)
         if input_length == target_lenght:
             return self.forward_pass(X, y)
-        elif input_length > target_lenght: 
-            return("The input data is greater than the output data.")
-        elif input_length < target_lenght:
-            return("The ouptut data is greater than the input data.")
+        else:
+            raise ValueError("X and y must have the same length")
 
     
     def predict(self, X):
@@ -95,6 +93,8 @@ if __name__ == '__main__':
     X_train = [[0, 0], [1, 1]]
     y_train = [0, 1]
     X_test = [[2.,2.]]
+    y_test = [1]
     ensemble = StackingEnsemble([SVC(), DecisionTreeClassifier()], [SVC()])
-    print(ensemble.fit(X_train, y_train))
-    print(ensemble.predict(X_test))
+    ensemble.fit(X_train, y_train)
+    y_pred = ensemble.predict(X_test)
+    
