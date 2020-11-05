@@ -8,15 +8,25 @@ from sklearn.tree import DecisionTreeClassifier
 class StackingEnsemble:
 
     def __init__(self, 
-    layers = [
-        [SVC(), LogisticRegression()],
-        [DecisionTreeClassifier()]
-    ],
-    final = GaussianNB()):
-       self.network = []
-       self.layers = layers
-       self.final = final
-    
+                 layers = None, 
+                 final = None):
+
+        if layers == None:
+            self.layers = [[SVC(), LogisticRegression()],
+                           [DecisionTreeClassifier()]]
+        
+        else:
+            self.layers = layers
+
+        if final == None:
+            self.final = GaussianNB()
+        
+        else:
+            self.final = final
+
+        self.network = []
+
+        
     def network_constructor(self): 
         """
         Creates a network containing layers of estimators.
@@ -97,4 +107,3 @@ if __name__ == '__main__':
     ensemble = StackingEnsemble([SVC(), DecisionTreeClassifier()], [SVC()])
     ensemble.fit(X_train, y_train)
     y_pred = ensemble.predict(X_test)
-    
