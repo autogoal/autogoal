@@ -27,12 +27,10 @@ def load():
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
 
-    path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/gisette"
-
-    train_data = open(os.path.join(path, "gisette_train.data"), "r")
-    train_labels = open(os.path.join(path, "gisette_train.labels"), "r")
-    valid_data = open(os.path.join(path, "gisette_valid.data"), "r")
-    valid_labels = open(os.path.join(path, "gisette_valid.labels"), "r")
+    train_data = open(datapath("gisette") / "gisette_train.data", "r")
+    train_labels = open(datapath("gisette") / "gisette_train.labels", "r")
+    valid_data = open(datapath("gisette") / "gisette_valid.data", "r")
+    valid_labels = open(datapath("gisette") / "gisette_valid.labels", "r")
 
     Xtrain = sp.lil_matrix((6000, 5000))
     ytrain = []
