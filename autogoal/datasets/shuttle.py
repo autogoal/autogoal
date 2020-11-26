@@ -26,9 +26,8 @@ def load(max_examples=None):
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
 
-    path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/shuttle"
-    train_data = open(os.path.join(path, "shuttle.trn"), "r")
-    test_data = open(os.path.join(path, "shuttle.tst"), "r")
+    train_data = open(datapath("shuttle") / "shuttle.trn", "r")
+    test_data = open(datapath("shuttle") / "shuttle.tst", "r")
 
     X_train = []
     X_test = []

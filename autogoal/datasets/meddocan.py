@@ -27,13 +27,9 @@ def load(max_examples=None):
         )
         raise
 
-    path = (
-        str(datapath(os.path.dirname(os.path.abspath(__file__))))
-        + "/data/meddocan_2018"
-    )
-    train_path = path + "/train/brat"
-    dev_path = path + "/dev/brat"
-    test_path = path + "/test/brat"
+    train_path = datapath("meddocan_2018") / "train/brat"
+    dev_path = datapath("meddocan_2018") / "dev/brat"
+    test_path = datapath("meddocan_2018") / "test/brat"
 
     X_train = []
     X_test = []
@@ -340,3 +336,5 @@ def test_meddocan():
 
     for xi, yi in zip(X_valid, y_valid):
         assert len(xi) == len(yi)
+
+load()
