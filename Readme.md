@@ -159,6 +159,7 @@ Here are all the current contributions.
     <td align="center"><a href="https://github.com/geblanco"><img src="https://avatars3.githubusercontent.com/u/6652222?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Guillermo Blanco</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ageblanco" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=yacth" title="Code">💻</a></td>
     <td align="center"><a href="https://sourceplusplus.com"><img src="https://avatars0.githubusercontent.com/u/3278877?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Fergerson</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3ABFergerson" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://ryanberdeen.com/"><img src="https://avatars0.githubusercontent.com/u/15624?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ryan Berdeen</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Aalso" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
