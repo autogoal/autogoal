@@ -119,6 +119,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "AdityaNikhil",
+      "name": "Aditya Nikhil",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/30192967?v=4",
+      "profile": "https://adityanikhil.github.io/main/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
