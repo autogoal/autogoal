@@ -10,13 +10,6 @@ from autogoal.kb import *
 from autogoal.kb._data import *
 from autogoal.utils import nice_repr
 
-nltk.download("wordnet")
-nltk.download("sentiwordnet")
-nltk.download("stopwords")
-
-from nltk.corpus import sentiwordnet as swn
-from nltk.corpus import stopwords, wordnet
-
 
 @nice_repr
 class Doc2Vec(_Doc2Vec, SklearnTransformer):
@@ -106,6 +99,10 @@ class StopwordRemover:
         ),
     ):
         self.language = language
+
+        nltk.download("stopwords")
+        from nltk.corpus import stopwords
+
         self.words = stopwords.words(language)
         SklearnWrapper.__init__(self)
 
@@ -148,12 +145,15 @@ class WordnetConcept:
     """
 
     def __init__(self):
-        pass
+        nltk.download("wordnet")
+        from nltk.corpus import wordnet
+
+        self.wordnet = wordnet
 
     def run(self, input: Word(domain="general", language="english")) -> Synset():
         """Find a word in Wordnet and return a List of Synset de Wordnet
         """
-        synsets = wordnet.synsets(input)
+        synsets = self.wordnet.synsets(input)
         names_synsets = []
         for i in synsets:
             names_synsets.append(i.name())
@@ -181,16 +181,19 @@ class SentimentWord:
     """
 
     def __init__(self):
-        pass
+        nltk.download("sentiwordnet")
+        from nltk.corpus import sentiwordnet
+
+        self.swn = sentiwordnet
 
     def run(self, input: Synset(domain="general", language="english")) -> Sentiment():
         """Find a word in SentiWordnet and return a List of sentiment of the word.
         """
-        swn_synset = swn.senti_synset(input)
+        swn_synset = self.swn.senti_synset(input)
 
         sentiment = {}
-        sentiments["positive"] = i.pos_score()
-        sentiments["negative"] = i.neg_score()
+        sentiments["positive"] = swn_synset.pos_score()
+        sentiments["negative"] = swn_synset.neg_score()
 
         return sentiment
 
