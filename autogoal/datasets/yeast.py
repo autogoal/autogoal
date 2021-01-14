@@ -25,8 +25,7 @@ def load():
         print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
         raise
 
-    path = str(datapath(os.path.dirname(os.path.abspath(__file__)))) + "/data/yeast"
-    f = open(os.path.join(path, "yeast.data"), "r")
+    f = open(datapath("yeast") / "yeast.data", "r")
 
     X = []
     y = []

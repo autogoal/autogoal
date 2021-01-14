@@ -11,6 +11,14 @@ DATASETS_METADATA = (
     "https://raw.githubusercontent.com/autogoal/datasets/master/datasets.json"
 )
 
+DATA_PATH = f"{str(Path.home())}/.autogoal/data"
+
+#ensure data path directory creation
+try:
+    os.makedirs(DATA_PATH)
+except Exception as ex:
+    #directory already exists
+    pass
 
 @lru_cache()
 def get_datasets_list() -> Dict[str, str]:
@@ -30,7 +38,7 @@ def datapath(path: str) -> Path:
 
     ```
     """
-    return Path(__file__).parent / "data" / path
+    return Path(DATA_PATH) / path
 
 
 def pack(folder: str):
