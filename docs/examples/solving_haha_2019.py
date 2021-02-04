@@ -45,11 +45,8 @@
 from autogoal.ml import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
-    Logger,
     PESearch,
-    ConsoleLogger,
-    ProgressLogger,
-    MemoryLogger,
+    RichLogger,
 )
 from autogoal.kb import List, Sentence, Tuple, CategoricalVector
 from autogoal.contrib import find_classes
@@ -105,23 +102,7 @@ classifier = AutoML(
     ),
 )
 
-# This custom logger is used for debugging purposes, to be able later to recover
-# the best pipelines and all the errors encountered in the experimentation process.
-
-class CustomLogger(Logger):
-    def error(self, e: Exception, solution):
-        if e and solution:
-            with open("haha_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={repr(e)}\n\n")
-
-    def update_best(self, new_best, new_fn, *args):
-        with open("haha.log", "a") as fp:
-            fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
-
-# Basic logging configuration.
-
-logger = MemoryLogger()
-loggers = [ProgressLogger(), ConsoleLogger(), logger]
+loggers = [RichLogger()]
 
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger

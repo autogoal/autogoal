@@ -340,10 +340,10 @@ class RichLogger(Logger):
         self.console.print(Panel(f"📈 Fitness=[blue]{fitness:.3f}"))
 
     def error(self, e: Exception, solution):
-        self.logger.error(str(e))
+        self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
     def start_generation(self, generations, best_fn):
-        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn:.3f}")
+        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}")
 
     def start_generation(self, generations, best_fn):
         self.progress.update(self.pop_counter, completed=0)
@@ -354,7 +354,7 @@ class RichLogger(Logger):
     def end(self, best, best_fn):
         self.console.rule(f"Search finished")
         self.console.print(repr(best))
-        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn:.3f}"))
+        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn or 0:.3f}"))
         self.progress.stop()
         self.console.rule("Search finished", style="red")
 

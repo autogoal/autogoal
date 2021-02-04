@@ -48,7 +48,7 @@ class Interface:
                 compatible.append(other_cls)
 
         if not compatible:
-            raise InterfaceIncompatibleError(cls)
+            raise InterfaceIncompatibleError(cls.__name__)
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
@@ -74,7 +74,7 @@ class Distinct:
 
         if not compatible:
             raise ValueError(
-                "Cannot find compatible implementations for interface %r"
+                "Cannot find compatible implementations for <class %s>"
                 % self.interface
             )
 
