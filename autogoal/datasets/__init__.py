@@ -16,11 +16,7 @@ DATASETS_METADATA = (
 DATA_PATH = Path.home() / ".autogoal" / "data"
 
 #ensure data path directory creation
-try:
-    os.makedirs(DATA_PATH)
-except IOError as ex:
-    #directory already exists
-    pass
+os.makedirs(DATA_PATH, exist_ok=True)
 
 
 @lru_cache()
