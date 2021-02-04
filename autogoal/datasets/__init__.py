@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict
 
 import requests
+import os
 from tqdm import tqdm
 from functools import lru_cache
 
@@ -11,12 +12,12 @@ DATASETS_METADATA = (
     "https://raw.githubusercontent.com/autogoal/datasets/master/datasets.json"
 )
 
-DATA_PATH = f"{str(Path.home())}/.autogoal/data"
+DATA_PATH = Path.home() / ".autogoal" / "data"
 
 #ensure data path directory creation
 try:
     os.makedirs(DATA_PATH)
-except Exception as ex:
+except IOError as ex:
     #directory already exists
     pass
 
