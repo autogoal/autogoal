@@ -1,3 +1,4 @@
+from autogoal.experimental.pipeline import AlgorithmBase
 from pathlib import Path
 
 import requests
@@ -13,7 +14,7 @@ from gensim.models.fasttext import FastText, FastTextKeyedVectors
 
 
 @nice_repr
-class Word2VecEmbedding:
+class Word2VecEmbedding(AlgorithmBase):
     """This class transform a word in embedding vector using Word2Vec of `gensim` (using `glove-twitter-25`).
 
     ##### Notes
@@ -44,7 +45,7 @@ class Word2VecEmbedding:
 
 
 @nice_repr
-class Word2VecEmbeddingSpanish:
+class Word2VecEmbeddingSpanish(AlgorithmBase):
     """This class transform a word in embedding vector using Word2Vec of `gensim` (using `Spanish 3B Word2Vec`).
 
     ##### Notes
@@ -85,7 +86,7 @@ class Word2VecEmbeddingSpanish:
 
 
 @nice_repr
-class FastTextEmbeddingSpanishSUC:
+class FastTextEmbeddingSpanishSUC(AlgorithmBase):
     """This class transform a word in embedding vector using FastText of `gensim`.
 
     ##### Notes
@@ -128,7 +129,7 @@ class FastTextEmbeddingSpanishSUC:
 
 
 @nice_repr
-class FastTextEmbeddingSpanishSWBC:
+class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
     """This class transform a word in embedding vector using FastText of `gensim`.
 
     ##### Notes
@@ -171,7 +172,7 @@ class FastTextEmbeddingSpanishSWBC:
 
 
 @nice_repr
-class GloveEmbeddingSpanishSWBC:
+class GloveEmbeddingSpanishSWBC(AlgorithmBase):
     """This class transform a word in embedding vector using Glove of `gensim`.
 
     ##### Notes

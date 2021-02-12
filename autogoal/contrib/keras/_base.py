@@ -1,3 +1,4 @@
+from autogoal.experimental.pipeline import AlgorithmBase, Supervised
 from typing import Optional
 
 import collections
@@ -30,10 +31,11 @@ from autogoal.kb import (
     Tuple,
 )
 from autogoal.utils import nice_repr
+import abc
 
 
 @nice_repr
-class KerasNeuralNetwork:
+class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
     def __init__(
         self,
         grammar: GraphGrammar,
@@ -59,8 +61,7 @@ class KerasNeuralNetwork:
     def eval(self):
         self._mode = "eval"
 
-    def run(self, input):
-        X, y = input
+    def run(self, X, y=None):
         if self._mode == "train":
             self.fit(X, y)
             return y
@@ -122,8 +123,9 @@ class KerasNeuralNetwork:
         self._model = Model(inputs=input_x, outputs=final_ouput)
         self._model.compile(**self._compile_kwargs)
 
+    @abc.abstractmethod
     def _build_input(self, X):
-        raise NotImplementedError()
+        pass
 
     def _build_output(self, outputs, y):
         return outputs
@@ -205,7 +207,7 @@ class KerasClassifier(KerasNeuralNetwork):
         return [self._inverse_classes[yi] for yi in predictions]
 
     def run(
-        self, input: Tuple(MatrixContinuousDense(), CategoricalVector())
+        self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
         return super().run(input)
 
@@ -288,7 +290,7 @@ class KerasImageClassifier(KerasClassifier):
             **kwargs,
         )
 
-    def run(self, input: Tuple(Tensor4(), CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor4(), y:Supervised(CategoricalVector())) -> CategoricalVector():
         return super().run(input)
 
     def _build_input(self, X):
@@ -302,7 +304,7 @@ class KerasSequenceClassifier(KerasClassifier):
     def _build_input(self, X):
         return Input(shape=(None, X.shape[2]))
 
-    def run(self, input: Tuple(Tensor3(), CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor3(), y:Supervised(CategoricalVector())) -> CategoricalVector():
         return super().run(input)
 
 
@@ -421,6 +423,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return self._decode(predictions)
 
     def run(
-        self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))
+        self, X:List(MatrixContinuousDense), y:Supervised(List(List(Postag())))
     ) -> List(List(Postag())):
-        return super().run(input)
+        return super().run(X, y)

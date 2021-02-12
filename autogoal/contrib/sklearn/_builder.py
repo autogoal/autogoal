@@ -9,22 +9,21 @@ from pathlib import Path
 import black
 import enlighten
 import numpy as np
+from autogoal import kb
+from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
+from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
+from autogoal.utils import nice_repr
+from joblib import parallel_backend
+from numpy import inf, nan
+
 import sklearn
 import sklearn.cluster
 import sklearn.cross_decomposition
 import sklearn.feature_extraction
 import sklearn.impute
 import sklearn.naive_bayes
-from numpy import inf, nan
 from sklearn.datasets import make_classification
-
-from autogoal import kb
-from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
-from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
-from autogoal.utils import nice_repr
-
-from joblib import parallel_backend
-
 
 try:
     import dask
@@ -37,7 +36,7 @@ except ImportError:
 
 
 @nice_repr
-class SklearnWrapper(metaclass=abc.ABCMeta):
+class SklearnWrapper(AlgorithmBase):
     def __init__(self):
         self._mode = "train"
 
@@ -47,35 +46,31 @@ class SklearnWrapper(metaclass=abc.ABCMeta):
     def eval(self):
         self._mode = "eval"
 
-    def run(self, input):
+    def run(self, *args):
         if self._mode == "train":
-            return self._train(input)
+            return self._train(*args)
         elif self._mode == "eval":
-            return self._eval(input)
+            return self._eval(*args)
 
         raise ValueError("Invalid mode: %s" % self._mode)
 
     @abc.abstractmethod
-    def _train(self, input):
+    def _train(self, *args):
         pass
 
     @abc.abstractmethod
-    def _eval(self, input):
+    def _eval(self, *args):
         pass
 
 
 class SklearnEstimator(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-
+    def _train(self, X, y):
         with parallel_backend(PARALLEL_BACKEND):
             self.fit(X, y)
 
         return y
 
-    def _eval(self, input):
-        X, _ = input
-
+    def _eval(self, X):
         with parallel_backend(PARALLEL_BACKEND):
             return self.predict(X)
 
@@ -89,15 +84,11 @@ class SklearnEstimator(SklearnWrapper):
 
 
 class SklearnTransformer(SklearnWrapper):
-    def _train(self, input):
-        X = input
-
+    def _train(self, X, y):
         with parallel_backend(PARALLEL_BACKEND):
             return self.fit_transform(X)
 
-    def _eval(self, input):
-        X = input
-
+    def _eval(self, X):
         with parallel_backend(PARALLEL_BACKEND):
             return self.transform(X)
 

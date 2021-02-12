@@ -1,3 +1,4 @@
+from autogoal.experimental.pipeline import AlgorithmBase
 import gensim
 import nltk
 import black
@@ -51,7 +52,7 @@ GENERATION_RULES = dict(
 )
 
 
-class NltkTokenizer:
+class NltkTokenizer(AlgorithmBase):
     def run(self, input):
         return self.tokenize(input)
 
@@ -60,7 +61,7 @@ class NltkTokenizer:
         pass
 
 
-class NltkStemmer:
+class NltkStemmer(AlgorithmBase):
     def run(self, input):
         return self.stem(input)
 
@@ -69,7 +70,7 @@ class NltkStemmer:
         pass
 
 
-class NltkLemmatizer:
+class NltkLemmatizer(AlgorithmBase):
     def run(self, input):
         return self.lemmatize(input)
 
@@ -90,29 +91,25 @@ class NltkClusterer(SklearnWrapper):
 
 
 class NltkTagger(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
+    def _train(self, X, y):
         tagged_sentences = [list(zip(words, tags)) for words, tags in zip(X, y)]
         self._instance = self.tagger(train=tagged_sentences)
         return X, y
 
-    def _eval(self, input):
-        X, y = input
+    def _eval(self, X):
         return [
             [tag for _, tag in sentence] for sentence in self._instance.tag_sents(X)
         ]
 
 
 class NltkTrainedTagger(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
+    def _train(self, X, y):
         # X expected to be a tokenized sentence
         return self.tag(X), y
 
-    def _eval(self, input):
-        X, y = input
+    def _eval(self, X):
         # X expected to be a tokenized sentence
-        return self.tag(X), y
+        return self.tag(X)
 
 
 base_classes = {

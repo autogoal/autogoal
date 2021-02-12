@@ -1,3 +1,4 @@
+from autogoal.experimental.pipeline import AlgorithmBase
 from transformers import BertModel, BertTokenizer
 from pathlib import Path
 import torch
@@ -9,7 +10,7 @@ from autogoal.utils import CacheManager, nice_repr
 
 
 @nice_repr
-class BertEmbedding:
+class BertEmbedding(AlgorithmBase):
     """
     Transforms a sentence already tokenized into a list of vector embeddings using a Bert pretrained multilingual model.
 
@@ -105,7 +106,7 @@ class BertEmbedding:
 
 
 @nice_repr
-class BertTokenizeEmbedding:
+class BertTokenizeEmbedding(AlgorithmBase):
     """
     Transforms a sentence into a list of vector embeddings using a Bert pretrained English model.
 

@@ -1,20 +1,17 @@
+from enum import auto
 import io
 
 from autogoal.search import PESearch
-from autogoal.kb import (
-    build_pipelines,
-    build_pipeline_graph,
-    Tuple,
-    infer_type,
-)
+from autogoal.kb import infer_type
+
+# TODO: Refactor this import when merged
+from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
 
 from autogoal.ml.metrics import accuracy
 from autogoal.sampling import ReplaySampler
 from autogoal.contrib import find_classes
-# from autogoal.ml._metalearning import DatasetFeatureLogger
 
 import numpy as np
-import random
 import statistics
 import pickle
 
@@ -31,7 +28,7 @@ class AutoML:
         input=None,
         output=None,
         random_state=None,
-        search_algorithm=PESearch,
+        search_algorithm=None,
         search_kwargs={},
         search_iterations=100,
         include_filter=".*",
@@ -42,11 +39,10 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
-        metalearning_log=False,
     ):
         self.input = input
         self.output = output
-        self.search_algorithm = search_algorithm
+        self.search_algorithm = search_algorithm or PESearch
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
         self.include_filter = include_filter
@@ -58,7 +54,6 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.score_metric = score_metric or accuracy
-        self.metalearning_log = metalearning_log
 
         if random_state:
             np.random.seed(random_state)
@@ -69,29 +64,14 @@ class AutoML:
         )
 
         return build_pipeline_graph(
-            input=Tuple(self.input, self.output),
-            output=self.output,
+            input_types=(self.input, Supervised(self.output)),
+            output_type=self.output,
             registry=registry,
         )
 
     def fit(self, X, y, **kwargs):
         self.input = self._input_type(X)
         self.output = self._output_type(y)
-
-        if self.metalearning_log:
-            raise NotImplementedError("Metalearning is not ready yet")
-
-            loggers = kwargs.get('logger', [])
-            loggers.append(DatasetFeatureLogger(X, y, problem_features=dict(
-                input=repr(self.input),
-                output=repr(self.output),
-                metric=self.score_metric.__name__,
-            ), environment_features=dict(
-                memory_limit=self.search_kwargs.get('memory_limit'),
-                search_timeout=self.search_kwargs.get('search_timeout'),
-                evaluation_timeout=self.search_kwargs.get('evaluation_timeout'),
-            )))
-            kwargs['logger'] = loggers
 
         search = self.search_algorithm(
             self._make_pipeline_builder(),
@@ -112,7 +92,7 @@ class AutoML:
             raise TypeError("You have to call `fit()` first.")
 
         self.best_pipeline_.send("train")
-        self.best_pipeline_.run((X, y))
+        self.best_pipeline_.run(X, y)
         self.best_pipeline_.send("eval")
 
     def save_pipeline(self, fp):
@@ -213,3 +193,12 @@ class AutoML:
 
     def predict(self, X):
         return self.best_pipeline_.run((X, [None] * len(X)))
+
+
+### TESTS
+
+from autogoal.kb import MatrixContinuous, CategoricalVector
+
+def test_automl_finds_classifiers():
+    automl = AutoML(input=MatrixContinuous(), output=CategoricalVector())
+    builder = automl._make_pipeline_builder()

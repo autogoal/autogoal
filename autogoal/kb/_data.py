@@ -319,6 +319,9 @@ class DataType:
     def __hash__(self):
         return hash(repr(self))
 
+    def __name__(self):
+        return self.__class__.__name__
+
     def __conforms__(self, other):
         return issubclass(self.__class__, other.__class__)
 

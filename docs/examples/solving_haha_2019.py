@@ -94,6 +94,7 @@ classifier = AutoML(
     output=CategoricalVector(),
     search_iterations=args.iterations,
     score_metric=f1_score,
+    errors='raise',
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
@@ -123,5 +124,3 @@ classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)
 
 print(score)
-print(logger.generation_best_fn)
-print(logger.generation_mean_fn)

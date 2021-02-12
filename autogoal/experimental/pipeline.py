@@ -20,9 +20,6 @@ class Supervised(DataType):
     def __name__(self):
         return f"Supervised({self.internal.__name__})"
 
-    # def __conforms__(self, other):
-    #     return conforms(self.internal, other)
-
    
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
@@ -85,6 +82,7 @@ class AlgorithmBase(Algorithm):
     @classmethod
     def output_type(cls) -> type:
         return inspect.signature(cls.run).return_annotation
+
 
 
 def _build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
@@ -412,3 +410,11 @@ def test_when_pipeline_second_step_receives_two_input_one_from_previous_and_one_
     pipeline = Pipeline([StrToInt(), TwoInputAlgorithm()])
     result = pipeline.run("hello world")
     assert result == 121
+
+
+from autogoal.kb import MatrixContinuous, CategoricalVector
+from autogoal.contrib import find_classes
+
+
+def test_build_real_pipeline():
+    pipeline = build_pipeline_graph(input_types=(MatrixContinuous(), Supervised(CategoricalVector)), output_type=CategoricalVector(), registry=find_classes())

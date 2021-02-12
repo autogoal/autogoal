@@ -1,3 +1,4 @@
+from autogoal.experimental.pipeline import AlgorithmBase
 import spacy
 
 from autogoal.grammar import Categorical, Boolean
@@ -6,7 +7,7 @@ from autogoal.utils import nice_repr
 
 
 @nice_repr
-class SpacyNLP:
+class SpacyNLP(AlgorithmBase):
     def __init__(
         self,
         language: Categorical("en", "es"),
@@ -35,7 +36,7 @@ class SpacyNLP:
 
         return self._nlp
 
-    def run(self, input: Sentence()) -> Tuple(List(Word()), List(Flags())):
+    def run(self, input: Sentence()) -> List(Flags()):
         tokenized = self.nlp(input)
 
         tokens = []
@@ -43,6 +44,7 @@ class SpacyNLP:
 
         for token in tokenized:
             token_flags = {}
+            token_flags["text"] = token.text
             if self.extract_lemma:
                 token_flags["lemma"] = token.lemma_
             if self.extract_pos_tag:
@@ -82,7 +84,6 @@ class SpacyNLP:
             if self.extract_sentiment:
                 token_flags["sentiment"] = token.sentiment
 
-            tokens.append(token.text)
             flags.append(token_flags)
 
-        return tokens, flags
+        return flags
