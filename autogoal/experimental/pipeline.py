@@ -5,7 +5,16 @@ from typing import Any, Dict, List, Tuple
 
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
-from autogoal.kb import List as _List, conforms
+from autogoal.kb import List as _List, conforms, DataType
+
+
+class Supervised(DataType):
+    def __init__(self, internal, **tags):
+        super().__init__(**tags)
+        self.internal = internal
+
+    # def __conforms__(self, other):
+    #     return conforms(self.internal, other)
 
    
 class Algorithm(abc.ABC):
@@ -282,7 +291,10 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
                 continue
 
             # And we never want an algorithm that doesn't provide a novel output type...
-            if algorithm.output_type() in guaranteed_types:
+            if (algorithm.output_type() in guaranteed_types and 
+                # ... unless it is the actual output 
+                algorithm.output_type() != output_type
+            ) :
                 continue
 
             p = PipelineNode(
@@ -326,11 +338,23 @@ class T2_T3(AlgorithmBase):
     def run(self, t1:T2) -> T3:
         pass
 
+@nice_repr
+class T2_T3_Supervised(AlgorithmBase):
+    def run(self, x:T2, y:Supervised(T3)) -> T3:
+        pass
+
 def test_build_pipeline_with_two_algorithms():
     pipeline_builder = build_pipeline_graph(input_types=(T1,), output_type=T3, registry=[T1_T2, T2_T3])
     pipeline = pipeline_builder.sample()
     
     assert repr(pipeline.algorithms) == "[T1_T2(), T2_T3()]"
+
+
+def test_build_pipeline_with_supervised():
+    pipeline_builder = build_pipeline_graph(input_types=(T1,Supervised(T3),), output_type=T3, registry=[T1_T2, T2_T3_Supervised])
+    pipeline = pipeline_builder.sample()
+    
+    assert repr(pipeline.algorithms) == "[T1_T2(), T2_T3_Supervised()]"
 
     
 class Float2Str(AlgorithmBase):
