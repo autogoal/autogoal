@@ -3,6 +3,7 @@ import abc
 import types
 from typing import Any, Dict, List, Tuple
 
+import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb import List as _List, conforms, DataType
@@ -12,6 +13,12 @@ class Supervised(DataType):
     def __init__(self, internal, **tags):
         super().__init__(**tags)
         self.internal = internal
+
+    def __conforms__(self, other):
+        return isinstance(other, Supervised) and conforms(self.internal, other.internal)
+
+    def __name__(self):
+        return f"Supervised({self.internal.__name__})"
 
     # def __conforms__(self, other):
     #     return conforms(self.internal, other)
@@ -210,7 +217,7 @@ class PipelineNode:
         ])
 
     def __repr__(self) -> str:
-        return f"<PipelineNode(algorithm={self.algorithm.__class__.__name__},input_types={self.input_types},output_types={self.output_types})>"
+        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -292,8 +299,8 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
 
             # And we never want an algorithm that doesn't provide a novel output type...
             if (algorithm.output_type() in guaranteed_types and 
-                # ... unless it is the actual output 
-                algorithm.output_type() != output_type
+                # ... unless it is an idempotent algorithm
+                [algorithm.output_type()] != algorithm.input_types()
             ) :
                 continue
 
@@ -309,10 +316,15 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
                 open_nodes.append(p)
 
         # Now we check to see if this node is a possible output
-        if output_type in guaranteed_types:
+        if conforms(node.algorithm.output_type(), output_type):
             G.add_edge(node, GraphSpace.End)
 
         closed_nodes.add(node)
+
+    # Remove all nodes that are not connected to the end node    
+    reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
+    unreachable_nodes = set(G.nodes) - reachable_from_end
+    G.remove_nodes_from(unreachable_nodes)
 
     return PipelineSpace(G, input_types=input_types)
 
@@ -328,6 +340,9 @@ class T2:
 class T3:
     pass
 
+class T4:
+    pass
+
 @nice_repr
 class T1_T2(AlgorithmBase):
     def run(self, t1:T1) -> T2:
@@ -335,7 +350,12 @@ class T1_T2(AlgorithmBase):
 
 @nice_repr
 class T2_T3(AlgorithmBase):
-    def run(self, t1:T2) -> T3:
+    def run(self, t2:T2) -> T3:
+        pass
+
+@nice_repr
+class T3_T4(AlgorithmBase):
+    def run(self, t3:T3) -> T4:
         pass
 
 @nice_repr
@@ -355,6 +375,14 @@ def test_build_pipeline_with_supervised():
     pipeline = pipeline_builder.sample()
     
     assert repr(pipeline.algorithms) == "[T1_T2(), T2_T3_Supervised()]"
+
+
+def test_build_pipeline_has_no_extra_nodes():
+    pipeline_builder = build_pipeline_graph(input_types=(T1,), output_type=T3, registry=[T1_T2, T2_T3, T3_T4])
+    
+    print(pipeline_builder.graph.nodes)
+
+    assert "T3_T4" not in [node.algorithm.__name__ for node in pipeline_builder.graph if hasattr(node, "algorithm")]
 
     
 class Float2Str(AlgorithmBase):
