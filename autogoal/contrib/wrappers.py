@@ -18,12 +18,13 @@ from autogoal.kb import (
 )
 from autogoal.grammar import Categorical, Boolean
 from autogoal.utils import nice_repr
+from autogoal.experimental.pipeline import AlgorithmBase
 
 import numpy as np
 
 
 @nice_repr
-class VectorAggregator:
+class VectorAggregator(AlgorithmBase):
     def __init__(self, mode: Categorical("mean", "max")):
         self.mode = mode
 
@@ -39,7 +40,7 @@ class VectorAggregator:
 
 
 @nice_repr
-class MatrixBuilder:
+class MatrixBuilder(AlgorithmBase):
     """
     Builds a matrix from a list of vectors.
 
@@ -63,7 +64,7 @@ class MatrixBuilder:
 
 
 @nice_repr
-class TensorBuilder:
+class TensorBuilder(AlgorithmBase):
     """
     Builds a 3D tensor from a list of matrices.
 
@@ -92,7 +93,7 @@ class TensorBuilder:
 
 
 @nice_repr
-class FlagsMerger:
+class FlagsMerger(AlgorithmBase):
     def run(self, input: List(Flags())) -> Flags():
         result = {}
 
@@ -103,7 +104,7 @@ class FlagsMerger:
 
 
 @nice_repr
-class MultipleFeatureExtractor:
+class MultipleFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
         extractors: Distinct(
@@ -120,7 +121,7 @@ class MultipleFeatureExtractor:
 
 
 @nice_repr
-class SentenceFeatureExtractor:
+class SentenceFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
         tokenizer: algorithm(Sentence(), List(Word())),
@@ -144,7 +145,7 @@ class SentenceFeatureExtractor:
 
 
 @nice_repr
-class DocumentFeatureExtractor:
+class DocumentFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
         tokenizer: algorithm(Document(), List(Sentence())),
@@ -160,7 +161,7 @@ class DocumentFeatureExtractor:
 
 
 @nice_repr
-class TextEntityEncoder:
+class TextEntityEncoder(AlgorithmBase):
     """
     Convierte una oración en texto plano más la lista de entidades
     reconocidas en la oración, en una lista de tokens con sus respectivas
@@ -177,7 +178,7 @@ class TextEntityEncoder:
 
 
 @nice_repr
-class TextRelationEncoder:
+class TextRelationEncoder(AlgorithmBase):
     """
     Convierte una oración en texto plano y una lista de relaciones 
     que se cumplen entre entidades, en una lista de ejemplos
