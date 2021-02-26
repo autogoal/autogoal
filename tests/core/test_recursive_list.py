@@ -1,6 +1,7 @@
 import pprint
-from autogoal.kb import Matrix, MatrixContinuous, MatrixContinuousDense, MatrixContinuousSparse, build_pipeline_graph, build_pipelines, Text, Document, Word, Stem, List, Tuple, Sentence, algorithm
+from autogoal.kb import CategoricalVector, Matrix, MatrixContinuous, MatrixContinuousDense, MatrixContinuousSparse, build_pipeline_graph, build_pipelines, Text, Document, Word, Stem, List, Tuple, Sentence, algorithm
 from autogoal.ml.metrics import accuracy
+from autogoal.contrib import find_classes
 from autogoal.ml import AutoML
 from autogoal.grammar import Discrete, generate_cfg, Subset, Categorical
 from autogoal.search import PESearch, RandomSearch, RichLogger
@@ -9,6 +10,12 @@ class TextAlgorithm:
     def run(
         self, 
         input:Sentence()) -> Document():
+            pass
+
+class TestAlgorithm():
+    def run(
+        self, 
+        input:Stem()) -> Tuple(MatrixContinuous(), CategoricalVector()):
             pass
 
 class StemWithDependanceAlgorithm:
@@ -55,6 +62,32 @@ def test_recursive_list_pipeline_graph():
         )
 
     best_pipeline_, _ = search.run(3)
+    assert best_pipeline_.steps[0].__class__.__name__ == "ListAlgorithm"
+
+    search = RandomSearch(
+        pipelineBuilder,
+        _make_mock_fitness_fn(0,0),
+        random_state=1,
+        errors="warn"
+        )
+
+    best_pipeline_, _ = search.run(3)
+    assert best_pipeline_.steps[0].__class__.__name__ == "HigherStemAlgorithm"
+
+def test_sklearn_nltk_graph():
+    pipelineBuilder = build_pipelines(input=Word()
+                                 ,output=CategoricalVector()
+                                 ,registry=find_classes() + [TestAlgorithm])
+    search = RandomSearch(
+        pipelineBuilder,
+        _make_mock_fitness_fn(0,0),
+        random_state=0,
+        errors="warn"
+        )
+
+
+    pprint.pprint([x for x in pipelineBuilder.graph.build_order()])
+    best_pipeline_, _ = search.run(3, RichLogger())
     assert best_pipeline_.steps[0].__class__.__name__ == "ListAlgorithm"
 
     search = RandomSearch(
