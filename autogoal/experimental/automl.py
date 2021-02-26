@@ -58,7 +58,7 @@ class AutoML:
         if random_state:
             np.random.seed(random_state)
 
-    def _make_pipeline_builder(self):
+    def make_pipeline_builder(self):
         registry = self.registry or find_classes(
             include=self.include_filter, exclude=self.exclude_filter
         )
@@ -74,8 +74,8 @@ class AutoML:
         self.output = self._output_type(y)
 
         search = self.search_algorithm(
-            self._make_pipeline_builder(),
-            self._make_fitness_fn(X, y),
+            self.make_pipeline_builder(),
+            self.make_fitness_fn(X, y),
             random_state=self.random_state,
             errors=self.errors,
             **self.search_kwargs,
@@ -140,7 +140,7 @@ class AutoML:
         """
         sampler = ReplaySampler.load(fp)
         self.input, self.output = pickle.Unpickler(fp).load()
-        self.best_pipeline_ = self._make_pipeline_builder()(sampler)
+        self.best_pipeline_ = self.make_pipeline_builder()(sampler)
 
     def score(self, X, y):
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
@@ -152,7 +152,7 @@ class AutoML:
     def _output_type(self, y):
         return self.output or infer_type(y)
 
-    def _make_fitness_fn(self, X, y):
+    def make_fitness_fn(self, X, y):
         y = np.asarray(y)
 
         def fitness_fn(pipeline):
@@ -201,4 +201,6 @@ from autogoal.kb import MatrixContinuous, CategoricalVector
 
 def test_automl_finds_classifiers():
     automl = AutoML(input=MatrixContinuous(), output=CategoricalVector())
-    builder = automl._make_pipeline_builder()
+    builder = automl.make_pipeline_builder()
+
+    assert len(builder.graph) > 10

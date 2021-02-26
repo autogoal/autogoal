@@ -18,7 +18,7 @@ class Supervised(DataType):
         return isinstance(other, Supervised) and conforms(self.internal, other.internal)
 
     def __name__(self):
-        return f"Supervised({self.internal.__name__})"
+        return f"Supervised({self.internal.__name__()})"
 
    
 class Algorithm(abc.ABC):
@@ -77,11 +77,17 @@ class AlgorithmBase(Algorithm):
     """
     @classmethod
     def input_types(cls) -> Tuple[type]:
-        return tuple(param.annotation for name, param in inspect.signature(cls.run).parameters.items() if name != 'self')
+        if not hasattr(cls, "__run_signature__"):
+            cls.__run_signature__ = inspect.signature(cls.run)
+
+        return tuple(param.annotation for name, param in cls.__run_signature__.parameters.items() if name != 'self')
 
     @classmethod
     def output_type(cls) -> type:
-        return inspect.signature(cls.run).return_annotation
+        if not hasattr(cls, "__run_signature__"):
+            cls.__run_signature__ = inspect.signature(cls.run)
+
+        return cls.__run_signature__.return_annotation
 
 
 
@@ -215,7 +221,7 @@ class PipelineNode:
         ])
 
     def __repr__(self) -> str:
-        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
+        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__() for i in self.input_types]},output_types={[o.__name__() for o in self.output_types]})>"
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -310,7 +316,7 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
 
             G.add_edge(node, p)
 
-            if p not in closed_nodes:
+            if p not in closed_nodes and p not in open_nodes:
                 open_nodes.append(p)
 
         # Now we check to see if this node is a possible output

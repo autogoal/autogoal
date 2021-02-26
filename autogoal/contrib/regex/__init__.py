@@ -4,6 +4,7 @@ import abc
 from autogoal.utils import nice_repr
 from autogoal.kb import Word, Flags
 from autogoal.grammar import Boolean
+from autogoal.experimental.pipeline import AlgorithmBase
 
 
 class _Regex(abc.ABC):
@@ -22,7 +23,7 @@ class _Regex(abc.ABC):
 
 
 @nice_repr
-class UrlRegex(_Regex):
+class UrlRegex(AlgorithmBase, _Regex):
     """
     Finds if a URL is contained inside a word using regular expressions.
 
@@ -48,7 +49,7 @@ class UrlRegex(_Regex):
 
 
 @nice_repr
-class IPRegex(_Regex):
+class IPRegex(AlgorithmBase, _Regex):
     """
     Finds if an IP-address is contained inside a word using regular expressions.
 
@@ -74,7 +75,7 @@ class IPRegex(_Regex):
 
 
 @nice_repr
-class MACRegex(_Regex):
+class MACRegex(AlgorithmBase, _Regex):
     """
     Finds if a MAC-address is contained inside a word using regular expressions.
 
@@ -100,7 +101,7 @@ class MACRegex(_Regex):
 
 
 @nice_repr
-class EmailRegex(_Regex):
+class EmailRegex(AlgorithmBase, _Regex):
     """
     Finds if an email is contained inside a word using regular expressions.
 
@@ -126,7 +127,7 @@ class EmailRegex(_Regex):
 
 
 @nice_repr
-class PhoneRegex(_Regex):
+class PhoneRegex(AlgorithmBase, _Regex):
     """
     Finds if a phone number is contained inside a word using regular expressions.
 
