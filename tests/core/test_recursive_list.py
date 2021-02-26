@@ -74,35 +74,6 @@ def test_recursive_list_pipeline_graph():
     best_pipeline_, _ = search.run(3)
     assert best_pipeline_.steps[0].__class__.__name__ == "HigherStemAlgorithm"
 
-def test_sklearn_nltk_graph():
-    pipelineBuilder = build_pipelines(input=Word()
-                                 ,output=CategoricalVector()
-                                 ,registry=find_classes() + [TestAlgorithm])
-    search = RandomSearch(
-        pipelineBuilder,
-        _make_mock_fitness_fn(0,0),
-        random_state=0,
-        errors="warn"
-        )
-
-
-    best_pipeline_, _ = search.run(3, RichLogger())
-    assert best_pipeline_.steps[0].__class__.__name__ == "WordNetLemmatizer"
-    assert best_pipeline_.steps[1].__class__.__name__ == "TestAlgorithm"
-    assert best_pipeline_.steps[2].__class__.__name__ == "OneClassSVM"
-
-    search = RandomSearch(
-        pipelineBuilder,
-        _make_mock_fitness_fn(0,0),
-        random_state=1,
-        errors="warn"
-        )
-
-    best_pipeline_, _ = search.run(3, RichLogger())
-    assert best_pipeline_.steps[0].__class__.__name__ == "ISRIStemmer"
-    assert best_pipeline_.steps[1].__class__.__name__ == "TestAlgorithm"
-    assert best_pipeline_.steps[2].__class__.__name__ == "LogisticRegression"
-
 def _make_mock_fitness_fn(X, y):
     def mock_fitness_fn(pipeline):
         return 1
