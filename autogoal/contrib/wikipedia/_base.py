@@ -2,10 +2,11 @@ import wikipedia
 
 from autogoal.kb import Word, Entity, Summary, Flags
 from autogoal.utils import nice_repr
+from autogoal.experimental.pipeline import AlgorithmBase
 
 
 @nice_repr
-class WikipediaSummary:
+class WikipediaSummary(AlgorithmBase):
     """This class find a word in Wikipedia and return a summary in english.
     """
 
@@ -22,7 +23,7 @@ class WikipediaSummary:
 
 
 @nice_repr
-class WikipediaContainsWord:
+class WikipediaContainsWord(AlgorithmBase):
     """This class find a word in Wikipedia and return a summary in english.
     """
 
@@ -36,7 +37,7 @@ class WikipediaContainsWord:
 
 
 @nice_repr
-class WikipediaSummarySpanish:
+class WikipediaSummarySpanish(AlgorithmBase):
     """This class find a word in Wikipedia and return a summary in Spanish.
     """
 
@@ -53,7 +54,7 @@ class WikipediaSummarySpanish:
 
 
 @nice_repr
-class WikipediaContainsWordSpanish:
+class WikipediaContainsWordSpanish(AlgorithmBase):
     """This class find a word in Wikipedia and return a summary in Spanish.
     """
 
