@@ -86,9 +86,10 @@ def test_sklearn_nltk_graph():
         )
 
 
-    pprint.pprint([x for x in pipelineBuilder.graph.build_order()])
     best_pipeline_, _ = search.run(3, RichLogger())
-    assert best_pipeline_.steps[0].__class__.__name__ == "ListAlgorithm"
+    assert best_pipeline_.steps[0].__class__.__name__ == "WordNetLemmatizer"
+    assert best_pipeline_.steps[1].__class__.__name__ == "TestAlgorithm"
+    assert best_pipeline_.steps[2].__class__.__name__ == "OneClassSVM"
 
     search = RandomSearch(
         pipelineBuilder,
@@ -97,10 +98,13 @@ def test_sklearn_nltk_graph():
         errors="warn"
         )
 
-    best_pipeline_, _ = search.run(3)
-    assert best_pipeline_.steps[0].__class__.__name__ == "HigherStemAlgorithm"
+    best_pipeline_, _ = search.run(3, RichLogger())
+    assert best_pipeline_.steps[0].__class__.__name__ == "ISRIStemmer"
+    assert best_pipeline_.steps[1].__class__.__name__ == "TestAlgorithm"
+    assert best_pipeline_.steps[2].__class__.__name__ == "LogisticRegression"
 
 def _make_mock_fitness_fn(X, y):
     def mock_fitness_fn(pipeline):
         return 1
     return mock_fitness_fn
+    
