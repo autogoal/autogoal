@@ -1,4 +1,3 @@
-from enum import auto
 import io
 
 from autogoal.search import PESearch
@@ -8,7 +7,7 @@ from autogoal.kb import infer_type
 from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
 
 from autogoal.ml.metrics import accuracy
-from autogoal.sampling import ReplaySampler
+from autogoal.sampling import ReplaySampler, Sampler
 from autogoal.contrib import find_classes
 
 import numpy as np
@@ -182,9 +181,9 @@ class AutoML:
                     )
 
                 pipeline.send("train")
-                pipeline.run((X_train, y_train))
+                pipeline.run(X_train, y_train)
                 pipeline.send("eval")
-                y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
+                y_pred = pipeline.run(X_test)
                 scores.append(self.score_metric(y_test, y_pred))
 
             return getattr(statistics, self.cross_validation)(scores)
@@ -192,7 +191,7 @@ class AutoML:
         return fitness_fn
 
     def predict(self, X):
-        return self.best_pipeline_.run((X, [None] * len(X)))
+        return self.best_pipeline_.run(X, None)
 
 
 ### TESTS
@@ -204,3 +203,12 @@ def test_automl_finds_classifiers():
     builder = automl.make_pipeline_builder()
 
     assert len(builder.graph) > 10
+
+
+import numpy as np
+
+
+def test_automl_trains_pipeline():
+    automl = AutoML(input=MatrixContinuous(), output=CategoricalVector(), search_iterations=1)
+    automl.fit(np.ones(shape=(2,2)), [0,1])
+    automl.predict(np.ones(shape=(2,2)))
