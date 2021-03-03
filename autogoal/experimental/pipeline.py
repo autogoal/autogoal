@@ -1,6 +1,8 @@
+from autogoal.sampling import Sampler
 import inspect
 import abc
 import types
+import warnings
 from typing import Any, Dict, List, Tuple
 
 import networkx as nx
@@ -17,9 +19,12 @@ class Supervised(DataType):
     def __conforms__(self, other):
         return isinstance(other, Supervised) and conforms(self.internal, other.internal)
 
-    def __name__(self):
-        return f"Supervised({self.internal.__name__()})"
+    def __repr__(self):
+        return self.__name__
 
+    @property
+    def __name__(self):
+        return f"Supervised({self.internal.__name__}())"
    
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
@@ -91,7 +96,7 @@ class AlgorithmBase(Algorithm):
 
 
 
-def _build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
+def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
     """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
 
     The input can be a class that inherits from `Algorithm` or an instance of such a class.
@@ -122,22 +127,37 @@ class Pipeline:
     Each algorithm must have a `run` method declaring it's input and output type.
     The pipeline instance also receives the input and output types.
     """
-    def __init__(self, algorithms:List[Algorithm]) -> None:
+    def __init__(self, algorithms:List[Algorithm], input_types:List[DataType]) -> None:
         self.algorithms = algorithms
+        self.input_types = input_types
 
     def run(self, *inputs):
         data = {}
 
-        for i,t in zip(inputs, self.algorithms[0].input_types()):
+        for i,t in zip(inputs, self.input_types):
             data[t] = i
 
         for algorithm in self.algorithms:
-            args = _build_input_args(algorithm, data)
+            args = build_input_args(algorithm, data)
             output = algorithm.run(**args)
             output_type = algorithm.output_type()
             data[output_type] = output
 
         return data[self.algorithms[-1].output_type()]
+
+    def send(self, msg: str, *args, **kwargs):
+        found = False
+
+        for step in self.algorithms:
+            if hasattr(step, msg):
+                getattr(step, msg)(*args, **kwargs)
+                found = True
+            elif hasattr(step, "send"):
+                step.send(msg, *args, **kwargs)
+                found = True
+
+        if not found:
+            warnings.warn(f"No step answered message {msg}.")
 
 
 def _make_list_algorithm(algorithm: Algorithm):
@@ -201,11 +221,11 @@ def _make_list_algorithm(algorithm: Algorithm):
 
 
 class PipelineNode:
-    def __init__(self, algorithm, input_types, output_types) -> None:
+    def __init__(self, algorithm, input_types, output_types, registry=None) -> None:
         self.algorithm = algorithm
         self.input_types = set(input_types)
         self.output_types = set(output_types)
-        self.grammar = generate_cfg(self.algorithm)
+        self.grammar = generate_cfg(self.algorithm, registry=registry)
 
     def sample(self, sampler):
         return self.grammar.sample(sampler=sampler)
@@ -221,7 +241,7 @@ class PipelineNode:
         ])
 
     def __repr__(self) -> str:
-        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__() for i in self.input_types]},output_types={[o.__name__() for o in self.output_types]})>"
+        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -237,7 +257,7 @@ class PipelineSpace(GraphSpace):
 
     def sample(self, *args, **kwargs):
         path = super().sample(*args, **kwargs)
-        return Pipeline(path)
+        return Pipeline(path, input_types=self.input_types)
 
 
 def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int=3):
@@ -274,7 +294,8 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
         open_nodes.append(PipelineNode(
             algorithm = algorithm,
             input_types = input_types,
-            output_types = set(input_types) | set([algorithm.output_type()])
+            output_types = set(input_types) | set([algorithm.output_type()]),
+            registry=registry,
         ))
 
     G = Graph()
@@ -311,7 +332,8 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
             p = PipelineNode(
                 algorithm = algorithm,
                 input_types = guaranteed_types,
-                output_types = guaranteed_types | set([algorithm.output_type()])
+                output_types = guaranteed_types | set([algorithm.output_type()]),
+                registry=registry,
             )
 
             G.add_edge(node, p)
@@ -398,7 +420,7 @@ class StrToInt(AlgorithmBase):
         return len(b)
 
 def test_when_pipeline_has_two_algorithms_then_passes_the_output():
-    pipeline = Pipeline([Float2Str(), StrToInt()])
+    pipeline = Pipeline([Float2Str(), StrToInt()], input_types=[float])
     result = pipeline.run(3.0)
     assert result == 3
 
@@ -408,12 +430,12 @@ class TwoInputAlgorithm(AlgorithmBase):
         return a * len(b)
 
 def test_when_pipeline_step_has_more_that_one_input_then_all_arguments_are_passed():
-    pipeline = Pipeline([TwoInputAlgorithm()])
+    pipeline = Pipeline([TwoInputAlgorithm()], input_types=[int, str])
     assert pipeline.run(3, "hello world") == 33
 
 
 def test_when_pipeline_second_step_receives_two_input_one_from_previous_and_one_from_origin():
-    pipeline = Pipeline([StrToInt(), TwoInputAlgorithm()])
+    pipeline = Pipeline([StrToInt(), TwoInputAlgorithm()], input_types=[str])
     result = pipeline.run("hello world")
     assert result == 121
 
@@ -422,5 +444,28 @@ from autogoal.kb import MatrixContinuous, CategoricalVector
 from autogoal.contrib import find_classes
 
 
+import numpy as np
+
+
 def test_build_real_pipeline():
-    pipeline = build_pipeline_graph(input_types=(MatrixContinuous(), Supervised(CategoricalVector)), output_type=CategoricalVector(), registry=find_classes())
+    graph = build_pipeline_graph(
+        input_types=(MatrixContinuous(), Supervised(CategoricalVector())), 
+        output_type=CategoricalVector(), 
+        registry=find_classes()
+    )
+    pipeline = graph.sample(sampler=Sampler(random_state=0))
+    pipeline.run(np.ones(shape=(2,2)), [0,1])
+
+
+from autogoal.kb import MatrixContinuous, MatrixContinuousDense
+
+class A(AlgorithmBase):
+    def run(self, x: MatrixContinuous()):
+        pass
+
+
+def test_build_input_args_with_subclass():
+    m = np.ones(shape=(2,2))
+
+    result = build_input_args(A, { MatrixContinuousDense(): m })
+    assert result['x'] == m

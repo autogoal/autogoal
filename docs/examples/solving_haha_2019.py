@@ -42,7 +42,7 @@
 # Most of this example follows the same logic as the [UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
-from autogoal.ml import AutoML
+from autogoal.experimental.automl import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
     PESearch,
@@ -94,7 +94,7 @@ classifier = AutoML(
     output=CategoricalVector(),
     search_iterations=args.iterations,
     score_metric=f1_score,
-    errors='raise',
+    errors='warn',
     search_kwargs=dict(
         pop_size=args.popsize,
         search_timeout=args.global_timeout,
