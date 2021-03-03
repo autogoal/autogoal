@@ -307,11 +307,11 @@ class DataType:
         return self.tags.get(tag, None)
 
     def __repr__(self):
-        tags = ", ".join(
-            f"{key}={value}"
-            for key, value in sorted(self.tags.items(), key=lambda t: t[0])
-        )
-        return f"{self.__class__.__name__}({tags})"
+        # tags = ", ".join(
+        #     f"{key}={value}"
+        #     for key, value in sorted(self.tags.items(), key=lambda t: t[0])
+        # )
+        return f"{self.__class__.__name__}()" #({tags})"
 
     def __eq__(self, other):
         return repr(self) == repr(other)
@@ -319,6 +319,7 @@ class DataType:
     def __hash__(self):
         return hash(repr(self))
 
+    @property
     def __name__(self):
         return self.__class__.__name__
 

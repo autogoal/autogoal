@@ -29,7 +29,7 @@ class AffinityPropagation(_AffinityPropagation, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.cluster._agglomerative import FeatureAgglomeration as _FeatureAgglomeration
@@ -81,7 +81,7 @@ class Birch(_Birch, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.cluster._kmeans import KMeans as _KMeans
@@ -106,7 +106,7 @@ class KMeans(_KMeans, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.cluster._kmeans import MiniBatchKMeans as _MiniBatchKMeans
@@ -137,7 +137,7 @@ class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.cluster._mean_shift import MeanShift as _MeanShift
@@ -152,7 +152,7 @@ class MeanShift(_MeanShift, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.decomposition._factor_analysis import FactorAnalysis as _FactorAnalysis
@@ -486,7 +486,7 @@ class LinearRegression(_LinearRegression, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._bayes import ARDRegression as _ARDRegression
@@ -517,7 +517,7 @@ class ARDRegression(_ARDRegression, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._bayes import BayesianRidge as _BayesianRidge
@@ -546,7 +546,7 @@ class BayesianRidge(_BayesianRidge, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._coordinate_descent import ElasticNet as _ElasticNet
@@ -579,7 +579,7 @@ class ElasticNet(_ElasticNet, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._coordinate_descent import Lasso as _Lasso
@@ -610,7 +610,7 @@ class Lasso(_Lasso, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._huber import HuberRegressor as _HuberRegressor
@@ -627,7 +627,7 @@ class HuberRegressor(_HuberRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._least_angle import Lars as _Lars
@@ -656,7 +656,7 @@ class Lars(_Lars, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._least_angle import LassoLars as _LassoLars
@@ -685,7 +685,7 @@ class LassoLars(_LassoLars, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._least_angle import LassoLarsIC as _LassoLarsIC
@@ -714,7 +714,7 @@ class LassoLarsIC(_LassoLarsIC, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._logistic import LogisticRegression as _LogisticRegression
@@ -745,7 +745,7 @@ class LogisticRegression(_LogisticRegression, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._omp import (
@@ -772,7 +772,7 @@ class OrthogonalMatchingPursuit(_OrthogonalMatchingPursuit, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._passive_aggressive import (
@@ -809,7 +809,7 @@ class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._passive_aggressive import (
@@ -848,7 +848,7 @@ class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._perceptron import Perceptron as _Perceptron
@@ -881,7 +881,7 @@ class Perceptron(_Perceptron, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._ridge import Ridge as _Ridge
@@ -912,7 +912,7 @@ class Ridge(_Ridge, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._ridge import RidgeClassifier as _RidgeClassifier
@@ -943,7 +943,7 @@ class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._stochastic_gradient import SGDClassifier as _SGDClassifier
@@ -1000,7 +1000,7 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._stochastic_gradient import SGDRegressor as _SGDRegressor
@@ -1052,7 +1052,7 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.linear_model._theil_sen import TheilSenRegressor as _TheilSenRegressor
@@ -1069,7 +1069,7 @@ class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.manifold._isomap import Isomap as _Isomap
@@ -1151,7 +1151,7 @@ class BernoulliNB(_BernoulliNB, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.naive_bayes import CategoricalNB as _CategoricalNB
@@ -1166,7 +1166,7 @@ class CategoricalNB(_CategoricalNB, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.naive_bayes import ComplementNB as _ComplementNB
@@ -1181,7 +1181,7 @@ class ComplementNB(_ComplementNB, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.naive_bayes import GaussianNB as _GaussianNB
@@ -1196,7 +1196,7 @@ class GaussianNB(_GaussianNB, SklearnEstimator):
     def run(
         self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.naive_bayes import MultinomialNB as _MultinomialNB
@@ -1211,7 +1211,7 @@ class MultinomialNB(_MultinomialNB, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.neighbors._classification import (
@@ -1244,7 +1244,7 @@ class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.neighbors._graph import KNeighborsTransformer as _KNeighborsTransformer
@@ -1329,7 +1329,7 @@ class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
         )
 
     def run(self, input: MatrixContinuous()) -> DiscreteVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.neighbors._nearest_centroid import NearestCentroid as _NearestCentroid
@@ -1344,7 +1344,7 @@ class NearestCentroid(_NearestCentroid, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.neighbors._regression import KNeighborsRegressor as _KNeighborsRegressor
@@ -1375,7 +1375,7 @@ class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.neighbors._regression import (
@@ -1406,7 +1406,7 @@ class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.preprocessing._data import KernelCenterer as _KernelCenterer
@@ -1570,7 +1570,7 @@ class LinearSVC(_LinearSVC, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import LinearSVR as _LinearSVR
@@ -1601,7 +1601,7 @@ class LinearSVR(_LinearSVR, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import NuSVC as _NuSVC
@@ -1638,7 +1638,7 @@ class NuSVC(_NuSVC, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import NuSVR as _NuSVR
@@ -1671,7 +1671,7 @@ class NuSVR(_NuSVR, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import OneClassSVM as _OneClassSVM
@@ -1702,7 +1702,7 @@ class OneClassSVM(_OneClassSVM, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import SVC as _SVC
@@ -1739,7 +1739,7 @@ class SVC(_SVC, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.svm._classes import SVR as _SVR
@@ -1774,7 +1774,7 @@ class SVR(_SVR, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.tree._classes import DecisionTreeClassifier as _DecisionTreeClassifier
@@ -1801,7 +1801,7 @@ class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.tree._classes import DecisionTreeRegressor as _DecisionTreeRegressor
@@ -1828,7 +1828,7 @@ class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.tree._classes import ExtraTreeClassifier as _ExtraTreeClassifier
@@ -1855,7 +1855,7 @@ class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(CategoricalVector())
     ) -> CategoricalVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 from sklearn.tree._classes import ExtraTreeRegressor as _ExtraTreeRegressor
@@ -1882,7 +1882,7 @@ class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
     def run(
         self, X:MatrixContinuous(), y:Supervised(ContinuousVector())
     ) -> ContinuousVector():
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 __all__ = [

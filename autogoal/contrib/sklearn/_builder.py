@@ -70,7 +70,7 @@ class SklearnEstimator(SklearnWrapper):
 
         return y
 
-    def _eval(self, X):
+    def _eval(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.predict(X)
 
@@ -84,11 +84,11 @@ class SklearnEstimator(SklearnWrapper):
 
 
 class SklearnTransformer(SklearnWrapper):
-    def _train(self, X, y):
+    def _train(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.fit_transform(X)
 
-    def _eval(self, X):
+    def _eval(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.transform(X)
 

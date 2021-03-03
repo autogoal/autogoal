@@ -9,6 +9,7 @@ from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.kb import *
 from autogoal.kb._data import *
 from autogoal.utils import nice_repr
+from autogoal.experimental.pipeline import AlgorithmBase
 
 
 @nice_repr
@@ -78,7 +79,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
 
 @nice_repr
-class StopwordRemover:
+class StopwordRemover(AlgorithmBase):
     def __init__(
         self,
         language: Categorical(
@@ -123,7 +124,7 @@ class StopwordRemover:
 
 
 @nice_repr
-class TextLowerer:
+class TextLowerer(AlgorithmBase):
     def __init__(self):
         pass
 
@@ -140,7 +141,7 @@ class TextLowerer:
 
 
 @nice_repr
-class WordnetConcept:
+class WordnetConcept(AlgorithmBase):
     """Find a word in Wordnet and return a List of Synset de Wordnet
     """
 
@@ -176,7 +177,7 @@ class WordnetConcept:
 
 
 @nice_repr
-class SentimentWord:
+class SentimentWord(AlgorithmBase):
     """Find a word in SentiWordnet and return a List of sentiment of the word.
     """
 
@@ -277,3 +278,14 @@ class GlobalChunker(SklearnWrapper):
 
     def run(self, input: List(List(Word()))) -> List(List(Chunktag())):
         return SklearnWrapper.run(self, input)
+
+
+__all__ = [
+    "Doc2Vec",
+    "StopwordRemover",
+    "TextLowerer",
+    "WordnetConcept",
+    "SentimentWord",
+    "NEChunkParserTagger",
+    "GlobalChunker",
+]

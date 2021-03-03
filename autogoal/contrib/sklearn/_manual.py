@@ -18,6 +18,7 @@ from autogoal.kb import (
 )
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 from autogoal.utils import nice_repr
+from autogoal.experimental.pipeline import AlgorithmBase
 
 
 @nice_repr
