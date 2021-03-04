@@ -363,10 +363,13 @@ class Tensor(SemanticType):
 Vector = Tensor[1, None, None]
 VectorContinuous = Tensor[1, Continuous, None]
 VectorCategorical = Tensor[1, Categorical, Dense]
-# ☝️ There is no point in having this one as sparse,
-# as you cannot have missing categories
+VectorDiscrete = Tensor[1, Discrete, Dense]
 
 Matrix = Tensor[2, None, None]
 MatrixContinuous = Tensor[2, Continuous, None]
 MatrixContinuousDense = Tensor[2, Continuous, Dense]
 MatrixContinuousSparse = Tensor[2, Continuous, Sparse]
+MatrixCategorical = Tensor[2, Categorical, Dense]
+MatrixDiscrete = Tensor[2, Discrete, Dense]
+
+# 📝 Makes no sense to have sparse discrete or categorical tensors as you cannot have missing categories.
