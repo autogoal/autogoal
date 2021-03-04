@@ -123,6 +123,18 @@ class Word(Sentence):
         return super()._match(x) and not " " in x
 
 
+# We also need some basic types for generic kinds of labels, used in NLP, for example.
+# Keep in mind these do not implement `_match` as there is no sensible structural way to define them.
+# They are used solely to annotate algorithms.
+
+class Label(SemanticType):
+    pass
+
+
+class Postag(Label):
+    pass
+
+
 # A first complex type we can implement is `Seq`, to represent a list (or sequence) of another semantic type.
 # We want this type to be able to specialize in this notation:
 #
@@ -373,3 +385,6 @@ MatrixCategorical = Tensor[2, Categorical, Dense]
 MatrixDiscrete = Tensor[2, Discrete, Dense]
 
 # 📝 Makes no sense to have sparse discrete or categorical tensors as you cannot have missing categories.
+
+Tensor3 = Tensor[3, Continuous, Dense]
+Tensor4 = Tensor[4, Continuous, Dense]

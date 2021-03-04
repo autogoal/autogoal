@@ -21,15 +21,15 @@ from autogoal.grammar import (
     Continuous,
     Discrete,
 )
-from autogoal.kb import (
-    CategoricalVector,
-    List,
+from autogoal.experimental.semantics import (
+    VectorCategorical,
+    Seq,
     MatrixContinuousDense,
     Postag,
     Tensor3,
     Tensor4,
-    Tuple,
 )
+
 from autogoal.utils import nice_repr
 import abc
 
@@ -207,8 +207,8 @@ class KerasClassifier(KerasNeuralNetwork):
         return [self._inverse_classes[yi] for yi in predictions]
 
     def run(
-        self, X:MatrixContinuousDense(), y:Supervised(CategoricalVector())
-    ) -> CategoricalVector():
+        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+    ) -> VectorCategorical:
         return super().run(input)
 
 
@@ -290,7 +290,7 @@ class KerasImageClassifier(KerasClassifier):
             **kwargs,
         )
 
-    def run(self, X:Tensor4(), y:Supervised(CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor4, y:Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
     def _build_input(self, X):
@@ -304,7 +304,7 @@ class KerasSequenceClassifier(KerasClassifier):
     def _build_input(self, X):
         return Input(shape=(None, X.shape[2]))
 
-    def run(self, X:Tensor3(), y:Supervised(CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor3, y:Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
 
@@ -423,6 +423,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return self._decode(predictions)
 
     def run(
-        self, X:List(MatrixContinuousDense), y:Supervised(List(List(Postag())))
-    ) -> List(List(Postag())):
+        self, X:Seq[MatrixContinuousDense], y:Supervised[Seq[Seq[Postag]]]
+    ) -> Seq[Seq[Postag]]:
         return super().run(X, y)
