@@ -192,23 +192,3 @@ class AutoML:
 
     def predict(self, X):
         return self.best_pipeline_.run(X, None)
-
-
-### TESTS
-
-from autogoal.kb import MatrixContinuous, CategoricalVector
-
-def test_automl_finds_classifiers():
-    automl = AutoML(input=MatrixContinuous(), output=CategoricalVector())
-    builder = automl.make_pipeline_builder()
-
-    assert len(builder.graph) > 10
-
-
-import numpy as np
-
-
-def test_automl_trains_pipeline():
-    automl = AutoML(input=MatrixContinuous(), output=CategoricalVector(), search_iterations=1)
-    automl.fit(np.ones(shape=(2,2)), [0,1])
-    automl.predict(np.ones(shape=(2,2)))
