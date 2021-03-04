@@ -3,7 +3,6 @@ from autogoal.contrib import find_classes
 from autogoal.experimental.automl import *
 from autogoal.experimental.pipeline import *
 from autogoal.experimental.semantics import *
-from autogoal.kb import CategoricalVector, MatrixContinuous, MatrixContinuousDense
 
 
 class T1:
@@ -42,7 +41,7 @@ class T3_T4(AlgorithmBase):
 
 @nice_repr
 class T2_T3_Supervised(AlgorithmBase):
-    def run(self, x: T2, y: Supervised(T3)) -> T3:
+    def run(self, x: T2, y: Supervised[T3]) -> T3:
         pass
 
 
@@ -57,7 +56,7 @@ def test_build_pipeline_with_two_algorithms():
 
 def test_build_pipeline_with_supervised():
     pipeline_builder = build_pipeline_graph(
-        input_types=(T1, Supervised(T3),),
+        input_types=(T1, Supervised[T3],),
         output_type=T3,
         registry=[T1_T2, T2_T3_Supervised],
     )
@@ -114,8 +113,8 @@ def test_when_pipeline_second_step_receives_two_input_one_from_previous_and_one_
 
 def test_build_real_pipeline():
     graph = build_pipeline_graph(
-        input_types=(MatrixContinuous(), Supervised(CategoricalVector())),
-        output_type=CategoricalVector(),
+        input_types=(MatrixContinuous, Supervised[VectorCategorical]),
+        output_type=VectorCategorical,
         registry=find_classes(),
     )
     pipeline = graph.sample(sampler=Sampler(random_state=0))
@@ -131,11 +130,11 @@ def test_build_input_args_with_subclass():
     m = np.ones(shape=(2, 2))
 
     result = build_input_args(A, {MatrixContinuousDense: m})
-    assert result["x"] == m
+    assert id(result["x"]) == id(m)
 
 
 def test_automl_finds_classifiers():
-    automl = AutoML(input=MatrixContinuous(), output=CategoricalVector())
+    automl = AutoML(input=MatrixContinuous, output=VectorContinuous)
     builder = automl.make_pipeline_builder()
 
     assert len(builder.graph) > 10
@@ -143,7 +142,7 @@ def test_automl_finds_classifiers():
 
 def test_automl_trains_pipeline():
     automl = AutoML(
-        input=MatrixContinuous(), output=CategoricalVector(), search_iterations=1
+        input=MatrixContinuous, output=VectorCategorical, search_iterations=1
     )
     automl.fit(np.ones(shape=(2, 2)), [0, 1])
     automl.predict(np.ones(shape=(2, 2)))

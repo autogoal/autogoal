@@ -20,7 +20,8 @@ from typing import Type
 # We start by defining the base class of our hierarchy.
 # A `SemanticType` is just a class that knows how to do one thing: determine if a given object
 # matches its semantic definition.
-# We will define a metaclass to allow for `isinstance` and `issubclass` to work based on our semantic match definition.
+# We will define a metaclass to allow for `isinstance` and `issubclass` to work based on our semantic match definition,
+# and to leave space for implementing class-level `__getitem__` to allow for a generics kind-of notation.
 
 
 class SemanticTypeMeta(type):
@@ -34,13 +35,16 @@ class SemanticTypeMeta(type):
             return cls._specialize(args)
 
     def __subclasscheck__(cls, subclass: type) -> bool:
-        return subclass._conforms(cls) or super().__subclasscheck__(subclass)
+        if hasattr(subclass, "_conforms") and subclass._conforms(cls):
+            return True
+
+        return super().__subclasscheck__(subclass)
 
     def __call__(self, *args, **kwds):
         raise TypeError("Cannot instantiate a semantic type")
 
-    def __repr__(self) -> str:
-        return self.__name__
+    def __repr__(cls) -> str:
+        return cls._name()
 
 
 # `SemanticType` defines a `match` method that implements our `isinstance` method.
@@ -56,21 +60,29 @@ class SemanticType(metaclass=SemanticTypeMeta):
         return False
 
     @classmethod
+    def _name(cls) -> str:
+        return cls.__name__
+
+    @classmethod
     def _specialize(cls, *args):
         raise TypeError(f"{cls} cannot be specialized")
 
     @staticmethod
     def infer(x):
         """Automatically determines the semantic type of a given value.
-
+        
         >>> SemanticType.infer("word")
         Word
-
         >>> SemanticType.infer("hello world")
         Sentence
-
         >>> SemanticType.infer("Hello world. This a two sentence Document.")
         Document
+
+        It works with some tensorial types as well.
+
+        >>> import numpy as np
+        >>> SemanticType.infer(np.ones(shape=(2,2)))
+        Tensor[2, Continuous, Dense]
 
         """
         types = inspect.getmembers(inspect.getmodule(SemanticType), inspect.isclass)
@@ -147,6 +159,13 @@ class Seq(SemanticType):
     True
     >>> issubclass(Seq[Text], Seq[Word])
     False
+
+    They are pretty-printed as well
+
+    >>> Seq
+    Seq
+    >>> Seq[Word]
+    Seq[Word]
    
     """
 
@@ -161,6 +180,10 @@ class Seq(SemanticType):
 
         class SeqImp(Seq):
             __internal_type = internal_type
+
+            @classmethod
+            def _name(cls):
+                return f"Seq[{internal_type}]"
 
             @classmethod
             def _match(cls, x):
@@ -198,28 +221,36 @@ from scipy.sparse.base import spmatrix
 
 
 class TensorStructure:
-    def __init__(self, base_class: type) -> None:
+    def __init__(self, base_class: type, name: str) -> None:
         self.base_class = base_class
+        self.name = name
+
+    def __repr__(self) -> str:
+        return self.name
 
     def match(self, x):
         return isinstance(x, self.base_class)
 
 
-Dense = TensorStructure(ndarray)
-Sparse = TensorStructure(spmatrix)
+Dense = TensorStructure(ndarray, "Dense")
+Sparse = TensorStructure(spmatrix, "Sparse")
 
 
 class TensorData:
-    def __init__(self, dtype_label) -> None:
+    def __init__(self, dtype_label: str, name: str) -> None:
         self.dtype_label = dtype_label
+        self.name = name
+
+    def __repr__(self) -> str:
+        return self.name
 
     def match(self, x):
         return x.dtype.kind == self.dtype_label
 
 
-Categorical = TensorData("U")
-Continuous = TensorData("f")
-Discrete = TensorData("i")
+Categorical = TensorData("U", "Categorical")
+Continuous = TensorData("f", "Continuous")
+Discrete = TensorData("i", "Discrete")
 
 
 # We want the abstract `Tensor` type to be specializable using the notation:
@@ -280,7 +311,14 @@ class Tensor(SemanticType):
             __flags = (dimension, internal_type, structure)
 
             @classmethod
+            def _name(cls):
+                return f"Tensor[{cls.__flags[0]}, {cls.__flags[1]}, {cls.__flags[2]}]"
+
+            @classmethod
             def _match(cls, x):
+                if not super()._match(x):
+                    return False
+
                 if dimension is not None and (len(x.shape) != dimension):
                     return False
 
@@ -294,11 +332,11 @@ class Tensor(SemanticType):
 
             @classmethod
             def _conforms(cls, other: type) -> bool:
-                if not issubclass(other, Tensor):
-                    return False
-
                 if other == Tensor:
                     return True
+
+                if not hasattr(other, "_TensorImp__flags"):
+                    return False
 
                 for fmine, fother in zip(cls.__flags, other.__flags):
                     if fother is None:
@@ -317,13 +355,15 @@ class Tensor(SemanticType):
         return TensorImp
 
 
-# Now that we have the basic tensorial type implemented, we can add some aliases here
+# Now that we have the basic tensorial type implemented, we can add some aliases here.
+# These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
+# but keep in mind that anywhere we use `Vector` we just as well use `Tensor[1, None, None]`,
+# as they are *exactly* the same class.
 
 Vector = Tensor[1, None, None]
 VectorContinuous = Tensor[1, Continuous, None]
 VectorCategorical = Tensor[1, Categorical, Dense]
-
-# There is no point in having this one as sparse,
+# ☝️ There is no point in having this one as sparse,
 # as you cannot have missing categories
 
 Matrix = Tensor[2, None, None]

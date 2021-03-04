@@ -3,29 +3,53 @@ import inspect
 import abc
 import types
 import warnings
-from typing import Any, Dict, KeysView, List, Tuple
+from typing import Any, Dict, List, Tuple, Type
 
 import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
-from autogoal.kb import List as _List, conforms, DataType
+from autogoal.experimental.semantics import SemanticType, Seq, Vector
 
 
-class Supervised(DataType):
-    def __init__(self, internal, **tags):
-        super().__init__(**tags)
-        self.internal = internal
+class Supervised(SemanticType):
+    """Represents a supervised version of some type X.
+    
+    It is considered a subclass of X for semantic purposes, but not the other way around:
 
-    def __conforms__(self, other):
-        return isinstance(other, Supervised) and conforms(self.internal, other.internal)
+    >>> issubclass(Supervised[Vector], Vector)
+    True
+    >>> issubclass(Vector, Supervised[Vector])
+    False
+    
+    """
+    __internal_types = {}
 
-    def __repr__(self):
-        return self.__name__
+    @classmethod
+    def _specialize(cls, internal_type):
+        try:
+            return cls.__internal_types[internal_type]
+        except KeyError:
+            pass
 
-    @property
-    def __name__(self):
-        return f"Supervised({self.internal.__name__}())"
-   
+        class SupervisedImp(Supervised):
+            __internal = internal_type
+
+            @classmethod
+            def _name(cls):
+                return f"Supervised[{cls.__internal}]"
+
+            @classmethod
+            def _conforms(cls, other: type) -> bool:
+                if issubclass(cls.__internal, other):
+                    return True
+
+                return False
+
+        cls.__internal_types[internal_type] = SupervisedImp
+
+        return SupervisedImp
+
+
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
 
@@ -66,7 +90,7 @@ class Algorithm(abc.ABC):
 
         for needed in my_inputs:
             for having in input_types:
-                if conforms(having, needed):
+                if issubclass(having, needed):
                     break
             else:
                 return False
@@ -105,12 +129,13 @@ def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
     ...    def run(self, a:int, b:str):
     ...        pass
     >>> values = { str:"hello", float:3.0, int:42 }
-    >>> _build_input_args(A, values)
+    >>> build_input_args(A, values)
     {'a': 42, 'b': 'hello'}
-    >>> _build_input_args(A(), values)
+    >>> build_input_args(A(), values)
     {'a': 42, 'b': 'hello'}
 
     """
+
     parameters = [p for p in inspect.signature(algorithm.run).parameters if p != "self"]
     result = {}
 
@@ -119,8 +144,12 @@ def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
             result[name] = values[type]
         except KeyError:
             for key in values:
-                if conforms(type, key):
+                if issubclass(key, type):
                     result[name] = values[key]
+                    break
+            else:
+                raise TypeError(f"Cannot find compatible input value for {type}")
+
 
     return result
 
@@ -132,7 +161,7 @@ class Pipeline:
     Each algorithm must have a `run` method declaring it's input and output type.
     The pipeline instance also receives the input and output types.
     """
-    def __init__(self, algorithms:List[Algorithm], input_types:List[DataType]) -> None:
+    def __init__(self, algorithms:List[Algorithm], input_types:List[Type[SemanticType]]) -> None:
         self.algorithms = algorithms
         self.input_types = input_types
 
@@ -165,7 +194,7 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
 
-def _make_list_algorithm(algorithm: Algorithm):
+def _make_seq_algorithm(algorithm: Algorithm):
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types List[T1], List[T2], ...
 
     The generated class correctly defines the input and output types.
@@ -177,42 +206,42 @@ def _make_list_algorithm(algorithm: Algorithm):
     ...         return self.alpha * (x + len(y))
     ...     def __repr__(self):
     ...         return f"A({self.alpha})"
-    >>> B = _make_list_algorithm(A)
+    >>> B = _make_seq_algorithm(A)
     >>> b = B(0.5)
     >>> b
-    ListAlgorithm[A(0.5)]
+    SeqAlgorithm[A(0.5)]
     >>> b.run([1, 2], ["A", "BC"])
     [1.0, 2.0]
     >>> B.input_types()
-    (List(<class 'int'>), List(<class 'str'>))
+    (Seq[<class 'int'>], Seq[<class 'str'>])
     >>> b.output_type()
-    List(<class 'float'>)
+    Seq[<class 'float'>]
     
     """
     
     output_type = algorithm.output_type()
 
-    name = f"ListAlgorithm[{algorithm.__name__}]"
+    name = f"SeqAlgorithm[{algorithm.__name__}]"
 
     def init_method(self, *args, **kwargs):
         self.inner = algorithm(*args, **kwargs)
 
-    def run_method(self, *args) -> _List(output_type):
+    def run_method(self, *args) -> Seq[output_type]:
         return [self.inner.run(*xs) for xs in zip(*args)]
 
     def repr_method(self):
-        return f"ListAlgorithm[{repr(self.inner)}]"
+        return f"SeqAlgorithm[{repr(self.inner)}]"
 
     def getattr_method(self, attr):
         return getattr(self.inner, attr)
 
     @classmethod
     def input_types_method(cls):
-        return tuple(_List(t) for t in algorithm.input_types())
+        return tuple(Seq[t] for t in algorithm.input_types())
 
     @classmethod
     def output_types_method(cls):
-        return _List(algorithm.output_type())
+        return Seq[algorithm.output_type()]
 
     def body(ns):
         ns["__init__"] = init_method
@@ -283,7 +312,7 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
 
     for algorithm in registry:
         for _ in range(max_list_depth):            
-            algorithm = _make_list_algorithm(algorithm)
+            algorithm = _make_seq_algorithm(algorithm)
             pool.add(algorithm)
 
     # For building the graph, we'll keep at each node the guaranteed output types
@@ -347,7 +376,7 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
                 open_nodes.append(p)
 
         # Now we check to see if this node is a possible output
-        if conforms(node.algorithm.output_type(), output_type):
+        if issubclass(node.algorithm.output_type(), output_type):
             G.add_edge(node, GraphSpace.End)
 
         closed_nodes.add(node)
