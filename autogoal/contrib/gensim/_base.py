@@ -6,7 +6,7 @@ import shutil
 import numpy as np
 
 import gensim.downloader as api
-from autogoal.kb import ContinuousVector, Word
+from autogoal.experimental.semantics import Word, VectorContinuous
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors
@@ -34,8 +34,7 @@ class Word2VecEmbedding(AlgorithmBase):
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="english")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -75,8 +74,7 @@ class Word2VecEmbeddingSpanish(AlgorithmBase):
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -118,8 +116,7 @@ class FastTextEmbeddingSpanishSUC(AlgorithmBase):
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -161,8 +158,7 @@ class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -204,8 +200,7 @@ class GloveEmbeddingSpanishSWBC(AlgorithmBase):
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
