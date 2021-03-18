@@ -16,6 +16,8 @@
 import inspect
 from typing import Type
 
+from numpy.lib.arraysetops import isin
+
 
 # We start by defining the base class of our hierarchy.
 # A `SemanticType` is just a class that knows how to do one thing: determine if a given object
@@ -141,6 +143,15 @@ class Chunktag(Label):
 
 class Stem(Text):
     pass
+
+
+# Another basic type is a feature set, which for us is basically a dictionary of strings vs anything:
+
+class FeatureSet(SemanticType):
+    @classmethod
+    def _match(self, x):
+        # TODO: This is a very naive implementation of `match`.
+        return isinstance(x, dict) and isinstance(list(x.keys()[0]), str)
 
 
 # A first complex type we can implement is `Seq`, to represent a list (or sequence) of another semantic type.

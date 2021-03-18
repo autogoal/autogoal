@@ -146,7 +146,7 @@ def build_nltk_wrappers():
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
             from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkTagger, NltkTrainedTagger
-            from autogoal.kb._data import *
+            from autogoal.kb import *
             from autogoal.utils import nice_repr
             from numpy import inf, nan
             """
@@ -219,8 +219,8 @@ def _write_class(cls, fp):
 
                     {base_class}.__init__(self)
 
-                def run(self, input: Tuple({input_str}, {output_str})) -> {output_str}:
-                    return {base_class}.run(self, input)
+                def run(self, X: {input_str}, y:Supervised[{output_str}]) -> {output_str}:
+                    return {base_class}.run(self, X, y)
             """
             )
         )

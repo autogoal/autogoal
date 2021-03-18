@@ -7,7 +7,6 @@ from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
 from autogoal.kb import *
-from autogoal.kb._data import *
 from autogoal.utils import nice_repr
 from autogoal.experimental.pipeline import AlgorithmBase
 
@@ -23,9 +22,9 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         alpha: Continuous(min=0.001, max=0.075),
         epochs: Discrete(min=2, max=10),
         window: Discrete(min=2, max=10),
-        inner_tokenizer: algorithm(Sentence(), List(Word())),
-        inner_stemmer: algorithm(Word(), Stem()),
-        inner_stopwords: algorithm(List(Word()), List(Word())),
+        inner_tokenizer: algorithm(Sentence, Seq[Word]),
+        inner_stemmer: algorithm(Word, Stem),
+        inner_stopwords: algorithm(Seq[Word], Seq[Word]),
         lowercase: Boolean(),
         stopwords_remove:Boolean(),
     ):
@@ -72,7 +71,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def transform(self, X, y=None):
         return [self.infer_vector(x) for x in X]
 
-    def run(self, input: List(Sentence())) -> MatrixContinuousDense():
+    def run(self, input: List(Sentence)) -> MatrixContinuousDense():
         """This methods receive a document list and transform this into a dense continuous matrix.
        """
         return SklearnTransformer.run(self, input)
@@ -113,7 +112,7 @@ class StopwordRemover(AlgorithmBase):
     def _eval(self, input):
         return [word for word in input if word not in self.words]
 
-    def run(self, input: List(Word())) -> List(Word()):
+    def run(self, input: Seq[Word]) -> Seq[Word]:
         """This methods receive a word list list and transform this into a word list list without stopwords.
        """
         return SklearnTransformer.run(self, input)
@@ -217,7 +216,7 @@ class NEChunkParserTagger(NltkTagger):
 class GlobalChunker(SklearnWrapper):
     def __init__(
         self,
-        inner_trained_pos_tagger: algorithm(List(Word()), List(Postag())),
+        inner_trained_pos_tagger: algorithm(Seq[Word], List(Postag())),
         inner_chunker: algorithm(List(List(Postag())), List(List(Chunktag())))
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
@@ -276,7 +275,7 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: List(List(Word()))) -> List(List(Chunktag())):
+    def run(self, input: List(Seq[Word])) -> List(List(Chunktag())):
         return SklearnWrapper.run(self, input)
 
 

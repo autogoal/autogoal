@@ -3,22 +3,10 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn_crfsuite import CRF
 
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnEstimator
-from autogoal.kb import (
-    List,
-    Sentence,
-    MatrixContinuousSparse,
-    MatrixContinuousDense,
-    algorithm,
-    Word,
-    Stem,
-    Flags,
-    Vector,
-    Category,
-    Tuple,
-)
+from autogoal.kb import *
 from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.experimental.pipeline import AlgorithmBase, Supervised
 
 
 @nice_repr
@@ -28,9 +16,9 @@ class CountVectorizerNoTokenize(_CountVectorizer, SklearnTransformer):
         lowercase: Boolean(),
         stopwords_remove: Boolean(),
         binary: Boolean(),
-        inner_tokenizer: algorithm(Sentence(), List(Word())),
-        inner_stemmer: algorithm(Word(), Stem()),
-        inner_stopwords: algorithm(List(Word()), List(Word())),
+        inner_tokenizer: algorithm(Sentence, Seq[Word]),
+        inner_stemmer: algorithm(Word, Stem),
+        inner_stopwords: algorithm(Seq[Word], Seq[Word]),
     ):
         self.stopwords_remove = stopwords_remove
         self.inner_tokenizer = inner_tokenizer
@@ -50,7 +38,7 @@ class CountVectorizerNoTokenize(_CountVectorizer, SklearnTransformer):
 
         return func
 
-    def run(self, input: List(Sentence())) -> MatrixContinuousSparse():
+    def run(self, input: Seq[Sentence]) -> MatrixContinuousSparse:
         return SklearnTransformer.run(self, input)
 
 
@@ -70,7 +58,7 @@ class FlagsSparseVectorizer(_FlagsVectorizer):
     def __init__(self):
         super().__init__(sparse=True)
 
-    def run(self, input: List(Flags())) -> MatrixContinuousSparse():
+    def run(self, input: Seq[FeatureSet]) -> MatrixContinuousSparse:
         return super().run(input)
 
 
@@ -79,7 +67,7 @@ class FlagsDenseVectorizer(_FlagsVectorizer):
     def __init__(self):
         super().__init__(sparse=False)
 
-    def run(self, input: List(Flags())) -> MatrixContinuousDense():
+    def run(self, input: Seq[FeatureSet]) -> MatrixContinuousDense:
         return super().run(input)
 
 
@@ -89,7 +77,7 @@ class CRFTagger(CRF, SklearnEstimator):
         SklearnEstimator.__init__(self)
         super().__init__(algorithm=algorithm)
 
-    def run(self, input: Tuple(List(List(Flags())), List(List(Category())))) -> List(List(Category())):
+    def run(self, X: Seq[Seq[FeatureSet]], y: Supervised[Seq[Seq[Label]]]) -> Seq[Seq[Label]]:
         return SklearnEstimator.run(self, input)
 
 
