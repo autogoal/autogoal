@@ -1,21 +1,4 @@
-from autogoal.kb import (
-    algorithm,
-    Sentence,
-    List,
-    Word,
-    ContinuousVector,
-    MatrixContinuousDense,
-    Tensor3,
-    Flags,
-    Document,
-    Distinct,
-    Entity,
-    Category,
-    Tuple,
-    Postag,
-    Vector,
-    CategoricalVector,
-)
+from autogoal.kb import *
 from autogoal.grammar import CategoricalValue, BooleanValue
 from autogoal.utils import nice_repr
 from autogoal.experimental.pipeline import AlgorithmBase

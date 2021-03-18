@@ -16,8 +16,6 @@
 import inspect
 from typing import Type
 
-from numpy.lib.arraysetops import isin
-
 
 # We start by defining the base class of our hierarchy.
 # A `SemanticType` is just a class that knows how to do one thing: determine if a given object
@@ -413,3 +411,34 @@ MatrixDiscrete = Tensor[2, Discrete, Dense]
 
 Tensor3 = Tensor[3, Continuous, Dense]
 Tensor4 = Tensor[4, Continuous, Dense]
+
+# Finally we define the publicly export classes
+
+__all__ = [
+    "SemanticType",
+    "Seq",
+    "Text",
+    "Document",
+    "Sentence",
+    "Word",
+    "Label",
+    "Postag",
+    "Chunktag",
+    "Stem",
+    "Synset",
+    "Sentiment",
+    "FeatureSet",
+    "Tensor",
+    "Vector",
+    "VectorContinuous",
+    "VectorCategorical",
+    "VectorDiscrete",
+    "Matrix",
+    "MatrixContinuous",
+    "MatrixContinuousDense",
+    "MatrixContinuousSparse",
+    "MatrixCategorical",
+    "MatrixDiscrete",
+    "Tensor3",
+    "Tensor4",
+]
