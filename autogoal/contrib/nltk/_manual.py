@@ -5,7 +5,7 @@ from numpy import inf, nan
 
 from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
-from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
+from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
 from autogoal.kb import *
 from autogoal.utils import nice_repr
 from autogoal.experimental.pipeline import AlgorithmBase
@@ -15,18 +15,18 @@ from autogoal.experimental.pipeline import AlgorithmBase
 class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
-        dm: Discrete(min=0, max=2),
-        dbow_words: Discrete(min=-100, max=100),
-        dm_concat: Discrete(min=-100, max=100),
-        dm_tag_count: Discrete(min=0, max=2),
-        alpha: Continuous(min=0.001, max=0.075),
-        epochs: Discrete(min=2, max=10),
-        window: Discrete(min=2, max=10),
+        dm: DiscreteValue(min=0, max=2),
+        dbow_words: DiscreteValue(min=-100, max=100),
+        dm_concat: DiscreteValue(min=-100, max=100),
+        dm_tag_count: DiscreteValue(min=0, max=2),
+        alpha: ContinuousValue(min=0.001, max=0.075),
+        epochs: DiscreteValue(min=2, max=10),
+        window: DiscreteValue(min=2, max=10),
         inner_tokenizer: algorithm(Sentence, Seq[Word]),
         inner_stemmer: algorithm(Word, Stem),
         inner_stopwords: algorithm(Seq[Word], Seq[Word]),
-        lowercase: Boolean(),
-        stopwords_remove:Boolean(),
+        lowercase: BooleanValue(),
+        stopwords_remove:BooleanValue(),
     ):
 
         self.inner_tokenizer = inner_tokenizer
@@ -81,7 +81,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 class StopwordRemover(AlgorithmBase):
     def __init__(
         self,
-        language: Categorical(
+        language: CategoricalValue(
             "danish",
             "dutch",
             "english",

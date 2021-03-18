@@ -6,7 +6,7 @@ import numpy as np
 
 from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, Seq, Word
 from autogoal.experimental.pipeline import Supervised
-from autogoal.grammar import Discrete, Categorical
+from autogoal.grammar import DiscreteValue, CategoricalValue
 from autogoal.utils import CacheManager, nice_repr
 
 
@@ -43,7 +43,7 @@ class BertEmbedding(AlgorithmBase):
     """
     use_cache = False
 
-    def __init__(self, merge_mode: Categorical("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
+    def __init__(self, merge_mode: CategoricalValue("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )

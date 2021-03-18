@@ -1,7 +1,7 @@
 from autogoal.experimental.pipeline import AlgorithmBase
 import spacy
 
-from autogoal.grammar import Categorical, Boolean
+from autogoal.grammar import CategoricalValue, BooleanValue
 from autogoal.kb import Sentence, Word, FeatureSet, Seq
 from autogoal.experimental.pipeline import Supervised
 from autogoal.utils import nice_repr
@@ -11,14 +11,14 @@ from autogoal.utils import nice_repr
 class SpacyNLP(AlgorithmBase):
     def __init__(
         self,
-        language: Categorical("en", "es"),
-        extract_pos: Boolean(),
-        extract_lemma: Boolean(),
-        extract_pos_tag: Boolean(),
-        extract_dep: Boolean(),
-        extract_entity: Boolean(),
-        extract_details: Boolean(),
-        extract_sentiment: Boolean(),
+        language: CategoricalValue("en", "es"),
+        extract_pos: BooleanValue(),
+        extract_lemma: BooleanValue(),
+        extract_pos_tag: BooleanValue(),
+        extract_dep: BooleanValue(),
+        extract_entity: BooleanValue(),
+        extract_details: BooleanValue(),
+        extract_sentiment: BooleanValue(),
     ):
         self.language = language
         self.extract_pos = extract_pos

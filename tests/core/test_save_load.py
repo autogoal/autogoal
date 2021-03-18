@@ -2,7 +2,7 @@ from io import BytesIO
 from pickle import Pickler, Unpickler
 
 from autogoal.datasets import dummy
-from autogoal.grammar import Categorical, Discrete, generate_cfg
+from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
 from autogoal.kb import (
     CategoricalVector,
     List,
@@ -18,7 +18,7 @@ from autogoal.utils import nice_repr
 
 @nice_repr
 class A:
-    def __init__(self, x: Discrete(-10, 10), y: Discrete(-10, 10)):
+    def __init__(self, x: DiscreteValue(-10, 10), y: DiscreteValue(-10, 10)):
         self.x = x
         self.y = y
 
@@ -58,7 +58,7 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
 
 @nice_repr
 class DummyAlgorithm:
-    def __init__(self, x: Categorical("A", "B", "C")):
+    def __init__(self, x: CategoricalValue("A", "B", "C")):
         self.x = x
 
     def train(self):

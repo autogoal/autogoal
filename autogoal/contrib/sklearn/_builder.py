@@ -12,7 +12,7 @@ import numpy as np
 from autogoal import kb
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.experimental.pipeline import AlgorithmBase
-from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
+from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
 from autogoal.utils import nice_repr
 from joblib import parallel_backend
 from numpy import inf, nan
@@ -330,7 +330,7 @@ def _find_parameter_values(parameter, cls):
                 invalid.append(opt)
 
     if valid:
-        return Categorical(*sorted(valid))
+        return CategoricalValue(*sorted(valid))
 
     return None
 
@@ -402,7 +402,7 @@ def _get_arg_values(arg, value, cls):
 
     try:
         if isinstance(value, bool):
-            annotation = Boolean()
+            annotation = BooleanValue()
         elif isinstance(value, int):
             annotation = _get_integer_values(arg, value, cls)
         elif isinstance(value, float):
@@ -462,7 +462,7 @@ def _get_integer_values(arg, value, cls):
     max_value = left
 
     if min_value < max_value:
-        return Discrete(min=min_value, max=max_value)
+        return DiscreteValue(min=min_value, max=max_value)
 
     return None
 
@@ -507,7 +507,7 @@ def _get_float_values(arg, value, cls):
     max_value = left
 
     if max_value - min_value >= 2 * value:
-        return Continuous(min=min_value, max=max_value)
+        return ContinuousValue(min=min_value, max=max_value)
 
     return None
 

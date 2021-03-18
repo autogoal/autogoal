@@ -16,7 +16,7 @@ from autogoal.kb import (
     Vector,
     CategoricalVector,
 )
-from autogoal.grammar import Categorical, Boolean
+from autogoal.grammar import CategoricalValue, BooleanValue
 from autogoal.utils import nice_repr
 from autogoal.experimental.pipeline import AlgorithmBase
 
@@ -25,7 +25,7 @@ import numpy as np
 
 @nice_repr
 class VectorAggregator(AlgorithmBase):
-    def __init__(self, mode: Categorical("mean", "max")):
+    def __init__(self, mode: CategoricalValue("mean", "max")):
         self.mode = mode
 
     def run(self, input: List(ContinuousVector())) -> ContinuousVector():
@@ -126,7 +126,7 @@ class SentenceFeatureExtractor(AlgorithmBase):
         self,
         tokenizer: algorithm(Sentence(), List(Word())),
         feature_extractor: algorithm(Word(), Flags()),
-        include_text: Boolean(),
+        include_text: BooleanValue(),
     ):
         self.tokenizer = tokenizer
         self.feature_extractor = feature_extractor

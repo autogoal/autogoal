@@ -16,7 +16,7 @@ import enlighten
 
 from pathlib import Path
 from autogoal.kb import *
-from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
+from autogoal.grammar import DiscreteValue, ContinuousValue, CategoricalValue, BooleanValue
 from autogoal.contrib.sklearn._builder import SklearnWrapper
 from ._utils import (
     _is_algorithm,
@@ -415,7 +415,7 @@ def _get_args(cls):
         if str.lower(arg) == "language":
             values = _find_language_values(cls)
             if values:
-                result[arg] = Categorical(*values)
+                result[arg] = CategoricalValue(*values)
                 continue
 
         if str.lower(arg) == "train" and _is_tagger(cls):
@@ -427,14 +427,14 @@ def _get_args(cls):
 
 def _get_arg_values(arg, value, cls):
     if isinstance(value, bool):
-        return Boolean()
+        return BooleanValue()
     if isinstance(value, int):
-        return Discrete(*_get_integer_values(arg, value, cls))
+        return DiscreteValue(*_get_integer_values(arg, value, cls))
     if isinstance(value, float):
-        return Continuous(*_get_float_values(arg, value, cls))
+        return ContinuousValue(*_get_float_values(arg, value, cls))
     if isinstance(value, str):
         values = _find_parameter_values(arg, cls)
-        return Categorical(*values) if values else None
+        return CategoricalValue(*values) if values else None
     return None
 
 

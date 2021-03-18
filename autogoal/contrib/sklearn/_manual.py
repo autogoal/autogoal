@@ -4,7 +4,7 @@ from sklearn_crfsuite import CRF
 
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnEstimator
 from autogoal.kb import *
-from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
+from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
 from autogoal.utils import nice_repr
 from autogoal.experimental.pipeline import AlgorithmBase, Supervised
 
@@ -13,9 +13,9 @@ from autogoal.experimental.pipeline import AlgorithmBase, Supervised
 class CountVectorizerNoTokenize(_CountVectorizer, SklearnTransformer):
     def __init__(
         self,
-        lowercase: Boolean(),
-        stopwords_remove: Boolean(),
-        binary: Boolean(),
+        lowercase: BooleanValue(),
+        stopwords_remove: BooleanValue(),
+        binary: BooleanValue(),
         inner_tokenizer: algorithm(Sentence, Seq[Word]),
         inner_stemmer: algorithm(Word, Stem),
         inner_stopwords: algorithm(Seq[Word], Seq[Word]),
@@ -73,7 +73,7 @@ class FeatureDenseVectorizer(_FeatureVectorizer):
 
 @nice_repr
 class CRFTagger(CRF, SklearnEstimator):
-    def __init__(self, algorithm: Categorical('lbfgs', 'l2sgd', 'ap', 'pa', 'arow')) -> None:
+    def __init__(self, algorithm: CategoricalValue('lbfgs', 'l2sgd', 'ap', 'pa', 'arow')) -> None:
         SklearnEstimator.__init__(self)
         super().__init__(algorithm=algorithm)
 

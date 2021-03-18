@@ -18,8 +18,8 @@ from sklearn.cluster._affinity_propagation import (
 class AffinityPropagation(_AffinityPropagation, SklearnEstimator):
     def __init__(
         self,
-        convergence_iter: grammar.Discrete(min=1, max=29),
-        affinity: grammar.Categorical("euclidean"),
+        convergence_iter: grammar.DiscreteValue(min=1, max=29),
+        affinity: grammar.CategoricalValue("euclidean"),
     ):
         SklearnEstimator.__init__(self)
         _AffinityPropagation.__init__(
@@ -39,10 +39,10 @@ from sklearn.cluster._agglomerative import FeatureAgglomeration as _FeatureAgglo
 class FeatureAgglomeration(_FeatureAgglomeration, SklearnTransformer):
     def __init__(
         self,
-        n_clusters: grammar.Discrete(min=1, max=3),
-        affinity: grammar.Categorical("euclidean"),
-        compute_full_tree: grammar.Categorical("auto"),
-        linkage: grammar.Categorical("average", "complete", "single", "ward"),
+        n_clusters: grammar.DiscreteValue(min=1, max=3),
+        affinity: grammar.CategoricalValue("euclidean"),
+        compute_full_tree: grammar.CategoricalValue("auto"),
+        linkage: grammar.CategoricalValue("average", "complete", "single", "ward"),
     ):
         SklearnTransformer.__init__(self)
         _FeatureAgglomeration.__init__(
@@ -64,10 +64,10 @@ from sklearn.cluster._birch import Birch as _Birch
 class Birch(_Birch, SklearnEstimator):
     def __init__(
         self,
-        threshold: grammar.Continuous(min=-4.995, max=4.991),
-        branching_factor: grammar.Discrete(min=2, max=99),
-        n_clusters: grammar.Discrete(min=1, max=5),
-        compute_labels: grammar.Boolean(),
+        threshold: grammar.ContinuousValue(min=-4.995, max=4.991),
+        branching_factor: grammar.DiscreteValue(min=2, max=99),
+        n_clusters: grammar.DiscreteValue(min=1, max=5),
+        compute_labels: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _Birch.__init__(
@@ -91,9 +91,9 @@ from sklearn.cluster._kmeans import KMeans as _KMeans
 class KMeans(_KMeans, SklearnEstimator):
     def __init__(
         self,
-        n_clusters: grammar.Discrete(min=1, max=15),
-        init: grammar.Categorical("random"),
-        precompute_distances: grammar.Categorical("auto"),
+        n_clusters: grammar.DiscreteValue(min=1, max=15),
+        init: grammar.CategoricalValue("random"),
+        precompute_distances: grammar.CategoricalValue("auto"),
     ):
         SklearnEstimator.__init__(self)
         _KMeans.__init__(
@@ -116,12 +116,12 @@ from sklearn.cluster._kmeans import MiniBatchKMeans as _MiniBatchKMeans
 class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
     def __init__(
         self,
-        n_clusters: grammar.Discrete(min=1, max=15),
-        init: grammar.Categorical("random"),
-        compute_labels: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.992, max=0.992),
-        max_no_improvement: grammar.Discrete(min=1, max=19),
-        reassignment_ratio: grammar.Continuous(min=-0.093, max=0.094),
+        n_clusters: grammar.DiscreteValue(min=1, max=15),
+        init: grammar.CategoricalValue("random"),
+        compute_labels: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.992, max=0.992),
+        max_no_improvement: grammar.DiscreteValue(min=1, max=19),
+        reassignment_ratio: grammar.ContinuousValue(min=-0.093, max=0.094),
     ):
         SklearnEstimator.__init__(self)
         _MiniBatchKMeans.__init__(
@@ -145,7 +145,7 @@ from sklearn.cluster._mean_shift import MeanShift as _MeanShift
 
 @nice_repr
 class MeanShift(_MeanShift, SklearnEstimator):
-    def __init__(self, bin_seeding: grammar.Boolean(), cluster_all: grammar.Boolean()):
+    def __init__(self, bin_seeding: grammar.BooleanValue(), cluster_all: grammar.BooleanValue()):
         SklearnEstimator.__init__(self)
         _MeanShift.__init__(self, bin_seeding=bin_seeding, cluster_all=cluster_all)
 
@@ -162,9 +162,9 @@ from sklearn.decomposition._factor_analysis import FactorAnalysis as _FactorAnal
 class FactorAnalysis(_FactorAnalysis, SklearnTransformer):
     def __init__(
         self,
-        tol: grammar.Continuous(min=-0.093, max=0.094),
-        svd_method: grammar.Categorical("lapack", "randomized"),
-        iterated_power: grammar.Discrete(min=1, max=5),
+        tol: grammar.ContinuousValue(min=-0.093, max=0.094),
+        svd_method: grammar.CategoricalValue("lapack", "randomized"),
+        iterated_power: grammar.DiscreteValue(min=1, max=5),
     ):
         SklearnTransformer.__init__(self)
         _FactorAnalysis.__init__(
@@ -182,9 +182,9 @@ from sklearn.decomposition._fastica import FastICA as _FastICA
 class FastICA(_FastICA, SklearnTransformer):
     def __init__(
         self,
-        algorithm: grammar.Categorical("deflation", "parallel"),
-        whiten: grammar.Boolean(),
-        fun: grammar.Categorical("cube", "exp", "logcosh"),
+        algorithm: grammar.CategoricalValue("deflation", "parallel"),
+        whiten: grammar.BooleanValue(),
+        fun: grammar.CategoricalValue("cube", "exp", "logcosh"),
     ):
         SklearnTransformer.__init__(self)
         _FastICA.__init__(self, algorithm=algorithm, whiten=whiten, fun=fun)
@@ -198,7 +198,7 @@ from sklearn.decomposition._incremental_pca import IncrementalPCA as _Incrementa
 
 @nice_repr
 class IncrementalPCA(_IncrementalPCA, SklearnTransformer):
-    def __init__(self, whiten: grammar.Boolean()):
+    def __init__(self, whiten: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _IncrementalPCA.__init__(self, whiten=whiten)
 
@@ -213,12 +213,12 @@ from sklearn.decomposition._kernel_pca import KernelPCA as _KernelPCA
 class KernelPCA(_KernelPCA, SklearnTransformer):
     def __init__(
         self,
-        degree: grammar.Discrete(min=1, max=5),
-        alpha: grammar.Continuous(min=-9.995, max=9.991),
-        fit_inverse_transform: grammar.Boolean(),
-        eigen_solver: grammar.Categorical("arpack", "auto", "dense"),
-        tol: grammar.Discrete(min=-99, max=99),
-        remove_zero_eig: grammar.Boolean(),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        alpha: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_inverse_transform: grammar.BooleanValue(),
+        eigen_solver: grammar.CategoricalValue("arpack", "auto", "dense"),
+        tol: grammar.DiscreteValue(min=-99, max=99),
+        remove_zero_eig: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _KernelPCA.__init__(
@@ -257,9 +257,9 @@ from sklearn.decomposition._nmf import NMF as _NMF
 class NMF(_NMF, SklearnTransformer):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=0.0, max=0.0),
-        l1_ratio: grammar.Continuous(min=0.0, max=0.0),
-        shuffle: grammar.Boolean(),
+        alpha: grammar.ContinuousValue(min=0.0, max=0.0),
+        l1_ratio: grammar.ContinuousValue(min=0.0, max=0.0),
+        shuffle: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _NMF.__init__(self, alpha=alpha, l1_ratio=l1_ratio, shuffle=shuffle)
@@ -275,10 +275,10 @@ from sklearn.decomposition._pca import PCA as _PCA
 class PCA(_PCA, SklearnTransformer):
     def __init__(
         self,
-        whiten: grammar.Boolean(),
-        svd_solver: grammar.Categorical("arpack", "auto", "full", "randomized"),
-        tol: grammar.Continuous(min=-0.992, max=0.992),
-        iterated_power: grammar.Categorical("auto", "randomized"),
+        whiten: grammar.BooleanValue(),
+        svd_solver: grammar.CategoricalValue("arpack", "auto", "full", "randomized"),
+        tol: grammar.ContinuousValue(min=-0.992, max=0.992),
+        iterated_power: grammar.CategoricalValue("auto", "randomized"),
     ):
         SklearnTransformer.__init__(self)
         _PCA.__init__(
@@ -300,11 +300,11 @@ from sklearn.decomposition._sparse_pca import MiniBatchSparsePCA as _MiniBatchSp
 class MiniBatchSparsePCA(_MiniBatchSparsePCA, SklearnTransformer):
     def __init__(
         self,
-        ridge_alpha: grammar.Continuous(min=-0.093, max=0.094),
-        n_iter: grammar.Discrete(min=1, max=199),
-        batch_size: grammar.Discrete(min=1, max=5),
-        shuffle: grammar.Boolean(),
-        method: grammar.Categorical("cd", "lars"),
+        ridge_alpha: grammar.ContinuousValue(min=-0.093, max=0.094),
+        n_iter: grammar.DiscreteValue(min=1, max=199),
+        batch_size: grammar.DiscreteValue(min=1, max=5),
+        shuffle: grammar.BooleanValue(),
+        method: grammar.CategoricalValue("cd", "lars"),
     ):
         SklearnTransformer.__init__(self)
         _MiniBatchSparsePCA.__init__(
@@ -327,8 +327,8 @@ from sklearn.decomposition._sparse_pca import SparsePCA as _SparsePCA
 class SparsePCA(_SparsePCA, SklearnTransformer):
     def __init__(
         self,
-        ridge_alpha: grammar.Continuous(min=-0.093, max=0.094),
-        method: grammar.Categorical("cd", "lars"),
+        ridge_alpha: grammar.ContinuousValue(min=-0.093, max=0.094),
+        method: grammar.CategoricalValue("cd", "lars"),
     ):
         SklearnTransformer.__init__(self)
         _SparsePCA.__init__(self, ridge_alpha=ridge_alpha, method=method)
@@ -344,9 +344,9 @@ from sklearn.decomposition._truncated_svd import TruncatedSVD as _TruncatedSVD
 class TruncatedSVD(_TruncatedSVD, SklearnTransformer):
     def __init__(
         self,
-        n_components: grammar.Discrete(min=1, max=3),
-        n_iter: grammar.Discrete(min=1, max=9),
-        tol: grammar.Continuous(min=-0.992, max=0.992),
+        n_components: grammar.DiscreteValue(min=1, max=3),
+        n_iter: grammar.DiscreteValue(min=1, max=9),
+        tol: grammar.ContinuousValue(min=-0.992, max=0.992),
     ):
         SklearnTransformer.__init__(self)
         _TruncatedSVD.__init__(self, n_components=n_components, n_iter=n_iter, tol=tol)
@@ -360,7 +360,7 @@ from sklearn.feature_extraction.text import CountVectorizer as _CountVectorizer
 
 @nice_repr
 class CountVectorizer(_CountVectorizer, SklearnTransformer):
-    def __init__(self, lowercase: grammar.Boolean(), binary: grammar.Boolean()):
+    def __init__(self, lowercase: grammar.BooleanValue(), binary: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _CountVectorizer.__init__(self, lowercase=lowercase, binary=binary)
 
@@ -375,11 +375,11 @@ from sklearn.feature_extraction.text import HashingVectorizer as _HashingVectori
 class HashingVectorizer(_HashingVectorizer, SklearnTransformer):
     def __init__(
         self,
-        lowercase: grammar.Boolean(),
-        n_features: grammar.Discrete(min=1, max=2097151),
-        binary: grammar.Boolean(),
-        norm: grammar.Categorical("l1"),
-        alternate_sign: grammar.Boolean(),
+        lowercase: grammar.BooleanValue(),
+        n_features: grammar.DiscreteValue(min=1, max=2097151),
+        binary: grammar.BooleanValue(),
+        norm: grammar.CategoricalValue("l1"),
+        alternate_sign: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _HashingVectorizer.__init__(
@@ -402,10 +402,10 @@ from sklearn.feature_extraction.text import TfidfTransformer as _TfidfTransforme
 class TfidfTransformer(_TfidfTransformer, SklearnTransformer):
     def __init__(
         self,
-        norm: grammar.Categorical("l1", "l2"),
-        use_idf: grammar.Boolean(),
-        smooth_idf: grammar.Boolean(),
-        sublinear_tf: grammar.Boolean(),
+        norm: grammar.CategoricalValue("l1", "l2"),
+        use_idf: grammar.BooleanValue(),
+        smooth_idf: grammar.BooleanValue(),
+        sublinear_tf: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _TfidfTransformer.__init__(
@@ -427,11 +427,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer as _TfidfVectorizer
 class TfidfVectorizer(_TfidfVectorizer, SklearnTransformer):
     def __init__(
         self,
-        lowercase: grammar.Boolean(),
-        binary: grammar.Boolean(),
-        use_idf: grammar.Boolean(),
-        smooth_idf: grammar.Boolean(),
-        sublinear_tf: grammar.Boolean(),
+        lowercase: grammar.BooleanValue(),
+        binary: grammar.BooleanValue(),
+        use_idf: grammar.BooleanValue(),
+        smooth_idf: grammar.BooleanValue(),
+        sublinear_tf: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _TfidfVectorizer.__init__(
@@ -454,10 +454,10 @@ from sklearn.impute._knn import KNNImputer as _KNNImputer
 class KNNImputer(_KNNImputer, SklearnTransformer):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        weights: grammar.Categorical("distance", "uniform"),
-        metric: grammar.Categorical("nan_euclidean"),
-        add_indicator: grammar.Boolean(),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        weights: grammar.CategoricalValue("distance", "uniform"),
+        metric: grammar.CategoricalValue("nan_euclidean"),
+        add_indicator: grammar.BooleanValue(),
     ):
         SklearnTransformer.__init__(self)
         _KNNImputer.__init__(
@@ -477,7 +477,7 @@ from sklearn.linear_model._base import LinearRegression as _LinearRegression
 
 @nice_repr
 class LinearRegression(_LinearRegression, SklearnEstimator):
-    def __init__(self, fit_intercept: grammar.Boolean(), normalize: grammar.Boolean()):
+    def __init__(self, fit_intercept: grammar.BooleanValue(), normalize: grammar.BooleanValue()):
         SklearnEstimator.__init__(self)
         _LinearRegression.__init__(
             self, fit_intercept=fit_intercept, normalize=normalize
@@ -496,12 +496,12 @@ from sklearn.linear_model._bayes import ARDRegression as _ARDRegression
 class ARDRegression(_ARDRegression, SklearnEstimator):
     def __init__(
         self,
-        n_iter: grammar.Discrete(min=1, max=599),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        compute_score: grammar.Boolean(),
-        threshold_lambda: grammar.Continuous(min=-99999.993, max=99999.995),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
+        n_iter: grammar.DiscreteValue(min=1, max=599),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        compute_score: grammar.BooleanValue(),
+        threshold_lambda: grammar.ContinuousValue(min=-99999.993, max=99999.995),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _ARDRegression.__init__(
@@ -527,11 +527,11 @@ from sklearn.linear_model._bayes import BayesianRidge as _BayesianRidge
 class BayesianRidge(_BayesianRidge, SklearnEstimator):
     def __init__(
         self,
-        n_iter: grammar.Discrete(min=1, max=599),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        compute_score: grammar.Boolean(),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
+        n_iter: grammar.DiscreteValue(min=1, max=599),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        compute_score: grammar.BooleanValue(),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _BayesianRidge.__init__(
@@ -556,13 +556,13 @@ from sklearn.linear_model._coordinate_descent import ElasticNet as _ElasticNet
 class ElasticNet(_ElasticNet, SklearnEstimator):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=-9.995, max=9.991),
-        l1_ratio: grammar.Continuous(min=-4.995, max=4.991),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Boolean(),
-        positive: grammar.Boolean(),
-        selection: grammar.Categorical("cyclic", "random"),
+        alpha: grammar.ContinuousValue(min=-9.995, max=9.991),
+        l1_ratio: grammar.ContinuousValue(min=-4.995, max=4.991),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.BooleanValue(),
+        positive: grammar.BooleanValue(),
+        selection: grammar.CategoricalValue("cyclic", "random"),
     ):
         SklearnEstimator.__init__(self)
         _ElasticNet.__init__(
@@ -589,12 +589,12 @@ from sklearn.linear_model._coordinate_descent import Lasso as _Lasso
 class Lasso(_Lasso, SklearnEstimator):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=-9.995, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Boolean(),
-        positive: grammar.Boolean(),
-        selection: grammar.Categorical("cyclic", "random"),
+        alpha: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.BooleanValue(),
+        positive: grammar.BooleanValue(),
+        selection: grammar.CategoricalValue("cyclic", "random"),
     ):
         SklearnEstimator.__init__(self)
         _Lasso.__init__(
@@ -619,7 +619,7 @@ from sklearn.linear_model._huber import HuberRegressor as _HuberRegressor
 @nice_repr
 class HuberRegressor(_HuberRegressor, SklearnEstimator):
     def __init__(
-        self, epsilon: grammar.Continuous(min=1.002, max=13.494), fit_intercept: grammar.Boolean()
+        self, epsilon: grammar.ContinuousValue(min=1.002, max=13.494), fit_intercept: grammar.BooleanValue()
     ):
         SklearnEstimator.__init__(self)
         _HuberRegressor.__init__(self, epsilon=epsilon, fit_intercept=fit_intercept)
@@ -637,11 +637,11 @@ from sklearn.linear_model._least_angle import Lars as _Lars
 class Lars(_Lars, SklearnEstimator):
     def __init__(
         self,
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Categorical("auto"),
-        n_nonzero_coefs: grammar.Discrete(min=1, max=999),
-        fit_path: grammar.Boolean(),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.CategoricalValue("auto"),
+        n_nonzero_coefs: grammar.DiscreteValue(min=1, max=999),
+        fit_path: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _Lars.__init__(
@@ -666,11 +666,11 @@ from sklearn.linear_model._least_angle import LassoLars as _LassoLars
 class LassoLars(_LassoLars, SklearnEstimator):
     def __init__(
         self,
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Categorical("auto"),
-        fit_path: grammar.Boolean(),
-        positive: grammar.Boolean(),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.CategoricalValue("auto"),
+        fit_path: grammar.BooleanValue(),
+        positive: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _LassoLars.__init__(
@@ -695,11 +695,11 @@ from sklearn.linear_model._least_angle import LassoLarsIC as _LassoLarsIC
 class LassoLarsIC(_LassoLarsIC, SklearnEstimator):
     def __init__(
         self,
-        criterion: grammar.Categorical("aic", "bic"),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Categorical("auto"),
-        positive: grammar.Boolean(),
+        criterion: grammar.CategoricalValue("aic", "bic"),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.CategoricalValue("auto"),
+        positive: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _LassoLarsIC.__init__(
@@ -724,12 +724,12 @@ from sklearn.linear_model._logistic import LogisticRegression as _LogisticRegres
 class LogisticRegression(_LogisticRegression, SklearnEstimator):
     def __init__(
         self,
-        penalty: grammar.Categorical("l2", "none"),
-        dual: grammar.Boolean(),
-        C: grammar.Continuous(min=0.005, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        solver: grammar.Categorical("lbfgs", "liblinear", "sag", "saga"),
-        multi_class: grammar.Categorical("auto", "multinomial", "ovr"),
+        penalty: grammar.CategoricalValue("l2", "none"),
+        dual: grammar.BooleanValue(),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        solver: grammar.CategoricalValue("lbfgs", "liblinear", "sag", "saga"),
+        multi_class: grammar.CategoricalValue("auto", "multinomial", "ovr"),
     ):
         SklearnEstimator.__init__(self)
         _LogisticRegression.__init__(
@@ -757,9 +757,9 @@ from sklearn.linear_model._omp import (
 class OrthogonalMatchingPursuit(_OrthogonalMatchingPursuit, SklearnEstimator):
     def __init__(
         self,
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        precompute: grammar.Categorical("auto"),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        precompute: grammar.CategoricalValue("auto"),
     ):
         SklearnEstimator.__init__(self)
         _OrthogonalMatchingPursuit.__init__(
@@ -784,14 +784,14 @@ from sklearn.linear_model._passive_aggressive import (
 class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator):
     def __init__(
         self,
-        C: grammar.Continuous(min=-9.995, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        early_stopping: grammar.Boolean(),
-        validation_fraction: grammar.Continuous(min=0.006, max=0.993),
-        n_iter_no_change: grammar.Discrete(min=1, max=9),
-        shuffle: grammar.Boolean(),
-        average: grammar.Boolean(),
+        C: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        early_stopping: grammar.BooleanValue(),
+        validation_fraction: grammar.ContinuousValue(min=0.006, max=0.993),
+        n_iter_no_change: grammar.DiscreteValue(min=1, max=9),
+        shuffle: grammar.BooleanValue(),
+        average: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _PassiveAggressiveClassifier.__init__(
@@ -821,15 +821,15 @@ from sklearn.linear_model._passive_aggressive import (
 class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
     def __init__(
         self,
-        C: grammar.Continuous(min=-9.995, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        early_stopping: grammar.Boolean(),
-        validation_fraction: grammar.Continuous(min=0.006, max=0.993),
-        n_iter_no_change: grammar.Discrete(min=1, max=9),
-        shuffle: grammar.Boolean(),
-        epsilon: grammar.Continuous(min=-0.992, max=0.993),
-        average: grammar.Boolean(),
+        C: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        early_stopping: grammar.BooleanValue(),
+        validation_fraction: grammar.ContinuousValue(min=0.006, max=0.993),
+        n_iter_no_change: grammar.DiscreteValue(min=1, max=9),
+        shuffle: grammar.BooleanValue(),
+        epsilon: grammar.ContinuousValue(min=-0.992, max=0.993),
+        average: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _PassiveAggressiveRegressor.__init__(
@@ -858,13 +858,13 @@ from sklearn.linear_model._perceptron import Perceptron as _Perceptron
 class Perceptron(_Perceptron, SklearnEstimator):
     def __init__(
         self,
-        fit_intercept: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        shuffle: grammar.Boolean(),
-        eta0: grammar.Continuous(min=0.005, max=9.991),
-        early_stopping: grammar.Boolean(),
-        validation_fraction: grammar.Continuous(min=0.006, max=0.993),
-        n_iter_no_change: grammar.Discrete(min=1, max=9),
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        shuffle: grammar.BooleanValue(),
+        eta0: grammar.ContinuousValue(min=0.005, max=9.991),
+        early_stopping: grammar.BooleanValue(),
+        validation_fraction: grammar.ContinuousValue(min=0.006, max=0.993),
+        n_iter_no_change: grammar.DiscreteValue(min=1, max=9),
     ):
         SklearnEstimator.__init__(self)
         _Perceptron.__init__(
@@ -891,11 +891,11 @@ from sklearn.linear_model._ridge import Ridge as _Ridge
 class Ridge(_Ridge, SklearnEstimator):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=-9.995, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        solver: grammar.Categorical(
+        alpha: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        solver: grammar.CategoricalValue(
             "auto", "cholesky", "lsqr", "sag", "saga", "sparse_cg", "svd"
         ),
     ):
@@ -922,11 +922,11 @@ from sklearn.linear_model._ridge import RidgeClassifier as _RidgeClassifier
 class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=-9.995, max=9.991),
-        fit_intercept: grammar.Boolean(),
-        normalize: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        solver: grammar.Categorical(
+        alpha: grammar.ContinuousValue(min=-9.995, max=9.991),
+        fit_intercept: grammar.BooleanValue(),
+        normalize: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        solver: grammar.CategoricalValue(
             "auto", "cholesky", "lsqr", "sag", "saga", "sparse_cg", "svd"
         ),
     ):
@@ -953,7 +953,7 @@ from sklearn.linear_model._stochastic_gradient import SGDClassifier as _SGDClass
 class SGDClassifier(_SGDClassifier, SklearnEstimator):
     def __init__(
         self,
-        loss: grammar.Categorical(
+        loss: grammar.CategoricalValue(
             "epsilon_insensitive",
             "hinge",
             "huber",
@@ -964,19 +964,19 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
             "squared_hinge",
             "squared_loss",
         ),
-        penalty: grammar.Categorical("elasticnet", "l1", "l2"),
-        l1_ratio: grammar.Continuous(min=0.001, max=0.999),
-        fit_intercept: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        shuffle: grammar.Boolean(),
-        epsilon: grammar.Continuous(min=-0.992, max=0.993),
-        learning_rate: grammar.Categorical("optimal"),
-        eta0: grammar.Continuous(min=-0.992, max=0.992),
-        power_t: grammar.Continuous(min=-4.995, max=4.991),
-        early_stopping: grammar.Boolean(),
-        validation_fraction: grammar.Continuous(min=0.006, max=0.993),
-        n_iter_no_change: grammar.Discrete(min=1, max=9),
-        average: grammar.Boolean(),
+        penalty: grammar.CategoricalValue("elasticnet", "l1", "l2"),
+        l1_ratio: grammar.ContinuousValue(min=0.001, max=0.999),
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        shuffle: grammar.BooleanValue(),
+        epsilon: grammar.ContinuousValue(min=-0.992, max=0.993),
+        learning_rate: grammar.CategoricalValue("optimal"),
+        eta0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        power_t: grammar.ContinuousValue(min=-4.995, max=4.991),
+        early_stopping: grammar.BooleanValue(),
+        validation_fraction: grammar.ContinuousValue(min=0.006, max=0.993),
+        n_iter_no_change: grammar.DiscreteValue(min=1, max=9),
+        average: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _SGDClassifier.__init__(
@@ -1010,25 +1010,25 @@ from sklearn.linear_model._stochastic_gradient import SGDRegressor as _SGDRegres
 class SGDRegressor(_SGDRegressor, SklearnEstimator):
     def __init__(
         self,
-        loss: grammar.Categorical(
+        loss: grammar.CategoricalValue(
             "epsilon_insensitive",
             "huber",
             "squared_epsilon_insensitive",
             "squared_loss",
         ),
-        penalty: grammar.Categorical("elasticnet", "l1", "l2"),
-        l1_ratio: grammar.Continuous(min=0.001, max=0.999),
-        fit_intercept: grammar.Boolean(),
-        tol: grammar.Continuous(min=-0.005, max=0.001),
-        shuffle: grammar.Boolean(),
-        epsilon: grammar.Continuous(min=-0.992, max=0.993),
-        learning_rate: grammar.Categorical("adaptive", "constant", "invscaling", "optimal"),
-        eta0: grammar.Continuous(min=0.003, max=0.094),
-        power_t: grammar.Continuous(min=-2.494, max=2.491),
-        early_stopping: grammar.Boolean(),
-        validation_fraction: grammar.Continuous(min=0.006, max=0.993),
-        n_iter_no_change: grammar.Discrete(min=1, max=9),
-        average: grammar.Boolean(),
+        penalty: grammar.CategoricalValue("elasticnet", "l1", "l2"),
+        l1_ratio: grammar.ContinuousValue(min=0.001, max=0.999),
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
+        shuffle: grammar.BooleanValue(),
+        epsilon: grammar.ContinuousValue(min=-0.992, max=0.993),
+        learning_rate: grammar.CategoricalValue("adaptive", "constant", "invscaling", "optimal"),
+        eta0: grammar.ContinuousValue(min=0.003, max=0.094),
+        power_t: grammar.ContinuousValue(min=-2.494, max=2.491),
+        early_stopping: grammar.BooleanValue(),
+        validation_fraction: grammar.ContinuousValue(min=0.006, max=0.993),
+        n_iter_no_change: grammar.DiscreteValue(min=1, max=9),
+        average: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _SGDRegressor.__init__(
@@ -1061,7 +1061,7 @@ from sklearn.linear_model._theil_sen import TheilSenRegressor as _TheilSenRegres
 @nice_repr
 class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def __init__(
-        self, fit_intercept: grammar.Boolean(), tol: grammar.Continuous(min=-0.005, max=0.001)
+        self, fit_intercept: grammar.BooleanValue(), tol: grammar.ContinuousValue(min=-0.005, max=0.001)
     ):
         SklearnEstimator.__init__(self)
         _TheilSenRegressor.__init__(self, fit_intercept=fit_intercept, tol=tol)
@@ -1079,13 +1079,13 @@ from sklearn.manifold._isomap import Isomap as _Isomap
 class Isomap(_Isomap, SklearnTransformer):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        n_components: grammar.Discrete(min=1, max=3),
-        eigen_solver: grammar.Categorical("arpack", "auto", "dense"),
-        tol: grammar.Discrete(min=-99, max=99),
-        path_method: grammar.Categorical("auto"),
-        neighbors_algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        p: grammar.Discrete(min=1, max=3),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        n_components: grammar.DiscreteValue(min=1, max=3),
+        eigen_solver: grammar.CategoricalValue("arpack", "auto", "dense"),
+        tol: grammar.DiscreteValue(min=-99, max=99),
+        path_method: grammar.CategoricalValue("auto"),
+        neighbors_algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        p: grammar.DiscreteValue(min=1, max=3),
     ):
         SklearnTransformer.__init__(self)
         _Isomap.__init__(
@@ -1112,12 +1112,12 @@ from sklearn.manifold._locally_linear import (
 class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        n_components: grammar.Discrete(min=1, max=3),
-        reg: grammar.Continuous(min=-0.005, max=0.001),
-        eigen_solver: grammar.Categorical("arpack", "auto", "dense"),
-        method: grammar.Categorical("ltsa", "modified", "standard"),
-        neighbors_algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        n_components: grammar.DiscreteValue(min=1, max=3),
+        reg: grammar.ContinuousValue(min=-0.005, max=0.001),
+        eigen_solver: grammar.CategoricalValue("arpack", "auto", "dense"),
+        method: grammar.CategoricalValue("ltsa", "modified", "standard"),
+        neighbors_algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
     ):
         SklearnTransformer.__init__(self)
         _LocallyLinearEmbedding.__init__(
@@ -1141,9 +1141,9 @@ from sklearn.naive_bayes import BernoulliNB as _BernoulliNB
 class BernoulliNB(_BernoulliNB, SklearnEstimator):
     def __init__(
         self,
-        alpha: grammar.Continuous(min=0.0, max=9.991),
-        binarize: grammar.Continuous(min=-0.992, max=0.992),
-        fit_prior: grammar.Boolean(),
+        alpha: grammar.ContinuousValue(min=0.0, max=9.991),
+        binarize: grammar.ContinuousValue(min=-0.992, max=0.992),
+        fit_prior: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _BernoulliNB.__init__(self, alpha=alpha, binarize=binarize, fit_prior=fit_prior)
@@ -1159,7 +1159,7 @@ from sklearn.naive_bayes import CategoricalNB as _CategoricalNB
 
 @nice_repr
 class CategoricalNB(_CategoricalNB, SklearnEstimator):
-    def __init__(self, fit_prior: grammar.Boolean()):
+    def __init__(self, fit_prior: grammar.BooleanValue()):
         SklearnEstimator.__init__(self)
         _CategoricalNB.__init__(self, fit_prior=fit_prior)
 
@@ -1174,7 +1174,7 @@ from sklearn.naive_bayes import ComplementNB as _ComplementNB
 
 @nice_repr
 class ComplementNB(_ComplementNB, SklearnEstimator):
-    def __init__(self, fit_prior: grammar.Boolean(), norm: grammar.Boolean()):
+    def __init__(self, fit_prior: grammar.BooleanValue(), norm: grammar.BooleanValue()):
         SklearnEstimator.__init__(self)
         _ComplementNB.__init__(self, fit_prior=fit_prior, norm=norm)
 
@@ -1204,7 +1204,7 @@ from sklearn.naive_bayes import MultinomialNB as _MultinomialNB
 
 @nice_repr
 class MultinomialNB(_MultinomialNB, SklearnEstimator):
-    def __init__(self, fit_prior: grammar.Boolean()):
+    def __init__(self, fit_prior: grammar.BooleanValue()):
         SklearnEstimator.__init__(self)
         _MultinomialNB.__init__(self, fit_prior=fit_prior)
 
@@ -1223,12 +1223,12 @@ from sklearn.neighbors._classification import (
 class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        weights: grammar.Categorical("distance", "uniform"),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
-        metric: grammar.Categorical("minkowski"),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        weights: grammar.CategoricalValue("distance", "uniform"),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
+        metric: grammar.CategoricalValue("minkowski"),
     ):
         SklearnEstimator.__init__(self)
         _KNeighborsClassifier.__init__(
@@ -1254,11 +1254,11 @@ from sklearn.neighbors._graph import KNeighborsTransformer as _KNeighborsTransfo
 class KNeighborsTransformer(_KNeighborsTransformer, SklearnTransformer):
     def __init__(
         self,
-        mode: grammar.Categorical("connectivity", "distance"),
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
+        mode: grammar.CategoricalValue("connectivity", "distance"),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
     ):
         SklearnTransformer.__init__(self)
         _KNeighborsTransformer.__init__(
@@ -1283,11 +1283,11 @@ from sklearn.neighbors._graph import (
 class RadiusNeighborsTransformer(_RadiusNeighborsTransformer, SklearnTransformer):
     def __init__(
         self,
-        mode: grammar.Categorical("connectivity", "distance"),
-        radius: grammar.Continuous(min=-9.995, max=9.991),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
+        mode: grammar.CategoricalValue("connectivity", "distance"),
+        radius: grammar.ContinuousValue(min=-9.995, max=9.991),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
     ):
         SklearnTransformer.__init__(self)
         _RadiusNeighborsTransformer.__init__(
@@ -1310,12 +1310,12 @@ from sklearn.neighbors._lof import LocalOutlierFactor as _LocalOutlierFactor
 class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=39),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
-        contamination: grammar.Categorical("auto"),
-        novelty: grammar.Boolean(),
+        n_neighbors: grammar.DiscreteValue(min=1, max=39),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
+        contamination: grammar.CategoricalValue("auto"),
+        novelty: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _LocalOutlierFactor.__init__(
@@ -1354,12 +1354,12 @@ from sklearn.neighbors._regression import KNeighborsRegressor as _KNeighborsRegr
 class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
-        n_neighbors: grammar.Discrete(min=1, max=9),
-        weights: grammar.Categorical("distance", "uniform"),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
-        metric: grammar.Categorical("minkowski"),
+        n_neighbors: grammar.DiscreteValue(min=1, max=9),
+        weights: grammar.CategoricalValue("distance", "uniform"),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
+        metric: grammar.CategoricalValue("minkowski"),
     ):
         SklearnEstimator.__init__(self)
         _KNeighborsRegressor.__init__(
@@ -1387,11 +1387,11 @@ from sklearn.neighbors._regression import (
 class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
     def __init__(
         self,
-        radius: grammar.Continuous(min=-9.995, max=9.991),
-        weights: grammar.Categorical("distance", "uniform"),
-        algorithm: grammar.Categorical("auto", "ball_tree", "brute", "kd_tree"),
-        leaf_size: grammar.Discrete(min=1, max=59),
-        p: grammar.Discrete(min=1, max=3),
+        radius: grammar.ContinuousValue(min=-9.995, max=9.991),
+        weights: grammar.CategoricalValue("distance", "uniform"),
+        algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        leaf_size: grammar.DiscreteValue(min=1, max=59),
+        p: grammar.DiscreteValue(min=1, max=3),
     ):
         SklearnEstimator.__init__(self)
         _RadiusNeighborsRegressor.__init__(
@@ -1440,7 +1440,7 @@ from sklearn.preprocessing._data import PowerTransformer as _PowerTransformer
 
 @nice_repr
 class PowerTransformer(_PowerTransformer, SklearnTransformer):
-    def __init__(self, standardize: grammar.Boolean()):
+    def __init__(self, standardize: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _PowerTransformer.__init__(self, standardize=standardize)
 
@@ -1453,7 +1453,7 @@ from sklearn.preprocessing._data import RobustScaler as _RobustScaler
 
 @nice_repr
 class RobustScaler(_RobustScaler, SklearnTransformer):
-    def __init__(self, with_centering: grammar.Boolean(), with_scaling: grammar.Boolean()):
+    def __init__(self, with_centering: grammar.BooleanValue(), with_scaling: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _RobustScaler.__init__(
             self, with_centering=with_centering, with_scaling=with_scaling
@@ -1468,7 +1468,7 @@ from sklearn.preprocessing._data import StandardScaler as _StandardScaler
 
 @nice_repr
 class StandardScaler(_StandardScaler, SklearnTransformer):
-    def __init__(self, with_mean: grammar.Boolean(), with_std: grammar.Boolean()):
+    def __init__(self, with_mean: grammar.BooleanValue(), with_std: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _StandardScaler.__init__(self, with_mean=with_mean, with_std=with_std)
 
@@ -1483,9 +1483,9 @@ from sklearn.preprocessing._discretization import KBinsDiscretizer as _KBinsDisc
 class KBinsDiscretizer(_KBinsDiscretizer, SklearnTransformer):
     def __init__(
         self,
-        n_bins: grammar.Discrete(min=2, max=9),
-        encode: grammar.Categorical("onehot", "ordinal"),
-        strategy: grammar.Categorical("kmeans", "quantile", "uniform"),
+        n_bins: grammar.DiscreteValue(min=2, max=9),
+        encode: grammar.CategoricalValue("onehot", "ordinal"),
+        strategy: grammar.CategoricalValue("kmeans", "quantile", "uniform"),
     ):
         SklearnTransformer.__init__(self)
         _KBinsDiscretizer.__init__(
@@ -1503,9 +1503,9 @@ from sklearn.preprocessing._encoders import OneHotEncoder as _OneHotEncoder
 class OneHotEncoder(_OneHotEncoder, SklearnTransformer):
     def __init__(
         self,
-        categories: grammar.Categorical("auto"),
-        sparse: grammar.Boolean(),
-        handle_unknown: grammar.Categorical("error", "ignore"),
+        categories: grammar.CategoricalValue("auto"),
+        sparse: grammar.BooleanValue(),
+        handle_unknown: grammar.CategoricalValue("error", "ignore"),
     ):
         SklearnTransformer.__init__(self)
         _OneHotEncoder.__init__(
@@ -1521,7 +1521,7 @@ from sklearn.preprocessing._encoders import OrdinalEncoder as _OrdinalEncoder
 
 @nice_repr
 class OrdinalEncoder(_OrdinalEncoder, SklearnTransformer):
-    def __init__(self, categories: grammar.Categorical("auto")):
+    def __init__(self, categories: grammar.CategoricalValue("auto")):
         SklearnTransformer.__init__(self)
         _OrdinalEncoder.__init__(self, categories=categories)
 
@@ -1534,7 +1534,7 @@ from sklearn.preprocessing._label import LabelBinarizer as _LabelBinarizer
 
 @nice_repr
 class LabelBinarizer(_LabelBinarizer, SklearnTransformer):
-    def __init__(self, sparse_output: grammar.Boolean()):
+    def __init__(self, sparse_output: grammar.BooleanValue()):
         SklearnTransformer.__init__(self)
         _LabelBinarizer.__init__(self, sparse_output=sparse_output)
 
@@ -1549,12 +1549,12 @@ from sklearn.svm._classes import LinearSVC as _LinearSVC
 class LinearSVC(_LinearSVC, SklearnEstimator):
     def __init__(
         self,
-        penalty: grammar.Categorical("l2"),
-        loss: grammar.Categorical("hinge", "squared_hinge"),
-        dual: grammar.Boolean(),
-        C: grammar.Continuous(min=0.005, max=9.991),
-        multi_class: grammar.Categorical("crammer_singer", "ovr"),
-        fit_intercept: grammar.Boolean(),
+        penalty: grammar.CategoricalValue("l2"),
+        loss: grammar.CategoricalValue("hinge", "squared_hinge"),
+        dual: grammar.BooleanValue(),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        multi_class: grammar.CategoricalValue("crammer_singer", "ovr"),
+        fit_intercept: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _LinearSVC.__init__(
@@ -1580,12 +1580,12 @@ from sklearn.svm._classes import LinearSVR as _LinearSVR
 class LinearSVR(_LinearSVR, SklearnEstimator):
     def __init__(
         self,
-        epsilon: grammar.Continuous(min=0.0, max=0.992),
-        C: grammar.Continuous(min=0.005, max=9.991),
-        loss: grammar.Categorical("epsilon_insensitive", "squared_epsilon_insensitive"),
-        fit_intercept: grammar.Boolean(),
-        intercept_scaling: grammar.Continuous(min=0.005, max=9.991),
-        dual: grammar.Boolean(),
+        epsilon: grammar.ContinuousValue(min=0.0, max=0.992),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        loss: grammar.CategoricalValue("epsilon_insensitive", "squared_epsilon_insensitive"),
+        fit_intercept: grammar.BooleanValue(),
+        intercept_scaling: grammar.ContinuousValue(min=0.005, max=9.991),
+        dual: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _LinearSVR.__init__(
@@ -1611,15 +1611,15 @@ from sklearn.svm._classes import NuSVC as _NuSVC
 class NuSVC(_NuSVC, SklearnEstimator):
     def __init__(
         self,
-        kernel: grammar.Categorical("linear", "poly", "rbf", "sigmoid"),
-        degree: grammar.Discrete(min=1, max=5),
-        gamma: grammar.Categorical("auto", "scale"),
-        coef0: grammar.Continuous(min=-0.992, max=0.992),
-        shrinking: grammar.Boolean(),
-        probability: grammar.Boolean(),
-        cache_size: grammar.Discrete(min=1, max=399),
-        decision_function_shape: grammar.Categorical("ovo", "ovr"),
-        break_ties: grammar.Boolean(),
+        kernel: grammar.CategoricalValue("linear", "poly", "rbf", "sigmoid"),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        gamma: grammar.CategoricalValue("auto", "scale"),
+        coef0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        shrinking: grammar.BooleanValue(),
+        probability: grammar.BooleanValue(),
+        cache_size: grammar.DiscreteValue(min=1, max=399),
+        decision_function_shape: grammar.CategoricalValue("ovo", "ovr"),
+        break_ties: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _NuSVC.__init__(
@@ -1648,13 +1648,13 @@ from sklearn.svm._classes import NuSVR as _NuSVR
 class NuSVR(_NuSVR, SklearnEstimator):
     def __init__(
         self,
-        C: grammar.Continuous(min=0.005, max=9.991),
-        kernel: grammar.Categorical("linear", "poly", "rbf", "sigmoid"),
-        degree: grammar.Discrete(min=1, max=5),
-        gamma: grammar.Categorical("auto", "scale"),
-        coef0: grammar.Continuous(min=-0.992, max=0.992),
-        shrinking: grammar.Boolean(),
-        cache_size: grammar.Discrete(min=1, max=399),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        kernel: grammar.CategoricalValue("linear", "poly", "rbf", "sigmoid"),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        gamma: grammar.CategoricalValue("auto", "scale"),
+        coef0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        shrinking: grammar.BooleanValue(),
+        cache_size: grammar.DiscreteValue(min=1, max=399),
     ):
         SklearnEstimator.__init__(self)
         _NuSVR.__init__(
@@ -1681,12 +1681,12 @@ from sklearn.svm._classes import OneClassSVM as _OneClassSVM
 class OneClassSVM(_OneClassSVM, SklearnEstimator):
     def __init__(
         self,
-        kernel: grammar.Categorical("linear", "poly", "rbf", "sigmoid"),
-        degree: grammar.Discrete(min=1, max=5),
-        gamma: grammar.Categorical("auto", "scale"),
-        coef0: grammar.Continuous(min=-0.992, max=0.992),
-        shrinking: grammar.Boolean(),
-        cache_size: grammar.Discrete(min=1, max=399),
+        kernel: grammar.CategoricalValue("linear", "poly", "rbf", "sigmoid"),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        gamma: grammar.CategoricalValue("auto", "scale"),
+        coef0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        shrinking: grammar.BooleanValue(),
+        cache_size: grammar.DiscreteValue(min=1, max=399),
     ):
         SklearnEstimator.__init__(self)
         _OneClassSVM.__init__(
@@ -1712,15 +1712,15 @@ from sklearn.svm._classes import SVC as _SVC
 class SVC(_SVC, SklearnEstimator):
     def __init__(
         self,
-        C: grammar.Continuous(min=0.005, max=9.991),
-        degree: grammar.Discrete(min=1, max=5),
-        gamma: grammar.Categorical("auto", "scale"),
-        coef0: grammar.Continuous(min=-0.992, max=0.992),
-        shrinking: grammar.Boolean(),
-        probability: grammar.Boolean(),
-        cache_size: grammar.Discrete(min=1, max=399),
-        decision_function_shape: grammar.Categorical("ovo", "ovr"),
-        break_ties: grammar.Boolean(),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        gamma: grammar.CategoricalValue("auto", "scale"),
+        coef0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        shrinking: grammar.BooleanValue(),
+        probability: grammar.BooleanValue(),
+        cache_size: grammar.DiscreteValue(min=1, max=399),
+        decision_function_shape: grammar.CategoricalValue("ovo", "ovr"),
+        break_ties: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _SVC.__init__(
@@ -1749,14 +1749,14 @@ from sklearn.svm._classes import SVR as _SVR
 class SVR(_SVR, SklearnEstimator):
     def __init__(
         self,
-        kernel: grammar.Categorical("linear", "poly", "rbf", "sigmoid"),
-        degree: grammar.Discrete(min=1, max=5),
-        gamma: grammar.Categorical("auto", "scale"),
-        coef0: grammar.Continuous(min=-0.992, max=0.992),
-        C: grammar.Continuous(min=0.005, max=9.991),
-        epsilon: grammar.Continuous(min=0.006, max=0.993),
-        shrinking: grammar.Boolean(),
-        cache_size: grammar.Discrete(min=1, max=399),
+        kernel: grammar.CategoricalValue("linear", "poly", "rbf", "sigmoid"),
+        degree: grammar.DiscreteValue(min=1, max=5),
+        gamma: grammar.CategoricalValue("auto", "scale"),
+        coef0: grammar.ContinuousValue(min=-0.992, max=0.992),
+        C: grammar.ContinuousValue(min=0.005, max=9.991),
+        epsilon: grammar.ContinuousValue(min=0.006, max=0.993),
+        shrinking: grammar.BooleanValue(),
+        cache_size: grammar.DiscreteValue(min=1, max=399),
     ):
         SklearnEstimator.__init__(self)
         _SVR.__init__(
@@ -1784,10 +1784,10 @@ from sklearn.tree._classes import DecisionTreeClassifier as _DecisionTreeClassif
 class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: grammar.Discrete(min=2, max=3),
-        min_weight_fraction_leaf: grammar.Continuous(min=0.0, max=0.5),
-        min_impurity_decrease: grammar.Continuous(min=0.0, max=0.992),
-        ccp_alpha: grammar.Continuous(min=0.0, max=0.992),
+        min_samples_split: grammar.DiscreteValue(min=2, max=3),
+        min_weight_fraction_leaf: grammar.ContinuousValue(min=0.0, max=0.5),
+        min_impurity_decrease: grammar.ContinuousValue(min=0.0, max=0.992),
+        ccp_alpha: grammar.ContinuousValue(min=0.0, max=0.992),
     ):
         SklearnEstimator.__init__(self)
         _DecisionTreeClassifier.__init__(
@@ -1811,10 +1811,10 @@ from sklearn.tree._classes import DecisionTreeRegressor as _DecisionTreeRegresso
 class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: grammar.Discrete(min=2, max=3),
-        min_weight_fraction_leaf: grammar.Continuous(min=0.0, max=0.5),
-        min_impurity_decrease: grammar.Continuous(min=0.0, max=0.992),
-        ccp_alpha: grammar.Continuous(min=0.0, max=0.992),
+        min_samples_split: grammar.DiscreteValue(min=2, max=3),
+        min_weight_fraction_leaf: grammar.ContinuousValue(min=0.0, max=0.5),
+        min_impurity_decrease: grammar.ContinuousValue(min=0.0, max=0.992),
+        ccp_alpha: grammar.ContinuousValue(min=0.0, max=0.992),
     ):
         SklearnEstimator.__init__(self)
         _DecisionTreeRegressor.__init__(
@@ -1838,10 +1838,10 @@ from sklearn.tree._classes import ExtraTreeClassifier as _ExtraTreeClassifier
 class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: grammar.Discrete(min=2, max=3),
-        min_weight_fraction_leaf: grammar.Continuous(min=0.0, max=0.5),
-        min_impurity_decrease: grammar.Continuous(min=0.0, max=0.992),
-        ccp_alpha: grammar.Continuous(min=0.0, max=0.992),
+        min_samples_split: grammar.DiscreteValue(min=2, max=3),
+        min_weight_fraction_leaf: grammar.ContinuousValue(min=0.0, max=0.5),
+        min_impurity_decrease: grammar.ContinuousValue(min=0.0, max=0.992),
+        ccp_alpha: grammar.ContinuousValue(min=0.0, max=0.992),
     ):
         SklearnEstimator.__init__(self)
         _ExtraTreeClassifier.__init__(
@@ -1865,10 +1865,10 @@ from sklearn.tree._classes import ExtraTreeRegressor as _ExtraTreeRegressor
 class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
     def __init__(
         self,
-        min_samples_split: grammar.Discrete(min=2, max=3),
-        min_weight_fraction_leaf: grammar.Continuous(min=0.0, max=0.5),
-        min_impurity_decrease: grammar.Continuous(min=0.0, max=0.992),
-        ccp_alpha: grammar.Continuous(min=0.0, max=0.992),
+        min_samples_split: grammar.DiscreteValue(min=2, max=3),
+        min_weight_fraction_leaf: grammar.ContinuousValue(min=0.0, max=0.5),
+        min_impurity_decrease: grammar.ContinuousValue(min=0.0, max=0.992),
+        ccp_alpha: grammar.ContinuousValue(min=0.0, max=0.992),
     ):
         SklearnEstimator.__init__(self)
         _ExtraTreeRegressor.__init__(

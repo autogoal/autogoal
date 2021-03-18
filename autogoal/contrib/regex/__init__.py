@@ -3,12 +3,12 @@ import abc
 
 from autogoal.utils import nice_repr
 from autogoal.kb import Word, FeatureSet
-from autogoal.grammar import Boolean
+from autogoal.grammar import BooleanValue
 from autogoal.experimental.pipeline import AlgorithmBase
 
 
 class _Regex(abc.ABC):
-    def __init__(self, full: Boolean):
+    def __init__(self, full: BooleanValue):
         self.full = full
         self._name = self.__class__.__name__[:-len("Regex")].lower()
 
