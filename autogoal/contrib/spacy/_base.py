@@ -2,7 +2,8 @@ from autogoal.experimental.pipeline import AlgorithmBase
 import spacy
 
 from autogoal.grammar import Categorical, Boolean
-from autogoal.kb import Sentence, Tuple, Word, Flags, List
+from autogoal.kb import Sentence, Word, FeatureSet, Seq
+from autogoal.experimental.pipeline import Supervised
 from autogoal.utils import nice_repr
 
 
@@ -36,7 +37,7 @@ class SpacyNLP(AlgorithmBase):
 
         return self._nlp
 
-    def run(self, input: Sentence()) -> List(Flags()):
+    def run(self, input: Sentence) -> Seq[FeatureSet]:
         tokenized = self.nlp(input)
 
         tokens = []
