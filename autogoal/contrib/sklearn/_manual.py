@@ -42,7 +42,7 @@ class CountVectorizerNoTokenize(_CountVectorizer, SklearnTransformer):
         return SklearnTransformer.run(self, input)
 
 
-class _FlagsVectorizer(SklearnTransformer):
+class _FeatureVectorizer(SklearnTransformer):
     def __init__(self, sparse):
         self.vectorizer = DictVectorizer(sparse=sparse)
         super().__init__()
@@ -54,7 +54,7 @@ class _FlagsVectorizer(SklearnTransformer):
         return self.vectorizer.transform(X, y=y)
 
 @nice_repr
-class FlagsSparseVectorizer(_FlagsVectorizer):
+class FeatureSparseVectorizer(_FeatureVectorizer):
     def __init__(self):
         super().__init__(sparse=True)
 
@@ -63,7 +63,7 @@ class FlagsSparseVectorizer(_FlagsVectorizer):
 
 
 @nice_repr
-class FlagsDenseVectorizer(_FlagsVectorizer):
+class FeatureDenseVectorizer(_FeatureVectorizer):
     def __init__(self):
         super().__init__(sparse=False)
 
@@ -83,7 +83,7 @@ class CRFTagger(CRF, SklearnEstimator):
 
 __all__ = [
     "CountVectorizerNoTokenize",
-    "FlagsSparseVectorizer",
-    "FlagsDenseVectorizer",
+    "FeatureSparseVectorizer",
+    "FeatureDenseVectorizer",
     "CRFTagger"
 ]

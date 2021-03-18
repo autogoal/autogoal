@@ -9,7 +9,7 @@ from autogoal.contrib.nltk._builder import (
     NltkTagger,
     NltkTrainedTagger,
 )
-from autogoal.kb import Word, Stem, Sentence, Seq, Postag, Document
+from autogoal.kb import Word, Stem, Sentence, Seq, Postag, Document, algorithm
 from autogoal.experimental.pipeline import Supervised
 from autogoal.utils import nice_repr
 from numpy import inf, nan
