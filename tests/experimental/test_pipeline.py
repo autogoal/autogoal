@@ -1,3 +1,5 @@
+import pytest
+
 import numpy as np
 from autogoal.contrib import find_classes
 from autogoal.experimental.automl import *
@@ -111,13 +113,14 @@ def test_when_pipeline_second_step_receives_two_input_one_from_previous_and_one_
     assert result == 121
 
 
+@pytest.mark.slow
 def test_build_real_pipeline():
     graph = build_pipeline_graph(
         input_types=(MatrixContinuous, Supervised[VectorCategorical]),
         output_type=VectorCategorical,
         registry=find_classes(),
     )
-    pipeline = graph.sample(sampler=Sampler(random_state=0))
+    pipeline = graph.sample(sampler=Sampler(random_state=42))
     pipeline.run(np.ones(shape=(2, 2)), [0, 1])
 
 
@@ -133,6 +136,7 @@ def test_build_input_args_with_subclass():
     assert id(result["x"]) == id(m)
 
 
+@pytest.mark.slow
 def test_automl_finds_classifiers():
     automl = AutoML(input=MatrixContinuous, output=VectorContinuous)
     builder = automl.make_pipeline_builder()
@@ -140,6 +144,7 @@ def test_automl_finds_classifiers():
     assert len(builder.graph) > 10
 
 
+@pytest.mark.slow
 def test_automl_trains_pipeline():
     automl = AutoML(
         input=MatrixContinuous, output=VectorCategorical, search_iterations=1

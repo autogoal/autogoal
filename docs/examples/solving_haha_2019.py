@@ -63,7 +63,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=1800)
-parser.add_argument("--memory", type=int, default=20)
+parser.add_argument("--memory", type=int, default=2)
 parser.add_argument("--popsize", type=int, default=50)
 parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)

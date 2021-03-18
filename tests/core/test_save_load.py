@@ -1,17 +1,11 @@
+from autogoal.experimental.pipeline import AlgorithmBase
 from io import BytesIO
 from pickle import Pickler, Unpickler
 
 from autogoal.datasets import dummy
 from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
-from autogoal.kb import (
-    CategoricalVector,
-    List,
-    MatrixContinuousDense,
-    Tuple,
-    build_composite_list,
-    build_composite_tuple,
-)
-from autogoal.ml import AutoML
+from autogoal.kb import *
+from autogoal.experimental.automl import AutoML
 from autogoal.search import RandomSearch
 from autogoal.utils import nice_repr
 
@@ -57,7 +51,7 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
 
 
 @nice_repr
-class DummyAlgorithm:
+class DummyAlgorithm(AlgorithmBase):
     def __init__(self, x: CategoricalValue("A", "B", "C")):
         self.x = x
 
@@ -68,9 +62,8 @@ class DummyAlgorithm:
         pass
 
     def run(
-        self, input: Tuple(MatrixContinuousDense(), CategoricalVector())
-    ) -> CategoricalVector():
-        X, y = input
+        self, x: MatrixContinuousDense, y:VectorCategorical
+    ) -> VectorCategorical:
         return y
 
 
@@ -89,38 +82,3 @@ def test_automl_save_load():
     pipe2 = automl2.best_pipeline_
 
     assert repr(pipe) == repr(pipe2)
-
-
-def test_save_load_tuple():
-    TupleClass = build_composite_tuple(
-        1,
-        input_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-        output_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-    )
-    algorithm = TupleClass(DummyAlgorithm)
-
-    fp = BytesIO()
-
-    Pickler(fp).dump(algorithm)
-    fp.seek(0)
-
-    algorithm2 = Unpickler(fp).load()
-
-    assert repr(algorithm) == repr(algorithm2)
-
-
-def test_save_load_list():
-    ListClass = build_composite_list(
-        input_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-        output_type=List(CategoricalVector()),
-    )
-    algorithm = ListClass(DummyAlgorithm)
-
-    fp = BytesIO()
-
-    Pickler(fp).dump(algorithm)
-    fp.seek(0)
-
-    algorithm2 = Unpickler(fp).load()
-
-    assert repr(algorithm) == repr(algorithm2)

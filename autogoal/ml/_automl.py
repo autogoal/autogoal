@@ -1,12 +1,7 @@
 import io
 
 from autogoal.search import PESearch
-from autogoal.kb import (
-    build_pipelines,
-    build_pipeline_graph,
-    Tuple,
-    infer_type,
-)
+from autogoal.kb import *
 
 from autogoal.ml.metrics import accuracy
 from autogoal.sampling import ReplaySampler

@@ -11,8 +11,8 @@ from rich.logging import RichHandler
 from rich.table import Table
 
 from autogoal.contrib import find_classes
-from autogoal.kb import CategoricalVector
-from autogoal.ml import AutoML
+from autogoal.kb import VectorCategorical
+from autogoal.experimental.automl import AutoML
 from autogoal.search import RichLogger
 from autogoal.utils import Gb, Min
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
@@ -159,7 +159,7 @@ def automl_fit(
     y = dataset[target].values
 
     automl = AutoML(
-        output=CategoricalVector(),
+        output=VectorCategorical(),
         search_kwargs=dict(
             evaluation_timeout=evaluation_timeout,
             memory_limit=memory_limit,

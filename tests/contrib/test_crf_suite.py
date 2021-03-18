@@ -1,17 +1,15 @@
 import pytest
 
 from autogoal.contrib import find_classes
-from autogoal.kb import build_pipelines, List, Flags, Category, Tuple
+from autogoal.kb import *
+from autogoal.experimental.pipeline import Supervised
 from autogoal.sampling import Sampler
 
 
 def _build_pipeline():
-    builder = build_pipelines(
-        input=Tuple(
-            List(List(Flags())),
-            List(List(Category()))
-        ),
-        output=List(List(Category())),
+    builder = build_pipeline_graph(
+        input=(Seq[Seq[FeatureSet]], Supervised[Seq[Seq[Label]]]),
+        output=Seq[Seq[Label]],
         registry=find_classes(include="CRF")
     )
 

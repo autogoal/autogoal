@@ -266,7 +266,7 @@ def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
 
     ```python
     >>> class MyClass:
-    ...     def __init__(self, x: Discrete(1,3), y: Continuous(0,1)):
+    ...     def __init__(self, x: DiscreteValue(1,3), y: ContinuousValue(0,1)):
     ...         pass
     >>> grammar = generate_cfg(MyClass)
     >>> print(grammar)

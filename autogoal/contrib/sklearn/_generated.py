@@ -1329,7 +1329,7 @@ class LocalOutlierFactor(_LocalOutlierFactor, SklearnEstimator):
         )
 
     def run(self, input: MatrixContinuous) -> VectorDiscrete:
-        return SklearnEstimator.run(self, X, y)
+        return SklearnTransformer.run(self, input, None)
 
 
 from sklearn.neighbors._nearest_centroid import NearestCentroid as _NearestCentroid

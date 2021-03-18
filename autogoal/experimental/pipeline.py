@@ -353,8 +353,6 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
 
     pool = set(registry)
 
-    print(pool)
-
     for algorithm in registry:
         for _ in range(max_list_depth):            
             algorithm = _make_seq_algorithm(algorithm)
@@ -427,8 +425,11 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
         closed_nodes.add(node)
 
     # Remove all nodes that are not connected to the end node    
-    reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
-    unreachable_nodes = set(G.nodes) - reachable_from_end
-    G.remove_nodes_from(unreachable_nodes)
+    try:
+        reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
+        unreachable_nodes = set(G.nodes) - reachable_from_end
+        G.remove_nodes_from(unreachable_nodes)
+    except KeyError:
+        raise ValueError("No pipelines can be found!")
 
     return PipelineSpace(G, input_types=input_types)

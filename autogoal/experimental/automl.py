@@ -1,3 +1,4 @@
+from autogoal.experimental.semantics import SemanticType
 import io
 
 from autogoal.search import PESearch
@@ -145,10 +146,10 @@ class AutoML:
         return self.score_metric(y, y_pred)
 
     def _input_type(self, X):
-        return self.input or infer_type(X)
+        return self.input or SemanticType.infer(X)
 
     def _output_type(self, y):
-        return self.output or infer_type(y)
+        return self.output or SemanticType.infer(y)
 
     def make_fitness_fn(self, X, y):
         y = np.asarray(y)
