@@ -4,7 +4,8 @@ from pathlib import Path
 import torch
 import numpy as np
 
-from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, List, Word
+from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, Seq, Word
+from autogoal.experimental.pipeline import Supervised
 from autogoal.grammar import Discrete, Categorical
 from autogoal.utils import CacheManager, nice_repr
 
@@ -58,7 +59,7 @@ class BertEmbedding(AlgorithmBase):
 
         print(*args, **kwargs)
 
-    def run(self, input: List(Word(language="english"))) -> MatrixContinuousDense():
+    def run(self, input: Seq[Word]) -> MatrixContinuousDense:
         if self.model is None:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
@@ -134,7 +135,7 @@ class BertTokenizeEmbedding(AlgorithmBase):
 
         print(*args, **kwargs)
 
-    def run(self, input: List(Sentence(language="english"))) -> Tensor3():
+    def run(self, input: Seq[Sentence]) -> Tensor3:
         if self.model is None:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")

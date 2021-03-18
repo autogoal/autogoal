@@ -2,7 +2,7 @@ import re
 import abc
 
 from autogoal.utils import nice_repr
-from autogoal.kb import Word, Flags
+from autogoal.kb import Word, FeatureSet
 from autogoal.grammar import Boolean
 from autogoal.experimental.pipeline import AlgorithmBase
 
@@ -16,7 +16,7 @@ class _Regex(abc.ABC):
     def _regex(self):
         pass
 
-    def run(self, input: Word()) -> Flags():
+    def run(self, input: Word) -> FeatureSet:
         r_exp = self._regex()
         b = re.fullmatch(r_exp, input) if self.full else re.search(r_exp, input) 
         return {f"is_{self._name}_regex": bool(b)}
