@@ -56,7 +56,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         return self.transform(X)
 
     def fit(self, X, y):
-        # Data must be turned to tagged data as TaggedDocument(List(Token), Tag)
+        # Data must be turned to tagged data as TaggedDocument(Seq[Token), Tag)
         # Tag use to be an unique integer
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
@@ -71,7 +71,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def transform(self, X, y=None):
         return [self.infer_vector(x) for x in X]
 
-    def run(self, input: List(Sentence)) -> MatrixContinuousDense():
+    def run(self, input: Seq[Sentence]) -> MatrixContinuousDense:
         """This methods receive a document list and transform this into a dense continuous matrix.
        """
         return SklearnTransformer.run(self, input)
@@ -150,7 +150,7 @@ class WordnetConcept(AlgorithmBase):
 
         self.wordnet = wordnet
 
-    def run(self, input: Word(domain="general", language="english")) -> Synset():
+    def run(self, input: Word) -> Seq[Synset]:
         """Find a word in Wordnet and return a List of Synset de Wordnet
         """
         synsets = self.wordnet.synsets(input)
@@ -186,7 +186,7 @@ class SentimentWord(AlgorithmBase):
 
         self.swn = sentiwordnet
 
-    def run(self, input: Synset(domain="general", language="english")) -> Sentiment():
+    def run(self, input: Synset) -> Sentiment:
         """Find a word in SentiWordnet and return a List of sentiment of the word.
         """
         swn_synset = self.swn.senti_synset(input)
@@ -208,7 +208,7 @@ class NEChunkParserTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Postag()))) -> List(List(Chunktag())):
+    def run(self, input: Seq[Postag]) -> Seq[Chunktag]:
         return NltkTagger.run(self, input)
 
 
@@ -216,8 +216,8 @@ class NEChunkParserTagger(NltkTagger):
 class GlobalChunker(SklearnWrapper):
     def __init__(
         self,
-        inner_trained_pos_tagger: algorithm(Seq[Word], List(Postag())),
-        inner_chunker: algorithm(List(List(Postag())), List(List(Chunktag())))
+        inner_trained_pos_tagger: algorithm(Seq[Word], Seq[Postag]),
+        inner_chunker: algorithm(Seq[Postag], Seq[Chunktag])
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
@@ -275,7 +275,7 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: List(Seq[Word])) -> List(List(Chunktag())):
+    def run(self, input: Seq[Seq[Word]] ) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
 
 

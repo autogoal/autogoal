@@ -145,6 +145,12 @@ class Stem(Text):
     pass
 
 
+class Synset(SemanticType):
+    pass
+
+class Sentiment(Label):
+    pass
+
 # Another basic type is a feature set, which for us is basically a dictionary of strings vs anything:
 
 class FeatureSet(SemanticType):
