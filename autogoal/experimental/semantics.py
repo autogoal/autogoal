@@ -135,6 +135,10 @@ class Postag(Label):
     pass
 
 
+class Stem(Text):
+    pass
+
+
 # A first complex type we can implement is `Seq`, to represent a list (or sequence) of another semantic type.
 # We want this type to be able to specialize in this notation:
 #

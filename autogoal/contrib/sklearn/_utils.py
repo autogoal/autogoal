@@ -167,21 +167,21 @@ from autogoal import kb
 
 
 DATA_RESOLVERS = {
-    kb.MatrixContinuousDense(): is_matrix_continuous_dense,
-    kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
-    kb.CategoricalVector(): is_categorical,
-    kb.ContinuousVector(): is_continuous,
-    kb.List(kb.Sentence()): is_string_list,
+    kb.MatrixContinuousDense: is_matrix_continuous_dense,
+    kb.MatrixContinuousSparse: is_matrix_continuous_sparse,
+    kb.VectorCategorical: is_categorical,
+    kb.VectorContinuous: is_continuous,
+    kb.Seq[kb.Sentence]: is_string_list,
 }
 
 
 DATA_TYPE_EXAMPLES = {
-    kb.MatrixContinuousDense(): np.random.rand(10, 10),
-    kb.MatrixContinuousSparse(): sp.rand(10, 10),
-    kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
-    kb.ContinuousVector(): np.random.rand(10),
-    kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
-    kb.List(kb.Sentence()): ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
+    kb.MatrixContinuousDense: np.random.rand(10, 10),
+    kb.MatrixContinuousSparse: sp.rand(10, 10),
+    kb.VectorCategorical: np.asarray(["A"] * 5 + ["B"] * 5),
+    kb.VectorContinuous: np.random.rand(10),
+    kb.VectorDiscrete: np.random.randint(0, 10, (10,), dtype=int),
+    kb.Seq[kb.Sentence]: ["abc bcd def feg geh hij jkl lmn nop pqr"] * 10,
 }
 
 

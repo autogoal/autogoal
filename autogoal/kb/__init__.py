@@ -1,7 +1,3 @@
-from ._data import *
-from ._algorithm import (
-    build_pipelines,
-    build_pipeline_graph,
-    PipelineBuilder,
-    Pipeline,
-)
+from autogoal.experimental.automl import AutoML
+from autogoal.experimental.semantics import *
+from autogoal.experimental.pipeline import build_pipeline_graph, Pipeline

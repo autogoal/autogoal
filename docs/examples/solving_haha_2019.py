@@ -48,7 +48,7 @@ from autogoal.search import (
     PESearch,
     RichLogger,
 )
-from autogoal.kb import List, Sentence, Tuple, CategoricalVector
+from autogoal.kb import Seq, Sentence, VectorCategorical
 from autogoal.contrib import find_classes
 from sklearn.metrics import f1_score
 
@@ -90,8 +90,8 @@ for cls in find_classes():
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=List(Sentence()),
-    output=CategoricalVector(),
+    input=Seq[Sentence],
+    output=VectorCategorical,
     search_iterations=args.iterations,
     score_metric=f1_score,
     errors='warn',

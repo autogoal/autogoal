@@ -1,7 +1,6 @@
 import io
 
 from autogoal.search import PESearch
-from autogoal.kb import infer_type
 
 # TODO: Refactor this import when merged
 from autogoal.experimental.pipeline import Supervised, build_pipeline_graph

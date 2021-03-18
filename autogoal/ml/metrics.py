@@ -1,9 +1,6 @@
 import inspect
 import numpy as np
 
-from autogoal.kb import CategoricalVector
-from autogoal.kb import conforms
-
 
 METRICS = []
 
@@ -29,5 +26,5 @@ def find_metric(*types):
     raise ValueError("No metric found for types: %r" % types)
 
 
-def accuracy(ytrue: CategoricalVector, ypred: CategoricalVector) -> float:
+def accuracy(ytrue, ypred) -> float:
     return np.mean([1 if yt == yp else 0 for yt,yp in zip(ytrue, ypred)])
