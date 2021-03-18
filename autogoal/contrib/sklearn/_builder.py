@@ -110,7 +110,7 @@ GENERATION_RULES = dict(
     RadiusNeighborsRegressor=dict(ignore_params=set(["metric"])),
     LabelBinarizer=dict(
         ignore_params=set(["neg_label", "pos_label"]),
-        input_annotation=kb.List(kb.Category()),
+        input_annotation=kb.Seq[kb.Label],
     ),
     HashingVectorizer=dict(
         ignore_params=set(["token_pattern", "analyzer", "input", "decode_error"])

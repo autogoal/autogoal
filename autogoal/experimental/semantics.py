@@ -135,6 +135,10 @@ class Postag(Label):
     pass
 
 
+class Chunktag(Label):
+    pass
+
+
 class Stem(Text):
     pass
 

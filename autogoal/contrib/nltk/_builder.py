@@ -47,11 +47,6 @@ languages = [
 languages_re = re.compile("|".join(languages))
 
 
-GENERATION_RULES = dict(
-    SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
-)
-
-
 class NltkTokenizer(AlgorithmBase):
     def run(self, input):
         return self.tokenize(input)
@@ -125,7 +120,7 @@ base_classes = {
 
 
 GENERATION_RULES = dict(
-    SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
+    SnowballStemmer=dict(assume=True, assume_input=Word, assume_output=Stem),
 )
 
 

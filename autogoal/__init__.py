@@ -10,7 +10,7 @@ tunable, and then use search algorithms to find the best way to tune or configur
 from autogoal import contrib
 from autogoal import datasets
 from autogoal import grammar
-# from autogoal import kb
+from autogoal import kb
 from autogoal import ml
 from autogoal import sampling
 from autogoal import search

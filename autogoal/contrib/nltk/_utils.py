@@ -12,26 +12,26 @@ from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
                                             is_string_list
 
 DATA_TYPE_EXAMPLES = {
-    kb.Postag():("lorem", "ipsum"), # (str, str) Tagged token
-    kb.List(kb.Postag()):[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
-    kb.List(kb.List(kb.Postag())):[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
-    kb.Chunktag():(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
-    kb.List(kb.Chunktag()):[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
-    kb.List(kb.List(kb.Chunktag())):[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
-    kb.Stem():"ips",
-    kb.Word():"ipsum",
-    kb.Sentence():"It is the best of all movies.",
-    kb.Document():"It is the best of all movies. I actually love that action scene.",
-    kb.MatrixContinuousDense(): np.random.rand(10, 10),
-    kb.MatrixContinuousSparse(): sp.rand(10, 10),
-    kb.CategoricalVector(): np.asarray(["A"] * 5 + ["B"] * 5),
-    kb.ContinuousVector(): np.random.rand(10),
-    kb.DiscreteVector(): np.random.randint(0, 10, (10,), dtype=int),
-    kb.List(kb.Word()):["ipsu", "lorem"],
-    kb.List(kb.Document()): ["abc ipsu lorem say hello", "ipsum lorem", "abc"] * 2,
-    kb.List(kb.List(kb.Stem())): [["abc", "ipsu", "lorem"] * 10],
-    kb.List(kb.List(kb.Word())): [["abc", "ipsu", "lorem"] * 10],
-    kb.List(kb.List(kb.Sentence())): [["abc a sentence lorem"], ["ipsum lorem"], ["abc"]]
+    kb.Postag:("lorem", "ipsum"), # (str, str) Tagged token
+    kb.Seq[kb.Postag]:[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
+    kb.Seq[kb.Seq[kb.Postag]]:[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
+    kb.Chunktag:(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
+    kb.Seq[kb.Chunktag]:[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
+    kb.Seq[kb.Seq[kb.Chunktag]]:[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
+    kb.Stem:"ips",
+    kb.Word:"ipsum",
+    kb.Sentence:"It is the best of all movies.",
+    kb.Document:"It is the best of all movies. I actually love that action scene.",
+    kb.MatrixContinuousDense: np.random.rand(10, 10),
+    kb.MatrixContinuousSparse: sp.rand(10, 10),
+    kb.VectorCategorical: np.asarray(["A"] * 5 + ["B"] * 5),
+    kb.VectorContinuous: np.random.rand(10),
+    kb.VectorDiscrete: np.random.randint(0, 10, (10,), dtype=int),
+    kb.Seq[kb.Word]:["ipsu", "lorem"],
+    kb.Seq[kb.Document]: ["abc ipsu lorem say hello", "ipsum lorem", "abc"] * 2,
+    kb.Seq[kb.Seq[kb.Stem]]: [["abc", "ipsu", "lorem"] * 10],
+    kb.Seq[kb.Seq[kb.Word]]: [["abc", "ipsu", "lorem"] * 10],
+    kb.Seq[kb.Seq[kb.Sentence]]: [["abc a sentence lorem"], ["ipsum lorem"], ["abc"]]
 }
 
 def is_algorithm(cls, verbose=False):
@@ -143,7 +143,7 @@ def is_stemmer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.stem import Cistem
     >>> is_stemmer(Cistem)
-    (True, (Word(), Stem()))
+    (True, (Word, Stem))
     >>> is_stemmer(LogisticRegression)
     (False, None)
 
@@ -152,9 +152,9 @@ def is_stemmer(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.Stem()
+    output = kb.Stem
 
-    for input_type in [kb.Word()]:
+    for input_type in [kb.Word]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -183,7 +183,7 @@ def is_lemmatizer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.stem import WordNetLemmatizer
     >>> is_lemmatizer(WordNetLemmatizer)
-    (True, (Word(), Stem()))
+    (True, (Word, Stem))
     >>> is_lemmatizer(LogisticRegression)
     (False, None)
 
@@ -192,8 +192,8 @@ def is_lemmatizer(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.Stem()
-    for input_type in [kb.Word()]:
+    output = kb.Stem
+    for input_type in [kb.Word]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -222,7 +222,7 @@ def is_word_tokenizer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.tokenize import TweetTokenizer
     >>> is_word_tokenizer(TweetTokenizer)
-    (True, (Sentence(), List(Word())))
+    (True, (Sentence, List(Word)))
     >>> is_word_tokenizer(LogisticRegression)
     (False, None)
 
@@ -231,9 +231,9 @@ def is_word_tokenizer(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.Word())
+    output = kb.Seq[kb.Word]
 
-    for input_type in [kb.Sentence()]:
+    for input_type in [kb.Sentence]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -262,7 +262,7 @@ def is_sent_tokenizer(cls, verbose=False):
     >>> from sklearn.linear_model import LogisticRegression
     >>> from nltk.tokenize import PunktSentenceTokenizer
     >>> is_sent_tokenizer(PunktSentenceTokenizer)
-    (True, (Document(), List(Sentence())))
+    (True, (Document, List(Sentence)))
     >>> is_sent_tokenizer(LogisticRegression)
     (False, None)
 
@@ -271,9 +271,9 @@ def is_sent_tokenizer(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.Sentence())
+    output = kb.Seq(kb.Sentence)
 
-    for input_type in [kb.Document()]:
+    for input_type in [kb.Document]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -360,7 +360,7 @@ def is_tagger(cls, verbose=False):
     >>> from nltk.tag import AffixTagger
     >>> from nltk.tokenize import PunktSentenceTokenizer
     >>> is_tagger(AffixTagger)
-    (True, (List(List(Word())), List(List(Postag()))))
+    (True, (List(List(Word)), List(List(Postag()))))
     >>> is_tagger(LogisticRegression)
     (False, None)
 
@@ -369,9 +369,9 @@ def is_tagger(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.List(kb.Postag()))
+    output = kb.Seq(kb.Seq[kb.Postag])
 
-    for input_type in [kb.List(kb.List(kb.Word()))]:
+    for input_type in [kb.Seq(kb.Seq[kb.Word])]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -410,7 +410,7 @@ def is_chunker(cls, verbose=False):
     >>> from nltk.chunk.named_entity import NEChunkParserTagger
     >>> from nltk.tokenize import PunktSentenceTokenizer
     >>> is_chunker(NEChunkParserTagger)
-    (True, (List(List(Tuple(Word(), Word()))), List(List(Tuple(Tuple(Word(), Word()), Word())))))
+    (True, (List(List(Tuple(Word, Word))), List(List(Tuple(Tuple(Word, Word), Word)))))
     >>> is_chunker(PunktSentenceTokenizer)
     (False, None)
 
@@ -419,9 +419,9 @@ def is_chunker(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.List(kb.Chunktag()))
+    output = kb.Seq(kb.Seq[kb.Chunktag])
 
-    for input_type in [kb.List(kb.List(kb.Postag()))]:
+    for input_type in [kb.Seq(kb.Seq[kb.Postag])]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -452,7 +452,7 @@ def is_pretrained_tagger(cls, verbose=False):
     >>> from nltk.tag import AffixTagger
     >>> from nltk.tag.perceptron import PerceptronTagger
     >>> is_pretrained_tagger(PerceptronTagger)
-    (True, (List(Word()), List(Tuple(Word(), Word()))))
+    (True, (List(Word), List(Tuple(Word, Word))))
     >>> is_pretrained_tagger(AffixTagger)
     (False, None)
 
@@ -461,9 +461,9 @@ def is_pretrained_tagger(cls, verbose=False):
         return False, None
 
     inputs = []
-    output = kb.List(kb.Postag())
+    output = kb.Seq[kb.Postag]
 
-    for input_type in [kb.List(kb.Word())]:
+    for input_type in [kb.Seq[kb.Word]]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
             
@@ -720,22 +720,22 @@ def is_chunked_sentence_list(obj):
 
 
 DATA_RESOLVERS = {
-    kb.Postag():is_tag,
-    kb.List(kb.Postag()):is_tag_list,
-    kb.List(kb.List(kb.Postag())):is_tagged_sentence_list,
+    kb.Postag:is_tag,
+    kb.Seq[kb.Postag]:is_tag_list,
+    kb.Seq[kb.Seq[kb.Postag]]:is_tagged_sentence_list,
     kb.Chunktag:is_chunk,
-    kb.List(kb.Chunktag()):is_chunk_list,
-    kb.List(kb.List(kb.Chunktag())):is_chunked_sentence_list,
-    kb.Stem():is_word,
-    kb.Word():is_word,
-    kb.Sentence():is_sentence,
-    kb.Document():is_sentence,
-    kb.MatrixContinuousDense(): is_matrix_continuous_dense,
-    kb.MatrixContinuousSparse(): is_matrix_continuous_sparse,
-    kb.CategoricalVector(): is_categorical,
-    kb.ContinuousVector(): is_continuous,
-    kb.List(kb.Word()): is_word_list,
-    kb.List(kb.Sentence()): is_sentence_list,
-    kb.List(kb.List(kb.Stem())): is_word_list_list,
-    kb.List(kb.List(kb.Word())): is_word_list_list,
+    kb.Seq[kb.Chunktag]:is_chunk_list,
+    kb.Seq[kb.Seq[kb.Chunktag]]:is_chunked_sentence_list,
+    kb.Stem:is_word,
+    kb.Word:is_word,
+    kb.Sentence:is_sentence,
+    kb.Document:is_sentence,
+    kb.MatrixContinuousDense: is_matrix_continuous_dense,
+    kb.MatrixContinuousSparse: is_matrix_continuous_sparse,
+    kb.VectorCategorical: is_categorical,
+    kb.VectorContinuous: is_continuous,
+    kb.Seq[kb.Word]: is_word_list,
+    kb.Seq[kb.Sentence]: is_sentence_list,
+    kb.Seq[kb.Seq[kb.Stem]]: is_word_list_list,
+    kb.Seq[kb.Seq[kb.Word]]: is_word_list_list,
 }
