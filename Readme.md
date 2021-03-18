@@ -113,7 +113,7 @@ automl.fit(...)
 from autogoal.ml._automl import ...
 from autogoal.contrib.sklearn._generated import ...
 
-# private members as well
+# as well as private members of any type
 automl._input_type(...)
 
 ```
@@ -125,6 +125,8 @@ These are our consistency rules:
 - Between minor version updates, e.g., `1.x` and `1.y`, you can expect to find new functionality, but anything you can use from the   public API will still be there with a consistent semantic (save for bugfixes).
 
 - Between micro version updates, e.g., `1.3.x` and `1.3.y`, the public API is frozen even for additions.
+
+- The private API can be changed at all times.
 
 ⚠️ While AutoGOAL is on public beta (versions `0.x`) the public API is considered unstable and thus everything can change. However, we try to keep breaking changes to a minimum.
 
