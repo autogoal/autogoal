@@ -353,6 +353,8 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
 
     pool = set(registry)
 
+    print(pool)
+
     for algorithm in registry:
         for _ in range(max_list_depth):            
             algorithm = _make_seq_algorithm(algorithm)

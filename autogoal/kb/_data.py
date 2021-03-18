@@ -1,10 +1,10 @@
-# from autogoal.exceptions import InterfaceIncompatibleError
+from autogoal.exceptions import InterfaceIncompatibleError
 # import types
-# import inspect
+import inspect
 # import pprint
 
-# from typing import Mapping
-# from autogoal.grammar import Symbol, Union, Empty, Subset
+from typing import Mapping
+from autogoal.grammar import Symbol, Union, Empty, Subset
 
 # from scipy.sparse.base import spmatrix
 # from numpy import ndarray
@@ -24,61 +24,61 @@
 #     )
 
 
-# class Interface:
-#     @classmethod
-#     def is_compatible(cls, other_cls):
-#         own_methods = _get_annotations(cls, ignore=["generate_cfg", "is_compatible"])
+class Interface:
+    @classmethod
+    def is_compatible(cls, other_cls):
+        own_methods = _get_annotations(cls, ignore=["generate_cfg", "is_compatible"])
 
-#         if not inspect.isclass(other_cls):
-#             return False
+        if not inspect.isclass(other_cls):
+            return False
 
-#         if issubclass(other_cls, Interface):
-#             return False
+        if issubclass(other_cls, Interface):
+            return False
 
-#         type_methods = _get_annotations(other_cls)
-#         return _compatible_annotations(own_methods, type_methods)
+        type_methods = _get_annotations(other_cls)
+        return _compatible_annotations(own_methods, type_methods)
 
-#     @classmethod
-#     def generate_cfg(cls, grammar, head):
-#         symbol = head or Symbol(cls.__name__)
-#         compatible = []
+    @classmethod
+    def generate_cfg(cls, grammar, head):
+        symbol = head or Symbol(cls.__name__)
+        compatible = []
 
-#         for _, other_cls in grammar.namespace.items():
-#             if cls.is_compatible(other_cls):
-#                 compatible.append(other_cls)
+        for _, other_cls in grammar.namespace.items():
+            if cls.is_compatible(other_cls):
+                compatible.append(other_cls)
 
-#         if not compatible:
-#             raise InterfaceIncompatibleError(cls.__name__)
+        if not compatible:
+            raise InterfaceIncompatibleError(cls.__name__)
 
-#         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
+        return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
-# class Distinct:
-#     def __init__(self, interface: Interface, exceptions=None):
-#         self.interface = interface
-#         self.exceptions = exceptions
+class Distinct:
+    def __init__(self, interface: Interface, exceptions=None):
+        self.interface = interface
+        self.exceptions = exceptions
 
-#     def generate_cfg(self, grammar, head):
-#         symbol = head or Symbol(self.__class__.__name__)
-#         compatible = []
+    def generate_cfg(self, grammar, head):
+        symbol = head or Symbol(self.__class__.__name__)
+        compatible = []
 
-#         for _, other_cls in grammar.namespace.items():
-#             if other_cls in self.exceptions:
-#                 continue
+        for _, other_cls in grammar.namespace.items():
+            if other_cls in self.exceptions:
+                continue
 
-#             if hasattr(other_cls, "__name__") and other_cls.__name__ in self.exceptions:
-#                 continue
+            if hasattr(other_cls, "__name__") and other_cls.__name__ in self.exceptions:
+                continue
 
-#             if self.interface.is_compatible(other_cls):
-#                 compatible.append(other_cls)
+            if self.interface.is_compatible(other_cls):
+                compatible.append(other_cls)
 
-#         if not compatible:
-#             raise ValueError(
-#                 "Cannot find compatible implementations for <class %s>"
-#                 % self.interface
-#             )
+        if not compatible:
+            raise ValueError(
+                "Cannot find compatible implementations for <class %s>"
+                % self.interface
+            )
 
-#         return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
+        return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
 # def conforms(type1, type2):
@@ -94,72 +94,72 @@
 #     return False
 
 
-# def _compatible_annotations(
-#     methods_if: Mapping[str, inspect.Signature],
-#     methods_im: Mapping[str, inspect.Signature],
-# ):
-#     for name, mif in methods_if.items():
-#         if not name in methods_im:
-#             return False
+def _compatible_annotations(
+    methods_if: Mapping[str, inspect.Signature],
+    methods_im: Mapping[str, inspect.Signature],
+):
+    for name, mif in methods_if.items():
+        if not name in methods_im:
+            return False
 
-#         mim = methods_im[name]
+        mim = methods_im[name]
 
-#         for name, param_if in mif.parameters.items():
-#             if not name in mim.parameters:
-#                 return False
+        for name, param_if in mif.parameters.items():
+            if not name in mim.parameters:
+                return False
 
-#             param_im = mim.parameters[name]
-#             ann_if = param_if.annotation
+            param_im = mim.parameters[name]
+            ann_if = param_if.annotation
 
-#             if ann_if == inspect.Parameter.empty:
-#                 continue
+            if ann_if == inspect.Parameter.empty:
+                continue
 
-#             ann_im = param_im.annotation
+            ann_im = param_im.annotation
 
-#             if not conforms(ann_if, ann_im):
-#                 return False
+            if not conforms(ann_if, ann_im):
+                return False
 
-#         return_if = mif.return_annotation
+        return_if = mif.return_annotation
 
-#         if return_if == inspect.Parameter.empty:
-#             continue
+        if return_if == inspect.Parameter.empty:
+            continue
 
-#         return_im = mim.return_annotation
+        return_im = mim.return_annotation
 
-#         if not conforms(return_im, return_if):
-#             return False
+        if not conforms(return_im, return_if):
+            return False
 
-#     return True
+    return True
 
 
-# def _get_annotations(clss, ignore=[]):
-#     """
-#     Computes the annotations of all public methods in type `clss`.
+def _get_annotations(clss, ignore=[]):
+    """
+    Computes the annotations of all public methods in type `clss`.
 
-#     ##### Examples
+    ##### Examples
 
-#     ```python
-#     >>> class A:
-#     ...     def f(self, input: int) -> float:
-#     ...         pass
-#     >>> _get_annotations(A)
-#     {'f': <Signature (self, input:int) -> float>}
+    ```python
+    >>> class A:
+    ...     def f(self, input: int) -> float:
+    ...         pass
+    >>> _get_annotations(A)
+    {'f': <Signature (self, input:int) -> float>}
 
-#     ```
-#     """
-#     methods = inspect.getmembers(
-#         clss, lambda m: inspect.ismethod(m) or inspect.isfunction(m)
-#     )
-#     signatures = {
-#         name: inspect.signature(method)
-#         for name, method in methods
-#         if not name.startswith("_")
-#     }
+    ```
+    """
+    methods = inspect.getmembers(
+        clss, lambda m: inspect.ismethod(m) or inspect.isfunction(m)
+    )
+    signatures = {
+        name: inspect.signature(method)
+        for name, method in methods
+        if not name.startswith("_")
+    }
 
-#     for name in ignore:
-#         signatures.pop(name, None)
+    for name in ignore:
+        signatures.pop(name, None)
 
-#     return signatures
+    return signatures
 
 
 # # def make_list_wrapper(algorithm):

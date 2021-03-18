@@ -11,7 +11,7 @@ class VectorAggregator(AlgorithmBase):
     def __init__(self, mode: CategoricalValue("mean", "max")):
         self.mode = mode
 
-    def run(self, input: List(ContinuousVector())) -> ContinuousVector():
+    def run(self, input: Seq[VectorContinuous]) -> VectorContinuous:
         input = np.vstack(input)
 
         if self.mode == "mean":
@@ -42,7 +42,7 @@ class MatrixBuilder(AlgorithmBase):
     ```
     """
 
-    def run(self, input: List(ContinuousVector())) -> MatrixContinuousDense():
+    def run(self, input: Seq[VectorContinuous]) -> MatrixContinuousDense:
         return np.vstack(input)
 
 
@@ -71,13 +71,13 @@ class TensorBuilder(AlgorithmBase):
     ```
     """
 
-    def run(self, input: List(MatrixContinuousDense())) -> Tensor3():
+    def run(self, input: Seq[MatrixContinuousDense]) -> Tensor3:
         return np.vstack([np.expand_dims(m, axis=0) for m in input])
 
 
 @nice_repr
 class FlagsMerger(AlgorithmBase):
-    def run(self, input: List(Flags())) -> Flags():
+    def run(self, input: Seq[FeatureSet]) -> FeatureSet:
         result = {}
 
         for d in input:
@@ -91,14 +91,14 @@ class MultipleFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
         extractors: Distinct(
-            algorithm(Word(), Flags()), exceptions=["MultipleFeatureExtractor"]
+            algorithm(Word, FeatureSet), exceptions=["MultipleFeatureExtractor"]
         ),
-        merger: algorithm(List(Flags()), Flags()),
+        merger: algorithm(Seq[FeatureSet], FeatureSet),
     ):
         self.extractors = extractors
         self.merger = merger
 
-    def run(self, input: Word()) -> Flags():
+    def run(self, input: Word) -> FeatureSet:
         flags = [extractor.run(input) for extractor in self.extractors]
         return self.merger.run(flags)
 
@@ -107,15 +107,15 @@ class MultipleFeatureExtractor(AlgorithmBase):
 class SentenceFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
-        tokenizer: algorithm(Sentence(), List(Word())),
-        feature_extractor: algorithm(Word(), Flags()),
+        tokenizer: algorithm(Sentence, Seq[Word]),
+        feature_extractor: algorithm(Word, FeatureSet),
         include_text: BooleanValue(),
     ):
         self.tokenizer = tokenizer
         self.feature_extractor = feature_extractor
         self.include_text = include_text
 
-    def run(self, input: Sentence()) -> Flags():
+    def run(self, input: Sentence) -> FeatureSet:
         tokens = self.tokenizer.run(input)
         flags = [self.feature_extractor(w) for w in tokens]
 
@@ -131,51 +131,51 @@ class SentenceFeatureExtractor(AlgorithmBase):
 class DocumentFeatureExtractor(AlgorithmBase):
     def __init__(
         self,
-        tokenizer: algorithm(Document(), List(Sentence())),
-        feature_extractor: algorithm(Sentence(), Flags()),
+        tokenizer: algorithm(Document, Seq[Sentence]),
+        feature_extractor: algorithm(Sentence, FeatureSet),
     ):
         self.tokenizer = tokenizer
         self.feature_extractor = feature_extractor
 
-    def run(self, input: Document()) -> List(Flags()):
+    def run(self, input: Document) -> Seq[FeatureSet]:
         tokens = self.tokenizer.run(input)
         flags = [self.feature_extractor(w) for w in tokens]
         return
 
 
-@nice_repr
-class TextEntityEncoder(AlgorithmBase):
-    """
-    Convierte una oración en texto plano más la lista de entidades
-    reconocidas en la oración, en una lista de tokens con sus respectivas
-    categorias BILOUV.
-    """
+# @nice_repr
+# class TextEntityEncoder(AlgorithmBase):
+#     """
+#     Convierte una oración en texto plano más la lista de entidades
+#     reconocidas en la oración, en una lista de tokens con sus respectivas
+#     categorias BILOUV.
+#     """
 
-    def __init__(self, tokenizer: algorithm(Sentence(), List(Word()))):
-        self.tokenizer = tokenizer
+#     def __init__(self, tokenizer: algorithm(Sentence, Seq[Word])):
+#         self.tokenizer = tokenizer
 
-    def run(
-        self, input: Tuple(Sentence(), List(Entity()))
-    ) -> Tuple(List(Word()), List(Postag())):
-        pass
+#     def run(
+#         self, input: Tuple(Sentence, Seq[Entity])
+#     ) -> Tuple(Seq[Word], Seq[Postag]:
+#         pass
 
 
-@nice_repr
-class TextRelationEncoder(AlgorithmBase):
-    """
-    Convierte una oración en texto plano y una lista de relaciones 
-    que se cumplen entre entidades, en una lista de ejemplos
-    por cada oración.
-    """
+# @nice_repr
+# class TextRelationEncoder(AlgorithmBase):
+#     """
+#     Convierte una oración en texto plano y una lista de relaciones 
+#     que se cumplen entre entidades, en una lista de ejemplos
+#     por cada oración.
+#     """
 
-    def __init__(self,
-        tokenizer: algorithm(Sentence(), List(Word())),
-        token_feature_extractor: algorithm(Word(), Flags()),
-        # token_sentence_encoder: algorithm(Word(), )
-    ):
-        pass
+#     def __init__(self,
+#         tokenizer: algorithm(Sentence, Seq[Word]),
+#         token_feature_extractor: algorithm(Word, FeatureSet),
+#         # token_sentence_encoder: algorithm(Word, )
+#     ):
+#         pass
 
-    def run(
-        self, input: Tuple(Sentence(), List(Tuple(Entity(), Entity(), Category())))
-    ) -> Tuple(List(Vector()), CategoricalVector()):
-        pass
+#     def run(
+#         self, input: Tuple(Sentence, Seq[Tupl](Entity(), Entity(), Category())))
+#     ) -> Tuple(Seq[Vect]r()), CategoricalVector()):
+#         pass
