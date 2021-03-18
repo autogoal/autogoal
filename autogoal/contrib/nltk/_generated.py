@@ -9,7 +9,8 @@ from autogoal.contrib.nltk._builder import (
     NltkTagger,
     NltkTrainedTagger,
 )
-from autogoal.kb._data import *
+from autogoal.kb import Word, Stem, Sentence, Seq, Postag, Document
+from autogoal.experimental.pipeline import Supervised
 from autogoal.utils import nice_repr
 from numpy import inf, nan
 
@@ -23,7 +24,7 @@ class Cistem(_Cistem, NltkStemmer):
         NltkStemmer.__init__(self)
         _Cistem.__init__(self, case_insensitive=case_insensitive)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -37,7 +38,7 @@ class ISRIStemmer(_ISRIStemmer, NltkStemmer):
         NltkStemmer.__init__(self)
         _ISRIStemmer.__init__(self,)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -51,7 +52,7 @@ class LancasterStemmer(_LancasterStemmer, NltkStemmer):
         NltkStemmer.__init__(self)
         _LancasterStemmer.__init__(self, strip_prefix_flag=strip_prefix_flag)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -65,7 +66,7 @@ class PorterStemmer(_PorterStemmer, NltkStemmer):
         NltkStemmer.__init__(self)
         _PorterStemmer.__init__(self,)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -79,7 +80,7 @@ class RSLPStemmer(_RSLPStemmer, NltkStemmer):
         NltkStemmer.__init__(self)
         _RSLPStemmer.__init__(self,)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -112,7 +113,7 @@ class SnowballStemmer(_SnowballStemmer, NltkStemmer):
         NltkStemmer.__init__(self)
         _SnowballStemmer.__init__(self, language=language)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
 
 
@@ -126,7 +127,7 @@ class WordNetLemmatizer(_WordNetLemmatizer, NltkLemmatizer):
         NltkLemmatizer.__init__(self)
         _WordNetLemmatizer.__init__(self,)
 
-    def run(self, input: Word()) -> Stem():
+    def run(self, input: Word) -> Stem:
         return NltkLemmatizer.run(self, input)
 
 
@@ -140,7 +141,7 @@ class PerceptronTagger(_PerceptronTagger, NltkTrainedTagger):
         NltkTrainedTagger.__init__(self)
         _PerceptronTagger.__init__(self,)
 
-    def run(self, input: List(Word())) -> List(Postag()):
+    def run(self, input: Seq[Word]) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
 
 
@@ -155,7 +156,7 @@ class AffixTagger(NltkTagger):
         min_stem_length: Discrete(min=1, max=4),
         cutoff: Discrete(min=0, max=10),
         backoff: algorithm(
-            Tuple(List(List(Word())), List(List(Postag()))), List(List(Postag()))
+            Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]], Seq[Seq[Postag]]
         ),
     ):
         self.affix_length = affix_length
@@ -173,9 +174,7 @@ class AffixTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run(self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -193,9 +192,7 @@ class BigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run(self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -211,9 +208,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -231,9 +226,7 @@ class TrigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -251,9 +244,7 @@ class UnigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -271,7 +262,7 @@ class TnT(_TnT, NltkTrainedTagger):
         NltkTrainedTagger.__init__(self)
         _TnT.__init__(self, Trained=Trained, N=N, C=C)
 
-    def run(self, input: List(Word())) -> List(Postag()):
+    def run(self, input: Seq[Word] ) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
 
 
@@ -294,7 +285,7 @@ class TweetTokenizer(_TweetTokenizer, NltkTokenizer):
             strip_handles=strip_handles,
         )
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -308,7 +299,7 @@ class MWETokenizer(_MWETokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _MWETokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -322,7 +313,7 @@ class PunktSentenceTokenizer(_PunktSentenceTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _PunktSentenceTokenizer.__init__(self,)
 
-    def run(self, input: Document()) -> List(Sentence()):
+    def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
 
 
@@ -336,7 +327,7 @@ class BlanklineTokenizer(_BlanklineTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _BlanklineTokenizer.__init__(self,)
 
-    def run(self, input: Document()) -> List(Sentence()):
+    def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
 
 
@@ -350,7 +341,7 @@ class WhitespaceTokenizer(_WhitespaceTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _WhitespaceTokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -364,7 +355,7 @@ class WordPunctTokenizer(_WordPunctTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _WordPunctTokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -378,7 +369,7 @@ class SExprTokenizer(_SExprTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _SExprTokenizer.__init__(self, strict=strict)
 
-    def run(self, input: Document()) -> List(Sentence()):
+    def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
 
 
@@ -392,7 +383,7 @@ class LineTokenizer(_LineTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _LineTokenizer.__init__(self,)
 
-    def run(self, input: Document()) -> List(Sentence()):
+    def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
 
 
@@ -406,7 +397,7 @@ class SpaceTokenizer(_SpaceTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _SpaceTokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -420,7 +411,7 @@ class TabTokenizer(_TabTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _TabTokenizer.__init__(self,)
 
-    def run(self, input: Document()) -> List(Sentence()):
+    def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
 
 
@@ -434,7 +425,7 @@ class ToktokTokenizer(_ToktokTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _ToktokTokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -448,7 +439,7 @@ class TreebankWordTokenizer(_TreebankWordTokenizer, NltkTokenizer):
         NltkTokenizer.__init__(self)
         _TreebankWordTokenizer.__init__(self,)
 
-    def run(self, input: Sentence()) -> List(Word()):
+    def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
 
 
@@ -462,7 +453,7 @@ class PerceptronTagger(_PerceptronTagger, NltkTrainedTagger):
         NltkTrainedTagger.__init__(self)
         _PerceptronTagger.__init__(self,)
 
-    def run(self, input: List(Word())) -> List(Postag()):
+    def run(self, input: Seq[Word]) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
 
 
@@ -480,9 +471,7 @@ class BigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -498,9 +487,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -518,9 +505,7 @@ class TrigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -538,9 +523,7 @@ class UnigramTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(
-        self, input: Tuple(List(List(Word())), List(List(Postag())))
-    ) -> List(List(Postag())):
+    def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
         return NltkTagger.run(self, input)
 
 
@@ -558,7 +541,7 @@ class TnT(_TnT, NltkTrainedTagger):
         NltkTrainedTagger.__init__(self)
         _TnT.__init__(self, Trained=Trained, N=N, C=C)
 
-    def run(self, input: List(Word())) -> List(Postag()):
+    def run(self, input: Seq[Word]) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
 
 
