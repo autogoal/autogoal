@@ -289,7 +289,7 @@ Discrete = TensorData("i", "Discrete")
 # This requires us to implement the `_specialize` just like we did with `Seq`.
 # The internal class will in turn implement `_match` accordingly to how those values are defined.
 
-# Now, one special thing we want to do, is to let some of these semantic flags undefined (using `None`)
+# One special thing we want to do is to let some of these semantic flags undefined (using `None`)
 # such that `Tensor[2, None, Dense]` represents any structure that can have two dimensions no matter the internal type.
 # And we want `issubclass(...)` to work in a way that `Tensor[2, Categorical, Dense]` is a subclass to `Tensor[2, None, Dense]`.
 # For this purpose we will redefine `_conforms` to match according to how those semantic flags are defined.
