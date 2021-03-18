@@ -50,6 +50,49 @@ class Supervised(SemanticType):
         return SupervisedImp
 
 
+def algorithm(*types):
+    from autogoal.grammar import Union, Symbol
+
+    *inputs, output = types
+
+    def match(cls):
+        if not hasattr(cls, "run"):
+            return False
+
+        signature = inspect.signature(cls.run)
+        input_types = [v.annotation for k,v in signature.parameters.items() if k != "self"]
+        output_type = signature.return_annotation
+
+        if len(inputs) != len(input_types):
+            return False
+
+        for expected, real in zip(inputs, input_types):
+            if not issubclass(expected, real):
+                return False
+
+        if not issubclass(output, output_type):
+            return False
+
+        return True       
+
+    class AlgorithmProduction:
+        @classmethod
+        def generate_cfg(cls, grammar, head):
+            symbol = head or Symbol(cls.__name__)
+            compatible = []
+
+            for _, other_cls in grammar.namespace.items():
+                if match(other_cls):
+                    compatible.append(other_cls)
+
+            if not compatible:
+                raise ValueError(f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}")
+
+            return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
+
+    return AlgorithmProduction
+
+
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
 
