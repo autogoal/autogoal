@@ -441,4 +441,9 @@ __all__ = [
     "MatrixDiscrete",
     "Tensor3",
     "Tensor4",
+    "Dense",
+    "Sparse",
+    "Categorical",
+    "Continuous",
+    "Discrete",
 ]
