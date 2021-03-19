@@ -113,14 +113,14 @@ class Document(Text):
 
 class Sentence(Document):
     @classmethod
-    def _match(self, x):
+    def _match(cls, x):
         return super()._match(x) and x.count(".") <= 1
 
 
 class Word(Sentence):
     @classmethod
     def _match(cls, x):
-        return super()._match(x) and not " " in x
+        return super()._match(x) and " " not in x
 
 
 # We also need some basic types for generic kinds of labels, used in NLP, for example.

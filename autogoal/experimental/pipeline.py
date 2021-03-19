@@ -4,6 +4,7 @@ import abc
 import types
 import warnings
 from typing import Any, Dict, List, Tuple, Type
+import types
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -50,10 +51,10 @@ class Supervised(SemanticType):
         return SupervisedImp
 
 
-def algorithm(*types):
+def algorithm(*annotations):
     from autogoal.grammar import Union, Symbol
 
-    *inputs, output = types
+    *inputs, output = annotations
 
     def match(cls):
         if not hasattr(cls, "run"):
@@ -70,27 +71,29 @@ def algorithm(*types):
             if not issubclass(expected, real):
                 return False
 
-        if not issubclass(output, output_type):
+        if not issubclass(output_type, output):
             return False
 
         return True       
 
-    class AlgorithmProduction:
-        @classmethod
-        def generate_cfg(cls, grammar, head):
-            symbol = head or Symbol(cls.__name__)
-            compatible = []
+    @classmethod
+    def generate_cfg(cls, grammar, head):
+        symbol = head or Symbol(cls.__name__)
+        compatible = []
 
-            for _, other_cls in grammar.namespace.items():
-                if match(other_cls):
-                    compatible.append(other_cls)
+        for _, other_cls in grammar.namespace.items():
+            if match(other_cls):
+                compatible.append(other_cls)
 
-            if not compatible:
-                raise ValueError(f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}")
+        if not compatible:
+            raise ValueError(f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}")
 
-            return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
+        return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
-    return AlgorithmProduction
+    def build(ns):
+        ns["generate_cfg"] = generate_cfg
+
+    return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
 
 class Algorithm(abc.ABC):

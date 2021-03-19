@@ -183,7 +183,7 @@ class AutoML:
                 pipeline.send("train")
                 pipeline.run(X_train, y_train)
                 pipeline.send("eval")
-                y_pred = pipeline.run(X_test)
+                y_pred = pipeline.run(X_test, None)
                 scores.append(self.score_metric(y_test, y_pred))
 
             return getattr(statistics, self.cross_validation)(scores)
