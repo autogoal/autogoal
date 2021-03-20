@@ -17,10 +17,14 @@ class Supervised(SemanticType):
     
     It is considered a subclass of X for semantic purposes, but not the other way around:
 
-    >>> issubclass(Supervised[Vector], Vector)
-    True
-    >>> issubclass(Vector, Supervised[Vector])
-    False
+    # >>> issubclass(Supervised[Vector], Vector)
+    # True
+    # >>> issubclass(Vector, Supervised[Vector])
+    # False
+    # >>> issubclass(Supervised[Seq[Vector]], Seq[Vector])
+    # True
+    # >>> issubclass(Seq[Vector], Supervised[Seq[Vector]])
+    # False
     
     """
     __internal_types = {}
@@ -39,12 +43,12 @@ class Supervised(SemanticType):
             def _name(cls):
                 return f"Supervised[{cls.__internal}]"
 
-            @classmethod
-            def _conforms(cls, other: type) -> bool:
-                if issubclass(cls.__internal, other):
-                    return True
+            # @classmethod
+            # def _conforms(cls, other: type) -> bool:
+            #     if issubclass(cls.__internal, other):
+            #         return True
 
-                return False
+            #     return False
 
         cls.__internal_types[internal_type] = SupervisedImp
 

@@ -78,7 +78,7 @@ class CRFTagger(CRF, SklearnEstimator):
         super().__init__(algorithm=algorithm)
 
     def run(self, X: Seq[Seq[FeatureSet]], y: Supervised[Seq[Seq[Label]]]) -> Seq[Seq[Label]]:
-        return SklearnEstimator.run(self, input)
+        return SklearnEstimator.run(self, X, y)
 
 
 __all__ = [

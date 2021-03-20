@@ -28,7 +28,6 @@ class AutoML:
         output=None,
         random_state=None,
         search_algorithm=None,
-        search_kwargs={},
         search_iterations=100,
         include_filter=".*",
         exclude_filter=None,
@@ -38,11 +37,11 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
+        **search_kwargs
     ):
         self.input = input
         self.output = output
         self.search_algorithm = search_algorithm or PESearch
-        self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
         self.include_filter = include_filter
         self.exclude_filter = exclude_filter
@@ -53,6 +52,7 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.score_metric = score_metric or accuracy
+        self.search_kwargs = search_kwargs
 
         if random_state:
             np.random.seed(random_state)
