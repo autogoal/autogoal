@@ -34,7 +34,7 @@ from autogoal.kb import Seq ,Sentence, VectorCategorical, Supervised
 
 #¿Cómo utilizamos esto en la clase AutoML?
 automl = AutoML(
-      input = Seq[Sentence], Supervised[VectorCategorical] # **tipos de entrada**
+      input = (Seq[Sentence], Supervised[VectorCategorical]), # **tipos de entrada**
       output = VectorCategorical, # **tipo de salida**
       # tenemos el parámetro score_metric  para definir la función objetivo,
       # que si no le fijamos un valor utiliza por defecto la funció accuracy.
