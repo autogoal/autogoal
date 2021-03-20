@@ -141,7 +141,7 @@ class AutoML:
         self.best_pipeline_ = self.make_pipeline_builder()(sampler)
 
     def score(self, X, y):
-        y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
+        y_pred = self.best_pipeline_.run(X, np.zeros_like(y))
         return self.score_metric(y, y_pred)
 
     def _input_type(self, X):
@@ -191,6 +191,3 @@ class AutoML:
 
     def predict(self, X):
         return self.best_pipeline_.run(X, None)
-
-    def score(self, X, y):
-        raise NotImplementedError()
