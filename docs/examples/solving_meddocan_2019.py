@@ -43,11 +43,8 @@
 from autogoal.ml import AutoML
 from autogoal.datasets import meddocan
 from autogoal.search import (
-    Logger,
+    RichLogger,
     PESearch,
-    ConsoleLogger,
-    ProgressLogger,
-    MemoryLogger,
 )
 from autogoal.kb import *
 
@@ -93,23 +90,9 @@ classifier = AutoML(
     memory_limit=args.memory * 1024 ** 3,
 )
 
-# This custom logger is used for debugging purposes, to be able later to recover
-# the best pipelines and all the errors encountered in the experimentation process.
-
-class CustomLogger(Logger):
-    def error(self, e: Exception, solution):
-        if e and solution:
-            with open("meddocan_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={e}\n\n")
-
-    def update_best(self, new_best, new_fn, *args):
-        with open("meddocan.log", "a") as fp:
-            fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
-
 # Basic logging configuration.
 
-logger = MemoryLogger()
-loggers = [ProgressLogger(), ConsoleLogger(), logger]
+loggers = [RichLogger()]
 
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger
@@ -130,5 +113,3 @@ classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)
 
 print(score)
-print(logger.generation_best_fn)
-print(logger.generation_mean_fn)

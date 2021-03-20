@@ -49,6 +49,8 @@
 # We will need `argparse` for passing arguments to the script and `json` for serialization of results.
 
 import argparse
+from autogoal.experimental.pipeline import Supervised
+from autogoal.logging import logger
 import json
 
 # From `sklearn` we will use `train_test_split` to build train and validation sets.
@@ -70,7 +72,7 @@ from autogoal.datasets import (
 
 # We will also import this annotation type.
 
-from autogoal.kb import MatrixContinuousDense, CategoricalVector
+from autogoal.kb import MatrixContinuousDense, VectorCategorical
 
 # This is the real deal, the class `AutoML` does all the work.
 
@@ -80,11 +82,9 @@ from autogoal.ml import AutoML
 # and the `PESearch` class.
 
 from autogoal.search import (
-    ConsoleLogger,
-    Logger,
+    RichLogger,
     MemoryLogger,
     PESearch,
-    ProgressLogger,
 )
 
 # ## Parsing arguments
@@ -152,27 +152,21 @@ for epoch in range(args.epochs):
 # parameters we received from the command line.
 
         classifier = AutoML(
-            output=CategoricalVector(),
+            input=(MatrixContinuousDense,Supervised[VectorCategorical]), 
+            output=VectorCategorical,
             search_algorithm=PESearch,
             search_iterations=args.iterations,
-            search_kwargs=dict(
-                pop_size=args.popsize,
-                selection=args.selection,
-                evaluation_timeout=args.timeout,
-                memory_limit=args.memory * 1024 ** 3,
-                early_stop=args.early_stop,
-                search_timeout=args.global_timeout,
-                target_fn=args.target,
-            ),
+            pop_size=args.popsize,
+            selection=args.selection,
+            evaluation_timeout=args.timeout,
+            memory_limit=args.memory * 1024 ** 3,
+            early_stop=args.early_stop,
+            search_timeout=args.global_timeout,
+            target_fn=args.target,
         )
 
-# Here we configure all the logging strategies we will use.
-# `MemoryLogger` stores each generation's info in a list that we can
-# later dump into a JSON log file.
-# `ProgressLogger` and `ConsoleLogger` are for pretty printing the results on the console.
-
         logger = MemoryLogger()
-        loggers = [ProgressLogger(), ConsoleLogger(), logger]
+        loggers = [RichLogger()]
 
 # `TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
 
@@ -207,14 +201,12 @@ for epoch in range(args.epochs):
                         generation_mean=logger.generation_mean_fn,
                         best_pipeline=repr(classifier.best_pipeline_),
                         search_iterations=args.iterations,
-                        search_kwargs=dict(
-                            pop_size=args.popsize,
-                            selection=args.selection,
-                            evaluation_timeout=args.timeout,
-                            memory_limit=args.memory * 1024 ** 3,
-                            early_stop=args.early_stop,
-                            search_timeout=args.global_timeout,
-                        ),
+                        pop_size=args.popsize,
+                        selection=args.selection,
+                        evaluation_timeout=args.timeout,
+                        memory_limit=args.memory * 1024 ** 3,
+                        early_stop=args.early_stop,
+                        search_timeout=args.global_timeout,
                     )
                 )
             )
