@@ -11,7 +11,7 @@ from autogoal.kb import *
 
 #  Tenemos que crear una clase que representa a nuestro nuevo algoritmo
 
-# Supongamos que queremos un Algoritmo que puede convier o no a minúsculas y eliminar las palabras muy cortas.
+# Supongamos que queremos un Algoritmo que puede conviertir o no a minúsculas y eliminar las palabras muy cortas.
 # Al definirlas de esta forma le estamos pidiendo a AutoGOAL que pruebe a hacerlas o no en diferentes pipelines,
 # teniendo e cuenta además distintos valores. 
 
