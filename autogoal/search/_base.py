@@ -22,7 +22,7 @@ class SearchAlgorithm:
         maximize=True,
         errors="raise",
         early_stop=0.5,
-        evaluation_timeout: int = 30 * Sec,
+        evaluation_timeout: int = 10 * Sec,
         memory_limit: int = 4 * Gb,
         search_timeout: int = 5 * Min,
         target_fn=None,

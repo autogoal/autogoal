@@ -40,11 +40,14 @@ automl = AutoML(
       # que si no le fijamos un valor utiliza por defecto la función `autogoal.ml.metrics.accuracy`.
     )
 
-# ya hasta aquí hemos definido el problema que queremos resolver
-# ahora solo nos resta ejecutar nuestro algoritmo
+# Ya hasta aquí hemos definido el problema que queremos resolver
+# ahora solo nos resta ejecutar nuestro algoritmo, llamando al método `fit`.
 
-# Entrenando.....
-automl.fit(X_train, y_train)
+# Para monitorear el estado del proceso de AutoML, podemos pasar un logger al método `fit`.
+from autogoal.search import RichLogger
+
+# Entrenando...
+automl.fit(X_train, y_train, logger=RichLogger())
 
 # Conociemdo que tan bueno es nuestro algoritmo
 result = automl.score(X_test, y_test)

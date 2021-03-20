@@ -245,7 +245,7 @@ class Pipeline:
 
 
 def _make_seq_algorithm(algorithm: Algorithm):
-    """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types List[T1], List[T2], ...
+    """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
 
     The generated class correctly defines the input and output types.
 
