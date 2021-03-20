@@ -48,7 +48,7 @@ from autogoal.search import (
     PESearch,
     RichLogger,
 )
-from autogoal.kb import Seq, Sentence, VectorCategorical
+from autogoal.kb import Seq, Sentence, VectorCategorical, Supervised
 from autogoal.contrib import find_classes
 from sklearn.metrics import f1_score
 
@@ -90,17 +90,15 @@ for cls in find_classes():
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=Seq[Sentence],
+    input=(Seq[Sentence], Supervised[VectorCategorical]),
     output=VectorCategorical,
     search_iterations=args.iterations,
     score_metric=f1_score,
     errors='warn',
-    search_kwargs=dict(
-        pop_size=args.popsize,
-        search_timeout=args.global_timeout,
-        evaluation_timeout=args.timeout,
-        memory_limit=args.memory * 1024 ** 3,
-    ),
+    pop_size=args.popsize,
+    search_timeout=args.global_timeout,
+    evaluation_timeout=args.timeout,
+    memory_limit=args.memory * 1024 ** 3,
 )
 
 loggers = [RichLogger()]

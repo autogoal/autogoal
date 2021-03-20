@@ -50,13 +50,15 @@ from autogoal.search import RichLogger
 automl.fit(X_train, y_train, logger=RichLogger())
 
 # Conociemdo que tan bueno es nuestro algoritmo
-result = automl.score(X_test, y_test)
-print(result)
+score = automl.score(X_test, y_test)
+print(f"Score: {score:0.3f}")
 
 # Esto significa que nuestro algoritmo el mejor pipeline que encontró reportó un accuracy "result"
 
 # También puede llamarse al método predict que nos hace la predicción para un conjunto de ejemplos
 
-# Prediciendo.....
-predictions = automl.predict(X_test, y_test)
-print(predictions)
+# Prediciendo...
+predictions = automl.predict(X_test)
+
+for sentence, real, predicted in zip(X_test[:10], y_test, predictions):
+    print(sentence, "-->", real, "vs", predicted)

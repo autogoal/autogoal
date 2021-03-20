@@ -1,3 +1,4 @@
+from collections import namedtuple
 from autogoal.sampling import Sampler
 import inspect
 import abc
@@ -113,6 +114,12 @@ class Algorithm(abc.ABC):
         pass
 
     @abc.abstractclassmethod
+    def input_args(cls) -> Tuple[str]:
+        """Returns an ordered tuple of the names of the arguments in the `run` method.
+        """
+        pass
+
+    @abc.abstractclassmethod
     def output_type(cls) -> type:
         """Returns an ordered list of the expected semantic output type of the `run` method.
         """
@@ -149,7 +156,7 @@ class Algorithm(abc.ABC):
 
 
 class AlgorithmBase(Algorithm):
-    """Represents an algorithm. 
+    """Represents an algorithm,
 
     Automatically implements the input and output introspection methods using the `inspect` module.
     Users inheriting from this class must provide type annotations in the `run` method.
@@ -160,6 +167,13 @@ class AlgorithmBase(Algorithm):
             cls.__run_signature__ = inspect.signature(cls.run)
 
         return tuple(param.annotation for name, param in cls.__run_signature__.parameters.items() if name != 'self')
+
+    @classmethod
+    def input_args(cls) -> Tuple[str]:
+        if not hasattr(cls, "__run_signature__"):
+            cls.__run_signature__ = inspect.signature(cls.run)
+
+        return tuple(name for name in cls.__run_signature__.parameters if name != 'self')
 
     @classmethod
     def output_type(cls) -> type:
@@ -186,10 +200,9 @@ def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
 
     """
 
-    parameters = [p for p in inspect.signature(algorithm.run).parameters if p != "self"]
     result = {}
 
-    for name, type in zip(parameters, algorithm.input_types()):
+    for name, type in zip(algorithm.input_args(), algorithm.input_types()):
         try:
             result[name] = values[type]
         except KeyError:
@@ -244,10 +257,11 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
 
-def _make_seq_algorithm(algorithm: Algorithm):
+def make_seq_algorithm(algorithm: Algorithm):
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
 
     The generated class correctly defines the input and output types.
+    These implementations are compatible with `build_input_args`:
 
     >>> class A(AlgorithmBase):
     ...     def __init__(self, alpha):
@@ -256,16 +270,20 @@ def _make_seq_algorithm(algorithm: Algorithm):
     ...         return self.alpha * (x + len(y))
     ...     def __repr__(self):
     ...         return f"A({self.alpha})"
-    >>> B = _make_seq_algorithm(A)
+    >>> B = make_seq_algorithm(A)
     >>> b = B(0.5)
     >>> b
     SeqAlgorithm[A(0.5)]
-    >>> b.run([1, 2], ["A", "BC"])
+    >>> b.run([1, 2], y=["A", "BC"])
     [1.0, 2.0]
     >>> B.input_types()
     (Seq[<class 'int'>], Seq[<class 'str'>])
+    >>> B.input_args()
+    ('x', 'y')
     >>> b.output_type()
     Seq[<class 'float'>]
+    >>> build_input_args(B, {Seq[int]: [1, 2], Seq[str]: ["hello", "world"]})
+    {'x': [1, 2], 'y': ['hello', 'world']}
     
     """
     
@@ -276,8 +294,9 @@ def _make_seq_algorithm(algorithm: Algorithm):
     def init_method(self, *args, **kwargs):
         self.inner = algorithm(*args, **kwargs)
 
-    def run_method(self, *args) -> Seq[output_type]:
-        return [self.inner.run(*xs) for xs in zip(*args)]
+    def run_method(self, *args, **kwargs) -> Seq[output_type]:
+        args_kwargs = _make_list_args_and_kwargs(*args, **kwargs)
+        return [self.inner.run(*t.args, **t.kwargs) for t in args_kwargs]
 
     def repr_method(self):
         return f"SeqAlgorithm[{repr(self.inner)}]"
@@ -288,6 +307,10 @@ def _make_seq_algorithm(algorithm: Algorithm):
     @classmethod
     def input_types_method(cls):
         return tuple(Seq[t] for t in algorithm.input_types())
+    
+    @classmethod
+    def input_args_method(cls):
+        return algorithm.input_args()
 
     @classmethod
     def output_types_method(cls):
@@ -299,10 +322,47 @@ def _make_seq_algorithm(algorithm: Algorithm):
         ns["__repr__"] = repr_method
         ns["__getattr__"] = getattr_method
         ns["input_types"] = input_types_method
+        ns["input_args"] = input_args_method
         ns["output_type"] = output_types_method
 
     return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
 
+
+Akw = namedtuple("Akw", ["args", "kwargs"])
+
+
+def _make_list_args_and_kwargs(*args, **kwargs):
+    """Transforms a list of args into individual args and kwargs for an internal algorithm. 
+    
+    To be used by `make_seq_algorithm"
+
+    >>> _make_list_args_and_kwargs([1,2], [4,5])
+    [Akw(args=(1, 4), kwargs={}), Akw(args=(2, 5), kwargs={})]
+    >>> _make_list_args_and_kwargs(x=[1,2], y=[4,5])
+    [Akw(args=(), kwargs={'x': 1, 'y': 4}), Akw(args=(), kwargs={'x': 2, 'y': 5})]
+    >>> _make_list_args_and_kwargs([1,2], y=[4,5])
+    [Akw(args=(1,), kwargs={'y': 4}), Akw(args=(2,), kwargs={'y': 5})]
+
+    """
+    lengths = set(len(v) for v in kwargs.values()) | set(len(v) for v in args)
+
+    if len(lengths) != 1:
+        raise ValueError("All args and kwargs must be sequences of the same length.")
+
+    length = lengths.pop()
+
+    inner_args = []
+
+    for i in range(length):
+        inner_args.append(tuple([xs[i] for xs in args]))
+
+    inner_kwargs = []
+
+    for i in range(length):
+        inner_kwargs.append({k:v[i] for k,v in kwargs.items()})
+
+    return [Akw(xs, ks) for xs, ks in zip(inner_args, inner_kwargs)]
+    
 
 class PipelineNode:
     def __init__(self, algorithm, input_types, output_types, registry=None) -> None:
@@ -365,7 +425,7 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
 
     for algorithm in registry:
         for _ in range(max_list_depth):            
-            algorithm = _make_seq_algorithm(algorithm)
+            algorithm = make_seq_algorithm(algorithm)
             pool.add(algorithm)
 
     # For building the graph, we'll keep at each node the guaranteed output types
@@ -443,3 +503,10 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
         raise TypeError("No pipelines can be found!")
 
     return PipelineSpace(G, input_types=input_types)
+
+
+# Finally, we run doctest in the module for easy testing of the functional API.
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
