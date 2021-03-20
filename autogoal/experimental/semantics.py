@@ -70,6 +70,10 @@ class SemanticType(metaclass=SemanticTypeMeta):
     def _specialize(cls, *args):
         raise TypeError(f"{cls} cannot be specialized")
 
+    @classmethod
+    def _reduce(cls):
+        return None
+
     @staticmethod
     def infer(x):
         """Automatically determines the semantic type of a given value.
@@ -241,12 +245,12 @@ class Seq(SemanticType):
             def _specialize(cls, *args, **kwargs):
                 raise TypeError("Cannot specialize more a `Seq` type.")
 
-            # We need to implement __reduce__ to make the specialized class serializable.
-            # @classmethod
-            # def __reduce__(cls):
-            #     return (
-            #         _build_seq_specialization, (internal_type,)
-            #     )
+            # We need to implement _reduce to make the specialized class serializable.
+            @classmethod
+            def __reduce__(cls):
+                return (
+                    Seq._specialize, (internal_type,)
+                )
 
         Seq.__internal_types[internal_type] = SeqImp
 

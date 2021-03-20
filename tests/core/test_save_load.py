@@ -50,20 +50,6 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
     assert best_fn == fn2(sampler)
 
 
-def serialize_and_deserialize(type):
-    fp = BytesIO()
-    Pickler(fp).dump(type)
-    fp.seek(0)
-    return Unpickler(fp).load()
-
-
-def test_serialize_seq_type():
-    alias = Seq[Word]
-    alias2 = serialize_and_deserialize(alias)
-    
-    assert id(alias) == id(alias2)
-
-
 @nice_repr
 class DummyAlgorithm(AlgorithmBase):
     def __init__(self, x: CategoricalValue("A", "B", "C")):
@@ -76,14 +62,20 @@ class DummyAlgorithm(AlgorithmBase):
         pass
 
     def run(
-        self, x: MatrixContinuousDense, y:VectorCategorical
+        self, x: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return y
 
 
 def test_automl_save_load():
     X, y = dummy.generate(seed=0)
-    automl = AutoML(search_iterations=3, registry=[DummyAlgorithm])
+    automl = AutoML(
+        input=(MatrixContinuousDense, Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        search_iterations=3,
+        registry=[DummyAlgorithm],
+    )
+    
     automl.fit(X, y)
     pipe = automl.best_pipeline_
 
