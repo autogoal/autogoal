@@ -58,15 +58,15 @@ class NewAlgorithm(AlgorithmBase):
 from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
 
- # Probemos con HAHA
- from autogoal.datasets import haha
+# Probemos con HAHA
+from autogoal.datasets import haha
 
 # Cargando los datos
 X_train, y_train, X_test, y_test = haha.load()
 
 
 # Creando la instancia de AutoML con nuestra clase
- automl = AutoML(
+automl = AutoML(
       input = (Seq[Sentence], Supervised[VectorCategorical]), # **tipos de entrada**
       output = VectorCategorical, # **tipo de salida**
       # Agregando nuestra clase y todo el resto de algortimos de AutoGOAL
