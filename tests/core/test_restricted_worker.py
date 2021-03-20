@@ -2,6 +2,7 @@ from autogoal.utils import RestrictedWorkerByJoin, Gb, Mb
 import time
 import numpy as np
 import pytest
+import platform
 
 
 def func(wait_time, allocate_memory=0, raises=False):
@@ -39,14 +40,23 @@ def test_handles_exc():
 def test_restrict_memory():
     fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Gb)
 
-    with pytest.raises(MemoryError):
+    if (platform.system() == 'Linux'):
+        with pytest.raises(MemoryError):
+            fn(0, 10 ** 8)
+    
+    if (platform.system() == 'Windows'):
         fn(0, 10 ** 8)
 
 
 def test_restrict_memory_fails():
     fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Mb)
 
-    with pytest.raises(ValueError) as e:
-        fn(0, 10 ** 8)
+    if (platform.system() == 'Linux'):
+        with pytest.raises(ValueError) as e:
+            fn(0, 10 ** 8)
+
+    if (platform.system() == 'Windows'):
+        #TODO: implement memory restriction for Windows systems
+        pass
 
     assert isinstance(e.value, ValueError)

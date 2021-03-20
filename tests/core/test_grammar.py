@@ -1,11 +1,68 @@
+import pprint
 from autogoal.sampling import Sampler
 
 from autogoal.grammar import DiscreteValue, generate_cfg, Subset, CategoricalValue
+from autogoal.kb import Document, Word, Stem, Seq, Sentence, algorithm
+from autogoal.grammar import DiscreteValue, generate_cfg, Subset, CategoricalValue
+
+class TextAlgorithm:
+    def run(
+        self, 
+        input:Sentence()
+    ) -> Document():
+            pass
+
+class StemWithDependanceAlgorithm:
+    def __init__(
+        self, 
+        dependance:algorithm(Sentence(), Document())
+    ):
+        pass
+
+    def run(
+        self, 
+        input:Word()
+    ) -> Stem():
+        pass
+
+class StemAlgorithm:
+    def run(
+        self, 
+        input:Word()
+    ) -> Stem():
+        pass
+
+class HigherStemAlgorithm:
+    def __init__(
+        self, 
+        dependance:algorithm(Word(), Stem())
+    ):
+        pass
+
+    def run(
+        self, 
+        input:List(Word())
+    ) -> List(Stem()):
+        pass
+
 
 
 def check_grammar(g, s):
     s = [si.strip() for si in s.split()]
     assert str(g).split() == s
+
+
+def test_generate_from_registry_with_dependance():
+    check_grammar(
+        generate_cfg(HigherStemAlgorithm, registry=[StemAlgorithm, HigherStemAlgorithm, TextAlgorithm, StemWithDependanceAlgorithm] ), 
+        """
+        <HigherStemAlgorithm>               := HigherStemAlgorithm (dependance=<Algorithm[Word(), Stem()]>)
+        <Algorithm[Word(), Stem()]>         := <StemAlgorithm> | <StemWithDependanceAlgorithm>
+        <StemAlgorithm>                     := StemAlgorithm ()
+        <StemWithDependanceAlgorithm>       := StemWithDependanceAlgorithm (dependance=<Algorithm[Sentence(), Document()]>)
+        <Algorithm[Sentence(), Document()]> := <TextAlgorithm>
+        <TextAlgorithm>                     := TextAlgorithm ()
+        """)
 
 
 def test_generate_from_class():

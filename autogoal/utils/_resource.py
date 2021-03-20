@@ -1,10 +1,12 @@
 import signal
-import resource
 import psutil
 import warnings
 import os
 import multiprocessing
+import platform
 
+if (platform.system() == 'Linux'):
+    import resource
 
 class ResourceManager:
     """
