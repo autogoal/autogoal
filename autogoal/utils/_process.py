@@ -1,12 +1,15 @@
 from logging import log
 import multiprocessing
 import warnings
-import resource
 import psutil
 import signal
 import os
 import traceback
 import logging
+import platform
+
+if (platform.system() == 'Linux'):
+    import resource
 
 from autogoal.utils import Mb
 
@@ -21,21 +24,22 @@ class RestrictedWorker:
         signal.signal(signal.SIGXCPU, alarm_handler)
 
     def _restrict(self):
-        msoft, mhard = resource.getrlimit(resource.RLIMIT_DATA)
-        csoft, chard = resource.getrlimit(resource.RLIMIT_CPU)
-        used_memory = self.get_used_memory()
+        if (platform.system() == 'Linux'):
+            msoft, mhard = resource.getrlimit(resource.RLIMIT_DATA)
+            csoft, chard = resource.getrlimit(resource.RLIMIT_CPU)
+            used_memory = self.get_used_memory()
 
-        if self.memory and self.memory > (used_memory + 500 * Mb):
-            # memory may be restricted
-            resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
-        else:
-            warnings.warn("Cannot restrict memory")
+            if self.memory and self.memory > (used_memory + 500 * Mb):
+                # memory may be restricted
+                resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
+            else:
+                warnings.warn("Cannot restrict memory")
 
-        if self.timeout:
-            # time may be restricted
-            resource.setrlimit(resource.RLIMIT_CPU, (self.timeout, chard))
-        else:
-            warnings.warn("Cannot restrict cpu time")
+            if self.timeout:
+                # time may be restricted
+                resource.setrlimit(resource.RLIMIT_CPU, (self.timeout, chard))
+            else:
+                warnings.warn("Cannot restrict cpu time")
 
     def _restricted_function(self, result_bucket, args, kwargs):
         try:
@@ -89,18 +93,19 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         self.memory = memory
 
     def _restrict(self):
-        _, mhard = resource.getrlimit(resource.RLIMIT_AS)
-        used_memory = self.get_used_memory()
+        if (platform.system() == 'Linux'):
+            _, mhard = resource.getrlimit(resource.RLIMIT_AS)
+            used_memory = self.get_used_memory()
 
-        if self.memory is None:
-            return
+            if self.memory is None:
+                return
 
-        if self.memory > (used_memory + 50 * Mb):
-            # memory may be restricted
-            logger.info("💻 Restricting memory to %s" % self.memory)
-            resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
-        else:
-            raise ValueError("Cannot restrict memory to %s < %i" % (self.memory, used_memory + 50 * Mb))
+            if self.memory > (used_memory + 50 * Mb):
+                # memory may be restricted
+                logger.info("💻 Restricting memory to %s" % self.memory)
+                resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
+            else:
+                raise ValueError("Cannot restrict memory to %s < %i" % (self.memory, used_memory + 50 * Mb))
 
     def run_restricted(self, *args, **kwargs):
         """
