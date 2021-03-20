@@ -1,8 +1,7 @@
-from autogoal.kb import Pipeline, Seq, Sentence, Tensor, Dense, Categorical
+from autogoal.contrib.sklearn import CountVectorizer
+from autogoal.contrib.sklearn._generated import SGDClassifier
 from autogoal.experimental.pipeline import Supervised
-from autogoal.contrib.sklearn import CountVectorizerNoTokenize, CountVectorizer
-from autogoal.contrib.nltk._generated import SExprTokenizer, MWETokenizer
-from autogoal.contrib.sklearn._generated import ExtraTreeClassifier, SGDClassifier
+from autogoal.kb import Categorical, Dense, Pipeline, Sentence, Seq, Tensor
 
 
 def test_count_vectorizer_sgd():

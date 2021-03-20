@@ -138,7 +138,10 @@ def test_build_input_args_with_subclass():
 
 @pytest.mark.slow
 def test_automl_finds_classifiers():
-    automl = AutoML(input=MatrixContinuous, output=VectorContinuous)
+    automl = AutoML(
+        input=(MatrixContinuous, Supervised[VectorCategorical]),
+        output=VectorCategorical,
+    )
     builder = automl.make_pipeline_builder()
 
     assert len(builder.graph) > 10
@@ -147,7 +150,10 @@ def test_automl_finds_classifiers():
 @pytest.mark.slow
 def test_automl_trains_pipeline():
     automl = AutoML(
-        input=MatrixContinuous, output=VectorCategorical, search_iterations=1
+        input=(MatrixContinuous, Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        search_iterations=1,
+        random_state=42,
     )
     automl.fit(np.ones(shape=(2, 2)), [0, 1])
     automl.predict(np.ones(shape=(2, 2)))
