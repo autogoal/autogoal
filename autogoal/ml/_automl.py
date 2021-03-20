@@ -63,7 +63,7 @@ class AutoML:
         )
 
         return build_pipeline_graph(
-            input_types=(self.input, Supervised[self.output]),
+            input_types=self.input,
             output_type=self.output,
             registry=registry,
         )
