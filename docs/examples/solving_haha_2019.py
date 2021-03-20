@@ -42,7 +42,7 @@
 # Most of this example follows the same logic as the [UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
-from autogoal.experimental.automl import AutoML
+from autogoal.ml import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
     PESearch,

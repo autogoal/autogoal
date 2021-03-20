@@ -340,7 +340,7 @@ class PipelineSpace(GraphSpace):
         return Pipeline(path, input_types=self.input_types)
 
 
-def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int=3):
+def build_pipeline_graph(input_types: List[type], output_type: type, registry: List[type], max_list_depth: int=3):
     """Build a graph of algorithms.
 
     Every node in the graph corresponds to a <autogoal.grammar.ContextFreeGrammar> that
@@ -352,7 +352,10 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
             # ...
     """
     
-    # We start by enlarging the registry with all List[...] algorithms
+    if not isinstance(input_types, (list, tuple)):
+        input_types = [input_types]
+
+    # We start by enlarging the registry with all Seq[...] algorithms
 
     pool = set(registry)
 
@@ -367,7 +370,7 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
     # those that can process a subset of the input_types
     open_nodes: List[PipelineNode] = []
 
-    for algorithm in registry:
+    for algorithm in pool:
         if not algorithm.is_compatible_with(input_types):
             continue
 
@@ -433,6 +436,6 @@ def build_pipeline_graph(input_types, output_type, registry, max_list_depth: int
         unreachable_nodes = set(G.nodes) - reachable_from_end
         G.remove_nodes_from(unreachable_nodes)
     except KeyError:
-        raise ValueError("No pipelines can be found!")
+        raise TypeError("No pipelines can be found!")
 
     return PipelineSpace(G, input_types=input_types)

@@ -2,7 +2,7 @@ import pytest
 
 import numpy as np
 from autogoal.contrib import find_classes
-from autogoal.experimental.automl import *
+from autogoal.ml import *
 from autogoal.experimental.pipeline import *
 from autogoal.experimental.semantics import *
 

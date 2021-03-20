@@ -12,7 +12,7 @@ from rich.table import Table
 
 from autogoal.contrib import find_classes
 from autogoal.kb import VectorCategorical
-from autogoal.experimental.automl import AutoML
+from autogoal.ml import AutoML
 from autogoal.search import RichLogger
 from autogoal.utils import Gb, Min
 from autogoal.datasets import datapath, get_datasets_list, download, dummy

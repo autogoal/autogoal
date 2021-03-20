@@ -1,6 +1,8 @@
-from autogoal.kb import *
-from autogoal.experimental.automl import AutoML
+import pytest
+from autogoal.ml import AutoML
 from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import *
+
 
 class ExactAlgorithm(AlgorithmBase):
     def run(self, input:MatrixContinuousDense) -> MatrixContinuousDense:
@@ -51,34 +53,24 @@ class TextListToDocumentAlgorithm(AlgorithmBase):
 #     assert(graph.number_of_nodes() == nodes_amount)
     
 def assert_pipeline_graph_failed(input, output, registry):
-    try:
         pipeline_builder = build_pipeline_graph(input_types=input, output_type=output, registry=registry)
-        raise AssertionError("Graph built successfully (expected TypeError)")
-    except TypeError as error:
-        assert(error.args[0].startswith("No pipelines"))
-        
-def test_build_pipeline_graph():
-    #test failed graph generation
-    assert_pipeline_graph_failed(Text, Word, [])
-    assert_pipeline_graph_failed(Text, 
-                                 Document, 
-                                 [WordToWordAlgorithm, 
-                                  TextToWordAlgorithm, 
-                                  WordToWordListAlgorithm,
-                                  SentenceListToDocumentAlgorithm,
-                                  TextListToDocumentAlgorithm])
 
-def test_meta_pipeline_graph():
+
+def test_meta_pipeline_seq():
     # Test List algorithm generation
     build_pipeline_graph(input_types=(Seq[Word],),
                          output_type=Seq[Word],
                          registry=[WordToWordAlgorithm])
     
+
+def test_meta_pipeline_tuple():
     # Test Tuple breakdown feature
     build_pipeline_graph(input_types=(Word, Matrix),
                          output_type=Text,
                          registry=[WordToWordAlgorithm])
     
+
+def test_meta_pipeline_seq_and_tuple():
     # Test Tuple breakdown feature and List algorithm generation
     build_pipeline_graph(input_types=(Seq[Word], Matrix),
                          output_type=Seq[Word],

@@ -234,12 +234,26 @@ class Seq(SemanticType):
 
                 return issubclass(cls.__internal_type, other.__internal_type)
 
+            @classmethod
             def _specialize(cls, *args, **kwargs):
                 raise TypeError("Cannot specialize more a `Seq` type.")
+
+            # We need to implement __reduce__ to make the specialized class serializable.
+            @classmethod
+            def __reduce__(cls):
+                return (
+                    _build_seq_instance, (internal_type,)
+                )
 
         Seq.__internal_types[internal_type] = SeqImp
 
         return SeqImp
+
+
+# To allow pickling of `Seq` instances we need this globally defined function:
+
+def _build_seq_instance(type):
+    return Seq._specialize(type)
 
 
 # Now let's move to the algebraic types, vectors, matrices, and tensors.

@@ -1,15 +1,16 @@
+from autogoal.experimental.semantics import SemanticType
 import io
 
 from autogoal.search import PESearch
-from autogoal.kb import *
+
+# TODO: Refactor this import when merged
+from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
 
 from autogoal.ml.metrics import accuracy
-from autogoal.sampling import ReplaySampler
+from autogoal.sampling import ReplaySampler, Sampler
 from autogoal.contrib import find_classes
-# from autogoal.ml._metalearning import DatasetFeatureLogger
 
 import numpy as np
-import random
 import statistics
 import pickle
 
@@ -26,7 +27,7 @@ class AutoML:
         input=None,
         output=None,
         random_state=None,
-        search_algorithm=PESearch,
+        search_algorithm=None,
         search_kwargs={},
         search_iterations=100,
         include_filter=".*",
@@ -37,11 +38,10 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
-        metalearning_log=False,
     ):
         self.input = input
         self.output = output
-        self.search_algorithm = search_algorithm
+        self.search_algorithm = search_algorithm or PESearch
         self.search_kwargs = search_kwargs
         self.search_iterations = search_iterations
         self.include_filter = include_filter
@@ -53,19 +53,18 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.score_metric = score_metric or accuracy
-        self.metalearning_log = metalearning_log
 
         if random_state:
             np.random.seed(random_state)
 
-    def _make_pipeline_builder(self):
+    def make_pipeline_builder(self):
         registry = self.registry or find_classes(
             include=self.include_filter, exclude=self.exclude_filter
         )
 
         return build_pipeline_graph(
-            input=Tuple(self.input, self.output),
-            output=self.output,
+            input_types=(self.input, Supervised[self.output]),
+            output_type=self.output,
             registry=registry,
         )
 
@@ -73,24 +72,9 @@ class AutoML:
         self.input = self._input_type(X)
         self.output = self._output_type(y)
 
-        if self.metalearning_log:
-            raise NotImplementedError("Metalearning is not ready yet")
-
-            loggers = kwargs.get('logger', [])
-            loggers.append(DatasetFeatureLogger(X, y, problem_features=dict(
-                input=repr(self.input),
-                output=repr(self.output),
-                metric=self.score_metric.__name__,
-            ), environment_features=dict(
-                memory_limit=self.search_kwargs.get('memory_limit'),
-                search_timeout=self.search_kwargs.get('search_timeout'),
-                evaluation_timeout=self.search_kwargs.get('evaluation_timeout'),
-            )))
-            kwargs['logger'] = loggers
-
         search = self.search_algorithm(
-            self._make_pipeline_builder(),
-            self._make_fitness_fn(X, y),
+            self.make_pipeline_builder(),
+            self.make_fitness_fn(X, y),
             random_state=self.random_state,
             errors=self.errors,
             **self.search_kwargs,
@@ -107,7 +91,7 @@ class AutoML:
             raise TypeError("You have to call `fit()` first.")
 
         self.best_pipeline_.send("train")
-        self.best_pipeline_.run((X, y))
+        self.best_pipeline_.run(X, y)
         self.best_pipeline_.send("eval")
 
     def save_pipeline(self, fp):
@@ -155,19 +139,19 @@ class AutoML:
         """
         sampler = ReplaySampler.load(fp)
         self.input, self.output = pickle.Unpickler(fp).load()
-        self.best_pipeline_ = self._make_pipeline_builder()(sampler)
+        self.best_pipeline_ = self.make_pipeline_builder()(sampler)
 
     def score(self, X, y):
         y_pred = self.best_pipeline_.run((X, np.zeros_like(y)))
         return self.score_metric(y, y_pred)
 
     def _input_type(self, X):
-        return self.input or infer_type(X)
+        return self.input or SemanticType.infer(X)
 
     def _output_type(self, y):
-        return self.output or infer_type(y)
+        return self.output or SemanticType.infer(y)
 
-    def _make_fitness_fn(self, X, y):
+    def make_fitness_fn(self, X, y):
         y = np.asarray(y)
 
         def fitness_fn(pipeline):
@@ -197,9 +181,9 @@ class AutoML:
                     )
 
                 pipeline.send("train")
-                pipeline.run((X_train, y_train))
+                pipeline.run(X_train, y_train)
                 pipeline.send("eval")
-                y_pred = pipeline.run((X_test, np.zeros_like(y_test)))
+                y_pred = pipeline.run(X_test, None)
                 scores.append(self.score_metric(y_test, y_pred))
 
             return getattr(statistics, self.cross_validation)(scores)
@@ -207,4 +191,7 @@ class AutoML:
         return fitness_fn
 
     def predict(self, X):
-        return self.best_pipeline_.run((X, [None] * len(X)))
+        return self.best_pipeline_.run(X, None)
+
+    def score(self, X, y):
+        raise NotImplementedError()

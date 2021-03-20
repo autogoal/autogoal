@@ -1,11 +1,11 @@
 from autogoal.experimental.pipeline import AlgorithmBase
 from io import BytesIO
-from pickle import Pickler, Unpickler
+from pickle import Pickler, Unpickler, UnpicklingError
 
 from autogoal.datasets import dummy
 from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
 from autogoal.kb import *
-from autogoal.experimental.automl import AutoML
+from autogoal.ml import AutoML
 from autogoal.search import RandomSearch
 from autogoal.utils import nice_repr
 
@@ -48,6 +48,20 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
     assert best is sampler
     assert sampler._history != []
     assert best_fn == fn2(sampler)
+
+
+def serialize_and_deserialize(type):
+    fp = BytesIO()
+    Pickler(fp).dump(type)
+    fp.seek(0)
+    return Unpickler(fp).load()
+
+
+def test_serialize_seq_type():
+    alias = Seq[Word]
+    alias2 = serialize_and_deserialize(alias)
+    
+    assert id(alias) == id(alias2)
 
 
 @nice_repr
