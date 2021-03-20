@@ -8,7 +8,7 @@ import termcolor
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, Min, Gb
+from autogoal.utils import RestrictedWorkerByJoin, Min, Gb, Sec
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
@@ -18,13 +18,13 @@ class SearchAlgorithm:
         self,
         generator_fn=None,
         fitness_fn=None,
-        pop_size=1,
+        pop_size=20,
         maximize=True,
         errors="raise",
         early_stop=0.5,
-        evaluation_timeout: int = 5 * Min,
+        evaluation_timeout: int = 30 * Sec,
         memory_limit: int = 4 * Gb,
-        search_timeout: int = 60 * 60,
+        search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
     ):

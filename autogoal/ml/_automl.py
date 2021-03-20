@@ -1,20 +1,19 @@
-from autogoal.experimental.semantics import SemanticType
 import io
-
-from autogoal.search import PESearch
-
-# TODO: Refactor this import when merged
-from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
-
-from autogoal.ml.metrics import accuracy
-from autogoal.sampling import ReplaySampler, Sampler
-from autogoal.contrib import find_classes
+import pickle
+import statistics
 
 import numpy as np
-import statistics
-import pickle
+from autogoal.contrib import find_classes
+# TODO: Refactor this import when merged
+from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
+from autogoal.experimental.semantics import SemanticType
+from autogoal.ml.metrics import accuracy
+from autogoal.sampling import ReplaySampler, Sampler
+from autogoal.search import PESearch
+from autogoal.utils import nice_repr
 
 
+@nice_repr
 class AutoML:
     """
     Predefined pipeline search with automatic type inference.

@@ -37,7 +37,7 @@ automl = AutoML(
       input = (Seq[Sentence], Supervised[VectorCategorical]), # **tipos de entrada**
       output = VectorCategorical, # **tipo de salida**
       # tenemos el parámetro score_metric  para definir la función objetivo,
-      # que si no le fijamos un valor utiliza por defecto la funció accuracy.
+      # que si no le fijamos un valor utiliza por defecto la función `autogoal.ml.metrics.accuracy`.
     )
 
 # ya hasta aquí hemos definido el problema que queremos resolver
@@ -50,7 +50,7 @@ automl.fit(X_train, y_train)
 result = automl.score(X_test, y_test)
 print(result)
 
-# Esto significa que nuestro algoritmo el mejor pipeline que encontró reportó un accuaracy "result"
+# Esto significa que nuestro algoritmo el mejor pipeline que encontró reportó un accuracy "result"
 
 # También puede llamarse al método predict que nos hace la predicción para un conjunto de ejemplos
 
