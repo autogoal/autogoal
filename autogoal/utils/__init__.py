@@ -170,3 +170,4 @@ def factory(func_or_type, *args, **kwargs):
 from ._resource import ResourceManager
 from ._process import  RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager
+from ._pickle import Pickler
