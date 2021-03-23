@@ -57,24 +57,11 @@ class AutoML:
         if random_state:
             np.random.seed(random_state)
 
-    def __getstate__(self):
-        return dict(
-            best_pipeline_ = self.best_pipeline_,
-            score_metric = self.score_metric,
-            _unpickled = True
-        )
-
-    def _check_unpickled(self):
-        if self._unpickled:
-            raise TypeError("This operation cannot be done with an unpickled AutoML instance. Create a new instance.")
-
     def _check_fitted(self):
         if not hasattr(self, "best_pipeline_"):
             raise TypeError("This operation cannot be performed on an unfitted AutoML instance. Call `fit` first.")
 
     def make_pipeline_builder(self):
-        self._check_unpickled()
-
         registry = self.registry or find_classes(
             include=self.include_filter, exclude=self.exclude_filter
         )
@@ -86,8 +73,6 @@ class AutoML:
         )
 
     def fit(self, X, y, **kwargs):
-        self._check_unpickled()
-
         self.input = self._input_type(X)
         self.output = self._output_type(y)
 
@@ -146,8 +131,6 @@ class AutoML:
         return self.output or SemanticType.infer(y)
 
     def make_fitness_fn(self, X, y):
-        self._check_unpickled()
-
         y = np.asarray(y)
 
         def fitness_fn(pipeline):

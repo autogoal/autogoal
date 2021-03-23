@@ -44,12 +44,9 @@ class Supervised(SemanticType):
             def _name(cls):
                 return f"Supervised[{cls.__internal}]"
 
-            # @classmethod
-            # def _conforms(cls, other: type) -> bool:
-            #     if issubclass(cls.__internal, other):
-            #         return True
-
-            #     return False
+            @classmethod
+            def _reduce(cls):
+                return Supervised._specialize, (internal_type,)
 
         cls.__internal_types[internal_type] = SupervisedImp
 

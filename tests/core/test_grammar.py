@@ -8,41 +8,41 @@ from autogoal.grammar import DiscreteValue, generate_cfg, Subset, CategoricalVal
 class TextAlgorithm:
     def run(
         self, 
-        input:Sentence()
-    ) -> Document():
+        input:Sentence
+    ) -> Document:
             pass
 
 class StemWithDependanceAlgorithm:
     def __init__(
         self, 
-        dependance:algorithm(Sentence(), Document())
+        dependance:algorithm(Sentence, Document)
     ):
         pass
 
     def run(
         self, 
-        input:Word()
-    ) -> Stem():
+        input:Word
+    ) -> Stem:
         pass
 
 class StemAlgorithm:
     def run(
         self, 
-        input:Word()
-    ) -> Stem():
+        input:Word
+    ) -> Stem:
         pass
 
 class HigherStemAlgorithm:
     def __init__(
         self, 
-        dependance:algorithm(Word(), Stem())
+        dependance:algorithm(Word, Stem)
     ):
         pass
 
     def run(
         self, 
-        input:List(Word())
-    ) -> List(Stem()):
+        input:Seq[Word]
+    ) -> Seq[Stem]:
         pass
 
 

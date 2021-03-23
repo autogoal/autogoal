@@ -1,6 +1,7 @@
+from copyreg import pickle
 from autogoal.experimental.pipeline import AlgorithmBase
 from io import BytesIO
-from pickle import Pickler, Unpickler, UnpicklingError
+from pickle import Pickler, Unpickler, UnpicklingError, loads,dumps
 
 from autogoal.datasets import dummy
 from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
@@ -22,6 +23,20 @@ class A:
 
 def fn(a: A):
     return a.x ** 2 + a.y ** 2
+
+
+def test_save_seq():
+    t1 = Seq[Word]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
+
+
+def test_save_tensor():
+    t1 = Tensor[2, Continuous, Dense]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
 
 
 def test_search_is_replayable_from_grammar():
