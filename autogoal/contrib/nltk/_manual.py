@@ -8,7 +8,7 @@ from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
 from autogoal.kb import *
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 
 
 @nice_repr

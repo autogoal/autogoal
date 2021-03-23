@@ -4,7 +4,7 @@ import abc
 from autogoal.utils import nice_repr
 from autogoal.kb import Word, FeatureSet
 from autogoal.grammar import BooleanValue
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 
 
 class _Regex(abc.ABC):

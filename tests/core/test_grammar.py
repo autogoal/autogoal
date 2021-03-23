@@ -49,19 +49,20 @@ class HigherStemAlgorithm:
 
 def check_grammar(g, s):
     s = [si.strip() for si in s.split()]
-    assert str(g).split() == s
+    g = str(g).split()
+    assert g == s
 
 
 def test_generate_from_registry_with_dependance():
     check_grammar(
         generate_cfg(HigherStemAlgorithm, registry=[StemAlgorithm, HigherStemAlgorithm, TextAlgorithm, StemWithDependanceAlgorithm] ), 
         """
-        <HigherStemAlgorithm>               := HigherStemAlgorithm (dependance=<Algorithm[Word(), Stem()]>)
-        <Algorithm[Word(), Stem()]>         := <StemAlgorithm> | <StemWithDependanceAlgorithm>
-        <StemAlgorithm>                     := StemAlgorithm ()
-        <StemWithDependanceAlgorithm>       := StemWithDependanceAlgorithm (dependance=<Algorithm[Sentence(), Document()]>)
-        <Algorithm[Sentence(), Document()]> := <TextAlgorithm>
-        <TextAlgorithm>                     := TextAlgorithm ()
+        <HigherStemAlgorithm>            := HigherStemAlgorithm (dependance=<Algorithm[[Word],Stem]>)
+        <Algorithm[[Word],Stem]>         := <StemAlgorithm> | <StemWithDependanceAlgorithm>
+        <StemAlgorithm>                  := StemAlgorithm ()
+        <StemWithDependanceAlgorithm>    := StemWithDependanceAlgorithm (dependance=<Algorithm[[Sentence],Document]>)
+        <Algorithm[[Sentence],Document]> := <TextAlgorithm>
+        <TextAlgorithm>                  := TextAlgorithm ()
         """)
 
 

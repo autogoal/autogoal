@@ -5,9 +5,9 @@ from numpy import inf, nan
 
 from autogoal import grammar
 from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
-from autogoal.experimental.semantics import *
+from autogoal.kb import *
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 
 from sklearn.cluster._affinity_propagation import (
     AffinityPropagation as _AffinityPropagation,

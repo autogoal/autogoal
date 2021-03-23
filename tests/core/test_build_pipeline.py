@@ -1,6 +1,5 @@
 import pytest
 from autogoal.ml import AutoML
-from autogoal.experimental.pipeline import AlgorithmBase
 from autogoal.kb import *
 
 

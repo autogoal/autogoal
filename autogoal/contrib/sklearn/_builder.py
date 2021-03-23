@@ -11,7 +11,7 @@ import enlighten
 import numpy as np
 from autogoal import kb
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
 from autogoal.utils import nice_repr
 from joblib import parallel_backend

@@ -1,13 +1,13 @@
-from autogoal.kb import Document, Sentence, Seq, Stem, Word, build_pipeline_graph, algorithm
+from autogoal.kb import Document, Sentence, Seq, Stem, Word, build_pipeline_graph, algorithm, AlgorithmBase
 from autogoal.search import RandomSearch
 
 
-class TextAlgorithm:
+class TextAlgorithm(AlgorithmBase):
     def run(self, input: Sentence) -> Document:
         pass
 
 
-class StemWithDependanceAlgorithm:
+class StemWithDependanceAlgorithm(AlgorithmBase):
     def __init__(self, ub: algorithm(Sentence, Document)):
         pass
 
@@ -15,12 +15,12 @@ class StemWithDependanceAlgorithm:
         pass
 
 
-class StemAlgorithm:
+class StemAlgorithm(AlgorithmBase):
     def run(self, input: Word) -> Stem:
         print("inside StemAlgorithm")
 
 
-class HigherStemAlgorithm:
+class HigherStemAlgorithm(AlgorithmBase):
     def __init__(self, stem: algorithm(Word, Stem)):
         pass
 
@@ -34,19 +34,6 @@ def test_recursive_list_pipeline_graph():
         output_type=Seq[Stem],
         registry=[StemAlgorithm, HigherStemAlgorithm],
     )
-    search = RandomSearch(
-        pipelineBuilder, _make_mock_fitness_fn(0, 0), random_state=0, errors="warn"
-    )
-
-    best_pipeline_, _ = search.run(3)
-    assert best_pipeline_.steps[0].__class__.__name__ == "ListAlgorithm"
-
-    search = RandomSearch(
-        pipelineBuilder, _make_mock_fitness_fn(0, 0), random_state=1, errors="warn"
-    )
-
-    best_pipeline_, _ = search.run(3)
-    assert best_pipeline_.steps[0].__class__.__name__ == "HigherStemAlgorithm"
 
 
 def _make_mock_fitness_fn(X, y):

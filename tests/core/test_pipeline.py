@@ -3,8 +3,9 @@ import pytest
 import numpy as np
 from autogoal.contrib import find_classes
 from autogoal.ml import *
-from autogoal.experimental.pipeline import *
-from autogoal.experimental.semantics import *
+from autogoal.kb import *
+from autogoal.utils import nice_repr
+from autogoal.grammar import Sampler
 
 
 class T1:
@@ -129,13 +130,6 @@ class A(AlgorithmBase):
         pass
 
 
-def test_build_input_args_with_subclass():
-    m = np.ones(shape=(2, 2))
-
-    result = build_input_args(A, {MatrixContinuousDense: m})
-    assert id(result["x"]) == id(m)
-
-
 @pytest.mark.slow
 def test_automl_finds_classifiers():
     automl = AutoML(
@@ -145,16 +139,3 @@ def test_automl_finds_classifiers():
     builder = automl.make_pipeline_builder()
 
     assert len(builder.graph) > 10
-
-
-@pytest.mark.slow
-def test_automl_trains_pipeline():
-    automl = AutoML(
-        input=(MatrixContinuous, Supervised[VectorCategorical]),
-        output=VectorCategorical,
-        search_iterations=1,
-        random_state=42,
-    )
-    automl.fit(np.ones(shape=(2, 2)), [0, 1])
-    automl.predict(np.ones(shape=(2, 2)))
-

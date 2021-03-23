@@ -2,7 +2,7 @@ import wikipedia
 
 from autogoal.kb import Word, Document, FeatureSet
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 
 
 @nice_repr

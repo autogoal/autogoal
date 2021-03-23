@@ -1,10 +1,8 @@
-from copyreg import pickle
-from autogoal.experimental.pipeline import AlgorithmBase
 from io import BytesIO
-from pickle import Pickler, Unpickler, UnpicklingError, loads,dumps
+from pickle import loads, dumps
 
 from autogoal.datasets import dummy
-from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
+from autogoal.grammar import generate_cfg, DiscreteValue, CategoricalValue
 from autogoal.kb import *
 from autogoal.ml import AutoML
 from autogoal.search import RandomSearch

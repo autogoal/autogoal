@@ -1,10 +1,11 @@
 import pytest
-from autogoal.contrib.ensemble._stacking import StackingEnsemble
+from autogoal.experimental.stacking import StackingEnsemble
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+
 
 def test_stacking(): 
     X_train = [[0, 0], [1, 1]]

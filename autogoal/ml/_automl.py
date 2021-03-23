@@ -4,11 +4,9 @@ import statistics
 
 import numpy as np
 from autogoal.contrib import find_classes
-# TODO: Refactor this import when merged
-from autogoal.experimental.pipeline import Supervised, build_pipeline_graph
-from autogoal.experimental.semantics import SemanticType
+
+from autogoal.kb import build_pipeline_graph, SemanticType
 from autogoal.ml.metrics import accuracy
-from autogoal.sampling import ReplaySampler, Sampler
 from autogoal.search import PESearch
 from autogoal.utils import nice_repr
 
