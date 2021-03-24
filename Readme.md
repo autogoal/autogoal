@@ -92,6 +92,44 @@ To run the demo locally, simply type:
 
 And navigate to [localhost:8501](http://localhost:8501).
 
+## ⚖️ API stability
+
+We make a conscious effort to maintain a consistent public API across versions, but the private API can change at any time.
+In general, everything you can import from `autogoal` without underscores is considered public. 
+
+For example:
+
+```python
+# "clean" imports are part of the public API
+from autogoal import optimize   
+from autogoal.ml import AutoML  
+from autogoal.contrib.sklearn import find_classes
+
+# public members of public types as well
+automl = AutoML
+automl.fit(...) 
+
+# underscored imports are part of the private API
+from autogoal.ml._automl import ...
+from autogoal.contrib.sklearn._generated import ...
+
+# as well as private members of any type
+automl._input_type(...)
+
+```
+
+These are our consistency rules:
+
+- Major breaking changes are introduced between major version updates, e.g., `x.0` and `y.0`. These can be additions, removals, or modifications of any kind in any part of the API.
+
+- Between minor version updates, e.g., `1.x` and `1.y`, you can expect to find new functionality, but anything you can use from the   public API will still be there with a consistent semantic (save for bugfixes).
+
+- Between micro version updates, e.g., `1.3.x` and `1.3.y`, the public API is frozen even for additions.
+
+- The private API can be changed at all times.
+
+⚠️ While AutoGOAL is on public beta (versions `0.x`) the public API is considered unstable and thus everything can change. However, we try to keep breaking changes to a minimum.
+
 ## 📚 Documentation
 
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:

@@ -2,4 +2,3 @@ version: "2.3"
 services:
   autogoal:
     command: /bin/sh -c "while sleep 1000; do :; done"
- 

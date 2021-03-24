@@ -1,3 +1,4 @@
+from autogoal.kb import AlgorithmBase, Supervised
 from typing import Optional
 
 import collections
@@ -15,29 +16,30 @@ from autogoal.grammar import (
     Graph,
     GraphGrammar,
     Sampler,
-    Boolean,
-    Categorical,
-    Continuous,
-    Discrete,
+    BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
 )
-from autogoal.kb import (
-    CategoricalVector,
-    List,
+from autogoal.experimental.semantics import (
+    VectorCategorical,
+    Seq,
     MatrixContinuousDense,
     Postag,
     Tensor3,
     Tensor4,
-    Tuple,
 )
+
 from autogoal.utils import nice_repr
+import abc
 
 
 @nice_repr
-class KerasNeuralNetwork:
+class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
     def __init__(
         self,
         grammar: GraphGrammar,
-        optimizer: Categorical("sgd", "adam", "rmsprop"),
+        optimizer: CategoricalValue("sgd", "adam", "rmsprop"),
         epochs=10,
         early_stop=3,
         validation_split=0.1,
@@ -59,8 +61,7 @@ class KerasNeuralNetwork:
     def eval(self):
         self._mode = "eval"
 
-    def run(self, input):
-        X, y = input
+    def run(self, X, y=None):
         if self._mode == "train":
             self.fit(X, y)
             return y
@@ -122,8 +123,9 @@ class KerasNeuralNetwork:
         self._model = Model(inputs=input_x, outputs=final_ouput)
         self._model.compile(**self._compile_kwargs)
 
+    @abc.abstractmethod
     def _build_input(self, X):
-        raise NotImplementedError()
+        pass
 
     def _build_output(self, outputs, y):
         return outputs
@@ -156,7 +158,7 @@ class KerasNeuralNetwork:
 
 class KerasClassifier(KerasNeuralNetwork):
     def __init__(
-        self, optimizer: Categorical("sgd", "adam", "rmsprop"), grammar=None, **kwargs
+        self, optimizer: CategoricalValue("sgd", "adam", "rmsprop"), grammar=None, **kwargs
     ):
         self._classes = None
         self._num_classes = None
@@ -205,8 +207,8 @@ class KerasClassifier(KerasNeuralNetwork):
         return [self._inverse_classes[yi] for yi in predictions]
 
     def run(
-        self, input: Tuple(MatrixContinuousDense(), CategoricalVector())
-    ) -> CategoricalVector():
+        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+    ) -> VectorCategorical:
         return super().run(input)
 
 
@@ -224,17 +226,17 @@ class KerasImagePreprocessor(_ImageDataGenerator):
 
     def __init__(
         self,
-        featurewise_center: Boolean(),
-        samplewise_center: Boolean(),
-        featurewise_std_normalization: Boolean(),
-        samplewise_std_normalization: Boolean(),
-        rotation_range: Discrete(0, 15),
-        width_shift_range: Continuous(0, 0.25),
-        height_shift_range: Continuous(0, 0.25),
-        shear_range: Continuous(0, 15),
-        zoom_range: Continuous(0, 0.25),
-        horizontal_flip: Boolean(),
-        vertical_flip: Boolean(),
+        featurewise_center: BooleanValue(),
+        samplewise_center: BooleanValue(),
+        featurewise_std_normalization: BooleanValue(),
+        samplewise_std_normalization: BooleanValue(),
+        rotation_range: DiscreteValue(0, 15),
+        width_shift_range: ContinuousValue(0, 0.25),
+        height_shift_range: ContinuousValue(0, 0.25),
+        shear_range: ContinuousValue(0, 15),
+        zoom_range: ContinuousValue(0, 0.25),
+        horizontal_flip: BooleanValue(),
+        vertical_flip: BooleanValue(),
     ):
         super().__init__(
             featurewise_center=featurewise_center,
@@ -255,7 +257,7 @@ class KerasImageClassifier(KerasClassifier):
     def __init__(
         self,
         preprocessor: KerasImagePreprocessor,
-        optimizer: Categorical("sgd", "adam", "rmsprop"),
+        optimizer: CategoricalValue("sgd", "adam", "rmsprop"),
         **kwargs,
     ):
         self.preprocessor = preprocessor
@@ -288,7 +290,7 @@ class KerasImageClassifier(KerasClassifier):
             **kwargs,
         )
 
-    def run(self, input: Tuple(Tensor4(), CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor4, y:Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
     def _build_input(self, X):
@@ -302,7 +304,7 @@ class KerasSequenceClassifier(KerasClassifier):
     def _build_input(self, X):
         return Input(shape=(None, X.shape[2]))
 
-    def run(self, input: Tuple(Tensor3(), CategoricalVector())) -> CategoricalVector():
+    def run(self, X:Tensor3, y:Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
 
@@ -317,8 +319,8 @@ from autogoal.contrib.keras._crf import crf_loss
 class KerasSequenceTagger(KerasNeuralNetwork):
     def __init__(
         self,
-        decode: Categorical("dense", "crf"),
-        optimizer: Categorical("sgd", "adam", "rmsprop"),
+        decode: CategoricalValue("dense", "crf"),
+        optimizer: CategoricalValue("sgd", "adam", "rmsprop"),
         grammar=None,
         **kwargs,
     ):
@@ -421,6 +423,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return self._decode(predictions)
 
     def run(
-        self, input: Tuple(List(MatrixContinuousDense()), List(List(Postag())))
-    ) -> List(List(Postag())):
-        return super().run(input)
+        self, X:Seq[MatrixContinuousDense], y:Supervised[Seq[Seq[Postag]]]
+    ) -> Seq[Seq[Postag]]:
+        return super().run(X, y)

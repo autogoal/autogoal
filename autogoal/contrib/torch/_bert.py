@@ -1,15 +1,17 @@
+from autogoal.kb import AlgorithmBase
 from transformers import BertModel, BertTokenizer
 from pathlib import Path
 import torch
 import numpy as np
 
-from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, List, Word
-from autogoal.grammar import Discrete, Categorical
+from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, Seq, Word
+from autogoal.kb import Supervised
+from autogoal.grammar import DiscreteValue, CategoricalValue
 from autogoal.utils import CacheManager, nice_repr
 
 
 @nice_repr
-class BertEmbedding:
+class BertEmbedding(AlgorithmBase):
     """
     Transforms a sentence already tokenized into a list of vector embeddings using a Bert pretrained multilingual model.
 
@@ -41,7 +43,7 @@ class BertEmbedding:
     """
     use_cache = False
 
-    def __init__(self, merge_mode: Categorical("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
+    def __init__(self, merge_mode: CategoricalValue("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
@@ -57,7 +59,7 @@ class BertEmbedding:
 
         print(*args, **kwargs)
 
-    def run(self, input: List(Word(language="english"))) -> MatrixContinuousDense():
+    def run(self, input: Seq[Word]) -> MatrixContinuousDense:
         if self.model is None:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
@@ -105,7 +107,7 @@ class BertEmbedding:
 
 
 @nice_repr
-class BertTokenizeEmbedding:
+class BertTokenizeEmbedding(AlgorithmBase):
     """
     Transforms a sentence into a list of vector embeddings using a Bert pretrained English model.
 
@@ -133,7 +135,7 @@ class BertTokenizeEmbedding:
 
         print(*args, **kwargs)
 
-    def run(self, input: List(Sentence(language="english"))) -> Tensor3():
+    def run(self, input: Seq[Sentence]) -> Tensor3:
         if self.model is None:
             self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
             self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")

@@ -14,4 +14,4 @@ services:
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
     user: "1000:1000"
-    entrypoint: ["/bin/sh", "/home/coder/autogoal/entrypoint.sh"]
+    # entrypoint: ["/bin/sh", "/home/coder/autogoal/entrypoint.sh"]

@@ -1,3 +1,4 @@
+from autogoal.kb import AlgorithmBase
 from pathlib import Path
 
 import requests
@@ -5,7 +6,7 @@ import shutil
 import numpy as np
 
 import gensim.downloader as api
-from autogoal.kb import ContinuousVector, Word
+from autogoal.experimental.semantics import Word, VectorContinuous
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors
@@ -13,7 +14,7 @@ from gensim.models.fasttext import FastText, FastTextKeyedVectors
 
 
 @nice_repr
-class Word2VecEmbedding:
+class Word2VecEmbedding(AlgorithmBase):
     """This class transform a word in embedding vector using Word2Vec of `gensim` (using `glove-twitter-25`).
 
     ##### Notes
@@ -33,8 +34,7 @@ class Word2VecEmbedding:
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="english")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -44,7 +44,7 @@ class Word2VecEmbedding:
 
 
 @nice_repr
-class Word2VecEmbeddingSpanish:
+class Word2VecEmbeddingSpanish(AlgorithmBase):
     """This class transform a word in embedding vector using Word2Vec of `gensim` (using `Spanish 3B Word2Vec`).
 
     ##### Notes
@@ -74,8 +74,7 @@ class Word2VecEmbeddingSpanish:
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -85,7 +84,7 @@ class Word2VecEmbeddingSpanish:
 
 
 @nice_repr
-class FastTextEmbeddingSpanishSUC:
+class FastTextEmbeddingSpanishSUC(AlgorithmBase):
     """This class transform a word in embedding vector using FastText of `gensim`.
 
     ##### Notes
@@ -117,8 +116,7 @@ class FastTextEmbeddingSpanishSUC:
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -128,7 +126,7 @@ class FastTextEmbeddingSpanishSUC:
 
 
 @nice_repr
-class FastTextEmbeddingSpanishSWBC:
+class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
     """This class transform a word in embedding vector using FastText of `gensim`.
 
     ##### Notes
@@ -160,8 +158,7 @@ class FastTextEmbeddingSpanishSWBC:
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -171,7 +168,7 @@ class FastTextEmbeddingSpanishSWBC:
 
 
 @nice_repr
-class GloveEmbeddingSpanishSWBC:
+class GloveEmbeddingSpanishSWBC(AlgorithmBase):
     """This class transform a word in embedding vector using Glove of `gensim`.
 
     ##### Notes
@@ -203,8 +200,7 @@ class GloveEmbeddingSpanishSWBC:
         return self._model
 
     def run(
-        self, input: Word(domain="general", language="spanish")
-    ) -> ContinuousVector():
+        self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:

@@ -8,7 +8,7 @@ import termcolor
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, Min, Gb
+from autogoal.utils import RestrictedWorkerByJoin, Min, Gb, Sec
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
@@ -18,13 +18,13 @@ class SearchAlgorithm:
         self,
         generator_fn=None,
         fitness_fn=None,
-        pop_size=1,
+        pop_size=20,
         maximize=True,
         errors="raise",
         early_stop=0.5,
-        evaluation_timeout: int = 5 * Min,
+        evaluation_timeout: int = 10 * Sec,
         memory_limit: int = 4 * Gb,
-        search_timeout: int = 60 * 60,
+        search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
     ):
@@ -340,10 +340,10 @@ class RichLogger(Logger):
         self.console.print(Panel(f"📈 Fitness=[blue]{fitness:.3f}"))
 
     def error(self, e: Exception, solution):
-        self.logger.error(str(e))
+        self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
     def start_generation(self, generations, best_fn):
-        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn:.3f}")
+        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}")
 
     def start_generation(self, generations, best_fn):
         self.progress.update(self.pop_counter, completed=0)
@@ -354,7 +354,7 @@ class RichLogger(Logger):
     def end(self, best, best_fn):
         self.console.rule(f"Search finished")
         self.console.print(repr(best))
-        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn:.3f}"))
+        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn or 0:.3f}"))
         self.progress.stop()
         self.console.rule("Search finished", style="red")
 

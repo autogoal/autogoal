@@ -1,27 +1,27 @@
 from autogoal.exceptions import InterfaceIncompatibleError
-import types
+# import types
 import inspect
-import pprint
+# import pprint
 
 from typing import Mapping
 from autogoal.grammar import Symbol, Union, Empty, Subset
 
-from scipy.sparse.base import spmatrix
-from numpy import ndarray
+# from scipy.sparse.base import spmatrix
+# from numpy import ndarray
 
 
-def algorithm(input_type, output_type):
-    def run_method(self, input: input_type) -> output_type:
-        pass
+# def algorithm(input_type, output_type):
+#     def run_method(self, input: input_type) -> output_type:
+#         pass
 
-    def body(ns):
-        ns["run"] = run_method
+#     def body(ns):
+#         ns["run"] = run_method
 
-    return types.new_class(
-        name="Algorithm[%s, %s]" % (input_type, output_type),
-        bases=(Interface,),
-        exec_body=body,
-    )
+#     return types.new_class(
+#         name="Algorithm[%s, %s]" % (input_type, output_type),
+#         bases=(Interface,),
+#         exec_body=body,
+#     )
 
 
 class Interface:
@@ -48,7 +48,7 @@ class Interface:
                 compatible.append(other_cls)
 
         if not compatible:
-            raise InterfaceIncompatibleError(cls)
+            raise InterfaceIncompatibleError(cls.__name__)
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
@@ -74,24 +74,24 @@ class Distinct:
 
         if not compatible:
             raise ValueError(
-                "Cannot find compatible implementations for interface %r"
+                "Cannot find compatible implementations for <class %s>"
                 % self.interface
             )
 
         return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
 
-def conforms(type1, type2):
-    if inspect.isclass(type1) and inspect.isclass(type2):
-        return issubclass(type1, type2)
+# def conforms(type1, type2):
+#     if inspect.isclass(type1) and inspect.isclass(type2):
+#         return issubclass(type1, type2)
 
-    if hasattr(type1, "__conforms__") and type1.__conforms__(type2):
-        return True
+#     if hasattr(type1, "__conforms__") and type1.__conforms__(type2):
+#         return True
 
-    if hasattr(type2, "__rconforms__") and type2.__rconforms__(type1):
-        return True
+#     if hasattr(type2, "__rconforms__") and type2.__rconforms__(type1):
+#         return True
 
-    return False
+#     return False
 
 
 def _compatible_annotations(
@@ -162,454 +162,458 @@ def _get_annotations(clss, ignore=[]):
     return signatures
 
 
-def make_list_wrapper(algorithm):
-    from autogoal.kb._algorithm import _get_annotations
+# # def make_list_wrapper(algorithm):
+# #     from autogoal.kb._algorithm import _get_annotations
 
-    input_type, output_type = _get_annotations(algorithm)
-    name = f"List[{algorithm.__name__}]"
+# #     input_type, output_type = _get_annotations(algorithm)
+# #     name = f"List[{algorithm.__name__}]"
 
-    def wrap_list(types):
-        if isinstance(types, Tuple):
-            return Tuple(*(List(t) for t in types.inner))
+# #     def wrap_list(types):
+# #         if isinstance(types, Tuple):
+# #             return Tuple(*(List(t) for t in types.inner))
 
-        return List(types)
+# #         return List(types)
 
-    def init_method(self, inner: algorithm):
-        self.inner = inner
+# #     def init_method(self, inner: algorithm):
+# #         self.inner = inner
 
-    def run_method(self, input: wrap_list(input_type)) -> wrap_list(output_type):
-        return [self.inner.run(x) for x in xs]
+# #     def run_method(self, input: wrap_list(input_type)) -> wrap_list(output_type):
+# #         return [self.inner.run(x) for x in xs]
 
-    def repr_method(self):
-        return f"{name}(inner={repr(self.inner)})"
+# #     def repr_method(self):
+# #         return f"{name}(inner={repr(self.inner)})"
 
-    def getattr_method(self, attr):
-        return getattr(self.inner, attr)
+# #     def getattr_method(self, attr):
+# #         return getattr(self.inner, attr)
 
-    def body(ns):
-        ns["__init__"] = init_method
-        ns["run"] = run_method
-        ns["__repr__"] = repr_method
-        ns["__getattr__"] = getattr_method
+# #     def body(ns):
+# #         ns["__init__"] = init_method
+# #         ns["run"] = run_method
+# #         ns["__repr__"] = repr_method
+# #         ns["__getattr__"] = getattr_method
 
-    return types.new_class(name=name, bases=(), exec_body=body)
+# #     return types.new_class(name=name, bases=(), exec_body=body)
 
 
-def build_composite_list(input_type, output_type, depth=1):
-    def wrap(t, d):
-        if d == 0:
-            return t
+# # def build_composite_list(input_type, output_type, depth=1):
+# #     def wrap(t, d):
+# #         if d == 0:
+# #             return t
 
-        return List(wrap(t, d - 1))
+# #         return List(wrap(t, d - 1))
 
-    input_wrapper = wrap(input_type, depth)
-    output_wrapper = wrap(output_type, depth)
+# #     input_wrapper = wrap(input_type, depth)
+# #     output_wrapper = wrap(output_type, depth)
 
-    # name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
-    name = "ListAlgorithm" #[%s, %s]" % (input_wrapper, output_wrapper)
+# #     # name = "ListAlgorithm"  # % (input_wrapper, output_wrapper)
+# #     name = "ListAlgorithm" #[%s, %s]" % (input_wrapper, output_wrapper)
 
-    def init_method(self, inner: algorithm(input_type, output_type)):
-        self.inner = inner
+# #     def init_method(self, inner: algorithm(input_type, output_type)):
+# #         self.inner = inner
 
-    def run_method(self, input: input_wrapper) -> output_wrapper:
-        def wrap_run(xs, d):
-            if d == 0:
-                return self.inner.run(xs)
+# #     def run_method(self, input: input_wrapper) -> output_wrapper:
+# #         def wrap_run(xs, d):
+# #             if d == 0:
+# #                 return self.inner.run(xs)
 
-            return [wrap_run(x, d - 1) for x in xs]
+# #             return [wrap_run(x, d - 1) for x in xs]
 
-        return wrap_run(input, depth)
+# #         return wrap_run(input, depth)
 
-    def repr_method(self):
-        return f"{name}(inner={repr(self.inner)})"
+# #     def repr_method(self):
+# #         return f"{name}(inner={repr(self.inner)})"
 
-    def getattr_method(self, attr):
-        return getattr(self.inner, attr)
+# #     def getattr_method(self, attr):
+# #         return getattr(self.inner, attr)
 
-    def reduce_method(self):
-        return (
-            build_composite_list_instance,
-            (input_type, output_type, self.inner)
-        )
+# #     def reduce_method(self):
+# #         return (
+# #             build_composite_list_instance,
+# #             (input_type, output_type, self.inner)
+# #         )
 
-    def body(ns):
-        ns["__init__"] = init_method
-        ns["run"] = run_method
-        ns["__repr__"] = repr_method
-        ns["__getattr__"] = getattr_method
-        ns["__reduce__"] = reduce_method
+# #     def body(ns):
+# #         ns["__init__"] = init_method
+# #         ns["run"] = run_method
+# #         ns["__repr__"] = repr_method
+# #         ns["__getattr__"] = getattr_method
+# #         ns["__reduce__"] = reduce_method
 
-    return types.new_class(name=name, bases=(), exec_body=body)
+# #     return types.new_class(name=name, bases=(), exec_body=body)
 
 
-def build_composite_list_instance(input_type, output_type, inner_algorithm):
-    """
-    Build a ListAlgorithm[...] type and instantiate it directly on a given algorithm.
-    """
-    return build_composite_list(input_type, output_type)(inner_algorithm)
+# # def build_composite_list_instance(input_type, output_type, inner_algorithm):
+# #     """
+# #     Build a ListAlgorithm[...] type and instantiate it directly on a given algorithm.
+# #     """
+# #     return build_composite_list(input_type, output_type)(inner_algorithm)
 
 
-def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
-    """
-    Dynamically generate a class `TupleAlgorithm` that wraps
-    another algorithm to receive a Tuple but pass only one of the
-    parameters to the internal algorithm.
-    """
+# # def build_composite_tuple(index, input_type: "Tuple", output_type: "Tuple"):
+# #     """
+# #     Dynamically generate a class `TupleAlgorithm` that wraps
+# #     another algorithm to receive a Tuple but pass only one of the
+# #     parameters to the internal algorithm.
+# #     """
 
-    internal_input = input_type.inner[index]
-    internal_output = output_type.inner[index]
+# #     internal_input = input_type.inner[index]
+# #     internal_output = output_type.inner[index]
 
-    name = "TupleAlgorithm" #[%s, %s]" % (input_type, output_type)
+# #     name = "TupleAlgorithm" #[%s, %s]" % (input_type, output_type)
 
-    def init_method(self, inner: algorithm(internal_input, internal_output)):
-        self.inner = inner
+# #     def init_method(self, inner: algorithm(internal_input, internal_output)):
+# #         self.inner = inner
 
-    def run_method(self, input: input_type) -> output_type:
-        elements = list(input)
-        elements[index] = self.inner.run(elements[index])
-        return tuple(elements)
+# #     def run_method(self, input: input_type) -> output_type:
+# #         elements = list(input)
+# #         elements[index] = self.inner.run(elements[index])
+# #         return tuple(elements)
 
-    def repr_method(self):
-        return f"{name}(inner={repr(self.inner)})"
+# #     def repr_method(self):
+# #         return f"{name}(inner={repr(self.inner)})"
 
-    def getattr_method(self, attr):
-        return getattr(self.inner, attr)
+# #     def getattr_method(self, attr):
+# #         return getattr(self.inner, attr)
 
-    def reduce_method(self):
-        return (
-            build_composite_tuple_instance,
-            (index, input_type, output_type, self.inner)
-        )
+# #     def reduce_method(self):
+# #         return (
+# #             build_composite_tuple_instance,
+# #             (index, input_type, output_type, self.inner)
+# #         )
 
-    def body(ns):
-        ns["__init__"] = init_method
-        ns["run"] = run_method
-        ns["__repr__"] = repr_method
-        ns["__getattr__"] = getattr_method
-        ns["__reduce__"] = reduce_method
+# #     def body(ns):
+# #         ns["__init__"] = init_method
+# #         ns["run"] = run_method
+# #         ns["__repr__"] = repr_method
+# #         ns["__getattr__"] = getattr_method
+# #         ns["__reduce__"] = reduce_method
 
-    return types.new_class(name=name, bases=(), exec_body=body)
+# #     return types.new_class(name=name, bases=(), exec_body=body)
 
 
 
-def build_composite_tuple_instance(index, input_type, output_type, inner_algorithm):
-    """
-    Build a TupleAlgorithm[...] type and instantiate it directly on a given algorithm.
-    """
-    return build_composite_tuple(index, input_type, output_type)(inner_algorithm)
+# # def build_composite_tuple_instance(index, input_type, output_type, inner_algorithm):
+# #     """
+# #     Build a TupleAlgorithm[...] type and instantiate it directly on a given algorithm.
+# #     """
+# #     return build_composite_tuple(index, input_type, output_type)(inner_algorithm)
 
 
-class DataType:
-    def __init__(self, **tags):
-        self.tags = tags
+# # class DataType:
+# #     def __init__(self, **tags):
+# #         self.tags = tags
 
-    def get_tag(self, tag):
-        return self.tags.get(tag, None)
+# #     def get_tag(self, tag):
+# #         return self.tags.get(tag, None)
 
-    def __repr__(self):
-        tags = ", ".join(
-            f"{key}={value}"
-            for key, value in sorted(self.tags.items(), key=lambda t: t[0])
-        )
-        return f"{self.__class__.__name__}({tags})"
+# #     def __repr__(self):
+# #         # tags = ", ".join(
+# #         #     f"{key}={value}"
+# #         #     for key, value in sorted(self.tags.items(), key=lambda t: t[0])
+# #         # )
+# #         return f"{self.__class__.__name__}()" #({tags})"
 
-    def __eq__(self, other):
-        return repr(self) == repr(other)
+# #     def __eq__(self, other):
+# #         return repr(self) == repr(other)
 
-    def __hash__(self):
-        return hash(repr(self))
+# #     def __hash__(self):
+# #         return hash(repr(self))
 
-    def __conforms__(self, other):
-        return issubclass(self.__class__, other.__class__)
+# #     @property
+# #     def __name__(self):
+# #         return self.__class__.__name__
 
+# #     def __conforms__(self, other):
+# #         return issubclass(self.__class__, other.__class__)
 
-def infer_type(obj):
-    """
-    Attempts to automatically infer the most precise semantic type for `obj`.
 
-    ##### Parameters
+# # def infer_type(obj):
+# #     """
+# #     Attempts to automatically infer the most precise semantic type for `obj`.
 
-    * `obj`: Object to detect its semantic type.
+# #     ##### Parameters
 
-    ##### Raises
+# #     * `obj`: Object to detect its semantic type.
 
-    * `TypeError`: if no valid semantic type was found that matched `obj`.
+# #     ##### Raises
 
-    ##### Examples
+# #     * `TypeError`: if no valid semantic type was found that matched `obj`.
 
-    * Natural language
+# #     ##### Examples
 
-    ```python
-    >>> infer_type("hello")
-    Word()
-    >>> infer_type("hello world")
-    Sentence()
-    >>> infer_type("Hello Word. It is raining.")
-    Document()
+# #     * Natural language
 
-    ```
+# #     ```python
+# #     >>> infer_type("hello")
+# #     Word()
+# #     >>> infer_type("hello world")
+# #     Sentence()
+# #     >>> infer_type("Hello Word. It is raining.")
+# #     Document()
 
-    * Vectors
+# #     ```
 
-    ```
-    >>> import numpy as np
-    >>> infer_type(np.asarray(["A", "B", "C", "D"]))
-    CategoricalVector()
-    >>> infer_type(np.asarray([0.0, 1.1, 2.1, 0.2]))
-    ContinuousVector()
-    >>> infer_type(np.asarray([0, 1, 1, 0]))
-    DiscreteVector()
+# #     * Vectors
 
-    ```
+# #     ```
+# #     >>> import numpy as np
+# #     >>> infer_type(np.asarray(["A", "B", "C", "D"]))
+# #     CategoricalVector()
+# #     >>> infer_type(np.asarray([0.0, 1.1, 2.1, 0.2]))
+# #     ContinuousVector()
+# #     >>> infer_type(np.asarray([0, 1, 1, 0]))
+# #     DiscreteVector()
 
-    * Matrices
+# #     ```
 
-    ```
-    >>> import numpy as np
-    >>> infer_type(np.random.randn(10,10))
-    MatrixContinuousDense()
+# #     * Matrices
 
-    >>> import scipy.sparse as sp
-    >>> infer_type(sp.coo_matrix((10,10)))
-    MatrixContinuousSparse()
+# #     ```
+# #     >>> import numpy as np
+# #     >>> infer_type(np.random.randn(10,10))
+# #     MatrixContinuousDense()
 
-    ```
-    """
-    if isinstance(obj, str):
-        if " " not in obj:
-            return Word()
+# #     >>> import scipy.sparse as sp
+# #     >>> infer_type(sp.coo_matrix((10,10)))
+# #     MatrixContinuousSparse()
 
-        if "." not in obj:
-            return Sentence()
+# #     ```
+# #     """
+# #     if isinstance(obj, str):
+# #         if " " not in obj:
+# #             return Word()
 
-        return Document()
+# #         if "." not in obj:
+# #             return Sentence()
 
-    if isinstance(obj, list):
-        internal_types = set([infer_type(x) for x in obj])
+# #         return Document()
 
-        for test_type in [Document(), Sentence(), Word()]:
-            if test_type in internal_types:
-                return List(test_type)
+# #     if isinstance(obj, list):
+# #         internal_types = set([infer_type(x) for x in obj])
 
-    if hasattr(obj, "shape"):
-        if len(obj.shape) == 1:
-            if isinstance(obj, ndarray):
-                if obj.dtype.kind == "U":
-                    return CategoricalVector()
-                if obj.dtype.kind == "i":
-                    return DiscreteVector()
-                if obj.dtype.kind == "f":
-                    return ContinuousVector()
-        if len(obj.shape) == 2:
-            if isinstance(obj, spmatrix):
-                return MatrixContinuousSparse()
-            if isinstance(obj, ndarray):
-                if obj.dtype.kind == "O":
-                    return MatrixCategorical()
-                else:
-                    return MatrixContinuousDense()
+# #         for test_type in [Document(), Sentence(), Word()]:
+# #             if test_type in internal_types:
+# #                 return List(test_type)
 
-    raise TypeError("Cannot infer type for %r" % obj)
+# #     if hasattr(obj, "shape"):
+# #         if len(obj.shape) == 1:
+# #             if isinstance(obj, ndarray):
+# #                 if obj.dtype.kind == "U":
+# #                     return CategoricalVector()
+# #                 if obj.dtype.kind == "i":
+# #                     return DiscreteVector()
+# #                 if obj.dtype.kind == "f":
+# #                     return ContinuousVector()
+# #         if len(obj.shape) == 2:
+# #             if isinstance(obj, spmatrix):
+# #                 return MatrixContinuousSparse()
+# #             if isinstance(obj, ndarray):
+# #                 if obj.dtype.kind == "O":
+# #                     return MatrixCategorical()
+# #                 else:
+# #                     return MatrixContinuousDense()
 
+# #     raise TypeError("Cannot infer type for %r" % obj)
 
-class Text(DataType):
-    pass
 
+# # class Text(DataType):
+# #     pass
 
-class Word(Text):
-    pass
 
+# # class Word(Text):
+# #     pass
 
-class Stem(DataType):
-    pass
 
+# # class Stem(DataType):
+# #     pass
 
-class Sentence(Text):
-    pass
 
+# # class Sentence(Text):
+# #     pass
 
-class Document(Text):
-    pass
 
+# # class Document(Text):
+# #     pass
 
-class Category(DataType):
-    pass
 
+# # class Category(DataType):
+# #     pass
 
-class Vector(DataType):
-    pass
 
+# # class Vector(DataType):
+# #     pass
 
-class Matrix(DataType):
-    pass
 
+# # class Matrix(DataType):
+# #     pass
 
-class DenseMatrix(Matrix):
-    pass
 
+# # class DenseMatrix(Matrix):
+# #     pass
 
-class SparseMatrix(Matrix):
-    pass
 
+# # class SparseMatrix(Matrix):
+# #     pass
 
-class ContinuousVector(Vector):
-    pass
 
+# # class ContinuousVector(Vector):
+# #     pass
 
-class DiscreteVector(Vector):
-    pass
 
+# # class DiscreteVector(Vector):
+# #     pass
 
-class CategoricalVector(Vector):
-    pass
 
+# # class CategoricalVector(Vector):
+# #     pass
 
-class MatrixContinuous(Matrix):
-    pass
 
+# # class MatrixContinuous(Matrix):
+# #     pass
 
-class MatrixCategorical(Matrix):
-    pass
 
+# # class MatrixCategorical(Matrix):
+# #     pass
 
-class MatrixContinuousDense(MatrixContinuous, DenseMatrix):
-    pass
 
+# # class MatrixContinuousDense(MatrixContinuous, DenseMatrix):
+# #     pass
 
-class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
-    pass
 
+# # class MatrixContinuousSparse(MatrixContinuous, SparseMatrix):
+# #     pass
 
-class Entity(DataType):
-    pass
 
+# # class Entity(DataType):
+# #     pass
 
-class Summary(Document):
-    pass
 
+# # class Summary(Document):
+# #     pass
 
-class Sentiment(DataType):
-    pass
 
+# # class Sentiment(DataType):
+# #     pass
 
-class Synset(DataType):
-    pass
 
+# # class Synset(DataType):
+# #     pass
 
-class Postag(DataType):
-    pass
 
+# # class Postag(DataType):
+# #     pass
 
-class Chunktag(DataType):
-    pass
 
+# # class Chunktag(DataType):
+# #     pass
 
-class Tensor3(DataType):
-    pass
 
+# # class Tensor3(DataType):
+# #     pass
 
-class Tensor4(DataType):
-    pass
 
+# # class Tensor4(DataType):
+# #     pass
 
-class Flags(DataType):
-    pass
 
+# # class Flags(DataType):
+# #     pass
 
-class List(DataType):
-    def __init__(self, inner):
-        self.inner = inner
-        # super().__init__(**inner.tags)
 
-    def depth(self):
-        if not isinstance(self.inner, List):
-            return 1
+# # class List(DataType):
+# #     def __init__(self, inner):
+# #         self.inner = inner
+# #         # super().__init__(**inner.tags)
 
-        return 1 + self.inner.depth()
+# #     def depth(self):
+# #         if not isinstance(self.inner, List):
+# #             return 1
 
-    def __conforms__(self, other):
-        return isinstance(other, List) and conforms(self.inner, other.inner)
+# #         return 1 + self.inner.depth()
 
-    def __repr__(self):
-        return "List(%r)" % self.inner
+# #     def __conforms__(self, other):
+# #         return isinstance(other, List) and conforms(self.inner, other.inner)
 
+# #     def __repr__(self):
+# #         return "List(%r)" % self.inner
 
-class Tuple(DataType):
-    def __init__(self, *inner):
-        self.inner = inner
-        # super().__init__(**inner[0].tags)
 
-    def __repr__(self):
-        items = ", ".join(repr(s) for s in self.inner)
-        return "Tuple(%s)" % items
+# # class Tuple(DataType):
+# #     def __init__(self, *inner):
+# #         self.inner = inner
+# #         # super().__init__(**inner[0].tags)
 
-    def __conforms__(self, other):
-        if not isinstance(other, Tuple):
-            return False
+# #     def __repr__(self):
+# #         items = ", ".join(repr(s) for s in self.inner)
+# #         return "Tuple(%s)" % items
 
-        if len(self.inner) != len(other.inner):
-            return False
+# #     def __conforms__(self, other):
+# #         if not isinstance(other, Tuple):
+# #             return False
 
-        for x, y in zip(self.inner, other.inner):
-            if not conforms(x, y):
-                return False
+# #         if len(self.inner) != len(other.inner):
+# #             return False
 
-        return True
+# #         for x, y in zip(self.inner, other.inner):
+# #             if not conforms(x, y):
+# #                 return False
 
+# #         return True
 
-DATA_TYPES = frozenset(
-    [
-        Text,
-        Word,
-        Stem,
-        Sentence,
-        Document,
-        Category,
-        Vector,
-        Matrix,
-        DenseMatrix,
-        SparseMatrix,
-        ContinuousVector,
-        DiscreteVector,
-        CategoricalVector,
-        MatrixContinuous,
-        MatrixCategorical,
-        MatrixContinuousDense,
-        MatrixContinuousSparse,
-        Entity,
-        Summary,
-        Sentiment,
-        Synset,
-        Postag,
-        Chunktag,
-        Tensor3,
-        List,
-        Tuple,
-        Flags,
-    ]
-)
 
+# # DATA_TYPES = frozenset(
+# #     [
+# #         Text,
+# #         Word,
+# #         Stem,
+# #         Sentence,
+# #         Document,
+# #         Category,
+# #         Vector,
+# #         Matrix,
+# #         DenseMatrix,
+# #         SparseMatrix,
+# #         ContinuousVector,
+# #         DiscreteVector,
+# #         CategoricalVector,
+# #         MatrixContinuous,
+# #         MatrixCategorical,
+# #         MatrixContinuousDense,
+# #         MatrixContinuousSparse,
+# #         Entity,
+# #         Summary,
+# #         Sentiment,
+# #         Synset,
+# #         Postag,
+# #         Chunktag,
+# #         Tensor3,
+# #         List,
+# #         Tuple,
+# #         Flags,
+# #     ]
+# # )
 
-def draw_data_hierarchy(output_file):
-    """
-    Creates an SVG representation of the `DataType` hierarchy,
-    for documentation purposes.
-    """
-    import pydot
 
-    classes = list(DATA_TYPES) + [DataType]
+# # def draw_data_hierarchy(output_file):
+# #     """
+# #     Creates an SVG representation of the `DataType` hierarchy,
+# #     for documentation purposes.
+# #     """
+# #     import pydot
 
-    graph = pydot.Dot(direction="TB")
+# #     classes = list(DATA_TYPES) + [DataType]
 
-    for clss in classes:
-        graph.add_node(pydot.Node(clss.__name__))
+# #     graph = pydot.Dot(direction="TB")
 
-    for clss in classes:
-        for base in clss.__bases__:
-            if base not in classes:
-                continue
+# #     for clss in classes:
+# #         graph.add_node(pydot.Node(clss.__name__))
 
-            graph.add_edge(pydot.Edge(base.__name__, clss.__name__))
+# #     for clss in classes:
+# #         for base in clss.__bases__:
+# #             if base not in classes:
+# #                 continue
 
-    graph.write(output_file + ".svg", format="svg")
-    graph.write(output_file + ".png", format="png")
+# #             graph.add_edge(pydot.Edge(base.__name__, clss.__name__))
+
+# #     graph.write(output_file + ".svg", format="svg")
+# #     graph.write(output_file + ".png", format="png")

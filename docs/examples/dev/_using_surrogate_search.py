@@ -1,12 +1,12 @@
 from autogoal.search import SurrogateSearch, PESearch, ConsoleLogger
-from autogoal.grammar import Continuous, Sampler, generate_cfg
+from autogoal.grammar import ContinuousValue, Sampler, generate_cfg
 from autogoal.utils import nice_repr
 
 
 @nice_repr
 class Input:
     def __init__(
-        self, x: Continuous(-1, 1), y: Continuous(-1, 1), z: Continuous(-1, 1)
+        self, x: ContinuousValue(-1, 1), y: ContinuousValue(-1, 1), z: ContinuousValue(-1, 1)
     ):
         self.x = x
         self.y = y

@@ -1,3 +1,4 @@
+from autogoal.kb import AlgorithmBase
 import gensim
 import nltk
 import black
@@ -15,7 +16,7 @@ import enlighten
 
 from pathlib import Path
 from autogoal.kb import *
-from autogoal.grammar import Discrete, Continuous, Categorical, Boolean
+from autogoal.grammar import DiscreteValue, ContinuousValue, CategoricalValue, BooleanValue
 from autogoal.contrib.sklearn._builder import SklearnWrapper
 from ._utils import (
     _is_algorithm,
@@ -46,12 +47,7 @@ languages = [
 languages_re = re.compile("|".join(languages))
 
 
-GENERATION_RULES = dict(
-    SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
-)
-
-
-class NltkTokenizer:
+class NltkTokenizer(AlgorithmBase):
     def run(self, input):
         return self.tokenize(input)
 
@@ -60,7 +56,7 @@ class NltkTokenizer:
         pass
 
 
-class NltkStemmer:
+class NltkStemmer(AlgorithmBase):
     def run(self, input):
         return self.stem(input)
 
@@ -69,7 +65,7 @@ class NltkStemmer:
         pass
 
 
-class NltkLemmatizer:
+class NltkLemmatizer(AlgorithmBase):
     def run(self, input):
         return self.lemmatize(input)
 
@@ -90,29 +86,25 @@ class NltkClusterer(SklearnWrapper):
 
 
 class NltkTagger(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
+    def _train(self, X, y):
         tagged_sentences = [list(zip(words, tags)) for words, tags in zip(X, y)]
         self._instance = self.tagger(train=tagged_sentences)
         return X, y
 
-    def _eval(self, input):
-        X, y = input
+    def _eval(self, X):
         return [
             [tag for _, tag in sentence] for sentence in self._instance.tag_sents(X)
         ]
 
 
 class NltkTrainedTagger(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
+    def _train(self, X, y):
         # X expected to be a tokenized sentence
         return self.tag(X), y
 
-    def _eval(self, input):
-        X, y = input
+    def _eval(self, X):
         # X expected to be a tokenized sentence
-        return self.tag(X), y
+        return self.tag(X)
 
 
 base_classes = {
@@ -128,7 +120,7 @@ base_classes = {
 
 
 GENERATION_RULES = dict(
-    SnowballStemmer=dict(assume=True, assume_input=Word(), assume_output=Stem()),
+    SnowballStemmer=dict(assume=True, assume_input=Word, assume_output=Stem),
 )
 
 
@@ -154,7 +146,7 @@ def build_nltk_wrappers():
 
             from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
             from autogoal.contrib.nltk._builder import NltkStemmer, NltkTokenizer, NltkLemmatizer, NltkTagger, NltkTrainedTagger
-            from autogoal.kb._data import *
+            from autogoal.kb import *
             from autogoal.utils import nice_repr
             from numpy import inf, nan
             """
@@ -227,8 +219,8 @@ def _write_class(cls, fp):
 
                     {base_class}.__init__(self)
 
-                def run(self, input: Tuple({input_str}, {output_str})) -> {output_str}:
-                    return {base_class}.run(self, input)
+                def run(self, X: {input_str}, y:Supervised[{output_str}]) -> {output_str}:
+                    return {base_class}.run(self, X, y)
             """
             )
         )
@@ -423,7 +415,7 @@ def _get_args(cls):
         if str.lower(arg) == "language":
             values = _find_language_values(cls)
             if values:
-                result[arg] = Categorical(*values)
+                result[arg] = CategoricalValue(*values)
                 continue
 
         if str.lower(arg) == "train" and _is_tagger(cls):
@@ -435,14 +427,14 @@ def _get_args(cls):
 
 def _get_arg_values(arg, value, cls):
     if isinstance(value, bool):
-        return Boolean()
+        return BooleanValue()
     if isinstance(value, int):
-        return Discrete(*_get_integer_values(arg, value, cls))
+        return DiscreteValue(*_get_integer_values(arg, value, cls))
     if isinstance(value, float):
-        return Continuous(*_get_float_values(arg, value, cls))
+        return ContinuousValue(*_get_float_values(arg, value, cls))
     if isinstance(value, str):
         values = _find_parameter_values(arg, cls)
-        return Categorical(*values) if values else None
+        return CategoricalValue(*values) if values else None
     return None
 
 

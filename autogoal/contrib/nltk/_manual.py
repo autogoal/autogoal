@@ -5,28 +5,28 @@ from numpy import inf, nan
 
 from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
-from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
+from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
 from autogoal.kb import *
-from autogoal.kb._data import *
 from autogoal.utils import nice_repr
+from autogoal.kb import AlgorithmBase
 
 
 @nice_repr
 class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def __init__(
         self,
-        dm: Discrete(min=0, max=2),
-        dbow_words: Discrete(min=-100, max=100),
-        dm_concat: Discrete(min=-100, max=100),
-        dm_tag_count: Discrete(min=0, max=2),
-        alpha: Continuous(min=0.001, max=0.075),
-        epochs: Discrete(min=2, max=10),
-        window: Discrete(min=2, max=10),
-        inner_tokenizer: algorithm(Sentence(), List(Word())),
-        inner_stemmer: algorithm(Word(), Stem()),
-        inner_stopwords: algorithm(List(Word()), List(Word())),
-        lowercase: Boolean(),
-        stopwords_remove:Boolean(),
+        dm: DiscreteValue(min=0, max=2),
+        dbow_words: DiscreteValue(min=-100, max=100),
+        dm_concat: DiscreteValue(min=-100, max=100),
+        dm_tag_count: DiscreteValue(min=0, max=2),
+        alpha: ContinuousValue(min=0.001, max=0.075),
+        epochs: DiscreteValue(min=2, max=10),
+        window: DiscreteValue(min=2, max=10),
+        inner_tokenizer: algorithm(Sentence, Seq[Word]),
+        inner_stemmer: algorithm(Word, Stem),
+        inner_stopwords: algorithm(Seq[Word], Seq[Word]),
+        lowercase: BooleanValue(),
+        stopwords_remove:BooleanValue(),
     ):
 
         self.inner_tokenizer = inner_tokenizer
@@ -56,7 +56,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         return self.transform(X)
 
     def fit(self, X, y):
-        # Data must be turned to tagged data as TaggedDocument(List(Token), Tag)
+        # Data must be turned to tagged data as TaggedDocument(Seq[Token), Tag)
         # Tag use to be an unique integer
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
@@ -71,17 +71,17 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
     def transform(self, X, y=None):
         return [self.infer_vector(x) for x in X]
 
-    def run(self, input: List(Sentence())) -> MatrixContinuousDense():
+    def run(self, input: Seq[Sentence]) -> MatrixContinuousDense:
         """This methods receive a document list and transform this into a dense continuous matrix.
        """
         return SklearnTransformer.run(self, input)
 
 
 @nice_repr
-class StopwordRemover:
+class StopwordRemover(AlgorithmBase):
     def __init__(
         self,
-        language: Categorical(
+        language: CategoricalValue(
             "danish",
             "dutch",
             "english",
@@ -112,7 +112,7 @@ class StopwordRemover:
     def _eval(self, input):
         return [word for word in input if word not in self.words]
 
-    def run(self, input: List(Word())) -> List(Word()):
+    def run(self, input: Seq[Word]) -> Seq[Word]:
         """This methods receive a word list list and transform this into a word list list without stopwords.
        """
         return SklearnTransformer.run(self, input)
@@ -123,7 +123,7 @@ class StopwordRemover:
 
 
 @nice_repr
-class TextLowerer:
+class TextLowerer(AlgorithmBase):
     def __init__(self):
         pass
 
@@ -140,7 +140,7 @@ class TextLowerer:
 
 
 @nice_repr
-class WordnetConcept:
+class WordnetConcept(AlgorithmBase):
     """Find a word in Wordnet and return a List of Synset de Wordnet
     """
 
@@ -150,7 +150,7 @@ class WordnetConcept:
 
         self.wordnet = wordnet
 
-    def run(self, input: Word(domain="general", language="english")) -> Synset():
+    def run(self, input: Word) -> Seq[Synset]:
         """Find a word in Wordnet and return a List of Synset de Wordnet
         """
         synsets = self.wordnet.synsets(input)
@@ -176,7 +176,7 @@ class WordnetConcept:
 
 
 @nice_repr
-class SentimentWord:
+class SentimentWord(AlgorithmBase):
     """Find a word in SentiWordnet and return a List of sentiment of the word.
     """
 
@@ -186,7 +186,7 @@ class SentimentWord:
 
         self.swn = sentiwordnet
 
-    def run(self, input: Synset(domain="general", language="english")) -> Sentiment():
+    def run(self, input: Synset) -> Sentiment:
         """Find a word in SentiWordnet and return a List of sentiment of the word.
         """
         swn_synset = self.swn.senti_synset(input)
@@ -208,7 +208,7 @@ class NEChunkParserTagger(NltkTagger):
 
         NltkTagger.__init__(self)
 
-    def run(self, input: List(List(Postag()))) -> List(List(Chunktag())):
+    def run(self, input: Seq[Postag]) -> Seq[Chunktag]:
         return NltkTagger.run(self, input)
 
 
@@ -216,8 +216,8 @@ class NEChunkParserTagger(NltkTagger):
 class GlobalChunker(SklearnWrapper):
     def __init__(
         self,
-        inner_trained_pos_tagger: algorithm(List(Word()), List(Postag())),
-        inner_chunker: algorithm(List(List(Postag())), List(List(Chunktag())))
+        inner_trained_pos_tagger: algorithm(Seq[Word], Seq[Postag]),
+        inner_chunker: algorithm(Seq[Postag], Seq[Chunktag])
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
@@ -275,5 +275,16 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: List(List(Word()))) -> List(List(Chunktag())):
+    def run(self, input: Seq[Seq[Word]] ) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
+
+
+__all__ = [
+    "Doc2Vec",
+    "StopwordRemover",
+    "TextLowerer",
+    "WordnetConcept",
+    "SentimentWord",
+    "NEChunkParserTagger",
+    "GlobalChunker",
+]

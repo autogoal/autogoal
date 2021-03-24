@@ -9,22 +9,21 @@ from pathlib import Path
 import black
 import enlighten
 import numpy as np
+from autogoal import kb
+from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
+from autogoal.kb import AlgorithmBase
+from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.utils import nice_repr
+from joblib import parallel_backend
+from numpy import inf, nan
+
 import sklearn
 import sklearn.cluster
 import sklearn.cross_decomposition
 import sklearn.feature_extraction
 import sklearn.impute
 import sklearn.naive_bayes
-from numpy import inf, nan
 from sklearn.datasets import make_classification
-
-from autogoal import kb
-from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
-from autogoal.grammar import Boolean, Categorical, Continuous, Discrete
-from autogoal.utils import nice_repr
-
-from joblib import parallel_backend
-
 
 try:
     import dask
@@ -37,7 +36,7 @@ except ImportError:
 
 
 @nice_repr
-class SklearnWrapper(metaclass=abc.ABCMeta):
+class SklearnWrapper(AlgorithmBase):
     def __init__(self):
         self._mode = "train"
 
@@ -47,35 +46,31 @@ class SklearnWrapper(metaclass=abc.ABCMeta):
     def eval(self):
         self._mode = "eval"
 
-    def run(self, input):
+    def run(self, *args):
         if self._mode == "train":
-            return self._train(input)
+            return self._train(*args)
         elif self._mode == "eval":
-            return self._eval(input)
+            return self._eval(*args)
 
         raise ValueError("Invalid mode: %s" % self._mode)
 
     @abc.abstractmethod
-    def _train(self, input):
+    def _train(self, *args):
         pass
 
     @abc.abstractmethod
-    def _eval(self, input):
+    def _eval(self, *args):
         pass
 
 
 class SklearnEstimator(SklearnWrapper):
-    def _train(self, input):
-        X, y = input
-
+    def _train(self, X, y):
         with parallel_backend(PARALLEL_BACKEND):
             self.fit(X, y)
 
         return y
 
-    def _eval(self, input):
-        X, _ = input
-
+    def _eval(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.predict(X)
 
@@ -89,15 +84,11 @@ class SklearnEstimator(SklearnWrapper):
 
 
 class SklearnTransformer(SklearnWrapper):
-    def _train(self, input):
-        X = input
-
+    def _train(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.fit_transform(X)
 
-    def _eval(self, input):
-        X = input
-
+    def _eval(self, X, y=None):
         with parallel_backend(PARALLEL_BACKEND):
             return self.transform(X)
 
@@ -119,7 +110,7 @@ GENERATION_RULES = dict(
     RadiusNeighborsRegressor=dict(ignore_params=set(["metric"])),
     LabelBinarizer=dict(
         ignore_params=set(["neg_label", "pos_label"]),
-        input_annotation=kb.List(kb.Category()),
+        input_annotation=kb.Seq[kb.Label],
     ),
     HashingVectorizer=dict(
         ignore_params=set(["token_pattern", "analyzer", "input", "decode_error"])
@@ -339,7 +330,7 @@ def _find_parameter_values(parameter, cls):
                 invalid.append(opt)
 
     if valid:
-        return Categorical(*sorted(valid))
+        return CategoricalValue(*sorted(valid))
 
     return None
 
@@ -411,7 +402,7 @@ def _get_arg_values(arg, value, cls):
 
     try:
         if isinstance(value, bool):
-            annotation = Boolean()
+            annotation = BooleanValue()
         elif isinstance(value, int):
             annotation = _get_integer_values(arg, value, cls)
         elif isinstance(value, float):
@@ -471,7 +462,7 @@ def _get_integer_values(arg, value, cls):
     max_value = left
 
     if min_value < max_value:
-        return Discrete(min=min_value, max=max_value)
+        return DiscreteValue(min=min_value, max=max_value)
 
     return None
 
@@ -516,7 +507,7 @@ def _get_float_values(arg, value, cls):
     max_value = left
 
     if max_value - min_value >= 2 * value:
-        return Continuous(min=min_value, max=max_value)
+        return ContinuousValue(min=min_value, max=max_value)
 
     return None
 

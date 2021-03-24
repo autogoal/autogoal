@@ -37,11 +37,11 @@ from sklearn.pipeline import Pipeline as SkPipeline
 # These utilities are in the `autogoal.grammar` namespace.
 
 from autogoal.grammar import (
-    Continuous,
-    Discrete,
-    Categorical,
+    ContinuousValue,
+    DiscreteValue,
+    CategoricalValue,
     Union,
-    Boolean,
+    BooleanValue,
     generate_cfg,
     Sampler,
 )
@@ -77,7 +77,7 @@ from autogoal.datasets import movie_reviews
 
 
 class Count(CountVectorizer):
-    def __init__(self, ngram: Discrete(1, 3)):
+    def __init__(self, ngram: DiscreteValue(1, 3)):
         super().__init__(ngram_range=(1, ngram))
         self.ngram = ngram
 
@@ -92,7 +92,7 @@ class Count(CountVectorizer):
 
 
 class TfIdf(TfidfVectorizer):
-    def __init__(self, ngram: Discrete(1, 3), use_idf: Boolean()):
+    def __init__(self, ngram: DiscreteValue(1, 3), use_idf: BooleanValue()):
         super().__init__(ngram_range=(1, ngram), use_idf=use_idf)
         self.ngram = ngram
         self.use_idf = use_idf
@@ -108,7 +108,7 @@ class TfIdf(TfidfVectorizer):
 
 
 class SVD(TruncatedSVD):
-    def __init__(self, n: Discrete(50, 200)):
+    def __init__(self, n: DiscreteValue(50, 200)):
         super().__init__(n_components=n)
         self.n = n
 
@@ -147,7 +147,7 @@ class NoDec:
 
 
 class LR(LogisticRegression):
-    def __init__(self, penalty: Categorical("l1", "l2"), reg: Continuous(0.1, 10)):
+    def __init__(self, penalty: CategoricalValue("l1", "l2"), reg: ContinuousValue(0.1, 10)):
         super().__init__(penalty=penalty, C=reg, solver="liblinear")
         self.penalty = penalty
         self.reg = reg
@@ -155,7 +155,7 @@ class LR(LogisticRegression):
 
 class SVM(SVC):
     def __init__(
-        self, kernel: Categorical("rbf", "linear", "poly"), reg: Continuous(0.1, 10)
+        self, kernel: CategoricalValue("rbf", "linear", "poly"), reg: ContinuousValue(0.1, 10)
     ):
         super().__init__(C=reg, kernel=kernel)
         self.kernel = kernel
@@ -163,7 +163,7 @@ class SVM(SVC):
 
 
 class DT(DecisionTreeClassifier):
-    def __init__(self, criterion: Categorical("gini", "entropy")):
+    def __init__(self, criterion: CategoricalValue("gini", "entropy")):
         super().__init__(criterion=criterion)
         self.criterion = criterion
 

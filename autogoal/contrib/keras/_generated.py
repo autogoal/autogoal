@@ -13,7 +13,7 @@ from tensorflow.keras.layers import Flatten as _Flatten
 from tensorflow.keras.layers import Reshape as _Reshape
 from tensorflow.keras import regularizers
 
-from autogoal.grammar import Boolean, Categorical, Discrete, Continuous
+from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
 from autogoal.utils import nice_repr
 
 
@@ -21,11 +21,11 @@ from autogoal.utils import nice_repr
 class Seq2SeqLSTM(_LSTM):
     def __init__(
         self,
-        units: Discrete(32, 1024),
-        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        dropout: Continuous(0, 0.5),
-        recurrent_dropout: Continuous(0, 0.5),
+        units: DiscreteValue(32, 1024),
+        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        dropout: ContinuousValue(0, 0.5),
+        recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             units=units,
@@ -41,11 +41,11 @@ class Seq2SeqLSTM(_LSTM):
 class Seq2VecLSTM(_LSTM):
     def __init__(
         self,
-        units: Discrete(32, 1024),
-        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        dropout: Continuous(0, 0.5),
-        recurrent_dropout: Continuous(0, 0.5),
+        units: DiscreteValue(32, 1024),
+        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        dropout: ContinuousValue(0, 0.5),
+        recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             units=units,
@@ -61,12 +61,12 @@ class Seq2VecLSTM(_LSTM):
 class Seq2SeqBiLSTM(Bidirectional):
     def __init__(
         self,
-        merge_mode: Categorical("sum", "mul", "concat", "ave"),
-        units: Discrete(32, 1024),
-        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        dropout: Continuous(0, 0.5),
-        recurrent_dropout: Continuous(0, 0.5),
+        merge_mode: CategoricalValue("sum", "mul", "concat", "ave"),
+        units: DiscreteValue(32, 1024),
+        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        dropout: ContinuousValue(0, 0.5),
+        recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             layer=_LSTM(
@@ -85,12 +85,12 @@ class Seq2SeqBiLSTM(Bidirectional):
 class Seq2VecBiLSTM(Bidirectional):
     def __init__(
         self,
-        merge_mode: Categorical("sum", "mul", "concat", "ave"),
-        units: Discrete(32, 1024),
-        activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: Categorical("tanh", "sigmoid", "relu", "linear"),
-        dropout: Continuous(0, 0.5),
-        recurrent_dropout: Continuous(0, 0.5),
+        merge_mode: CategoricalValue("sum", "mul", "concat", "ave"),
+        units: DiscreteValue(32, 1024),
+        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        dropout: ContinuousValue(0, 0.5),
+        recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             layer=_LSTM(
@@ -113,19 +113,19 @@ class Reshape2D(_Reshape):
 
 @nice_repr
 class Embedding(_Embedding):
-    def __init__(self, output_dim: Discrete(32, 128)):
+    def __init__(self, output_dim: DiscreteValue(32, 128)):
         super().__init__(input_dim=1000, output_dim=output_dim)
 
 
 @nice_repr
 class Dense(_Dense):
-    def __init__(self, units: Discrete(128, 1024), **kwargs):
+    def __init__(self, units: DiscreteValue(128, 1024), **kwargs):
         super().__init__(units=units, **kwargs)
 
 
 @nice_repr
 class Conv1D(_Conv1D):
-    def __init__(self, filters: Discrete(2, 8), kernel_size: Categorical(3, 5, 7)):
+    def __init__(self, filters: DiscreteValue(2, 8), kernel_size: CategoricalValue(3, 5, 7)):
         super().__init__(
             filters=2 ** filters, kernel_size=kernel_size, padding="causal"
         )
@@ -135,10 +135,10 @@ class Conv1D(_Conv1D):
 class Conv2D(_Conv2D):
     def __init__(
         self,
-        filters: Discrete(2, 8),
-        kernel_size: Categorical(3, 5, 7),
-        l1: Continuous(0, 1e-3),
-        l2: Continuous(0, 1e-3),
+        filters: DiscreteValue(2, 8),
+        kernel_size: CategoricalValue(3, 5, 7),
+        l1: ContinuousValue(0, 1e-3),
+        l2: ContinuousValue(0, 1e-3),
     ):
         self.l1 = l1
         self.l2 = l2
@@ -167,7 +167,7 @@ class TimeDistributed(_TimeDistributed):
 
 @nice_repr
 class Dropout(_Dropout):
-    def __init__(self, rate: Continuous(0, 0.5)):
+    def __init__(self, rate: ContinuousValue(0, 0.5)):
         super().__init__(rate=rate)
 
 
@@ -181,7 +181,7 @@ class BatchNormalization(_BatchNormalization):
 class Activation(_Activation):
     def __init__(
         self,
-        function: Categorical(
+        function: CategoricalValue(
             "elu",
             "selu",
             "relu",

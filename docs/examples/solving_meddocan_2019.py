@@ -49,7 +49,7 @@ from autogoal.search import (
     ProgressLogger,
     MemoryLogger,
 )
-from autogoal.kb import List, Sentence, Word, Postag
+from autogoal.kb import *
 
 # ## Parsing arguments
 
@@ -82,17 +82,15 @@ print(args)
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=List(List(Word())),
-    output=List(List(Postag())),
+    input= Seq[Seq[Word]],
+    output= Seq[Seq[Postag]],
     search_iterations=args.iterations,
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
-    search_kwargs=dict(
-        pop_size=args.popsize,
-        search_timeout=args.global_timeout,
-        evaluation_timeout=args.timeout,
-        memory_limit=args.memory * 1024 ** 3,
-    ),
+    pop_size=args.popsize,
+    search_timeout=args.global_timeout,
+    evaluation_timeout=args.timeout,
+    memory_limit=args.memory * 1024 ** 3,
 )
 
 # This custom logger is used for debugging purposes, to be able later to recover

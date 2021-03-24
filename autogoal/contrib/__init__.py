@@ -83,6 +83,9 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
             if exclude is not None and re.match(exclude, repr(cls)):
                 continue
 
+            if not cls.__module__.startswith("autogoal.contrib"):
+                continue
+
             sig = inspect.signature(cls.run)
 
             if input and not re.match(input, str(sig.parameters["input"].annotation)):

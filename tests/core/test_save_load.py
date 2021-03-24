@@ -1,16 +1,9 @@
 from io import BytesIO
-from pickle import Pickler, Unpickler
+from pickle import loads, dumps
 
 from autogoal.datasets import dummy
-from autogoal.grammar import Categorical, Discrete, generate_cfg
-from autogoal.kb import (
-    CategoricalVector,
-    List,
-    MatrixContinuousDense,
-    Tuple,
-    build_composite_list,
-    build_composite_tuple,
-)
+from autogoal.grammar import generate_cfg, DiscreteValue, CategoricalValue
+from autogoal.kb import *
 from autogoal.ml import AutoML
 from autogoal.search import RandomSearch
 from autogoal.utils import nice_repr
@@ -18,7 +11,7 @@ from autogoal.utils import nice_repr
 
 @nice_repr
 class A:
-    def __init__(self, x: Discrete(-10, 10), y: Discrete(-10, 10)):
+    def __init__(self, x: DiscreteValue(-10, 10), y: DiscreteValue(-10, 10)):
         self.x = x
         self.y = y
 
@@ -28,6 +21,20 @@ class A:
 
 def fn(a: A):
     return a.x ** 2 + a.y ** 2
+
+
+def test_save_seq():
+    t1 = Seq[Word]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
+
+
+def test_save_tensor():
+    t1 = Tensor[2, Continuous, Dense]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
 
 
 def test_search_is_replayable_from_grammar():
@@ -57,8 +64,8 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
 
 
 @nice_repr
-class DummyAlgorithm:
-    def __init__(self, x: Categorical("A", "B", "C")):
+class DummyAlgorithm(AlgorithmBase):
+    def __init__(self, x: CategoricalValue("A", "B", "C")):
         self.x = x
 
     def train(self):
@@ -68,15 +75,20 @@ class DummyAlgorithm:
         pass
 
     def run(
-        self, input: Tuple(MatrixContinuousDense(), CategoricalVector())
-    ) -> CategoricalVector():
-        X, y = input
+        self, x: MatrixContinuousDense, y: Supervised[VectorCategorical]
+    ) -> VectorCategorical:
         return y
 
 
 def test_automl_save_load():
     X, y = dummy.generate(seed=0)
-    automl = AutoML(search_iterations=3, registry=[DummyAlgorithm])
+    automl = AutoML(
+        input=(MatrixContinuousDense, Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        search_iterations=3,
+        registry=[DummyAlgorithm],
+    )
+    
     automl.fit(X, y)
     pipe = automl.best_pipeline_
 
@@ -89,38 +101,3 @@ def test_automl_save_load():
     pipe2 = automl2.best_pipeline_
 
     assert repr(pipe) == repr(pipe2)
-
-
-def test_save_load_tuple():
-    TupleClass = build_composite_tuple(
-        1,
-        input_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-        output_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-    )
-    algorithm = TupleClass(DummyAlgorithm)
-
-    fp = BytesIO()
-
-    Pickler(fp).dump(algorithm)
-    fp.seek(0)
-
-    algorithm2 = Unpickler(fp).load()
-
-    assert repr(algorithm) == repr(algorithm2)
-
-
-def test_save_load_list():
-    ListClass = build_composite_list(
-        input_type=Tuple(MatrixContinuousDense(), CategoricalVector()),
-        output_type=List(CategoricalVector()),
-    )
-    algorithm = ListClass(DummyAlgorithm)
-
-    fp = BytesIO()
-
-    Pickler(fp).dump(algorithm)
-    fp.seek(0)
-
-    algorithm2 = Unpickler(fp).load()
-
-    assert repr(algorithm) == repr(algorithm2)

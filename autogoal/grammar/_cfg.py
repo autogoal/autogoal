@@ -266,7 +266,7 @@ def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
 
     ```python
     >>> class MyClass:
-    ...     def __init__(self, x: Discrete(1,3), y: Continuous(0,1)):
+    ...     def __init__(self, x: DiscreteValue(1,3), y: ContinuousValue(0,1)):
     ...         pass
     >>> grammar = generate_cfg(MyClass)
     >>> print(grammar)
@@ -344,7 +344,7 @@ def _generate_cfg(
     return grammar
 
 
-class Discrete:
+class DiscreteValue:
     def __init__(self, min, max):
         self.min = min
         self.max = max
@@ -359,7 +359,7 @@ class Discrete:
         return grammar
 
 
-class Continuous(Discrete):
+class ContinuousValue(DiscreteValue):
     def __repr__(self):
         return "Continuous(min=%r, max=%r)" % (self.min, self.max)
 
@@ -370,7 +370,7 @@ class Continuous(Discrete):
         return grammar
 
 
-class Categorical:
+class CategoricalValue:
     def __init__(self, *options):
         self.options = list(options)
 
@@ -385,7 +385,7 @@ class Categorical:
         return grammar
 
 
-class Boolean:
+class BooleanValue:
     def __repr__(self):
         return f"Boolean()"
 

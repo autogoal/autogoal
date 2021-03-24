@@ -6,3 +6,4 @@ except:
     raise
 
 from autogoal.contrib.nltk._generated import *
+from autogoal.contrib.nltk._manual import *

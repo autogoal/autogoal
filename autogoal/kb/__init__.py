@@ -1,7 +1,3 @@
-from ._data import *
-from ._algorithm import (
-    build_pipelines,
-    build_pipeline_graph,
-    PipelineBuilder,
-    Pipeline,
-)
+from autogoal.kb._algorithm import *
+from autogoal.kb._semantics import *
+from autogoal.kb._data import Distinct

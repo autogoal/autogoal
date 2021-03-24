@@ -1,17 +1,15 @@
 import pytest
 
 from autogoal.contrib import find_classes
-from autogoal.kb import build_pipelines, List, Flags, Category, Tuple
+from autogoal.kb import *
+from autogoal.kb import Supervised
 from autogoal.sampling import Sampler
 
 
 def _build_pipeline():
-    builder = build_pipelines(
-        input=Tuple(
-            List(List(Flags())),
-            List(List(Category()))
-        ),
-        output=List(List(Category())),
+    builder = build_pipeline_graph(
+        input_types=(Seq[Seq[FeatureSet]], Supervised[Seq[Seq[Label]]]),
+        output_type=Seq[Seq[Label]],
         registry=find_classes(include="CRF")
     )
 
@@ -32,9 +30,9 @@ def test_crf_training():
     y = [["T", "F", "T", "F", "T"]]
 
     pipeline.send("train")
-    pipeline.run((X, y))
+    pipeline.run(X, y)
 
     pipeline.send("eval")
-    ypred = pipeline.run((X, None))
+    ypred = pipeline.run(X, None)
 
     assert ypred == y

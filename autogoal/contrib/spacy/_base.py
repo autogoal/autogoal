@@ -1,22 +1,24 @@
+from autogoal.kb import AlgorithmBase
 import spacy
 
-from autogoal.grammar import Categorical, Boolean
-from autogoal.kb import Sentence, Tuple, Word, Flags, List
+from autogoal.grammar import CategoricalValue, BooleanValue
+from autogoal.kb import Sentence, Word, FeatureSet, Seq
+from autogoal.kb import Supervised
 from autogoal.utils import nice_repr
 
 
 @nice_repr
-class SpacyNLP:
+class SpacyNLP(AlgorithmBase):
     def __init__(
         self,
-        language: Categorical("en", "es"),
-        extract_pos: Boolean(),
-        extract_lemma: Boolean(),
-        extract_pos_tag: Boolean(),
-        extract_dep: Boolean(),
-        extract_entity: Boolean(),
-        extract_details: Boolean(),
-        extract_sentiment: Boolean(),
+        language: CategoricalValue("en", "es"),
+        extract_pos: BooleanValue(),
+        extract_lemma: BooleanValue(),
+        extract_pos_tag: BooleanValue(),
+        extract_dep: BooleanValue(),
+        extract_entity: BooleanValue(),
+        extract_details: BooleanValue(),
+        extract_sentiment: BooleanValue(),
     ):
         self.language = language
         self.extract_pos = extract_pos
@@ -35,7 +37,7 @@ class SpacyNLP:
 
         return self._nlp
 
-    def run(self, input: Sentence()) -> Tuple(List(Word()), List(Flags())):
+    def run(self, input: Sentence) -> Seq[FeatureSet]:
         tokenized = self.nlp(input)
 
         tokens = []
@@ -43,6 +45,7 @@ class SpacyNLP:
 
         for token in tokenized:
             token_flags = {}
+            token_flags["text"] = token.text
             if self.extract_lemma:
                 token_flags["lemma"] = token.lemma_
             if self.extract_pos_tag:
@@ -82,7 +85,6 @@ class SpacyNLP:
             if self.extract_sentiment:
                 token_flags["sentiment"] = token.sentiment
 
-            tokens.append(token.text)
             flags.append(token_flags)
 
-        return tokens, flags
+        return flags

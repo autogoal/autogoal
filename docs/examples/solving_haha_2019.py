@@ -45,13 +45,10 @@
 from autogoal.ml import AutoML
 from autogoal.datasets import haha
 from autogoal.search import (
-    Logger,
     PESearch,
-    ConsoleLogger,
-    ProgressLogger,
-    MemoryLogger,
+    RichLogger,
 )
-from autogoal.kb import List, Sentence, Tuple, CategoricalVector
+from autogoal.kb import Seq, Sentence, VectorCategorical, Supervised
 from autogoal.contrib import find_classes
 from sklearn.metrics import f1_score
 
@@ -65,8 +62,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--iterations", type=int, default=10000)
-parser.add_argument("--timeout", type=int, default=1800)
-parser.add_argument("--memory", type=int, default=20)
+parser.add_argument("--timeout", type=int, default=60)
+parser.add_argument("--memory", type=int, default=2)
 parser.add_argument("--popsize", type=int, default=50)
 parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)
@@ -93,35 +90,18 @@ for cls in find_classes():
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=List(Sentence()),
-    output=CategoricalVector(),
+    input=(Seq[Sentence], Supervised[VectorCategorical]),
+    output=VectorCategorical,
     search_iterations=args.iterations,
     score_metric=f1_score,
-    search_kwargs=dict(
-        pop_size=args.popsize,
-        search_timeout=args.global_timeout,
-        evaluation_timeout=args.timeout,
-        memory_limit=args.memory * 1024 ** 3,
-    ),
+    errors='warn',
+    pop_size=args.popsize,
+    search_timeout=args.global_timeout,
+    evaluation_timeout=args.timeout,
+    memory_limit=args.memory * 1024 ** 3,
 )
 
-# This custom logger is used for debugging purposes, to be able later to recover
-# the best pipelines and all the errors encountered in the experimentation process.
-
-class CustomLogger(Logger):
-    def error(self, e: Exception, solution):
-        if e and solution:
-            with open("haha_errors.log", "a") as fp:
-                fp.write(f"solution={repr(solution)}\nerror={repr(e)}\n\n")
-
-    def update_best(self, new_best, new_fn, *args):
-        with open("haha.log", "a") as fp:
-            fp.write(f"solution={repr(new_best)}\nfitness={new_fn}\n\n")
-
-# Basic logging configuration.
-
-logger = MemoryLogger()
-loggers = [ProgressLogger(), ConsoleLogger(), logger]
+loggers = [RichLogger()]
 
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger
@@ -142,5 +122,3 @@ classifier.fit(X_train, y_train, logger=loggers)
 score = classifier.score(X_test, y_test)
 
 print(score)
-print(logger.generation_best_fn)
-print(logger.generation_mean_fn)

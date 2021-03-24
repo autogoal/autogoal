@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
 from typing import Dict
+import json
 
 import requests
 import os
@@ -15,15 +16,24 @@ DATASETS_METADATA = (
 DATA_PATH = Path.home() / ".autogoal" / "data"
 
 #ensure data path directory creation
-try:
-    os.makedirs(DATA_PATH)
-except IOError as ex:
-    #directory already exists
-    pass
+os.makedirs(DATA_PATH, exist_ok=True)
+
 
 @lru_cache()
 def get_datasets_list() -> Dict[str, str]:
-    return requests.get(DATASETS_METADATA).json()
+    try:
+        data = requests.get(DATASETS_METADATA).json()
+        
+        with open(DATA_PATH / "datasets.json", "w") as fp:
+            json.dump(data, fp, indent=2)
+
+        return data
+    except requests.ConnectionError as e:
+        try:
+            with open(DATA_PATH / "datasets.json", "r") as fp:
+                return json.load(fp)
+        except IOError:
+            raise Exception("Cannot download dataset list and no cached version exists.")
 
 
 def datapath(path: str) -> Path:

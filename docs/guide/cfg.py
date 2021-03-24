@@ -52,14 +52,14 @@ print(score)  # :hide:
 
 # First we import some annotation types from AutoGOAL
 
-from autogoal.grammar import Continuous, Categorical
+from autogoal.grammar import ContinuousValue, CategoricalValue
 
 # Next we annotate the parameters we want to explore.
 # Since we cannot modify the class `LogisticRegression` we will inherit from it.
 
 
 class LR(LogisticRegression):
-    def __init__(self, penalty: Categorical("l1", "l2"), C: Continuous(0.1, 10)):
+    def __init__(self, penalty: CategoricalValue("l1", "l2"), C: ContinuousValue(0.1, 10)):
         super().__init__(penalty=penalty, C=C, solver="liblinear")
 
 
@@ -149,18 +149,18 @@ from sklearn.naive_bayes import GaussianNB
 
 class SVM(SVC):
     def __init__(
-        self, kernel: Categorical("rbf", "linear", "poly"), C: Continuous(0.1, 10)
+        self, kernel: CategoricalValue("rbf", "linear", "poly"), C: ContinuousValue(0.1, 10)
     ):
         super().__init__(C=C, kernel=kernel)
 
 
 class DT(DecisionTreeClassifier):
-    def __init__(self, criterion: Categorical("gini", "entropy")):
+    def __init__(self, criterion: CategoricalValue("gini", "entropy")):
         super().__init__(criterion=criterion)
 
 
 class NB(GaussianNB):
-    def __init__(self, var_smoothing: Continuous(1e-10, 0.1)):
+    def __init__(self, var_smoothing: ContinuousValue(1e-10, 0.1)):
         super().__init__(var_smoothing=var_smoothing)
 
 
@@ -254,11 +254,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # to receive an `ngram` parameter. We annotate this parameter with `:Discrete(1,3)` to
 # indicate that the possible values are integers in the interval `[1,3]`.
 
-from autogoal.grammar import Discrete
+from autogoal.grammar import DiscreteValue
 
 
 class Count(CountVectorizer):
-    def __init__(self, ngram: Discrete(1, 3)):
+    def __init__(self, ngram: DiscreteValue(1, 3)):
         super().__init__(ngram_range=(1, ngram))
         self.ngram = ngram
 
@@ -275,11 +275,11 @@ class Count(CountVectorizer):
 # explore automatically whether enabling or disabling `use_idf` is better.
 # We will use the `Boolean` annotation in this case.
 
-from autogoal.grammar import Boolean
+from autogoal.grammar import BooleanValue
 
 
 class TfIdf(TfidfVectorizer):
-    def __init__(self, ngram: Discrete(1, 3), use_idf: Boolean()):
+    def __init__(self, ngram: DiscreteValue(1, 3), use_idf: BooleanValue()):
         super().__init__(ngram_range=(1, ngram), use_idf=use_idf)
         self.ngram = ngram
 
@@ -296,7 +296,7 @@ from sklearn.decomposition import TruncatedSVD
 
 
 class SVD(TruncatedSVD):
-    def __init__(self, n: Discrete(50, 200)):
+    def __init__(self, n: DiscreteValue(50, 200)):
         super().__init__(n_components=n)
         self.n = n
 
