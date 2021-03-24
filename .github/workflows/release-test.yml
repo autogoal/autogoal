@@ -32,7 +32,9 @@ jobs:
         run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=tests/experimental --ignore=autogoal/contrib --ignore=autogoal/experimental --ignore=autogoal/datasets --cov=autogoal
 
       - name: Package
-        run: poetry build
+        run: |
+          source $HOME/.poetry/env
+          poetry build
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
