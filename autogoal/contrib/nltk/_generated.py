@@ -175,7 +175,7 @@ class AffixTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run(self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import BigramTagger as _BigramTagger
@@ -193,7 +193,7 @@ class BigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run(self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import ClassifierBasedPOSTagger as _ClassifierBasedPOSTagger
@@ -209,7 +209,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import TrigramTagger as _TrigramTagger
@@ -227,7 +227,7 @@ class TrigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]]) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import UnigramTagger as _UnigramTagger
@@ -245,7 +245,7 @@ class UnigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.tnt import TnT as _TnT
@@ -472,7 +472,7 @@ class BigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import ClassifierBasedPOSTagger as _ClassifierBasedPOSTagger
@@ -488,7 +488,7 @@ class ClassifierBasedPOSTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import TrigramTagger as _TrigramTagger
@@ -506,7 +506,7 @@ class TrigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y: Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.sequential import UnigramTagger as _UnigramTagger
@@ -524,7 +524,7 @@ class UnigramTagger(NltkTagger):
         NltkTagger.__init__(self)
 
     def run( self, input: Seq[Seq[Word]], y:Supervised[Seq[Seq[Postag]]] ) -> Seq[Seq[Postag]]:
-        return NltkTagger.run(self, input)
+        return NltkTagger.run(self, input, y)
 
 
 from nltk.tag.tnt import TnT as _TnT
