@@ -25,14 +25,14 @@ import sklearn.impute
 import sklearn.naive_bayes
 from sklearn.datasets import make_classification
 
-try:
-    import dask
-    from dask.distributed import Client
+# try:
+#     import dask
+#     from dask.distributed import Client
 
-    DASK_CLIENT = Client(processes=False)
-    PARALLEL_BACKEND = 'dask'
-except ImportError:
-    PARALLEL_BACKEND = 'loky'
+#     DASK_CLIENT = Client(processes=False)
+#     PARALLEL_BACKEND = 'dask'
+# except ImportError:
+PARALLEL_BACKEND = 'loky'
 
 
 @nice_repr
