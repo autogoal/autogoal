@@ -16,7 +16,6 @@ def setup(level="INFO"):
         handlers=[RichHandler(rich_tracebacks=True, console=_CONSOLE)],
     )
     logging.captureWarnings(True)
-    warnings.filterwarnings('ignore', message="joblib_memmap")
 
 
 def logger() -> logging.Logger:

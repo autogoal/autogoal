@@ -29,14 +29,31 @@ algorithms that can be automatically assembled into pipelines for different prob
 The core of this functionality lies in the [`AutoML`](https://autogoal.github.io/api/autogoal.ml#automl) class.
 
 To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
+The following code will run for approximately 5 minutes on a classic dataset.
 
 ```python
 from autogoal.datasets import cars
+from autogoal.kb import (MatrixContinuousDense, 
+                         Supervised, 
+                         VectorCategorical)
 from autogoal.ml import AutoML
 
+# Load dataset
 X, y = cars.load()
-automl = AutoML()
+
+# Instantiate AutoML and define input/output types
+automl = AutoML(
+    input=(MatrixContinuousDense, 
+           Supervised[VectorCategorical]),
+    output=VectorCategorical
+)
+
+# Run the pipeline search process
 automl.fit(X, y)
+
+# Report the best pipeline
+print(automl.best_pipeline_)
+print(automl.best_score_)
 ```
 
 Sensible defaults are defined for each of the many parameters of `AutoML`.

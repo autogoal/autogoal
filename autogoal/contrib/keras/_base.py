@@ -21,7 +21,7 @@ from autogoal.grammar import (
     ContinuousValue,
     DiscreteValue,
 )
-from autogoal.experimental.semantics import (
+from autogoal.kb import (
     VectorCategorical,
     Seq,
     MatrixContinuousDense,

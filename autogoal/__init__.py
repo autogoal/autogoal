@@ -18,3 +18,7 @@ from autogoal import utils
 from autogoal import logging
 
 from autogoal.utils._helpers import optimize
+
+
+# Setup logging for warning level by defautl
+logging.setup(level="WARNING")
