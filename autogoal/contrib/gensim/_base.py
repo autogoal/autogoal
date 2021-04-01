@@ -6,7 +6,7 @@ import shutil
 import numpy as np
 
 import gensim.downloader as api
-from autogoal.experimental.semantics import Word, VectorContinuous
+from autogoal.kb import Word, VectorContinuous
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors

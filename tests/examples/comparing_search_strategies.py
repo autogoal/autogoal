@@ -4,7 +4,7 @@
 # and [PESearch](/api/autogoal.search/#PESearch) on a toy problem.
 # The full source code can be found [here](https://github.com/autogoal/autogoal/blob/main/docs/examples/comparing_search_strategies.py).
 
-from autogoal.search import RandomSearch, PESearch, ConsoleLogger, ProgressLogger
+from autogoal.search import RandomSearch, PESearch, RichLogger
 
 # The problem to solve consists of a simple puzzle:
 # Combining the digits 1 through 9 in different operations
@@ -84,10 +84,10 @@ def evaluate(expr):
 # We will run 1000 iterations of each search strategy to compare their long-term performance.
 
 search_rand = RandomSearch(grammar, evaluate, errors='ignore')
-best_rand, best_fn_rand = search_rand.run(1000, logger=[ConsoleLogger(), ProgressLogger()])
+best_rand, best_fn_rand = search_rand.run(1000, logger=RichLogger())
 
 search_pe = PESearch(grammar, evaluate, pop_size=10, errors='ignore')
-best_pe, best_fn_pe = search_pe.run(1000, logger=[ConsoleLogger(), ProgressLogger()])
+best_pe, best_fn_pe = search_pe.run(1000, logger=RichLogger())
 
 # And here are the results.
 

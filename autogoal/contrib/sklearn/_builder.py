@@ -32,7 +32,7 @@ from sklearn.datasets import make_classification
 #     DASK_CLIENT = Client(processes=False)
 #     PARALLEL_BACKEND = 'dask'
 # except ImportError:
-PARALLEL_BACKEND = 'loky'
+# PARALLEL_BACKEND = 'loky'
 
 
 @nice_repr
@@ -65,14 +65,12 @@ class SklearnWrapper(AlgorithmBase):
 
 class SklearnEstimator(SklearnWrapper):
     def _train(self, X, y):
-        with parallel_backend(PARALLEL_BACKEND):
-            self.fit(X, y)
+        self.fit(X, y)
 
         return y
 
     def _eval(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.predict(X)
+        return self.predict(X)
 
     @abc.abstractmethod
     def fit(self, X, y):
@@ -85,12 +83,10 @@ class SklearnEstimator(SklearnWrapper):
 
 class SklearnTransformer(SklearnWrapper):
     def _train(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.fit_transform(X)
+        return self.fit_transform(X)
 
     def _eval(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.transform(X)
+        return self.transform(X)
 
     @abc.abstractmethod
     def fit_transform(self, X, y=None):
