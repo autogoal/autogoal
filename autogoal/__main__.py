@@ -1,6 +1,7 @@
 import collections
 import inspect
 import logging
+from os import stat
 from pathlib import Path
 from typing import List
 
@@ -10,7 +11,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.table import Table
 
-from autogoal.contrib import find_classes
+from autogoal.contrib import find_classes, status, ContribStatus, download as download_contrib
 from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
@@ -97,6 +98,38 @@ def contrib_list(
                     f" 🔹 {cls.__name__.ljust(max_cls_name_length)} : {sig.parameters['input'].annotation} -> {sig.return_annotation}"
                 )
 
+
+@contrib_app.command("status")
+def contrib_status():
+    """
+    ✔️ Shows the status of all contrib libraries.
+    """
+    table = Table("🛠️  Contrib", "✔️ Status")
+
+    statuses = {
+        ContribStatus.RequiresDependency: "🔴 Required dependency",
+        ContribStatus.RequiresDownload: "🔴 Requires download",
+        ContribStatus.Ready: "🟢 Ready",
+    }
+
+    for key, value in status().items():
+        table.add_row(key, statuses[value])
+
+    console.print(table)
+
+
+@contrib_app.command("download")
+def contrib_download(contrib=typer.Argument(..., help="Name of the contrib, e.g., `sklearn` or `nltk`, or `all`.")):
+    """
+    💾 Download necessary contrib files.
+    """
+    if status()[f'autogoal.contrib.{contrib}'] == ContribStatus.Ready:
+        console.print(f"✅ Nothing to download for contrib `{contrib}`.")
+    elif download_contrib(contrib):
+        console.print(f"✅ Succesfully downloaded files for contrib `{contrib}`.")
+    else:
+        console.print(f"❌ Cannot download files for contrib `{contrib}`.")
+    
 
 @automl_app.callback()
 def automl_callback():

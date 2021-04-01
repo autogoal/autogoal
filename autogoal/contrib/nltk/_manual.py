@@ -99,8 +99,6 @@ class StopwordRemover(AlgorithmBase):
         ),
     ):
         self.language = language
-
-        nltk.download("stopwords")
         from nltk.corpus import stopwords
 
         self.words = stopwords.words(language)
@@ -145,7 +143,6 @@ class WordnetConcept(AlgorithmBase):
     """
 
     def __init__(self):
-        nltk.download("wordnet")
         from nltk.corpus import wordnet
 
         self.wordnet = wordnet
@@ -181,7 +178,6 @@ class SentimentWord(AlgorithmBase):
     """
 
     def __init__(self):
-        nltk.download("sentiwordnet")
         from nltk.corpus import sentiwordnet
 
         self.swn = sentiwordnet
