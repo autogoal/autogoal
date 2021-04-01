@@ -393,7 +393,7 @@ class ReplaySampler:
 
     def __getattr__(self, attr):
         if attr == "sampler":
-            return self.__dict__.get('sampler')
+            return self.__dict__.get("sampler")
 
         return getattr(self.sampler, attr)
 
@@ -477,7 +477,9 @@ class MeanDevParam(ModelParam):
         average = np.average(values, weights=weights)
         variance = np.average((values - average) ** 2, weights=weights)
 
-        return MeanDevParam(average, math.sqrt(variance), initial_params=self.initial_params)
+        return MeanDevParam(
+            average, math.sqrt(variance), initial_params=self.initial_params
+        )
 
 
 @nice_repr

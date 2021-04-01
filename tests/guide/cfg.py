@@ -59,7 +59,9 @@ from autogoal.grammar import ContinuousValue, CategoricalValue
 
 
 class LR(LogisticRegression):
-    def __init__(self, penalty: CategoricalValue("l1", "l2"), C: ContinuousValue(0.1, 10)):
+    def __init__(
+        self, penalty: CategoricalValue("l1", "l2"), C: ContinuousValue(0.1, 10)
+    ):
         super().__init__(penalty=penalty, C=C, solver="liblinear")
 
 
@@ -70,9 +72,9 @@ class LR(LogisticRegression):
 # Now we will use AutoGOAL to automatically generate different instances of our `LR` class.
 # With the class-based API we achieve this by building a **context-free grammar** that describes all possible instances.
 
-from autogoal.grammar import  generate_cfg
+from autogoal.grammar import generate_cfg
 
-grammar =  generate_cfg(LR)
+grammar = generate_cfg(LR)
 print(grammar)
 
 # ```bash
@@ -149,7 +151,9 @@ from sklearn.naive_bayes import GaussianNB
 
 class SVM(SVC):
     def __init__(
-        self, kernel: CategoricalValue("rbf", "linear", "poly"), C: ContinuousValue(0.1, 10)
+        self,
+        kernel: CategoricalValue("rbf", "linear", "poly"),
+        C: ContinuousValue(0.1, 10),
     ):
         super().__init__(C=C, kernel=kernel)
 
@@ -170,7 +174,7 @@ class NB(GaussianNB):
 from autogoal.grammar import Union
 from autogoal.grammar import generate_cfg
 
-grammar =  generate_cfg(Union("Classifier", LR, SVM, NB, DT))
+grammar = generate_cfg(Union("Classifier", LR, SVM, NB, DT))
 
 # !!! note
 #     The method [`generate_cfg`](/api/grammar/#generate_cfg) works not only with annotated classes
@@ -350,11 +354,7 @@ class Pipeline(_Pipeline):
         self.classifier = classifier
 
         super().__init__(
-            [
-                ("vec", vectorizer),
-                ("dec", decomposer),
-                ("cls", classifier),
-            ]
+            [("vec", vectorizer), ("dec", decomposer), ("cls", classifier),]
         )
 
 
@@ -365,7 +365,7 @@ class Pipeline(_Pipeline):
 # that class, based on the parameters' annotations and recursively building the corresponding
 # rules for all classes down to basic parameter types.
 
-grammar =  generate_cfg(Pipeline)
+grammar = generate_cfg(Pipeline)
 
 # Notice how the grammar specifies all the possible ways to build a `Pipeline`,
 # both considering the different implementations we have for vectorizers, decomposers and classifiers;

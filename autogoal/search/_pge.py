@@ -10,6 +10,7 @@ import random
 import pickle
 import time
 
+
 class PESearch(SearchAlgorithm):
     def __init__(
         self,
@@ -38,7 +39,9 @@ class PESearch(SearchAlgorithm):
         if len(self._samplers) < self._epsilon_greed * self._pop_size:
             sampler = ModelSampler(random_state=self._random_states.getrandbits(32))
         else:
-            sampler = ModelSampler(self._model, random_state=self._random_states.getrandbits(32))
+            sampler = ModelSampler(
+                self._model, random_state=self._random_states.getrandbits(32)
+            )
 
         self._samplers.append(sampler)
         return sampler
@@ -53,16 +56,16 @@ class PESearch(SearchAlgorithm):
 
         # Update the probabilistic model with the marginal model from the best pipelines
         self._model = update_model(self._model, updates, self._learning_factor)
-        
+
         # save an internal state of metaheuristic for other executions
         if self._save == True:
-            with open('model-'+self._name+'.pickle', 'wb') as f:
-                pickle.dump(self._model, f) 
+            with open("model-" + self._name + ".pickle", "wb") as f:
+                pickle.dump(self._model, f)
 
     def load(self, name_pickle_file):
         """Rewrites the probabilistic distribution of metaheuristic with the value of the name model.
         """
-        
+
         with open(name_pickle_file) as f:
             loaded_obj = pickle.load(f)
         self._model = loaded_obj

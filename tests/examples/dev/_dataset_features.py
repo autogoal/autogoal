@@ -36,9 +36,7 @@ from autogoal.contrib import find_classes
 
 def run_automl(X, y, name, input=None, output=CategoricalVector()):
     telegram = TelegramLogger(
-        token=os.environ["TOKEN"],
-        channel="@autogoal_board",
-        name=name,
+        token=os.environ["TOKEN"], channel="@autogoal_board", name=name,
     )
     console = ConsoleLogger()
     progress = ProgressLogger()
@@ -72,12 +70,20 @@ for dataset in [
 
 for dataset in [movie_reviews, haha]:
     X, y, *_ = dataset.load()
-    run_automl(X, y, name=dataset.__name__, input=List(Sentence()), output=CategoricalVector())
+    run_automl(
+        X, y, name=dataset.__name__, input=List(Sentence()), output=CategoricalVector()
+    )
 
 
 for dataset in [meddocan]:
     X, _, y, _ = dataset.load()
-    run_automl(X, y, name=dataset.__name__, input=List(List(Word())), output=List(List(Postag())))
+    run_automl(
+        X,
+        y,
+        name=dataset.__name__,
+        input=List(List(Word())),
+        output=List(List(Postag())),
+    )
 
 
 for dataset in [cifar10]:

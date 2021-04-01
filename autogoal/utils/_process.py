@@ -8,7 +8,7 @@ import traceback
 import logging
 import platform
 
-if (platform.system() == 'Linux'):
+if platform.system() == "Linux":
     import resource
 
 from autogoal.utils import Mb
@@ -24,7 +24,7 @@ class RestrictedWorker:
         signal.signal(signal.SIGXCPU, alarm_handler)
 
     def _restrict(self):
-        if (platform.system() == 'Linux'):
+        if platform.system() == "Linux":
             msoft, mhard = resource.getrlimit(resource.RLIMIT_DATA)
             csoft, chard = resource.getrlimit(resource.RLIMIT_CPU)
             used_memory = self.get_used_memory()
@@ -93,7 +93,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         self.memory = memory
 
     def _restrict(self):
-        if (platform.system() == 'Linux'):
+        if platform.system() == "Linux":
             _, mhard = resource.getrlimit(resource.RLIMIT_AS)
             used_memory = self.get_used_memory()
 
@@ -105,7 +105,10 @@ class RestrictedWorkerByJoin(RestrictedWorker):
                 logger.info("💻 Restricting memory to %s" % self.memory)
                 resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
             else:
-                raise ValueError("Cannot restrict memory to %s < %i" % (self.memory, used_memory + 50 * Mb))
+                raise ValueError(
+                    "Cannot restrict memory to %s < %i"
+                    % (self.memory, used_memory + 50 * Mb)
+                )
 
     def run_restricted(self, *args, **kwargs):
         """

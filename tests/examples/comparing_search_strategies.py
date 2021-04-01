@@ -72,6 +72,7 @@ for i in range(100):
 # than 9 digits, it results in an error. The actual value of performing
 # corresponding operations is done in the `__call__` method of the expression classes.
 
+
 def evaluate(expr):
     def stream():
         for i in range(1, 10):
@@ -81,12 +82,13 @@ def evaluate(expr):
 
     return expr(stream())
 
+
 # We will run 1000 iterations of each search strategy to compare their long-term performance.
 
-search_rand = RandomSearch(grammar, evaluate, errors='ignore')
+search_rand = RandomSearch(grammar, evaluate, errors="ignore")
 best_rand, best_fn_rand = search_rand.run(1000, logger=RichLogger())
 
-search_pe = PESearch(grammar, evaluate, pop_size=10, errors='ignore')
+search_pe = PESearch(grammar, evaluate, pop_size=10, errors="ignore")
 best_pe, best_fn_pe = search_pe.run(1000, logger=RichLogger())
 
 # And here are the results.

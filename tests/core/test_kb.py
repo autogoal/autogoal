@@ -1,4 +1,9 @@
-from autogoal.kb import Matrix, MatrixContinuous, MatrixContinuousDense, MatrixContinuousSparse
+from autogoal.kb import (
+    Matrix,
+    MatrixContinuous,
+    MatrixContinuousDense,
+    MatrixContinuousSparse,
+)
 from autogoal.kb import algorithm
 
 
@@ -11,17 +16,17 @@ def test_matrix_hierarchy():
 
 
 class ExactAlgorithm:
-    def run(self, input:MatrixContinuousDense) -> MatrixContinuousDense:
+    def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         pass
 
 
 class HigherInputAlgorithm:
-    def run(self, input:MatrixContinuous) -> MatrixContinuousDense:
+    def run(self, input: MatrixContinuous) -> MatrixContinuousDense:
         pass
 
 
 class LowerOutputAlgorithm:
-    def run(self, input:MatrixContinuousDense) -> MatrixContinuousDense:
+    def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         pass
 
 

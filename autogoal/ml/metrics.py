@@ -27,4 +27,4 @@ def find_metric(*types):
 
 
 def accuracy(ytrue, ypred) -> float:
-    return np.mean([1 if yt == yp else 0 for yt,yp in zip(ytrue, ypred)])
+    return np.mean([1 if yt == yp else 0 for yt, yp in zip(ytrue, ypred)])

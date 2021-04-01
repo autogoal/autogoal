@@ -5,34 +5,43 @@ import numpy as np
 import scipy.sparse as sp
 
 from autogoal import kb
-from autogoal.contrib.sklearn._utils import is_matrix_continuous_dense,\
-                                            is_matrix_continuous_sparse,\
-                                            is_categorical,\
-                                            is_continuous,\
-                                            is_string_list
+from autogoal.contrib.sklearn._utils import (
+    is_matrix_continuous_dense,
+    is_matrix_continuous_sparse,
+    is_categorical,
+    is_continuous,
+    is_string_list,
+)
 
 DATA_TYPE_EXAMPLES = {
-    kb.Postag:("lorem", "ipsum"), # (str, str) Tagged token
-    kb.Seq[kb.Postag]:[("lorem", "ipsum")] * 10, # [(str, str), (str, str)] List of tagged tokens
-    kb.Seq[kb.Seq[kb.Postag]]:[[("lorem", "ipsum")] * 2], # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
-    kb.Chunktag:(("lorem", "ipsum"),"ipsum"), # ((str, str), str) IOB Tagged token
-    kb.Seq[kb.Chunktag]:[(("lorem", "ipsum"),"ipsum")] * 10, # [((str, str), str), ((str, str), str)] List of IOB Tagged token
-    kb.Seq[kb.Seq[kb.Chunktag]]:[[(("lorem", "ipsum"),"ipsum")] * 2], # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
-    kb.Stem:"ips",
-    kb.Word:"ipsum",
-    kb.Sentence:"It is the best of all movies.",
-    kb.Document:"It is the best of all movies. I actually love that action scene.",
+    kb.Postag: ("lorem", "ipsum"),  # (str, str) Tagged token
+    kb.Seq[kb.Postag]: [("lorem", "ipsum")]
+    * 10,  # [(str, str), (str, str)] List of tagged tokens
+    kb.Seq[kb.Seq[kb.Postag]]: [
+        [("lorem", "ipsum")] * 2
+    ],  # [[(str, str), (str, str)], [(str, str), (str, str)]] List of Tagged Sentences
+    kb.Chunktag: (("lorem", "ipsum"), "ipsum"),  # ((str, str), str) IOB Tagged token
+    kb.Seq[kb.Chunktag]: [(("lorem", "ipsum"), "ipsum")]
+    * 10,  # [((str, str), str), ((str, str), str)] List of IOB Tagged token
+    kb.Seq[kb.Seq[kb.Chunktag]]: [
+        [(("lorem", "ipsum"), "ipsum")] * 2
+    ],  # [[((str, str), str), ((str, str), str)], [((str, str), str), ((str, str), str)]] List of IOB Tagged Sentences
+    kb.Stem: "ips",
+    kb.Word: "ipsum",
+    kb.Sentence: "It is the best of all movies.",
+    kb.Document: "It is the best of all movies. I actually love that action scene.",
     kb.MatrixContinuousDense: np.random.rand(10, 10),
     kb.MatrixContinuousSparse: sp.rand(10, 10),
     kb.VectorCategorical: np.asarray(["A"] * 5 + ["B"] * 5),
     kb.VectorContinuous: np.random.rand(10),
     kb.VectorDiscrete: np.random.randint(0, 10, (10,), dtype=int),
-    kb.Seq[kb.Word]:["ipsu", "lorem"],
+    kb.Seq[kb.Word]: ["ipsu", "lorem"],
     kb.Seq[kb.Document]: ["abc ipsu lorem say hello", "ipsum lorem", "abc"] * 2,
     kb.Seq[kb.Seq[kb.Stem]]: [["abc", "ipsu", "lorem"] * 10],
     kb.Seq[kb.Seq[kb.Word]]: [["abc", "ipsu", "lorem"] * 10],
-    kb.Seq[kb.Seq[kb.Sentence]]: [["abc a sentence lorem"], ["ipsum lorem"], ["abc"]]
+    kb.Seq[kb.Seq[kb.Sentence]]: [["abc a sentence lorem"], ["ipsum lorem"], ["abc"]],
 }
+
 
 def is_algorithm(cls, verbose=False):
     if _is_classifier(cls):
@@ -58,81 +67,99 @@ def is_algorithm(cls, verbose=False):
 
     if _is_doc_embbeder(cls):
         return "doc_embbeder"
-    
+
     if is_pretrained_tagger(cls)[0]:
         return "trained_tagger"
-    
+
     if _is_tagger(cls):
         return "tagger"
-    
+
     return False
 
-def _is_algorithm(cls, verbose = False):
-    return  _is_stemmer(cls, verbose) or\
-            _is_lemmatizer(cls, verbose) or\
-            _is_word_tokenizer(cls, verbose) or\
-            _is_sent_tokenizer(cls, verbose) or\
-            _is_clusterer(cls, verbose) or\
-            _is_classifier(cls, verbose) or\
-            _is_word_embbeder(cls, verbose) or\
-            _is_doc_embbeder(cls, verbose) or\
-            _is_tagger(cls, verbose)
+
+def _is_algorithm(cls, verbose=False):
+    return (
+        _is_stemmer(cls, verbose)
+        or _is_lemmatizer(cls, verbose)
+        or _is_word_tokenizer(cls, verbose)
+        or _is_sent_tokenizer(cls, verbose)
+        or _is_clusterer(cls, verbose)
+        or _is_classifier(cls, verbose)
+        or _is_word_embbeder(cls, verbose)
+        or _is_doc_embbeder(cls, verbose)
+        or _is_tagger(cls, verbose)
+    )
+
 
 def _is_stemmer(cls, verbose=False):
     if hasattr(cls, "stem"):
         return True
     return False
 
+
 def _is_lemmatizer(cls, verbose=False):
     if hasattr(cls, "lemmatize"):
         return True
     return False
 
+
 def _is_word_tokenizer(cls, verbose=False):
-    if (hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize")):
+    if hasattr(cls, "tokenize") or hasattr(cls, "word_tokenize"):
         return True
     return False
+
 
 def _is_sent_tokenizer(cls, verbose=False):
     if hasattr(cls, "sent_tokenize") or (hasattr(cls, "tokenize")):
         return True
     return False
 
+
 def _is_clusterer(cls, verbose=False):
-    if (hasattr(cls, "classify") and hasattr(cls, "cluster")):
+    if hasattr(cls, "classify") and hasattr(cls, "cluster"):
         return True
     return False
 
-def _is_classifier(cls, verbose = False):
-    if (hasattr(cls, "classify") and hasattr(cls, "train")):
+
+def _is_classifier(cls, verbose=False):
+    if hasattr(cls, "classify") and hasattr(cls, "train"):
         return True
     return False
 
-def _is_word_embbeder(cls, verbose = False):
-    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "wv")):
+
+def _is_word_embbeder(cls, verbose=False):
+    if hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "wv"):
         return True
     return False
 
-def _is_doc_embbeder(cls, verbose = False):
-    if (hasattr(cls, "build_vocab") and hasattr(cls, "train") and hasattr(cls, "infer_vector")):
+
+def _is_doc_embbeder(cls, verbose=False):
+    if (
+        hasattr(cls, "build_vocab")
+        and hasattr(cls, "train")
+        and hasattr(cls, "infer_vector")
+    ):
         return True
     return False
 
-def _is_tagger(cls, verbose = False):
+
+def _is_tagger(cls, verbose=False):
     if hasattr(cls, "tag"):
         return True
     return False
 
-def _is_trained_tagger(cls, verbose = False):
+
+def _is_trained_tagger(cls, verbose=False):
     if hasattr(cls, "train") and _is_tagger(cls, verbose):
         return True
     return False
 
-def _is_chunker(cls, verbose = False):
+
+def _is_chunker(cls, verbose=False):
     if hasattr(cls, "parse"):
         return True
     return False
-    
+
 
 def is_stemmer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk stemmer.
@@ -174,6 +201,7 @@ def is_stemmer(cls, verbose=False):
     else:
         return False, None
 
+
 def is_lemmatizer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk lemmatizer.
     If True, returns the valid (input, output) types.
@@ -212,6 +240,7 @@ def is_lemmatizer(cls, verbose=False):
         return True, (inputs, output)
     else:
         return False, None
+
 
 def is_word_tokenizer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk word tokenizer algorithm.
@@ -253,6 +282,7 @@ def is_word_tokenizer(cls, verbose=False):
     else:
         return False, None
 
+
 def is_sent_tokenizer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk sentence tokenizer.
     If True, returns the valid (input, output) types.
@@ -292,6 +322,7 @@ def is_sent_tokenizer(cls, verbose=False):
         return True, (inputs, output)
     else:
         return False, None
+
 
 def is_clusterer(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk clusterer.
@@ -334,6 +365,7 @@ def is_clusterer(cls, verbose=False):
     else:
         return False, None
 
+
 def is_classifier(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk classifier.
     If True, returns the valid (input, output) types.
@@ -343,13 +375,14 @@ def is_classifier(cls, verbose=False):
 
     inputs = []
 
-    #TODO: Fix somehow compatibility with nltk classifiers
+    # TODO: Fix somehow compatibility with nltk classifiers
     inputs = combine_types(*inputs)
 
     if inputs:
         return True, (inputs, kb.ContinuousVector())
     else:
         return False, None
+
 
 def is_tagger(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk pos tagger.
@@ -375,8 +408,8 @@ def is_tagger(cls, verbose=False):
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
-            X_train = [[(word,word) for word in sentence] for sentence in X]
-            
+            X_train = [[(word, word) for word in sentence] for sentence in X]
+
             tagger = cls(train=X_train)
             # tagger = cls()
             y = tagger.tag_sents(X)
@@ -394,12 +427,13 @@ def is_tagger(cls, verbose=False):
     else:
         is_ptt = is_pretrained_tagger(cls, verbose)
         is_ckr = is_chunker(cls, verbose)
-        
+
         if is_ptt[0]:
             return is_ptt
         if is_ckr[0]:
             return is_ckr
         return False, None
+
 
 def is_chunker(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk chunker.
@@ -425,8 +459,11 @@ def is_chunker(cls, verbose=False):
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
-            X_train = [[((word, postag), postag) for word, postag in sentence] for sentence in X]
-            
+            X_train = [
+                [((word, postag), postag) for word, postag in sentence]
+                for sentence in X
+            ]
+
             chunker = cls(train=X_train)
             y = chunker.tag_sents(X)
 
@@ -442,6 +479,7 @@ def is_chunker(cls, verbose=False):
         return True, (inputs, output)
     else:
         return False, None
+
 
 def is_pretrained_tagger(cls, verbose=False):
     """Determine if `cls` corresponds to something that resembles an nltk sentence tokenizer.
@@ -466,9 +504,9 @@ def is_pretrained_tagger(cls, verbose=False):
     for input_type in [kb.Seq[kb.Word]]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            
+
             tagger = cls()
-            
+
             y = tagger.tag(X)
 
             assert DATA_RESOLVERS[output](y)
@@ -483,9 +521,11 @@ def is_pretrained_tagger(cls, verbose=False):
         return True, (inputs, output)
     else:
         return False, None
-    
+
+
 def is_data_type(X, data_type):
     return DATA_RESOLVERS[data_type](X)
+
 
 IO_TYPE_HANDLER = [
     is_stemmer,
@@ -499,6 +539,7 @@ IO_TYPE_HANDLER = [
     # is_doc_embbeder
 ]
 
+
 def get_input_output(cls, verbose=False):
     for func in IO_TYPE_HANDLER:
         matches, types = func(cls, verbose=verbose)
@@ -506,6 +547,7 @@ def get_input_output(cls, verbose=False):
             return types
 
     return None, None
+
 
 def combine_types(*types):
     if len(types) == 1:
@@ -517,6 +559,7 @@ def combine_types(*types):
         return kb.MatrixContinuous()
 
     return None
+
 
 def is_word_list(obj):
     """Determines if `obj` is a sequence of sequence of strings.
@@ -538,6 +581,7 @@ def is_word_list(obj):
         return len(oset) > 0.1 * len(obj) and all(isinstance(x, str) for x in oset)
     except:
         return False
+
 
 def is_word_list_list(obj):
     """Determines if `obj` is a sequence of sequence of strings.
@@ -561,6 +605,7 @@ def is_word_list_list(obj):
     except:
         return False
 
+
 def is_word(obj):
     """Determines if `obj` is a sequence of sequence of strings.
 
@@ -576,6 +621,7 @@ def is_word(obj):
         return isinstance(obj, str) and len(obj.split()) == 1
     except:
         return False
+
 
 def is_sentence(obj):
     """Determines if `obj` is a sentence strings.
@@ -593,11 +639,13 @@ def is_sentence(obj):
     except:
         return False
 
+
 def is_sentence_list(obj):
     try:
         return all([is_sentence(x) for x in obj])
     except:
         return False
+
 
 def is_text_list_list(obj):
     """Determines if `obj` is a sequence of sequence of strings.
@@ -621,6 +669,7 @@ def is_text_list_list(obj):
     except:
         return False
 
+
 def is_tag(obj):
     """Determines if `obj` is a tuple of two strings.
 
@@ -633,10 +682,15 @@ def is_tag(obj):
 
     """
     try:
-        return isinstance(obj, tuple) and len(obj) == 2 and all((isinstance(x, str) or x == None) for x in obj)
+        return (
+            isinstance(obj, tuple)
+            and len(obj) == 2
+            and all((isinstance(x, str) or x == None) for x in obj)
+        )
     except:
         return False
-    
+
+
 def is_tag_list(obj):
     """Determines if `obj` is a list of tuple of two strings.
 
@@ -652,6 +706,7 @@ def is_tag_list(obj):
         return isinstance(obj, list) and all(is_tag(x) for x in obj)
     except:
         return False
+
 
 def is_tagged_sentence_list(obj):
     """Determines if `obj` is a list(list(tuple(str, str)))
@@ -682,9 +737,15 @@ def is_chunk(obj):
 
     """
     try:
-        return isinstance(obj, tuple) and len(obj) == 2 and is_tag(obj[0]) and isinstance(obj[1], str)
+        return (
+            isinstance(obj, tuple)
+            and len(obj) == 2
+            and is_tag(obj[0])
+            and isinstance(obj[1], str)
+        )
     except:
         return False
+
 
 def is_chunk_list(obj):
     """Determines if `obj` is a list(tuple(tuple(str, str), str)).
@@ -701,6 +762,7 @@ def is_chunk_list(obj):
         return isinstance(obj, list) and all(is_chunk(x) for x in obj)
     except:
         return False
+
 
 def is_chunked_sentence_list(obj):
     """Determines if `obj` is a list(list(tuple(tuple(str, str), str))).
@@ -720,16 +782,16 @@ def is_chunked_sentence_list(obj):
 
 
 DATA_RESOLVERS = {
-    kb.Postag:is_tag,
-    kb.Seq[kb.Postag]:is_tag_list,
-    kb.Seq[kb.Seq[kb.Postag]]:is_tagged_sentence_list,
-    kb.Chunktag:is_chunk,
-    kb.Seq[kb.Chunktag]:is_chunk_list,
-    kb.Seq[kb.Seq[kb.Chunktag]]:is_chunked_sentence_list,
-    kb.Stem:is_word,
-    kb.Word:is_word,
-    kb.Sentence:is_sentence,
-    kb.Document:is_sentence,
+    kb.Postag: is_tag,
+    kb.Seq[kb.Postag]: is_tag_list,
+    kb.Seq[kb.Seq[kb.Postag]]: is_tagged_sentence_list,
+    kb.Chunktag: is_chunk,
+    kb.Seq[kb.Chunktag]: is_chunk_list,
+    kb.Seq[kb.Seq[kb.Chunktag]]: is_chunked_sentence_list,
+    kb.Stem: is_word,
+    kb.Word: is_word,
+    kb.Sentence: is_sentence,
+    kb.Document: is_sentence,
     kb.MatrixContinuousDense: is_matrix_continuous_dense,
     kb.MatrixContinuousSparse: is_matrix_continuous_sparse,
     kb.VectorCategorical: is_categorical,

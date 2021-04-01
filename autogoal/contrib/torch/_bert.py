@@ -41,9 +41,12 @@ class BertEmbedding(AlgorithmBase):
 
     If you are using the development container the model should be already downloaded for you.
     """
+
     use_cache = False
 
-    def __init__(self, merge_mode: CategoricalValue("avg", "first") = "avg", *, verbose=False):  # , length: Discrete(16, 512)):
+    def __init__(
+        self, merge_mode: CategoricalValue("avg", "first") = "avg", *, verbose=False
+    ):  # , length: Discrete(16, 512)):
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
@@ -61,8 +64,12 @@ class BertEmbedding(AlgorithmBase):
 
     def run(self, input: Seq[Word]) -> MatrixContinuousDense:
         if self.model is None:
-            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
-            self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
+            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(
+                self.device
+            )
+            self.tokenizer = BertTokenizer.from_pretrained(
+                "bert-base-multilingual-cased"
+            )
 
         if self.use_cache:
             sentence_hash = hash(" ".join(input))
@@ -137,8 +144,12 @@ class BertTokenizeEmbedding(AlgorithmBase):
 
     def run(self, input: Seq[Sentence]) -> Tensor3:
         if self.model is None:
-            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(self.device)
-            self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
+            self.model = BertModel.from_pretrained("bert-base-multilingual-cased").to(
+                self.device
+            )
+            self.tokenizer = BertTokenizer.from_pretrained(
+                "bert-base-multilingual-cased"
+            )
 
         self.print("Tokenizing...", end="", flush=True)
         tokens = [

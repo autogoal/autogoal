@@ -19,6 +19,7 @@ class AutoML:
     An `AutoML` instance represents a general-purpose machine learning
     algorithm, that can be applied to any input and output.
     """
+
     def __init__(
         self,
         input=None,
@@ -57,7 +58,9 @@ class AutoML:
 
     def _check_fitted(self):
         if not hasattr(self, "best_pipeline_"):
-            raise TypeError("This operation cannot be performed on an unfitted AutoML instance. Call `fit` first.")
+            raise TypeError(
+                "This operation cannot be performed on an unfitted AutoML instance. Call `fit` first."
+            )
 
     def make_pipeline_builder(self):
         registry = self.registry or find_classes(
@@ -65,9 +68,7 @@ class AutoML:
         )
 
         return build_pipeline_graph(
-            input_types=self.input,
-            output_type=self.output,
-            registry=registry,
+            input_types=self.input, output_type=self.output, registry=registry,
         )
 
     def fit(self, X, y, **kwargs):
@@ -110,7 +111,7 @@ class AutoML:
         After deserialization, the best pipeline found is ready to predict.
         """
         automl = pickle.Unpickler(fp).load()
-        
+
         if not isinstance(automl, AutoML):
             raise ValueError("The serialized file does not contain an AutoML instance.")
 

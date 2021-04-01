@@ -345,8 +345,16 @@ def is_transformer(cls, verbose=False):
     allowed_inputs = set()
     allowed_outputs = set()
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
-        for output_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse(), kb.List(kb.Sentence())]:
+    for input_type in [
+        kb.MatrixContinuousDense(),
+        kb.MatrixContinuousSparse(),
+        kb.List(kb.Sentence()),
+    ]:
+        for output_type in [
+            kb.MatrixContinuousDense(),
+            kb.MatrixContinuousSparse(),
+            kb.List(kb.Sentence()),
+        ]:
             try:
                 X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -375,12 +383,9 @@ def is_transformer(cls, verbose=False):
 def is_data_type(X, data_type):
     return DATA_RESOLVERS[data_type](X)
 
-IO_TYPE_HANDLER = [
-    is_classifier,
-    is_regressor,
-    is_clusterer,
-    is_transformer
-]
+
+IO_TYPE_HANDLER = [is_classifier, is_regressor, is_clusterer, is_transformer]
+
 
 def get_input_output(cls, verbose=False):
     for func in IO_TYPE_HANDLER:
@@ -389,6 +394,7 @@ def get_input_output(cls, verbose=False):
             return types
 
     return None, None
+
 
 def solve_type(obj):
     for type_, resolver in DATA_RESOLVERS.items():

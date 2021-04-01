@@ -1,14 +1,25 @@
-from autogoal.kb import Tuple, build_pipeline_graph, build_pipelines, List, Vector, Matrix, Sentence, Word
+from autogoal.kb import (
+    Tuple,
+    build_pipeline_graph,
+    build_pipelines,
+    List,
+    Vector,
+    Matrix,
+    Sentence,
+    Word,
+)
 from autogoal.utils import nice_repr
 
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 @nice_repr
 class A:
     def run(self, input: Sentence()) -> List(Word()):
         pass
+
 
 @nice_repr
 class B:
@@ -23,9 +34,7 @@ class C:
 
 
 builder = build_pipelines(
-    input=Tuple(Sentence(), Vector()),
-    output=Matrix(),
-    registry=[A, B, C]
+    input=Tuple(Sentence(), Vector()), output=Matrix(), registry=[A, B, C]
 )
 
 pipeline = builder.sample()

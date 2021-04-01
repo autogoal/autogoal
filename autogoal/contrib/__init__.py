@@ -17,61 +17,70 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
 
     if output:
         output = f".*({output}).*"
-        
+
     if modules is None:
         modules = []
 
         try:
             from autogoal.contrib import sklearn
+
             modules.append(sklearn)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import nltk
+
             modules.append(nltk)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import gensim
+
             modules.append(gensim)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import keras
+
             modules.append(keras)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import torch
+
             modules.append(torch)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import spacy
+
             modules.append(spacy)
         except ImportError as e:
             pass
 
         try:
             from autogoal.contrib import wikipedia
+
             modules.append(wikipedia)
         except ImportError as e:
             pass
 
         from autogoal.contrib import wrappers
+
         modules.append(wrappers)
 
         from autogoal.contrib import regex
+
         modules.append(regex)
 
     for module in modules:
         for _, cls in inspect.getmembers(module, inspect.isclass):
-            if not hasattr(cls, 'run'):
+            if not hasattr(cls, "run"):
                 continue
 
             if cls.__name__.startswith("_"):
@@ -93,13 +102,14 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
 
             if output and not re.match(output, str(sig.return_annotation)):
                 continue
-            
+
             result.append(cls)
 
     return result
 
 
 import enum
+
 
 class ContribStatus(enum.Enum):
     RequiresDependency = enum.auto()
@@ -113,42 +123,49 @@ def status():
 
     try:
         from autogoal.contrib import sklearn
+
         modules.append(sklearn)
     except ImportError as e:
         status["autogoal.contrib.sklearn"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import nltk
+
         modules.append(nltk)
     except ImportError as e:
         status["autogoal.contrib.nltk"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import gensim
+
         modules.append(gensim)
     except ImportError as e:
         status["autogoal.contrib.gensim"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import keras
+
         modules.append(keras)
     except ImportError as e:
         status["autogoal.contrib.keras"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import torch
+
         modules.append(torch)
     except ImportError as e:
         status["autogoal.contrib.torch"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import spacy
+
         modules.append(spacy)
     except ImportError as e:
         status["autogoal.contrib.spacy"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import wikipedia
+
         modules.append(wikipedia)
     except ImportError as e:
         status["autogoal.contrib.wikipedia"] = ContribStatus.RequiresDependency
@@ -162,47 +179,54 @@ def status():
     return status
 
 
-def download(contrib:str):
+def download(contrib: str):
     modules = {}
 
     try:
         from autogoal.contrib import sklearn
+
         modules["sklearn"] = sklearn
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import nltk
+
         modules["nltk"] = nltk
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import gensim
+
         modules["gensim"] = gensim
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import keras
+
         modules["keras"] = keras
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import torch
+
         modules["torch"] = torch
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import spacy
+
         modules["spacy"] = spacy
     except ImportError as e:
         pass
 
     try:
         from autogoal.contrib import wikipedia
+
         modules["wikipedia"] = wikipedia
     except ImportError as e:
         pass
@@ -218,4 +242,4 @@ def download(contrib:str):
     return contrib.download()
 
 
-__all__ = ['find_classes', "status", "download"]
+__all__ = ["find_classes", "status", "download"]

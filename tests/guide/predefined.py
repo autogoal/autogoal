@@ -9,12 +9,14 @@
 # To illustrate the simplicity of its use, we will first load a dataset.
 
 from autogoal.datasets import cars
+
 X, y = cars.load()
 
 # Next, we import and instantiate the [`AutoML`](/api/autogoal.ml#automl) class.
 
 from autogoal.ml import AutoML
-automl = AutoML(errors='ignore')
+
+automl = AutoML(errors="ignore")
 
 # Finally, we just call its `fit` method. AutoGOAL will automatically infer the input and
 # output type.
@@ -35,10 +37,12 @@ automl.fit(X, y)
 
 from autogoal.kb import DenseMatrix, CategoricalVector
 
+
 class MyClassifier:
     def run(self, input: DenseMatrix()) -> CategoricalVector():
         # implementation of the algorithm
         pass
+
 
 # This protocol allows AutoGOAL to automatically connect algorithms with compatible data types.
 # A set of predefined data types are available in [`autogoal.kb`](/api/autogoal.kb),

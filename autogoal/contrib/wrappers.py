@@ -163,7 +163,7 @@ class DocumentFeatureExtractor(AlgorithmBase):
 # @nice_repr
 # class TextRelationEncoder(AlgorithmBase):
 #     """
-#     Convierte una oración en texto plano y una lista de relaciones 
+#     Convierte una oración en texto plano y una lista de relaciones
 #     que se cumplen entre entidades, en una lista de ejemplos
 #     por cada oración.
 #     """

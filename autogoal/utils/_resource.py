@@ -5,8 +5,9 @@ import os
 import multiprocessing
 import platform
 
-if (platform.system() == 'Linux'):
+if platform.system() == "Linux":
     import resource
+
 
 class ResourceManager:
     """
@@ -106,20 +107,21 @@ class ResourceManager:
         """
         manager = multiprocessing.Manager()
         result_bucket = manager.dict()
-        
-        rprocess = multiprocessing.Process(target=self._restricted_function,
-                                            args=[result_bucket, function, args, kwargs])
+
+        rprocess = multiprocessing.Process(
+            target=self._restricted_function,
+            args=[result_bucket, function, args, kwargs],
+        )
 
         rprocess.start()
         # print("started process:", rprocess.pid)
         rprocess.join()
         # print("ended process:", rprocess.pid)
         result = result_bucket["result"]
-        if isinstance(result, Exception): #Exception ocurred
+        if isinstance(result, Exception):  # Exception ocurred
             raise result
         return result
-        
-        
+
 
 def alarm_handler(*args):
-    raise TimeoutError("process %d got to time limit" %os.getpid())
+    raise TimeoutError("process %d got to time limit" % os.getpid())

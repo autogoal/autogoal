@@ -27,7 +27,7 @@ class AffinityPropagation(_AffinityPropagation, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -79,7 +79,7 @@ class Birch(_Birch, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -104,7 +104,7 @@ class KMeans(_KMeans, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -135,7 +135,7 @@ class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -145,12 +145,14 @@ from sklearn.cluster._mean_shift import MeanShift as _MeanShift
 
 @nice_repr
 class MeanShift(_MeanShift, SklearnEstimator):
-    def __init__(self, bin_seeding: grammar.BooleanValue(), cluster_all: grammar.BooleanValue()):
+    def __init__(
+        self, bin_seeding: grammar.BooleanValue(), cluster_all: grammar.BooleanValue()
+    ):
         SklearnEstimator.__init__(self)
         _MeanShift.__init__(self, bin_seeding=bin_seeding, cluster_all=cluster_all)
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -360,7 +362,9 @@ from sklearn.feature_extraction.text import CountVectorizer as _CountVectorizer
 
 @nice_repr
 class CountVectorizer(_CountVectorizer, SklearnTransformer):
-    def __init__(self, lowercase: grammar.BooleanValue(), binary: grammar.BooleanValue()):
+    def __init__(
+        self, lowercase: grammar.BooleanValue(), binary: grammar.BooleanValue()
+    ):
         SklearnTransformer.__init__(self)
         _CountVectorizer.__init__(self, lowercase=lowercase, binary=binary)
 
@@ -477,14 +481,16 @@ from sklearn.linear_model._base import LinearRegression as _LinearRegression
 
 @nice_repr
 class LinearRegression(_LinearRegression, SklearnEstimator):
-    def __init__(self, fit_intercept: grammar.BooleanValue(), normalize: grammar.BooleanValue()):
+    def __init__(
+        self, fit_intercept: grammar.BooleanValue(), normalize: grammar.BooleanValue()
+    ):
         SklearnEstimator.__init__(self)
         _LinearRegression.__init__(
             self, fit_intercept=fit_intercept, normalize=normalize
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -515,7 +521,7 @@ class ARDRegression(_ARDRegression, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -544,7 +550,7 @@ class BayesianRidge(_BayesianRidge, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -577,7 +583,7 @@ class ElasticNet(_ElasticNet, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -608,7 +614,7 @@ class Lasso(_Lasso, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -619,13 +625,15 @@ from sklearn.linear_model._huber import HuberRegressor as _HuberRegressor
 @nice_repr
 class HuberRegressor(_HuberRegressor, SklearnEstimator):
     def __init__(
-        self, epsilon: grammar.ContinuousValue(min=1.002, max=13.494), fit_intercept: grammar.BooleanValue()
+        self,
+        epsilon: grammar.ContinuousValue(min=1.002, max=13.494),
+        fit_intercept: grammar.BooleanValue(),
     ):
         SklearnEstimator.__init__(self)
         _HuberRegressor.__init__(self, epsilon=epsilon, fit_intercept=fit_intercept)
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -654,7 +662,7 @@ class Lars(_Lars, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -683,7 +691,7 @@ class LassoLars(_LassoLars, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -712,7 +720,7 @@ class LassoLarsIC(_LassoLarsIC, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -743,7 +751,7 @@ class LogisticRegression(_LogisticRegression, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -770,7 +778,7 @@ class OrthogonalMatchingPursuit(_OrthogonalMatchingPursuit, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -807,7 +815,7 @@ class PassiveAggressiveClassifier(_PassiveAggressiveClassifier, SklearnEstimator
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -846,7 +854,7 @@ class PassiveAggressiveRegressor(_PassiveAggressiveRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -879,7 +887,7 @@ class Perceptron(_Perceptron, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -910,7 +918,7 @@ class Ridge(_Ridge, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -941,7 +949,7 @@ class RidgeClassifier(_RidgeClassifier, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -998,7 +1006,7 @@ class SGDClassifier(_SGDClassifier, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1022,7 +1030,9 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
         tol: grammar.ContinuousValue(min=-0.005, max=0.001),
         shuffle: grammar.BooleanValue(),
         epsilon: grammar.ContinuousValue(min=-0.992, max=0.993),
-        learning_rate: grammar.CategoricalValue("adaptive", "constant", "invscaling", "optimal"),
+        learning_rate: grammar.CategoricalValue(
+            "adaptive", "constant", "invscaling", "optimal"
+        ),
         eta0: grammar.ContinuousValue(min=0.003, max=0.094),
         power_t: grammar.ContinuousValue(min=-2.494, max=2.491),
         early_stopping: grammar.BooleanValue(),
@@ -1050,7 +1060,7 @@ class SGDRegressor(_SGDRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1061,13 +1071,15 @@ from sklearn.linear_model._theil_sen import TheilSenRegressor as _TheilSenRegres
 @nice_repr
 class TheilSenRegressor(_TheilSenRegressor, SklearnEstimator):
     def __init__(
-        self, fit_intercept: grammar.BooleanValue(), tol: grammar.ContinuousValue(min=-0.005, max=0.001)
+        self,
+        fit_intercept: grammar.BooleanValue(),
+        tol: grammar.ContinuousValue(min=-0.005, max=0.001),
     ):
         SklearnEstimator.__init__(self)
         _TheilSenRegressor.__init__(self, fit_intercept=fit_intercept, tol=tol)
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuousDense, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1084,7 +1096,9 @@ class Isomap(_Isomap, SklearnTransformer):
         eigen_solver: grammar.CategoricalValue("arpack", "auto", "dense"),
         tol: grammar.DiscreteValue(min=-99, max=99),
         path_method: grammar.CategoricalValue("auto"),
-        neighbors_algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        neighbors_algorithm: grammar.CategoricalValue(
+            "auto", "ball_tree", "brute", "kd_tree"
+        ),
         p: grammar.DiscreteValue(min=1, max=3),
     ):
         SklearnTransformer.__init__(self)
@@ -1117,7 +1131,9 @@ class LocallyLinearEmbedding(_LocallyLinearEmbedding, SklearnTransformer):
         reg: grammar.ContinuousValue(min=-0.005, max=0.001),
         eigen_solver: grammar.CategoricalValue("arpack", "auto", "dense"),
         method: grammar.CategoricalValue("ltsa", "modified", "standard"),
-        neighbors_algorithm: grammar.CategoricalValue("auto", "ball_tree", "brute", "kd_tree"),
+        neighbors_algorithm: grammar.CategoricalValue(
+            "auto", "ball_tree", "brute", "kd_tree"
+        ),
     ):
         SklearnTransformer.__init__(self)
         _LocallyLinearEmbedding.__init__(
@@ -1149,7 +1165,7 @@ class BernoulliNB(_BernoulliNB, SklearnEstimator):
         _BernoulliNB.__init__(self, alpha=alpha, binarize=binarize, fit_prior=fit_prior)
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1164,7 +1180,7 @@ class CategoricalNB(_CategoricalNB, SklearnEstimator):
         _CategoricalNB.__init__(self, fit_prior=fit_prior)
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1179,7 +1195,7 @@ class ComplementNB(_ComplementNB, SklearnEstimator):
         _ComplementNB.__init__(self, fit_prior=fit_prior, norm=norm)
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1194,7 +1210,7 @@ class GaussianNB(_GaussianNB, SklearnEstimator):
         _GaussianNB.__init__(self,)
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1209,7 +1225,7 @@ class MultinomialNB(_MultinomialNB, SklearnEstimator):
         _MultinomialNB.__init__(self, fit_prior=fit_prior)
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1242,7 +1258,7 @@ class KNeighborsClassifier(_KNeighborsClassifier, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1342,7 +1358,7 @@ class NearestCentroid(_NearestCentroid, SklearnEstimator):
         _NearestCentroid.__init__(self,)
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1373,7 +1389,7 @@ class KNeighborsRegressor(_KNeighborsRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1404,7 +1420,7 @@ class RadiusNeighborsRegressor(_RadiusNeighborsRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1453,7 +1469,11 @@ from sklearn.preprocessing._data import RobustScaler as _RobustScaler
 
 @nice_repr
 class RobustScaler(_RobustScaler, SklearnTransformer):
-    def __init__(self, with_centering: grammar.BooleanValue(), with_scaling: grammar.BooleanValue()):
+    def __init__(
+        self,
+        with_centering: grammar.BooleanValue(),
+        with_scaling: grammar.BooleanValue(),
+    ):
         SklearnTransformer.__init__(self)
         _RobustScaler.__init__(
             self, with_centering=with_centering, with_scaling=with_scaling
@@ -1468,7 +1488,9 @@ from sklearn.preprocessing._data import StandardScaler as _StandardScaler
 
 @nice_repr
 class StandardScaler(_StandardScaler, SklearnTransformer):
-    def __init__(self, with_mean: grammar.BooleanValue(), with_std: grammar.BooleanValue()):
+    def __init__(
+        self, with_mean: grammar.BooleanValue(), with_std: grammar.BooleanValue()
+    ):
         SklearnTransformer.__init__(self)
         _StandardScaler.__init__(self, with_mean=with_mean, with_std=with_std)
 
@@ -1568,7 +1590,7 @@ class LinearSVC(_LinearSVC, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1582,7 +1604,9 @@ class LinearSVR(_LinearSVR, SklearnEstimator):
         self,
         epsilon: grammar.ContinuousValue(min=0.0, max=0.992),
         C: grammar.ContinuousValue(min=0.005, max=9.991),
-        loss: grammar.CategoricalValue("epsilon_insensitive", "squared_epsilon_insensitive"),
+        loss: grammar.CategoricalValue(
+            "epsilon_insensitive", "squared_epsilon_insensitive"
+        ),
         fit_intercept: grammar.BooleanValue(),
         intercept_scaling: grammar.ContinuousValue(min=0.005, max=9.991),
         dual: grammar.BooleanValue(),
@@ -1599,7 +1623,7 @@ class LinearSVR(_LinearSVR, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1636,7 +1660,7 @@ class NuSVC(_NuSVC, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1669,7 +1693,7 @@ class NuSVR(_NuSVR, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1700,7 +1724,7 @@ class OneClassSVM(_OneClassSVM, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1737,7 +1761,7 @@ class SVC(_SVC, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1772,7 +1796,7 @@ class SVR(_SVR, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1799,7 +1823,7 @@ class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1826,7 +1850,7 @@ class DecisionTreeRegressor(_DecisionTreeRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 
@@ -1853,7 +1877,7 @@ class ExtraTreeClassifier(_ExtraTreeClassifier, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return SklearnEstimator.run(self, X, y)
 
@@ -1880,7 +1904,7 @@ class ExtraTreeRegressor(_ExtraTreeRegressor, SklearnEstimator):
         )
 
     def run(
-        self, X:MatrixContinuous, y:Supervised[VectorContinuous]
+        self, X: MatrixContinuous, y: Supervised[VectorContinuous]
     ) -> VectorContinuous:
         return SklearnEstimator.run(self, X, y)
 

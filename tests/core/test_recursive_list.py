@@ -1,4 +1,13 @@
-from autogoal.kb import Document, Sentence, Seq, Stem, Word, build_pipeline_graph, algorithm, AlgorithmBase
+from autogoal.kb import (
+    Document,
+    Sentence,
+    Seq,
+    Stem,
+    Word,
+    build_pipeline_graph,
+    algorithm,
+    AlgorithmBase,
+)
 from autogoal.search import RandomSearch
 
 

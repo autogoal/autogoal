@@ -7,10 +7,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 
 
-def test_stacking(): 
+def test_stacking():
     X_train = [[0, 0], [1, 1]]
     y_train = [0, 1]
-    X_test = [[2.,2.]]
+    X_test = [[2.0, 2.0]]
     y_test = [1]
     ensemble = StackingEnsemble([SVC(), DecisionTreeClassifier()], [SVC()])
     ensemble.fit(X_train, y_train)

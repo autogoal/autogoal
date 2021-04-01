@@ -1,6 +1,8 @@
 from autogoal.exceptions import InterfaceIncompatibleError
+
 # import types
 import inspect
+
 # import pprint
 
 from typing import Mapping
@@ -74,8 +76,7 @@ class Distinct:
 
         if not compatible:
             raise ValueError(
-                "Cannot find compatible implementations for <class %s>"
-                % self.interface
+                "Cannot find compatible implementations for <class %s>" % self.interface
             )
 
         return Subset(symbol.name, *compatible).generate_cfg(grammar, symbol)
@@ -289,7 +290,6 @@ def _get_annotations(clss, ignore=[]):
 # #         ns["__reduce__"] = reduce_method
 
 # #     return types.new_class(name=name, bases=(), exec_body=body)
-
 
 
 # # def build_composite_tuple_instance(index, input_type, output_type, inner_algorithm):

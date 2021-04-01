@@ -10,7 +10,7 @@ from autogoal.kb import AlgorithmBase
 class _Regex(abc.ABC):
     def __init__(self, full: BooleanValue):
         self.full = full
-        self._name = self.__class__.__name__[:-len("Regex")].lower()
+        self._name = self.__class__.__name__[: -len("Regex")].lower()
 
     @abc.abstractmethod
     def _regex(self):
@@ -18,7 +18,7 @@ class _Regex(abc.ABC):
 
     def run(self, input: Word) -> FeatureSet:
         r_exp = self._regex()
-        b = re.fullmatch(r_exp, input) if self.full else re.search(r_exp, input) 
+        b = re.fullmatch(r_exp, input) if self.full else re.search(r_exp, input)
         return {f"is_{self._name}_regex": bool(b)}
 
 
@@ -44,6 +44,7 @@ class UrlRegex(AlgorithmBase, _Regex):
 
     ```
     """
+
     def _regex(self):
         return r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"
 
@@ -70,6 +71,7 @@ class IPRegex(AlgorithmBase, _Regex):
 
     ```
     """
+
     def _regex(self):
         return r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)?){4}\b"
 
@@ -96,6 +98,7 @@ class MACRegex(AlgorithmBase, _Regex):
 
     ```
     """
+
     def _regex(self):
         return r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})"
 
@@ -122,6 +125,7 @@ class EmailRegex(AlgorithmBase, _Regex):
 
     ```
     """
+
     def _regex(self):
         return r"([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})"
 
@@ -148,5 +152,6 @@ class PhoneRegex(AlgorithmBase, _Regex):
 
     ```
     """
+
     def _regex(self):
         return r"^((\+){1}91){1}[1-9]{1}[0-9]{9}$"

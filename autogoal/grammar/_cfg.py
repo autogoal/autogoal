@@ -80,7 +80,7 @@ class OneOf(Production):
             raise ValueError("Max iterations exceeded")
 
         option = sampler.choice(self.options, handle=self.head.name)
-        return self.grammar[option].sample(sampler, namespace, max_iterations-1)
+        return self.grammar[option].sample(sampler, namespace, max_iterations - 1)
 
 
 class SubsetOf(Production):
@@ -100,7 +100,10 @@ class SubsetOf(Production):
         self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
-        rhs = [("<%s>" % option.name if hasattr(option, "name") else repr(option)) for option in self._options]
+        rhs = [
+            ("<%s>" % option.name if hasattr(option, "name") else repr(option))
+            for option in self._options
+        ]
 
         code.append("%s := { %s }" % (lhs, " , ".join(rhs)))
         visited.add(self.head)
@@ -124,7 +127,9 @@ class SubsetOf(Production):
             for option in self.options:
                 if hasattr(option, "name"):
                     handle = self.head.name + "_" + option.name
-                    sample = self.grammar[option].sample(sampler, namespace, max_iterations-1)
+                    sample = self.grammar[option].sample(
+                        sampler, namespace, max_iterations - 1
+                    )
                 else:
                     handle = self.head.name + "_" + repr(option)
                     sample = option
@@ -179,7 +184,9 @@ class Callable(Production):
 
         for arg, symbol in self._parameters.items():
             if isinstance(symbol, Symbol):
-                arg_value = self.grammar[symbol].sample(sampler, namespace, max_iterations-1)
+                arg_value = self.grammar[symbol].sample(
+                    sampler, namespace, max_iterations - 1
+                )
             else:
                 arg_value = symbol
 
@@ -198,7 +205,9 @@ class Distribution(Callable):
         return "Distribution(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def sample(self, sampler, namespace, max_iterations):
-        return sampler.distribution(self._name, handle=self.head.name, **self._parameters)
+        return sampler.distribution(
+            self._name, handle=self.head.name, **self._parameters
+        )
 
 
 class ContextFreeGrammar(Grammar):
@@ -280,7 +289,7 @@ def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
 
 
 def _generate_cfg(
-    cls, grammar: ContextFreeGrammar = None, head: Symbol = None, registry = None
+    cls, grammar: ContextFreeGrammar = None, head: Symbol = None, registry=None
 ) -> ContextFreeGrammar:
     symbol = head or Symbol(cls.__name__)
 
@@ -330,7 +339,9 @@ def _generate_cfg(
             try:
                 annotation_cls = grammar.namespace[annotation_cls]
             except KeyError:
-                raise ValueError("To use strings for annotations, make sure recursion hits the corresponding class first.")
+                raise ValueError(
+                    "To use strings for annotations, make sure recursion hits the corresponding class first."
+                )
 
         if hasattr(annotation_cls, "__name__"):
             param_symbol = Symbol(annotation_cls.__name__)
@@ -449,7 +460,9 @@ class Subset:
             else:
                 children.append(child)
 
-        grammar.replace(symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty))
+        grammar.replace(
+            symbol, SubsetOf(symbol, grammar, *children, allow_empty=self.allow_empty)
+        )
         return grammar
 
 
@@ -460,6 +473,6 @@ class CfgInitializer:
 
     def __call__(self, cls, sampler=None):
         if cls not in self._grammars:
-            self._grammars[cls] =  generate_cfg(cls, self._registry)
+            self._grammars[cls] = generate_cfg(cls, self._registry)
 
         return self._grammars[cls].sample(sampler=sampler)

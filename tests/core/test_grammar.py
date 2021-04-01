@@ -5,46 +5,31 @@ from autogoal.grammar import DiscreteValue, generate_cfg, Subset, CategoricalVal
 from autogoal.kb import Document, Word, Stem, Seq, Sentence, algorithm
 from autogoal.grammar import DiscreteValue, generate_cfg, Subset, CategoricalValue
 
+
 class TextAlgorithm:
-    def run(
-        self, 
-        input:Sentence
-    ) -> Document:
-            pass
+    def run(self, input: Sentence) -> Document:
+        pass
+
 
 class StemWithDependanceAlgorithm:
-    def __init__(
-        self, 
-        dependance:algorithm(Sentence, Document)
-    ):
+    def __init__(self, dependance: algorithm(Sentence, Document)):
         pass
 
-    def run(
-        self, 
-        input:Word
-    ) -> Stem:
+    def run(self, input: Word) -> Stem:
         pass
+
 
 class StemAlgorithm:
-    def run(
-        self, 
-        input:Word
-    ) -> Stem:
+    def run(self, input: Word) -> Stem:
         pass
+
 
 class HigherStemAlgorithm:
-    def __init__(
-        self, 
-        dependance:algorithm(Word, Stem)
-    ):
+    def __init__(self, dependance: algorithm(Word, Stem)):
         pass
 
-    def run(
-        self, 
-        input:Seq[Word]
-    ) -> Seq[Stem]:
+    def run(self, input: Seq[Word]) -> Seq[Stem]:
         pass
-
 
 
 def check_grammar(g, s):
@@ -55,7 +40,15 @@ def check_grammar(g, s):
 
 def test_generate_from_registry_with_dependance():
     check_grammar(
-        generate_cfg(HigherStemAlgorithm, registry=[StemAlgorithm, HigherStemAlgorithm, TextAlgorithm, StemWithDependanceAlgorithm] ), 
+        generate_cfg(
+            HigherStemAlgorithm,
+            registry=[
+                StemAlgorithm,
+                HigherStemAlgorithm,
+                TextAlgorithm,
+                StemWithDependanceAlgorithm,
+            ],
+        ),
         """
         <HigherStemAlgorithm>            := HigherStemAlgorithm (dependance=<Algorithm[[Word],Stem]>)
         <Algorithm[[Word],Stem]>         := <StemAlgorithm> | <StemWithDependanceAlgorithm>
@@ -63,7 +56,8 @@ def test_generate_from_registry_with_dependance():
         <StemWithDependanceAlgorithm>    := StemWithDependanceAlgorithm (dependance=<Algorithm[[Sentence],Document]>)
         <Algorithm[[Sentence],Document]> := <TextAlgorithm>
         <TextAlgorithm>                  := TextAlgorithm ()
-        """)
+        """,
+    )
 
 
 def test_generate_from_class():
@@ -87,9 +81,10 @@ def test_generate_from_class_with_args():
         """,
     )
 
+
 def test_subset_annotation_with_constants():
     class A:
-        def __init__(self, features: Subset('Subset', "Hello", "World", 1)):
+        def __init__(self, features: Subset("Subset", "Hello", "World", 1)):
             pass
 
     check_grammar(
@@ -100,9 +95,15 @@ def test_subset_annotation_with_constants():
         """,
     )
 
+
 def test_subset_annotation_with_callables():
     class A:
-        def __init__(self, features: Subset('Subset', DiscreteValue(1, 5), CategoricalValue('adam', 'sgd'))):
+        def __init__(
+            self,
+            features: Subset(
+                "Subset", DiscreteValue(1, 5), CategoricalValue("adam", "sgd")
+            ),
+        ):
             pass
 
     check_grammar(
@@ -113,9 +114,12 @@ def test_subset_annotation_with_callables():
         """,
     )
 
+
 def test_subset_annotation():
     class A:
-        def __init__(self, features: Subset('Subset', DiscreteValue(1, 5), 'Hello', 1, None)):
+        def __init__(
+            self, features: Subset("Subset", DiscreteValue(1, 5), "Hello", 1, None)
+        ):
             pass
 
     check_grammar(
@@ -126,9 +130,12 @@ def test_subset_annotation():
         """,
     )
 
+
 def test_subset_annotation():
     class A:
-        def __init__(self, features: Subset('Subset', DiscreteValue(1, 5), 'Hello', 1, None)):
+        def __init__(
+            self, features: Subset("Subset", DiscreteValue(1, 5), "Hello", 1, None)
+        ):
             pass
 
     check_grammar(
@@ -138,16 +145,21 @@ def test_subset_annotation():
         <Subset> := { Discrete(min=1, max=5) , 'Hello' , 1 , None }
         """,
     )
+
 
 def test_sample_subset():
     class A:
-        def __init__(self, features: Subset('Subset', DiscreteValue(1, 5), 'Hello', 1, None)):
+        def __init__(
+            self, features: Subset("Subset", DiscreteValue(1, 5), "Hello", 1, None)
+        ):
             self.features = features
 
     g = generate_cfg(A)
     selected_features = g.sample().features
     selected = set([repr(feature) for feature in selected_features])
-    assert selected.issubset([repr(feature) for feature in [DiscreteValue(1, 5), 'Hello', 1, None]])
+    assert selected.issubset(
+        [repr(feature) for feature in [DiscreteValue(1, 5), "Hello", 1, None]]
+    )
 
 
 def test_generate_from_method():

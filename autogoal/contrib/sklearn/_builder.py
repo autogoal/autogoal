@@ -12,7 +12,12 @@ import numpy as np
 from autogoal import kb
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.kb import AlgorithmBase
-from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
+)
 from autogoal.utils import nice_repr
 from joblib import parallel_backend
 from numpy import inf, nan
@@ -151,7 +156,9 @@ def build_sklearn_wrappers():
             counter.update()
             _write_class(cls, fp)
 
-    black.reformat_one(path, True, black.WriteBack.YES, black.FileMode(), black.Report())
+    black.reformat_one(
+        path, True, black.WriteBack.YES, black.FileMode(), black.Report()
+    )
 
     counter.close()
     manager.stop()
@@ -329,7 +336,6 @@ def _find_parameter_values(parameter, cls):
         return CategoricalValue(*sorted(valid))
 
     return None
-
 
 
 X, y = make_classification()

@@ -34,11 +34,11 @@ except:
 import warnings
 from sklearn.exceptions import ConvergenceWarning
 
-warnings.filterwarnings('ignore', message=".*resource_tracker.*")
-warnings.filterwarnings('ignore', category=ConvergenceWarning)
-warnings.filterwarnings('ignore', module="sklearn")
-warnings.filterwarnings('ignore', module="scipy")
-warnings.filterwarnings('ignore', module="numpy")
+warnings.filterwarnings("ignore", message=".*resource_tracker.*")
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
+warnings.filterwarnings("ignore", module="sklearn")
+warnings.filterwarnings("ignore", module="scipy")
+warnings.filterwarnings("ignore", module="numpy")
 
 
 from ._generated import *

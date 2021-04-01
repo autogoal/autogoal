@@ -11,6 +11,7 @@ from sklearn.feature_extraction import DictVectorizer
 def _parse(x):
     return int(x) if x.isdigit() else x
 
+
 def load(max_examples=None):
     download("german_credit")
 
@@ -26,7 +27,7 @@ def load(max_examples=None):
 
         clean_line = i.strip().split()
 
-        line = {'feature_%i'% i : _parse(v) for i,v in enumerate(clean_line[:-1])}
+        line = {"feature_%i" % i: _parse(v) for i, v in enumerate(clean_line[:-1])}
 
         X.append(line)
         y.append(int(clean_line[-1]) == 2)

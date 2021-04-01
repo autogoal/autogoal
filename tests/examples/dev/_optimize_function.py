@@ -17,8 +17,6 @@ def fn(a: A, y: DiscreteValue(-1, 1)):
 
 
 best, best_fn = optimize(
-    fn,
-    logger=[ConsoleLogger(), ProgressLogger()],
-    allow_duplicates=False,
+    fn, logger=[ConsoleLogger(), ProgressLogger()], allow_duplicates=False,
 )
 print(best, best_fn)

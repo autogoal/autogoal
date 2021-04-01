@@ -16,7 +16,7 @@
 # ==============================================================================
 """Implementing Conditional Random Field layer."""
 
-# !!! warning 
+# !!! warning
 # This code is taken verbatim from <https://github.com/tensorflow/addons/pull/377>
 # since the CRF layer has not yet landed in tensorflow
 # TODO: Make sure to replace this when tensorflow merges this commit

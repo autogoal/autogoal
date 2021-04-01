@@ -16,7 +16,12 @@ import enlighten
 
 from pathlib import Path
 from autogoal.kb import *
-from autogoal.grammar import DiscreteValue, ContinuousValue, CategoricalValue, BooleanValue
+from autogoal.grammar import (
+    DiscreteValue,
+    ContinuousValue,
+    CategoricalValue,
+    BooleanValue,
+)
 from autogoal.contrib.sklearn._builder import SklearnWrapper
 from ._utils import (
     _is_algorithm,

@@ -88,7 +88,7 @@ def test_automl_save_load():
         search_iterations=3,
         registry=[DummyAlgorithm],
     )
-    
+
     automl.fit(X, y)
     pipe = automl.best_pipeline_
 

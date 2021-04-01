@@ -5,7 +5,7 @@ from autogoal.datasets import download, datapath
 from sklearn.feature_extraction import DictVectorizer
 
 
-def load(representation='onehot'):
+def load(representation="onehot"):
     download("uci_cars")
 
     f = open(datapath("uci_cars") / "car.data", "r")
@@ -27,9 +27,9 @@ def load(representation='onehot'):
         X.append(temp)
         y.append(clean_line[6])
 
-    if representation == 'numeric':
+    if representation == "numeric":
         return _load_numeric(X, y)
-    elif representation == 'onehot':
+    elif representation == "onehot":
         return _load_onehot(X, y)
 
     raise ValueError("Invalid value for represenation: %s" % representation)

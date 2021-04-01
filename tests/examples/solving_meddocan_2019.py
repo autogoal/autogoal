@@ -79,8 +79,8 @@ print(args)
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input= (Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
-    output= Seq[Seq[Postag]],
+    input=(Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
+    output=Seq[Seq[Postag]],
     search_iterations=args.iterations,
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
@@ -97,11 +97,7 @@ loggers = [RichLogger()]
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger
 
-    telegram = TelegramLogger(
-        token=args.token,
-        name=f"MEDDOCAN",
-        channel=args.channel,
-    )
+    telegram = TelegramLogger(token=args.token, name=f"MEDDOCAN", channel=args.channel,)
     loggers.append(telegram)
 
 # Finally, loading the MEDDOCAN dataset, running the `AutoML` instance,

@@ -25,7 +25,10 @@ def _make_params_func(fn: Callable):
         return repr(ann)
 
     args_line = ",\n                ".join(f"{k}={k}" for k in args_names)
-    params_line = ", ".join(f"{arg.name}:{annotation_repr(arg.annotation)}" for arg in signature.parameters.values())
+    params_line = ", ".join(
+        f"{arg.name}:{annotation_repr(arg.annotation)}"
+        for arg in signature.parameters.values()
+    )
 
     func_code = textwrap.dedent(
         f"""
@@ -37,13 +40,21 @@ def _make_params_func(fn: Callable):
     )
 
     globals_dict = dict(fn.__globals__)
-    globals_dict['_ParamsDict'] = _ParamsDict
+    globals_dict["_ParamsDict"] = _ParamsDict
     locals_dict = {}
     exec(func_code, globals_dict, locals_dict)
     return locals_dict[func_name]
 
 
-def optimize(fn, search_strategy=PESearch, generations=100, pop_size=10, allow_duplicates=False, logger=None, **kwargs):
+def optimize(
+    fn,
+    search_strategy=PESearch,
+    generations=100,
+    pop_size=10,
+    allow_duplicates=False,
+    logger=None,
+    **kwargs,
+):
     """
     A general-purpose optimization function.
 
@@ -65,7 +76,13 @@ def optimize(fn, search_strategy=PESearch, generations=100, pop_size=10, allow_d
 
     grammar = generate_cfg(params_func)
 
-    search = search_strategy(grammar, eval_func, pop_size=pop_size, allow_duplicates=allow_duplicates, **kwargs)
+    search = search_strategy(
+        grammar,
+        eval_func,
+        pop_size=pop_size,
+        allow_duplicates=allow_duplicates,
+        **kwargs,
+    )
     best, best_fn = search.run(generations, logger=logger)
 
     return best, best_fn

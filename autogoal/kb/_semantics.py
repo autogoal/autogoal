@@ -105,11 +105,15 @@ class SemanticType(metaclass=SemanticTypeMeta):
 
         return best_type
 
+
 # To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.
 # This reduce function will just dispatch to the proper instance method
 
+
 def _reduce_semantic_type(t):
     return t._reduce()
+
+
 copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
 
 
@@ -142,6 +146,7 @@ class Word(Sentence):
 # Keep in mind these do not implement `_match` as there is no sensible structural way to define them.
 # They are used solely to annotate algorithms.
 
+
 class Label(SemanticType):
     pass
 
@@ -161,10 +166,13 @@ class Stem(Text):
 class Synset(SemanticType):
     pass
 
+
 class Sentiment(Label):
     pass
 
+
 # Another basic type is a feature set, which for us is basically a dictionary of strings vs anything:
+
 
 class FeatureSet(SemanticType):
     @classmethod
@@ -507,4 +515,5 @@ __all__ = [
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

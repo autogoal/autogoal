@@ -9,4 +9,3 @@ def load_training_entities():
     training_path = datapath("ehealthkd20") / "training"
 
     collection = Collection().load_dir(training_path)
-    

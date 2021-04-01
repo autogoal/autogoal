@@ -139,8 +139,8 @@ for epoch in range(args.epochs):
         print("=============================================")
         data = getattr(datasets, dataset).load()
 
-# Here we dynamically load the corresponding dataset and,
-# if necesary, split it into training and testing sets.
+        # Here we dynamically load the corresponding dataset and,
+        # if necesary, split it into training and testing sets.
 
         if len(data) == 4:
             X_train, X_test, y_train, y_test = data
@@ -148,11 +148,11 @@ for epoch in range(args.epochs):
             X, y = data
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-# Finally we can instantiate out `AutoML` with all the custom
-# parameters we received from the command line.
+        # Finally we can instantiate out `AutoML` with all the custom
+        # parameters we received from the command line.
 
         classifier = AutoML(
-            input=(MatrixContinuousDense,Supervised[VectorCategorical]), 
+            input=(MatrixContinuousDense, Supervised[VectorCategorical]),
             output=VectorCategorical,
             search_algorithm=PESearch,
             search_iterations=args.iterations,
@@ -168,7 +168,7 @@ for epoch in range(args.epochs):
         logger = MemoryLogger()
         loggers = [RichLogger()]
 
-# `TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
+        # `TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
 
         if args.token:
             from autogoal.contrib.telegram import TelegramLogger
@@ -180,7 +180,7 @@ for epoch in range(args.epochs):
             )
             loggers.append(telegram)
 
-# Finally, we run the AutoML classifier once and compute the score on an independent test-set.
+        # Finally, we run the AutoML classifier once and compute the score on an independent test-set.
 
         classifier.fit(X_train, y_train, logger=loggers)
         score = classifier.score(X_test, y_test)
@@ -189,7 +189,7 @@ for epoch in range(args.epochs):
         print(logger.generation_best_fn)
         print(logger.generation_mean_fn)
 
-# And store the results on a log file.
+        # And store the results on a log file.
 
         with open("uci_datasets.log", "a") as fp:
             fp.write(

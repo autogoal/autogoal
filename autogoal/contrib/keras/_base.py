@@ -158,7 +158,10 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
 
 class KerasClassifier(KerasNeuralNetwork):
     def __init__(
-        self, optimizer: CategoricalValue("sgd", "adam", "rmsprop"), grammar=None, **kwargs
+        self,
+        optimizer: CategoricalValue("sgd", "adam", "rmsprop"),
+        grammar=None,
+        **kwargs,
     ):
         self._classes = None
         self._num_classes = None
@@ -207,7 +210,7 @@ class KerasClassifier(KerasNeuralNetwork):
         return [self._inverse_classes[yi] for yi in predictions]
 
     def run(
-        self, X:MatrixContinuousDense, y:Supervised[VectorCategorical]
+        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return super().run(input)
 
@@ -290,7 +293,7 @@ class KerasImageClassifier(KerasClassifier):
             **kwargs,
         )
 
-    def run(self, X:Tensor4, y:Supervised[VectorCategorical]) -> VectorCategorical:
+    def run(self, X: Tensor4, y: Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
     def _build_input(self, X):
@@ -304,7 +307,7 @@ class KerasSequenceClassifier(KerasClassifier):
     def _build_input(self, X):
         return Input(shape=(None, X.shape[2]))
 
-    def run(self, X:Tensor3, y:Supervised[VectorCategorical]) -> VectorCategorical:
+    def run(self, X: Tensor3, y: Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(input)
 
 
@@ -378,12 +381,12 @@ class KerasSequenceTagger(KerasNeuralNetwork):
     def _encode(self, xi, yi):
         if self.decode == "dense":
             yi = to_categorical(yi, len(self._classes))
-            
+
         return (
             np.expand_dims(xi, axis=0),
             np.expand_dims(yi, axis=0),
         )
-        
+
     def _generate_batches(self, X, y):
         while True:
             for xi, yi in zip(X, y):
@@ -423,6 +426,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return self._decode(predictions)
 
     def run(
-        self, X:Seq[MatrixContinuousDense], y:Supervised[Seq[Seq[Postag]]]
+        self, X: Seq[MatrixContinuousDense], y: Supervised[Seq[Seq[Postag]]]
     ) -> Seq[Seq[Postag]]:
         return super().run(X, y)
