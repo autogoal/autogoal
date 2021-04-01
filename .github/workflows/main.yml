@@ -36,6 +36,9 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --extras dev
 
+      - name: Check format
+        run: black --check autogoal/ tests/
+
       - name: Run core tests
         run: make test-core
         env:

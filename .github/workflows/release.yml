@@ -29,8 +29,13 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --extras dev
 
+      - name: Check format
+        run: black --check autogoal/ tests/
+
       - name: Run core tests
-        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=tests/experimental --ignore=autogoal/contrib --ignore=autogoal/experimental --ignore=autogoal/datasets --cov=autogoal
+        run: make test-core
+        env:
+          BUILD_ENVIRONMENT: development
 
       - name: Package
         run: |
