@@ -49,7 +49,7 @@ from autogoal.grammar import (
 # Next, we will also use two different search strategies, from the `autogoal.search` module.
 
 from autogoal.search import RandomSearch, PESearch
-from autogoal.search import ProgressLogger # for logging
+from autogoal.search import RichLogger # for logging
 
 # Finally, we will use a toy dataset that comes pre-packaged with `autogoal`.
 # This is the famous [Movie Reviews dataset from Pang & Lee](https://www.cs.cornell.edu/people/pabo/movie-review-data/).
@@ -296,7 +296,7 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # of `1000` different random pipelines. To see what's actually going on we will use
 # the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
 
-logger = ProgressLogger()
+logger = RichLogger()
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
 best_rand, fn_rand = random_search.run(1000, logger=logger)

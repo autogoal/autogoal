@@ -49,7 +49,7 @@
 # We will need `argparse` for passing arguments to the script and `json` for serialization of results.
 
 import argparse
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 from autogoal.logging import logger
 import json
 
