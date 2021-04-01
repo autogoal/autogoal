@@ -13,7 +13,9 @@
 
 # We will never really instantiate these classes, just use them for annotations.
 
+from functools import reduce
 import inspect
+import copyreg
 from typing import Type
 
 
@@ -39,9 +41,6 @@ class SemanticTypeMeta(type):
             return True
 
         return super().__subclasscheck__(subclass)
-
-    def __reduce__(cls):
-        return cls._reduce()
 
     def __call__(self, *args, **kwds):
         raise TypeError("Cannot instantiate a semantic type")
@@ -69,6 +68,12 @@ class SemanticType(metaclass=SemanticTypeMeta):
     @classmethod
     def _specialize(cls, *args):
         raise TypeError(f"{cls} cannot be specialized")
+
+    @classmethod
+    def _reduce(cls):
+        # By default, we return the repr name of the class that
+        # allows to serialize globally defined classes.
+        return cls._name()
 
     @staticmethod
     def infer(x):
@@ -99,6 +104,13 @@ class SemanticType(metaclass=SemanticTypeMeta):
             raise ValueError(f"Cannot infer semantic type for {x}")
 
         return best_type
+
+# To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.
+# This reduce function will just dispatch to the proper instance method
+
+def _reduce_semantic_type(t):
+    return t._reduce()
+copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
 
 
 # Let's start with the natural language hierarchy.
@@ -204,6 +216,12 @@ class Seq(SemanticType):
     Seq
     >>> Seq[Word]
     Seq[Word]
+
+    Subclasses are also serializable (which requires some non-trivial dark magic on the implementation side):
+
+    >>> from pickle import dumps, loads
+    >>> loads(dumps(Seq[Word]))
+    Seq[Word]
    
     """
 
@@ -217,7 +235,7 @@ class Seq(SemanticType):
             pass
 
         class SeqImp(Seq):
-            __internal_type = internal_type
+            __internal_type__ = internal_type
 
             @classmethod
             def _name(cls):
@@ -235,28 +253,19 @@ class Seq(SemanticType):
                 if other == Seq:
                     return True
 
-                return issubclass(cls.__internal_type, other.__internal_type)
+                return issubclass(cls.__internal_type__, other.__internal_type__)
 
             @classmethod
             def _specialize(cls, *args, **kwargs):
                 raise TypeError("Cannot specialize more a `Seq` type.")
 
-            # We need to implement __reduce__ to make the specialized class serializable.
-            # @classmethod
-            # def __reduce__(cls):
-            #     return (
-            #         _build_seq_specialization, (internal_type,)
-            #     )
+            @classmethod
+            def _reduce(cls):
+                return Seq._specialize, (internal_type,)
 
         Seq.__internal_types[internal_type] = SeqImp
 
         return SeqImp
-
-
-# To allow pickling of `Seq` instances we need this globally defined function:
-
-# def _build_seq_specialization(type):
-#     return Seq._specialize(type)
 
 
 # Now let's move to the algebraic types, vectors, matrices, and tensors.
@@ -283,6 +292,12 @@ class TensorStructure:
     def match(self, x):
         return isinstance(x, self.base_class)
 
+    def __eq__(self, o: object) -> bool:
+        return isinstance(o, TensorStructure) and o.name == self.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
+
 
 Dense = TensorStructure(ndarray, "Dense")
 Sparse = TensorStructure(spmatrix, "Sparse")
@@ -298,6 +313,12 @@ class TensorData:
 
     def match(self, x):
         return x.dtype.kind == self.dtype_label
+
+    def __eq__(self, o: object) -> bool:
+        return isinstance(o, TensorData) and o.name == self.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
 
 
 Categorical = TensorData("U", "Categorical")
@@ -318,6 +339,8 @@ Discrete = TensorData("i", "Discrete")
 
 class Tensor(SemanticType):
     """Represents an abstract tensor type. Can be specialized into more concrete types.
+
+    They support type inference from numpy:
 
     >>> import numpy as np
     >>> a_matrix = np.ones(shape=(2,2))
@@ -341,6 +364,17 @@ class Tensor(SemanticType):
     True
     >>> issubclass(Tensor[2, Continuous, Sparse], Tensor[2, None, Dense])
     False
+
+    Each specific specialization is a singleton class:
+    
+    >>> id(Tensor[2, Continuous, Dense]) == id(Tensor[2, Continuous, Dense])
+    True
+
+    Tensor types are also serializable:
+
+    >>> from pickle import loads, dumps
+    >>> loads(dumps(Tensor[2, Continuous, Dense]))
+    Tensor[2, Continuous, Dense]
 
     """
 
@@ -401,6 +435,11 @@ class Tensor(SemanticType):
                         return False
 
                 return True
+
+            @classmethod
+            def _reduce(cls):
+                # To reduce Tensor implementations for pickling
+                return Tensor._specialize, (dimension, internal_type, structure)
 
         Tensor.__internal_types[(dimension, internal_type, structure)] = TensorImp
 
@@ -464,3 +503,8 @@ __all__ = [
     "Continuous",
     "Discrete",
 ]
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

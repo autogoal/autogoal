@@ -1,6 +1,6 @@
 from autogoal.contrib.sklearn import CountVectorizer
 from autogoal.contrib.sklearn._generated import SGDClassifier
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 from autogoal.kb import Categorical, Dense, Pipeline, Sentence, Seq, Tensor
 
 

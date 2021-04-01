@@ -1,7 +1,7 @@
 from autogoal.kb import *
 from autogoal.grammar import CategoricalValue, BooleanValue
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 
 import numpy as np
 

@@ -1,4 +1,4 @@
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 import gensim
 import nltk
 import black

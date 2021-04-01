@@ -1,11 +1,11 @@
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 from transformers import BertModel, BertTokenizer
 from pathlib import Path
 import torch
 import numpy as np
 
 from autogoal.kb import Sentence, MatrixContinuousDense, Tensor3, Seq, Word
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 from autogoal.grammar import DiscreteValue, CategoricalValue
 from autogoal.utils import CacheManager, nice_repr
 

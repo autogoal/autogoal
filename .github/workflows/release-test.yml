@@ -1,14 +1,6 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
+name: Publish to Test PyPI
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,12 +26,19 @@ jobs:
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
           source $HOME/.poetry/env
           poetry config virtualenvs.create false
-          poetry install --extras dev
+      #     poetry install --extras dev
 
-      - name: Run core tests
-        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=tests/experimental --ignore=autogoal/contrib --ignore=autogoal/experimental --ignore=autogoal/datasets --cov=autogoal
+      # - name: Run core tests
+      #   run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=tests/experimental --ignore=autogoal/contrib --ignore=autogoal/experimental --ignore=autogoal/datasets --cov=autogoal
 
-      - name: Run codecov
-        run: python -m codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Package
+        run: |
+          source $HOME/.poetry/env
+          poetry build
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/

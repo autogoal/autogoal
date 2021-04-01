@@ -1,9 +1,9 @@
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 import spacy
 
 from autogoal.grammar import CategoricalValue, BooleanValue
 from autogoal.kb import Sentence, Word, FeatureSet, Seq
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 from autogoal.utils import nice_repr
 
 

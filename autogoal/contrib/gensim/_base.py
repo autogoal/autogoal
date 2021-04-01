@@ -1,4 +1,4 @@
-from autogoal.experimental.pipeline import AlgorithmBase
+from autogoal.kb import AlgorithmBase
 from pathlib import Path
 
 import requests

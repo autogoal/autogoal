@@ -1,9 +1,8 @@
-from autogoal.experimental.pipeline import AlgorithmBase
 from io import BytesIO
-from pickle import Pickler, Unpickler, UnpicklingError
+from pickle import loads, dumps
 
 from autogoal.datasets import dummy
-from autogoal.grammar import CategoricalValue, DiscreteValue, generate_cfg
+from autogoal.grammar import generate_cfg, DiscreteValue, CategoricalValue
 from autogoal.kb import *
 from autogoal.ml import AutoML
 from autogoal.search import RandomSearch
@@ -22,6 +21,20 @@ class A:
 
 def fn(a: A):
     return a.x ** 2 + a.y ** 2
+
+
+def test_save_seq():
+    t1 = Seq[Word]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
+
+
+def test_save_tensor():
+    t1 = Tensor[2, Continuous, Dense]
+    t2 = loads(dumps(t1))
+
+    assert id(t1) == id(t2)
 
 
 def test_search_is_replayable_from_grammar():
@@ -50,20 +63,6 @@ def test_search_is_replayable_from_fitness_no_multiprocessing():
     assert best_fn == fn2(sampler)
 
 
-def serialize_and_deserialize(type):
-    fp = BytesIO()
-    Pickler(fp).dump(type)
-    fp.seek(0)
-    return Unpickler(fp).load()
-
-
-def test_serialize_seq_type():
-    alias = Seq[Word]
-    alias2 = serialize_and_deserialize(alias)
-    
-    assert id(alias) == id(alias2)
-
-
 @nice_repr
 class DummyAlgorithm(AlgorithmBase):
     def __init__(self, x: CategoricalValue("A", "B", "C")):
@@ -76,14 +75,20 @@ class DummyAlgorithm(AlgorithmBase):
         pass
 
     def run(
-        self, x: MatrixContinuousDense, y:VectorCategorical
+        self, x: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
         return y
 
 
 def test_automl_save_load():
     X, y = dummy.generate(seed=0)
-    automl = AutoML(search_iterations=3, registry=[DummyAlgorithm])
+    automl = AutoML(
+        input=(MatrixContinuousDense, Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        search_iterations=3,
+        registry=[DummyAlgorithm],
+    )
+    
     automl.fit(X, y)
     pipe = automl.best_pipeline_
 

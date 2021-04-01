@@ -6,7 +6,7 @@ from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnEstimat
 from autogoal.kb import *
 from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
 from autogoal.utils import nice_repr
-from autogoal.experimental.pipeline import AlgorithmBase, Supervised
+from autogoal.kb import AlgorithmBase, Supervised
 
 
 @nice_repr

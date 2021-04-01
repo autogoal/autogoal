@@ -2,7 +2,7 @@ import pytest
 
 from autogoal.contrib import find_classes
 from autogoal.kb import *
-from autogoal.experimental.pipeline import Supervised
+from autogoal.kb import Supervised
 from autogoal.sampling import Sampler
 
 

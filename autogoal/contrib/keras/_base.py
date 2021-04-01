@@ -1,4 +1,4 @@
-from autogoal.experimental.pipeline import AlgorithmBase, Supervised
+from autogoal.kb import AlgorithmBase, Supervised
 from typing import Optional
 
 import collections
