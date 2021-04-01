@@ -15,6 +15,9 @@
 # (!) Logo modified by AutoGOAL contributors
 # ==============================================================================
 
+# Change ownership of datasets folder
+sudo chown -R coder:coder /home/coder/.autogoal
+
 export PS1="\[\e[31m\]autogoal-docker\[\e[m\] \[\e[33m\]\w\[\e[m\] > "
 export TERM=xterm-256color
 alias grep="grep --color=auto"
