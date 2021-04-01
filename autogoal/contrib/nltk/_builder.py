@@ -91,7 +91,7 @@ class NltkTagger(SklearnWrapper):
         self._instance = self.tagger(train=tagged_sentences)
         return X, y
 
-    def _eval(self, X):
+    def _eval(self, X, y=None):
         return [
             [tag for _, tag in sentence] for sentence in self._instance.tag_sents(X)
         ]
@@ -102,7 +102,7 @@ class NltkTrainedTagger(SklearnWrapper):
         # X expected to be a tokenized sentence
         return self.tag(X), y
 
-    def _eval(self, X):
+    def _eval(self, X, y=None):
         # X expected to be a tokenized sentence
         return self.tag(X)
 

@@ -79,7 +79,7 @@ print(args)
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input= Seq[Seq[Word]],
+    input= (Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
     output= Seq[Seq[Postag]],
     search_iterations=args.iterations,
     score_metric=meddocan.F1_beta,
