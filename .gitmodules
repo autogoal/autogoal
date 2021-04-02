@@ -1,0 +1,3 @@
+[submodule "vendor/illiterate"]
+	path = vendor/illiterate
+	url = git@github.com:apiad/illiterate.git
