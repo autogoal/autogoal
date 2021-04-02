@@ -7,6 +7,10 @@ With AutoGOAL you can define a pipeline in many different ways, such that certai
 tunable, and then use search algorithms to find the best way to tune or configure it for a given problem.
 """
 
+# This is the top level module for AutoGOAL, it's what you we get when we `import autogoal`.
+# By default, Python won't import submodules, hence, if we want `autogoal.*` to work we'll have
+# to import all submodules here manually.
+
 from autogoal import contrib
 from autogoal import datasets
 from autogoal import grammar
@@ -20,5 +24,6 @@ from autogoal import logging
 from autogoal.utils._helpers import optimize
 
 
-# Setup logging for warning level by defautl
+# Setup logging for warning level by default
+
 logging.setup(level="WARNING")

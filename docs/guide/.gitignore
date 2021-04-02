@@ -1,3 +1,5 @@
 algorithms.md
 datatypes.svg
 datatypes.png
+*.md
+!index.md

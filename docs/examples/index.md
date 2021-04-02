@@ -8,8 +8,3 @@ These three examples conform the experimentation for the paper
 * [Optimizing seven UCI repository datasets](./solving_uci_datasets)
 * [Optimizing the HAHA 2019 challenge](./solving_haha_2019)
 * [Optimizing the MEDDOCAN 2019 challenge](./solving_meddocan_2019)
-
-These are other examples focusing on distinct features of AutoGOAL.
-
-* [Building an scikit-learn classificiation pipeline](./sklearn_simple_grammar)
-* [Comparing different search strategies on an artificial problem](./comparing_search_strategies)

@@ -31,16 +31,18 @@ nav:
     - Contributing: contributing.md
     - User Guide:
         - First steps: guide/index.md
-        - Predefined pipelines: guide/predefined.md
-        - Class-based API: guide/cfg.md
-        - Graph-based API: guide/graph.md
-        - Functional API: guide/functional.md
+        - Predefined pipelines: guide/tests.guide.predefined.md
+        - Class-based API: guide/tests.guide.cfg.md
+        - Graph-based API: guide/tests.guide.graph.md
+        - Functional API: guide/tests.guide.functional.md
     - Examples:
-        - Home: examples/index.md
-        - Solving UCI datasets: examples/solving_uci_datasets.md
-        - Solving HAHA 2019: examples/solving_haha_2019.md
-        - Solving MEDDOCAN 2019: examples/solving_meddocan_2019.md
-        - Sklearn integration: examples/sklearn_simple_grammar.md
-        - Search strategies: examples/comparing_search_strategies.md
+        - Index: examples/index.md
+        - Solving UCI datasets: examples/tests.examples.solving_uci_datasets.md
+        - Solving HAHA 2019: examples/tests.examples.solving_haha_2019.md
+        - Solving MEDDOCAN 2019: examples/tests.examples.solving_meddocan_2019.md
     - Demo: https://autogoal.github.io/demo
     - Dashboard: https://autogoal.github.io/dashboard
+    - API:
+        - autogoal: api/autogoal.__init__.md
+        - autogoal.grammar: api/autogoal.grammar.__init__.md
+        - autogoal.contrib: api/autogoal.contrib.__init__.md

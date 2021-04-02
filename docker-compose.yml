@@ -10,6 +10,7 @@ services:
       - 8000:8000
     volumes: 
       - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
       - "~/.autogoal:/home/coder/.autogoal"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
