@@ -45,5 +45,13 @@ nav:
     - Dashboard: https://autogoal.github.io/dashboard
     - API:
         - autogoal: api/autogoal.__init__.md
-        - autogoal.grammar: api/autogoal.grammar.__init__.md
-        - autogoal.contrib: api/autogoal.contrib.__init__.md
+        
+        - .grammar: 
+            - root: api/autogoal.grammar.__init__.md
+        
+        - .contrib:
+            - root: api/autogoal.contrib.__init__.md
+            - sklearn:
+                - root: api/autogoal.contrib.sklearn.__init__.md
+
+        - cli: api/autogoal.__main__.md
