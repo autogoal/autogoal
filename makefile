@@ -86,7 +86,7 @@ docs: ensure-dev
 
 # format       Format all source code inplace using `black`.
 format:
-	sudo black autogoal/ tests/
+	git status && sudo black autogoal/ tests/
 
 # anim         Make CLI animations
 .PHONY: anim
