@@ -8,28 +8,28 @@ There is also a `makefile` with all the necessary commands.
 The workflow is something like this:
 
 1. Fork and clone the project.
-    - If you have not already, please consider installing [Github CLI](https://cli.github.com).
-2. Run `make pull` to get the development image.
+    - If you have not already, consider installing [Github CLI](https://cli.github.com).
+2. Run `make pull` to get the development image or `make docker` if you prefer to build it from scratch (somewhat slow).
 3. Develop:
     - If you are using Visual Studio Code with Remote Extensions (recommended) when you open the project it will recommend you to launch the remote container. This is the most comfortable environment to develop for AutoGOAL since everything is preconfigured.
     - Otherwise, pick your poison (ehem, editor) and edit.
 4. Run `make shell` to open a local shell inside the development container at any moment.
-5. Run `make test-fast` **inside** the development container and make sure everything passes.
-    - You can run `make test-core` **inside** the development container to only test the core code, which is faster.
+5. Run `make test-core` **inside** the development container and make sure everything passes.
+    - You can also run `make test-full` to run the full set of tests. This is very slow and only necessary when making a new release.
     - You can also run `make test-ci` **outside** the development container. This will build a slim container with just the core dependencies and run the core tests. This is the most similar testing environment to the Github CI, so make sure this works as well.
-    - You can also run `make test-full` to run the full set of tests. This is very slow and only necessary when making a new release.    
     - Remember to add new tests if necessary.
-6. If all worked, push and open a pull-request. 
+6. Run `make format` in **in a separate commit** to reformat all code after all tests pass.
+7. If all worked, push to your own fork and open a pull-request.
 
 Here is a quick visual summary.
 
 ![](contribute.svg)
 
-This project uses [poetry](https://python-poetry.org/) for package management. If you need to install new dependencies, run `make shell` and then `sudo poetry ...` inside the dockerized environment. Finally, don't forget to `sudo poetry lock` and commit the changes to `pyproject.toml` and `poetry.lock` files.
+This project uses [poetry](https://python-poetry.org/) for package management. If you need to install new dependencies, run `make shell` and then `poetry ...` inside the dockerized environment. Finally, don't forget to `poetry lock` and commit the changes to `pyproject.toml` and `poetry.lock` files.
 
 ## License
 
-License is MIT, so you know the drill: fork, develop, add tests, pull request, rinse and repeat.
+License is MIT, so you know the drill: fork, develop, test, pull request, rinse and repeat.
 
 > MIT License
 >
