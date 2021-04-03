@@ -31,20 +31,25 @@ from autogoal import kb
 from autogoal import search
 
 # With these low level structures, we can build the core functionality of AutoGOAL, the AutoML algorithm.
-# The [`ml`](ref:autogoal.ml.__init__) submodule contains the definition of the [`AutoML`](ref:autogoal.ml._automl:AutoML) class
+# The [`ml`](ref:autogoal.ml.__init__) submodule contains the definition of 
+# the [`AutoML`](ref:autogoal.ml._automl:AutoML) class
 # and related functionality.
 from autogoal import ml
 
+# The [`contrib`](ref:autogoal.contrib.__init__) submodule contains all the juicy stuff: 
+# machine learning algorithms from several external dependencies.
+from autogoal import contrib
+
+# The [`datasets`](ref:autogoal.datasets.__init__) submodule contains several example
+# datasets that can be used to showcase AutoGOAL.
+from autogoal import datasets
+
+# These modules contain additional utilities.
 from autogoal import utils
 from autogoal import logging
 
-from autogoal import datasets
-
-from autogoal import contrib
-
+# Finally, we import the top-level [`optimize`](ref:autogoal.utils._helpers:optimize) function.
 from autogoal.utils._helpers import optimize
 
-
-# Setup logging for warning level by default
-
+# Before leaving, let's setup logging at the warning level by default.
 logging.setup(level="WARNING")
