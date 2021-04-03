@@ -18,7 +18,7 @@ The workflow is something like this:
     - You can also run `make test-full` to run the full set of tests. This is very slow and only necessary when making a new release.
     - You can also run `make test-ci` **outside** the development container. This will build a slim container with just the core dependencies and run the core tests. This is the most similar testing environment to the Github CI, so make sure this works as well.
     - Remember to add new tests if necessary.
-6. Run `make format` in **in a separate commit** to reformat all code after all tests pass.
+6. Run `make format` to reformat all code after all tests pass.
 7. If all worked, push to your own fork and open a pull-request.
 
 Here is a quick visual summary.
