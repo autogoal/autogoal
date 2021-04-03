@@ -84,6 +84,10 @@ docs: ensure-dev
 	mkdocs build
 	# (cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
+# format       Format all source code inplace using `black`.
+format:
+	sudo black autogoal/ tests/
+
 # anim         Make CLI animations
 .PHONY: anim
 anim:
