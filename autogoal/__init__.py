@@ -31,12 +31,12 @@ from autogoal import kb
 from autogoal import search
 
 # With these low level structures, we can build the core functionality of AutoGOAL, the AutoML algorithm.
-# The [`ml`](ref:autogoal.ml.__init__) submodule contains the definition of 
+# The [`ml`](ref:autogoal.ml.__init__) submodule contains the definition of
 # the [`AutoML`](ref:autogoal.ml._automl:AutoML) class
 # and related functionality.
 from autogoal import ml
 
-# The [`contrib`](ref:autogoal.contrib.__init__) submodule contains all the juicy stuff: 
+# The [`contrib`](ref:autogoal.contrib.__init__) submodule contains all the juicy stuff:
 # machine learning algorithms from several external dependencies.
 from autogoal import contrib
 
