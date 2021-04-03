@@ -87,7 +87,8 @@ docs: ensure-dev
 # format       Format all source code inplace using `black`.
 format:
 	(git status | grep "nothing to commit") && sudo black autogoal/ tests/ || echo "(!) REFUSING TO REFORMAT WITH UNCOMMITED CHANGES" && exit
-
+	git status
+	
 # anim         Make CLI animations
 .PHONY: anim
 anim:
