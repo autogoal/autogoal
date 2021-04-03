@@ -14,5 +14,6 @@ services:
       - "~/.autogoal:/home/coder/.autogoal"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
     # entrypoint: ["/bin/sh", "/home/coder/autogoal/entrypoint.sh"]
