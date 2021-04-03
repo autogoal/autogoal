@@ -76,9 +76,9 @@ ensure-dev:
 # docs         Compile and publish the documentation to Github.
 .PHONY: docs
 docs: ensure-dev
-	python3 -m illiterate autogoal docs/api
-	python3 -m illiterate tests/examples docs/examples
-	python3 -m illiterate tests/guide docs/guide
+	python3 -m illiterate --inline autogoal docs/api
+	python3 -m illiterate --inline tests/examples docs/examples
+	python3 -m illiterate --inline tests/guide docs/guide
 	cp Readme.md docs/index.md
 	# python3 -m typer_cli autogoal/__main__.py utils docs > docs/cli-api.md
 	mkdocs build

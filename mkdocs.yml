@@ -32,6 +32,7 @@ nav:
     - User Guide:
         - First steps: guide/index.md
         - Predefined pipelines: guide/tests.guide.predefined.md
+        - Using custom algorithms: guide/tests.guide.include_algorithm.md
         - Class-based API: guide/tests.guide.cfg.md
         - Graph-based API: guide/tests.guide.graph.md
         - Functional API: guide/tests.guide.functional.md
