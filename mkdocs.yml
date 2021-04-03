@@ -44,14 +44,15 @@ nav:
     - Demo: https://autogoal.github.io/demo
     - Dashboard: https://autogoal.github.io/dashboard
     - API:
-        - autogoal: api/autogoal.__init__.md
+        - Top level: 
+            - autogoal: api/autogoal.__init__.md
+            - cli: api/autogoal.__main__.md
         
-        - .grammar: 
-            - root: api/autogoal.grammar.__init__.md
+        - Grammars: 
+            - autogoal.grammar: api/autogoal.grammar.__init__.md
         
-        - .contrib:
-            - root: api/autogoal.contrib.__init__.md
-            - sklearn:
-                - root: api/autogoal.contrib.sklearn.__init__.md
+        - Contrib:
+            - autogoal.contrib: api/autogoal.contrib.__init__.md
+            - scikit-learn:
+                - autogoal.contrib.sklearn: api/autogoal.contrib.sklearn.__init__.md
 
-        - cli: api/autogoal.__main__.md

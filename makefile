@@ -84,11 +84,18 @@ docs: ensure-dev
 	mkdocs build
 	# (cd site && rm -rf .git && git init && git remote add origin git@github.com:autogoal/autogoal.github.io && git add . && git commit -a -m "Update docs" && git push -f origin master)
 
+# gh-deploy    Deploy docs to Github Pages
+.PHONY: gh-deploy
+gh-deploy: ensure-dev
+	git remote add pages git@github.com:autogoal/autogoal.github.io
+	mkdocs gh-deploy -r pages --force
+
 # format       Format all source code inplace using `black`.
-format:
+.PHONY: format
+format: ensure-dev
 	(git status | grep "nothing to commit") && sudo black autogoal/ tests/ || echo "(!) REFUSING TO REFORMAT WITH UNCOMMITED CHANGES" && exit
 	git status
-	
+
 # anim         Make CLI animations
 .PHONY: anim
 anim:
