@@ -16,24 +16,24 @@ class Modules:
             def make_top_level(self, top_level):
                 if "PreprocessingModule" not in top_level:
                     top_level.append("PreprocessingModule")
-            
+
             def add_productions(self, grammar: GraphGrammar):
                 grammar.add("PreprocessingModule", "RecurrentModule")
-                
+
                 grammar.add("RecurrentModule", Path("RecurrentCell", "RecurrentModule"))
                 grammar.add("RecurrentModule", "RecurrentCell")
 
                 grammar.add("RecurrentCell", Seq2SeqLSTM)
                 grammar.add("RecurrentCell", Seq2SeqBiLSTM)
 
-        class Conv2D(Module): 
+        class Conv2D(Module):
             def make_top_level(self, top_level):
                 if "PreprocessingModule" not in top_level:
                     top_level.append("PreprocessingModule")
 
             def add_productions(self, grammar: GraphGrammar):
                 grammar.add("PreprocessingModule", Path("Conv2DModule", Flatten))
-                
+
                 grammar.add("Conv2DModule", Path("Conv2DBlock", "Conv2DModule"))
                 grammar.add("Conv2DModule", "Conv2DBlock")
 

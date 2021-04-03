@@ -14,7 +14,7 @@ def to_biluov(tokensxsentence, entitiesxsentence):
             offset += len(token.text_with_ws)
         labelsxsentence.append(labels)
 
-    return labelsxsentence#, "BILUOV"
+    return labelsxsentence  # , "BILUOV"
 
 
 def find_match(start, end, entities):
@@ -66,8 +66,8 @@ def make_sentence(doc, bilouv, labels) -> Sentence:
     logger.debug(f"[make_sentence]: doc.text={doc.text}")
     logger.debug(f"[make_sentence]: bilouv={bilouv}")
 
-    labels = set(l[2:] for l in labels if l != 'O')
-    
+    labels = set(l[2:] for l in labels if l != "O")
+
     for label in labels:
         specific_bilouv = []
 
@@ -76,12 +76,16 @@ def make_sentence(doc, bilouv, labels) -> Sentence:
                 tag = tag[0]
                 specific_bilouv.append(tag[0])
             else:
-                specific_bilouv.append('O')
+                specific_bilouv.append("O")
 
-        logger.debug(f"[make_sentence]: label={label} specific_bilouv={specific_bilouv}")
+        logger.debug(
+            f"[make_sentence]: label={label} specific_bilouv={specific_bilouv}"
+        )
 
         spans = from_biluov(specific_bilouv, doc, spans=True)
-        sentence.keyphrases.extend(Keyphrase(sentence, label, i, sp) for i,sp in enumerate(spans))
+        sentence.keyphrases.extend(
+            Keyphrase(sentence, label, i, sp) for i, sp in enumerate(spans)
+        )
 
     return sentence
 

@@ -23,7 +23,9 @@ def load(max_examples=None):
     try:
         download("shuttle")
     except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
         raise
 
     train_data = open(datapath("shuttle") / "shuttle.trn", "r")

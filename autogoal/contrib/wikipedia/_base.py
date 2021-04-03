@@ -13,7 +13,7 @@ class WikipediaSummary(AlgorithmBase):
     def __init__(self):
         pass
 
-    def run(self, input: Word)-> Document:
+    def run(self, input: Word) -> Document:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         try:
@@ -30,7 +30,7 @@ class WikipediaContainsWord(AlgorithmBase):
     def __init__(self):
         pass
 
-    def run(self, input: Word)-> FeatureSet:
+    def run(self, input: Word) -> FeatureSet:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         return dict(in_wikipedia=bool(wikipedia.search(input)))
@@ -44,7 +44,7 @@ class WikipediaSummarySpanish(AlgorithmBase):
     def __init__(self):
         wikipedia.set_lang("es")
 
-    def run(self, input: Word)-> Document:
+    def run(self, input: Word) -> Document:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         try:
@@ -61,7 +61,7 @@ class WikipediaContainsWordSpanish(AlgorithmBase):
     def __init__(self):
         wikipedia.set_lang("es")
 
-    def run(self, input: Word)-> FeatureSet:
+    def run(self, input: Word) -> FeatureSet:
         """This method use Word2Vect of gensim for tranform a word in embedding vector.
         """
         return dict(in_wikipedia=bool(wikipedia.search(input)))

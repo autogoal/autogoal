@@ -1,24 +1,34 @@
 import random
 
+from autogoal.datasets import download, datapath
+
 
 def load(max_examples=None):
-    from nltk.corpus import movie_reviews
+    try:
+        download("movie_reviews")
+    except:
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
+        raise
 
     sentences = []
     classes = []
 
-    ids = list(movie_reviews.fileids())
+    path = datapath("movie_reviews")
+
+    ids = list(path.rglob("*.txt"))
     random.shuffle(ids)
 
     for fd in ids:
-        if fd.startswith("neg/"):
+        if "neg/" in str(fd):
             cls = "neg"
         else:
             cls = "pos"
 
-        fp = movie_reviews.open(fd)
-        sentences.append(fp.read())
-        classes.append(cls)
+        with fd.open() as fp:
+            sentences.append(fp.read())
+            classes.append(cls)
 
         if max_examples and len(classes) >= max_examples:
             break

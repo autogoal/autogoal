@@ -12,7 +12,12 @@ import numpy as np
 from autogoal import kb
 from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
 from autogoal.kb import AlgorithmBase
-from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
+)
 from autogoal.utils import nice_repr
 from joblib import parallel_backend
 from numpy import inf, nan
@@ -32,7 +37,7 @@ from sklearn.datasets import make_classification
 #     DASK_CLIENT = Client(processes=False)
 #     PARALLEL_BACKEND = 'dask'
 # except ImportError:
-PARALLEL_BACKEND = 'loky'
+# PARALLEL_BACKEND = 'loky'
 
 
 @nice_repr
@@ -65,14 +70,12 @@ class SklearnWrapper(AlgorithmBase):
 
 class SklearnEstimator(SklearnWrapper):
     def _train(self, X, y):
-        with parallel_backend(PARALLEL_BACKEND):
-            self.fit(X, y)
+        self.fit(X, y)
 
         return y
 
     def _eval(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.predict(X)
+        return self.predict(X)
 
     @abc.abstractmethod
     def fit(self, X, y):
@@ -85,12 +88,10 @@ class SklearnEstimator(SklearnWrapper):
 
 class SklearnTransformer(SklearnWrapper):
     def _train(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.fit_transform(X)
+        return self.fit_transform(X)
 
     def _eval(self, X, y=None):
-        with parallel_backend(PARALLEL_BACKEND):
-            return self.transform(X)
+        return self.transform(X)
 
     @abc.abstractmethod
     def fit_transform(self, X, y=None):
@@ -155,7 +156,9 @@ def build_sklearn_wrappers():
             counter.update()
             _write_class(cls, fp)
 
-    black.reformat_one(path, True, black.WriteBack.YES, black.FileMode(), black.Report())
+    black.reformat_one(
+        path, True, black.WriteBack.YES, black.FileMode(), black.Report()
+    )
 
     counter.close()
     manager.stop()
@@ -333,7 +336,6 @@ def _find_parameter_values(parameter, cls):
         return CategoricalValue(*sorted(valid))
 
     return None
-
 
 
 X, y = make_classification()

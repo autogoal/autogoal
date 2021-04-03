@@ -5,7 +5,12 @@ from numpy import inf, nan
 
 from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
-from autogoal.grammar import BooleanValue, CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
+)
 from autogoal.kb import *
 from autogoal.utils import nice_repr
 from autogoal.kb import AlgorithmBase
@@ -26,7 +31,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         inner_stemmer: algorithm(Word, Stem),
         inner_stopwords: algorithm(Seq[Word], Seq[Word]),
         lowercase: BooleanValue(),
-        stopwords_remove:BooleanValue(),
+        stopwords_remove: BooleanValue(),
     ):
 
         self.inner_tokenizer = inner_tokenizer
@@ -61,7 +66,9 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
 
-        tagged_data = [_TaggedDocument(self.tokenize(X[i]), str(i)) for i in range(len(X))]
+        tagged_data = [
+            _TaggedDocument(self.tokenize(X[i]), str(i)) for i in range(len(X))
+        ]
 
         self.build_vocab(tagged_data)
         return self.train(
@@ -99,8 +106,6 @@ class StopwordRemover(AlgorithmBase):
         ),
     ):
         self.language = language
-
-        nltk.download("stopwords")
         from nltk.corpus import stopwords
 
         self.words = stopwords.words(language)
@@ -145,7 +150,6 @@ class WordnetConcept(AlgorithmBase):
     """
 
     def __init__(self):
-        nltk.download("wordnet")
         from nltk.corpus import wordnet
 
         self.wordnet = wordnet
@@ -181,7 +185,6 @@ class SentimentWord(AlgorithmBase):
     """
 
     def __init__(self):
-        nltk.download("sentiwordnet")
         from nltk.corpus import sentiwordnet
 
         self.swn = sentiwordnet
@@ -200,6 +203,7 @@ class SentimentWord(AlgorithmBase):
 
 from nltk.chunk.named_entity import NEChunkParserTagger as _NEChunkParserTagger
 
+
 @nice_repr
 class NEChunkParserTagger(NltkTagger):
     def __init__(self,):
@@ -217,7 +221,7 @@ class GlobalChunker(SklearnWrapper):
     def __init__(
         self,
         inner_trained_pos_tagger: algorithm(Seq[Word], Seq[Postag]),
-        inner_chunker: algorithm(Seq[Postag], Seq[Chunktag])
+        inner_chunker: algorithm(Seq[Postag], Seq[Chunktag]),
     ):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
@@ -236,7 +240,9 @@ class GlobalChunker(SklearnWrapper):
                 sentence.append(word)
 
             postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
-            tagged_sentence = [ (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))]
+            tagged_sentence = [
+                (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))
+            ]
             if tagged_sentence:
                 postagged_sentences.append(tagged_sentence)
 
@@ -251,7 +257,10 @@ class GlobalChunker(SklearnWrapper):
                 tags.append(tag)
 
             postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
-            tagged_sentence = [ ((sentence[k], postag_sentence[k][1]), tags[k]) for k in range(len(sentence))]
+            tagged_sentence = [
+                ((sentence[k], postag_sentence[k][1]), tags[k])
+                for k in range(len(sentence))
+            ]
             if tagged_sentence:
                 tagged_sentences.append(tagged_sentence)
 
@@ -269,13 +278,15 @@ class GlobalChunker(SklearnWrapper):
                 sentence.append(word)
 
             postag_sentence = self.inner_trained_pos_tagger.run((sentence, sentence))[0]
-            tagged_sentence = [ (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))]
+            tagged_sentence = [
+                (sentence[k], postag_sentence[k][1]) for k in range(len(sentence))
+            ]
             if tagged_sentence:
                 postagged_document.append(tagged_sentence)
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: Seq[Seq[Word]] ) -> Seq[Chunktag]:
+    def run(self, input: Seq[Seq[Word]]) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
 
 

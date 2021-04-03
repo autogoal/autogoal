@@ -15,7 +15,7 @@ DATASETS_METADATA = (
 
 DATA_PATH = Path.home() / ".autogoal" / "data"
 
-#ensure data path directory creation
+# ensure data path directory creation
 os.makedirs(DATA_PATH, exist_ok=True)
 
 
@@ -23,7 +23,7 @@ os.makedirs(DATA_PATH, exist_ok=True)
 def get_datasets_list() -> Dict[str, str]:
     try:
         data = requests.get(DATASETS_METADATA).json()
-        
+
         with open(DATA_PATH / "datasets.json", "w") as fp:
             json.dump(data, fp, indent=2)
 
@@ -33,7 +33,9 @@ def get_datasets_list() -> Dict[str, str]:
             with open(DATA_PATH / "datasets.json", "r") as fp:
                 return json.load(fp)
         except IOError:
-            raise Exception("Cannot download dataset list and no cached version exists.")
+            raise Exception(
+                "Cannot download dataset list and no cached version exists."
+            )
 
 
 def datapath(path: str) -> Path:

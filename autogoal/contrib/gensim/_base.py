@@ -6,7 +6,7 @@ import shutil
 import numpy as np
 
 import gensim.downloader as api
-from autogoal.experimental.semantics import Word, VectorContinuous
+from autogoal.kb import Word, VectorContinuous
 from autogoal.utils import CacheManager, nice_repr
 from autogoal.datasets import download_and_save
 from gensim.models import KeyedVectors
@@ -23,6 +23,7 @@ class Word2VecEmbedding(AlgorithmBase):
 
     If you are using the development container the model should be already downloaded for you.
     """
+
     def __init__(self):
         self._model = None
 
@@ -33,8 +34,7 @@ class Word2VecEmbedding(AlgorithmBase):
 
         return self._model
 
-    def run(
-        self, input: Word) -> VectorContinuous:
+    def run(self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -53,6 +53,7 @@ class Word2VecEmbeddingSpanish(AlgorithmBase):
 
     If you are using the development container the model should be already downloaded for you.
     """
+
     def __init__(self):
         self._model = None
 
@@ -73,8 +74,7 @@ class Word2VecEmbeddingSpanish(AlgorithmBase):
 
         return self._model
 
-    def run(
-        self, input: Word) -> VectorContinuous:
+    def run(self, input: Word) -> VectorContinuous:
         """This method use Word2Vec of gensim for tranform a word in embedding vector.
         """
         try:
@@ -98,11 +98,14 @@ class FastTextEmbeddingSpanishSUC(AlgorithmBase):
     >>> embedder.run("algoritmo")
 
     """
+
     def __init__(self):
         self._model = None
 
     def _load_model(self):
-        url = "https://zenodo.org/record/3234051/files/embeddings-l-model.bin?download=1"
+        url = (
+            "https://zenodo.org/record/3234051/files/embeddings-l-model.bin?download=1"
+        )
         path = Path(__file__).parent / "fasttext-spanish-suc.bin"
 
         download_and_save(url, path)
@@ -115,8 +118,7 @@ class FastTextEmbeddingSpanishSUC(AlgorithmBase):
 
         return self._model
 
-    def run(
-        self, input: Word) -> VectorContinuous:
+    def run(self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -140,6 +142,7 @@ class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
     >>> embedder.run("algoritmo")
 
     """
+
     def __init__(self):
         self._model = None
 
@@ -157,8 +160,7 @@ class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
 
         return self._model
 
-    def run(
-        self, input: Word) -> VectorContinuous:
+    def run(self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:
@@ -182,6 +184,7 @@ class GloveEmbeddingSpanishSWBC(AlgorithmBase):
     >>> embedder.run("algoritmo")
 
     """
+
     def __init__(self):
         self._model = None
 
@@ -199,8 +202,7 @@ class GloveEmbeddingSpanishSWBC(AlgorithmBase):
 
         return self._model
 
-    def run(
-        self, input: Word) -> VectorContinuous:
+    def run(self, input: Word) -> VectorContinuous:
         """This method use FastText of gensim for tranform a word in embedding vector.
         """
         try:

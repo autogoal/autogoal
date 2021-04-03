@@ -20,7 +20,7 @@ automl = AutoML(
         save=False,
     ),
     search_iterations=1000,
-    validation_split=1/6
+    validation_split=1 / 6,
 )
 
 Xtrain, ytrain, Xtest, ytest = cifar10.load()

@@ -13,6 +13,7 @@ from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
 
+
 class SearchAlgorithm:
     def __init__(
         self,
@@ -135,7 +136,9 @@ class SearchAlgorithm:
                     spent_time = time.time() - start_time
 
                     if self._search_timeout and spent_time > self._search_timeout:
-                        autogoal.logging.logger().info("(!) Stopping since time spent is %.2f." % (spent_time))
+                        autogoal.logging.logger().info(
+                            "(!) Stopping since time spent is %.2f." % (spent_time)
+                        )
                         stop = True
                         break
 
@@ -147,7 +150,9 @@ class SearchAlgorithm:
                 generations -= 1
 
                 if generations <= 0:
-                    autogoal.logging.logger().info("(!) Stopping since all generations are done.")
+                    autogoal.logging.logger().info(
+                        "(!) Stopping since all generations are done."
+                    )
                     stop = True
                     break
 
@@ -326,7 +331,9 @@ class RichLogger(Logger):
     def begin(self, generations, pop_size):
         self.progress = Progress(console=self.console)
         self.pop_counter = self.progress.add_task("Generation", total=pop_size)
-        self.total_counter = self.progress.add_task("Overall", total=pop_size * generations)
+        self.total_counter = self.progress.add_task(
+            "Overall", total=pop_size * generations
+        )
         self.progress.start()
         self.console.rule("Search starting", style="blue")
 
@@ -343,13 +350,19 @@ class RichLogger(Logger):
         self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
     def start_generation(self, generations, best_fn):
-        self.console.rule(f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}")
+        self.console.rule(
+            f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}"
+        )
 
     def start_generation(self, generations, best_fn):
         self.progress.update(self.pop_counter, completed=0)
 
     def update_best(self, new_best, new_fn, previous_best, previous_fn):
-        self.console.print(Panel(f"🔥 Best improved from [red bold]{previous_fn or 0:.3f}[/] to [green bold]{new_fn:.3f}[/]"))
+        self.console.print(
+            Panel(
+                f"🔥 Best improved from [red bold]{previous_fn or 0:.3f}[/] to [green bold]{new_fn:.3f}[/]"
+            )
+        )
 
     def end(self, best, best_fn):
         self.console.rule(f"Search finished")

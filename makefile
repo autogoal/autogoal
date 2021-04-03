@@ -101,12 +101,7 @@ install: ensure-dev
 # test-core    Run the core unit tests (not contrib).
 .PHONY: test-core
 test-core: ensure-dev
-	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
-
-# test-fast    Run the minimal unit tests (not marked slow).
-.PHONY: test-fast
-test-fast: ensure-dev
-	python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests/core --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental --cov=autogoal --cov-report=term-missing -v
 
 # test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full

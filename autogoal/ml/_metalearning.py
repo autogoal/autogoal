@@ -10,6 +10,7 @@ from typing import List
 from autogoal.search import Logger
 from autogoal.utils import nice_repr
 from autogoal import sampling
+
 # from sklearn.feature_extraction import DictVectorizer
 
 

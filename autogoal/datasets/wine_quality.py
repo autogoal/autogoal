@@ -5,6 +5,7 @@ import os
 
 from autogoal.datasets import download, datapath
 
+
 def load(white=True, red=True, max_examples=None):
     if not red and not white:
         raise ValueError("Either red or white must be selected")
@@ -30,9 +31,8 @@ def load(white=True, red=True, max_examples=None):
 
             clean_line = i.strip().split(";")
 
-            X.append([1,0]+[float(i) for i in clean_line[:-1]])
+            X.append([1, 0] + [float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
-
 
     if red:
         title_line = True
@@ -47,8 +47,7 @@ def load(white=True, red=True, max_examples=None):
 
             clean_line = i.strip().split(";")
 
-            X.append([0,1]+[float(i) for i in clean_line[:-1]])
+            X.append([0, 1] + [float(i) for i in clean_line[:-1]])
             y.append(float(clean_line[-1]))
-
 
     return np.asarray(X), np.asarray(y)

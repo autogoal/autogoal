@@ -84,28 +84,38 @@ def nice_repr(cls):
         Change `autogoal.utils.MAX_REPR_DEPTH` to increase the depth level of recursive `repr`.
 
     """
+
     def repr_method(self):
         init_signature = inspect.signature(self.__init__)
-        exclude_param_names = set(['self'])
+        exclude_param_names = set(["self"])
 
         if _repr_depth[0] > MAX_REPR_DEPTH:
             return f"{self.__class__.__name__}(...)"
 
         _repr_depth[0] += 1
 
-        parameter_names = [name for name in init_signature.parameters if name not in exclude_param_names]
+        parameter_names = [
+            name
+            for name in init_signature.parameters
+            if name not in exclude_param_names
+        ]
         parameter_values = [getattr(self, param, None) for param in parameter_names]
 
-        if hasattr(self, '__nice_repr_hook__'):
+        if hasattr(self, "__nice_repr_hook__"):
             self.__nice_repr_hook__(parameter_names, parameter_values)
 
-        args = ", ".join(f"{name}={repr(value)}" for name, value in zip(parameter_names, parameter_values) if value is not None)
+        args = ", ".join(
+            f"{name}={repr(value)}"
+            for name, value in zip(parameter_names, parameter_values)
+            if value is not None
+        )
         fr = f"{self.__class__.__name__}({args})"
 
         _repr_depth[0] -= 1
 
         try:
             import black
+
             return black.format_str(fr, mode=black.FileMode()).strip()
         except:
             return fr
@@ -168,5 +178,5 @@ def factory(func_or_type, *args, **kwargs):
 
 
 from ._resource import ResourceManager
-from ._process import  RestrictedWorker, RestrictedWorkerByJoin
+from ._process import RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager

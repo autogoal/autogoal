@@ -1,26 +1,16 @@
-# This is a basic workflow to help you get started with Actions
+name: Test Core
 
-name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     if: contains(toJson(github.event.commits), '[skip ci]') == false
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Setup Python
@@ -36,8 +26,13 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --extras dev
 
+      - name: Check format
+        run: black --check autogoal/ tests/
+
       - name: Run core tests
-        run: python -m pytest autogoal tests --doctest-modules -m "not slow" --ignore=tests/contrib --ignore=tests/experimental --ignore=autogoal/contrib --ignore=autogoal/experimental --ignore=autogoal/datasets --cov=autogoal
+        run: make test-core
+        env:
+          BUILD_ENVIRONMENT: development 
 
       - name: Run codecov
         run: python -m codecov

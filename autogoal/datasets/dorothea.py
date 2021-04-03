@@ -5,6 +5,7 @@ import numpy as np
 from scipy import sparse as sp
 from autogoal.datasets import datapath, download
 
+
 def load():
     """
     Loads train and valid datasets from [DOROTHEA uci dataset](https://archive.ics.uci.edu/ml/datasets/dorothea).
@@ -23,11 +24,10 @@ def load():
 
     download("dorothea")
 
-    train_data = open(datapath('dorothea')/ "dorothea_train.data", "r")
-    train_labels = open(datapath('dorothea')/ "dorothea_train.labels", "r")
-    valid_data = open(datapath('dorothea')/ "dorothea_valid.data", "r")
-    valid_labels = open(datapath('dorothea')/ "dorothea_valid.labels", "r")
-
+    train_data = open(datapath("dorothea") / "dorothea_train.data", "r")
+    train_labels = open(datapath("dorothea") / "dorothea_train.labels", "r")
+    valid_data = open(datapath("dorothea") / "dorothea_valid.data", "r")
+    valid_labels = open(datapath("dorothea") / "dorothea_valid.labels", "r")
 
     Xtrain = sp.lil_matrix((800, 100000), dtype=int)
     ytrain = []
@@ -36,11 +36,11 @@ def load():
 
     for row, line in enumerate(train_data):
         for col in line.split():
-            Xtrain[row, int(col)-1] = 1
+            Xtrain[row, int(col) - 1] = 1
 
     for row, line in enumerate(valid_data):
         for col in line.split():
-            Xvalid[row, int(col)-1] = 1
+            Xvalid[row, int(col) - 1] = 1
 
     for line in train_labels:
         ytrain.append(int(line))

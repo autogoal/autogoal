@@ -66,7 +66,8 @@ class Demo:
         """
         )
 
-        st.write("""
+        st.write(
+            """
         ## Running the code
 
         To execute this demo on your own infrastructure, you need AutoGOAL's docker image.
@@ -76,7 +77,8 @@ class Demo:
 
             docker pull autogoal/autogoal
 
-        """)
+        """
+        )
 
         st.write(
             """
@@ -125,7 +127,7 @@ class Demo:
                 [Dorothea](https://archive.ics.uci.edu/ml/datasets/dorothea)
                 is a high-dimensionality sparse supervised problem with 100,000 numerical features.
                 """,
-            "gisette":  """
+            "gisette": """
                 [Gisette](https://archive.ics.uci.edu/ml/datasets/Gisette)
                 is a high-dimensionality sparse supervised problem with 5,000 numerical features.
                 """,
@@ -140,11 +142,11 @@ class Demo:
         }
 
         override_types = {
-            'german_credit': ("MatrixContinuousDense()", "CategoricalVector()"),
-            'dorothea': ("MatrixContinuousSparse()", "CategoricalVector()"),
-            'gisette': ("MatrixContinuousSparse()", "CategoricalVector()"),
-            'haha': ("List(Sentence())", "CategoricalVector()"),
-            'meddocan': ("List(List(Word()))", "List(List(Postag()))"),
+            "german_credit": ("MatrixContinuousDense()", "CategoricalVector()"),
+            "dorothea": ("MatrixContinuousSparse()", "CategoricalVector()"),
+            "gisette": ("MatrixContinuousSparse()", "CategoricalVector()"),
+            "haha": ("List(Sentence())", "CategoricalVector()"),
+            "meddocan": ("List(List(Word()))", "List(List(Postag()))"),
         }
 
         st.write(
@@ -182,7 +184,7 @@ class Demo:
                 st.write(X[:head])
             else:
                 st.write(X[:head, :])
-            
+
             st.write(y[:head])
 
         st.write(
@@ -211,17 +213,19 @@ class Demo:
                 input={input_type},
                 output={output_type},
             """
-            
-            st.info(f"""
+
+            st.info(
+                f"""
             In most cases AutoGOAL can automatically infer the input and output type
             from the dataset. Sometimes, such as with `{dataset}`, the user will need to provide them
             explicitely.
-            """)
+            """
+            )
         else:
             types_code = ""
 
-
-        code = textwrap.dedent(f"""
+        code = textwrap.dedent(
+            f"""
             from autogoal.kb import *
             from autogoal.ml import AutoML
 
@@ -299,8 +303,8 @@ class Demo:
 
             There are a total of **{len(all_classes)}** algorithms implemented.
             Select one to display some information.
-            """)
-
+            """
+        )
 
         class_name = st.selectbox("Select an algorithm", list(all_classes))
         class_type = all_classes[class_name]
@@ -310,11 +314,11 @@ class Demo:
         run_signature = inspect.signature(class_type.run)
         st.write(f"**Input type**: {run_signature.parameters['input'].annotation}")
         st.write(f"**Output type**: {run_signature.return_annotation}")
-        
+
         st.write("#### Parameters")
         params = []
         for name, param in inspect.signature(class_type.__init__).parameters.items():
-            if name == 'self':
+            if name == "self":
                 continue
 
             params.append(f"* **{name}**: {param.annotation}")
@@ -335,18 +339,17 @@ class Demo:
             """
         )
 
-
         st.sidebar.markdown("### Configure input and output types")
         list_input = st.sidebar.number_input("Input list (level)", 0, 3, 1)
         list_output = st.sidebar.number_input("Output list (level)", 0, 3, 0)
         tuples = st.sidebar.checkbox("Is supervised (use Tuple in input)", True)
-        
+
         input_type = st.selectbox(
-            "Select an input type", types_str, types_str.index('Sentence')
+            "Select an input type", types_str, types_str.index("Sentence")
         )
 
         output_type = st.selectbox(
-            "Select and output type", types_str, types_str.index('CategoricalVector')
+            "Select and output type", types_str, types_str.index("CategoricalVector")
         )
 
         input_type = input_type + "()"
@@ -393,9 +396,11 @@ class Demo:
         except Exception as e:
             if "No pipelines can be constructed" in str(e):
                 st.error(str(e))
-                st.info("Try changing the input and output type or select **Is supervised** in the left sidebar.")
+                st.info(
+                    "Try changing the input and output type or select **Is supervised** in the left sidebar."
+                )
                 return
-            
+
             raise
 
         st.write(
@@ -406,8 +411,9 @@ class Demo:
             Each node in this graph is an algorithm from the _Algorithm Library_ that is
             compatible with the input and output types of its neighbors.
             Any path from the top to the bottom of the graph represents a valid pipeline.
-            """)
-            
+            """
+        )
+
         graph = nx.DiGraph()
 
         def get_node_repr(node):
@@ -446,7 +452,8 @@ class Demo:
             hyperparameters as defined by the constructor.
             When these hyperparameters have complex values (e.g., an algorithm per-se), AutoGOAL
             recursively samples instances of the internal algorithms, and so on.
-            """)
+            """
+        )
 
         st.code(space.sample())
 

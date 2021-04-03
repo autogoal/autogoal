@@ -7,7 +7,9 @@ from autogoal.search import ConsoleLogger, ProgressLogger
 import numpy as np
 
 
-classifier = KerasSequenceTagger(decode='crf', optimizer='sgd', epochs=20, early_stop=100).sample()
+classifier = KerasSequenceTagger(
+    decode="crf", optimizer="sgd", epochs=20, early_stop=100
+).sample()
 
 
 X = [

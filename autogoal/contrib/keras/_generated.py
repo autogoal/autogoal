@@ -13,7 +13,12 @@ from tensorflow.keras.layers import Flatten as _Flatten
 from tensorflow.keras.layers import Reshape as _Reshape
 from tensorflow.keras import regularizers
 
-from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    DiscreteValue,
+    ContinuousValue,
+)
 from autogoal.utils import nice_repr
 
 
@@ -125,7 +130,9 @@ class Dense(_Dense):
 
 @nice_repr
 class Conv1D(_Conv1D):
-    def __init__(self, filters: DiscreteValue(2, 8), kernel_size: CategoricalValue(3, 5, 7)):
+    def __init__(
+        self, filters: DiscreteValue(2, 8), kernel_size: CategoricalValue(3, 5, 7)
+    ):
         super().__init__(
             filters=2 ** filters, kernel_size=kernel_size, padding="causal"
         )

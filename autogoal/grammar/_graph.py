@@ -267,7 +267,12 @@ class GraphGrammar(Grammar):
             self._non_terminals.add(pattern)
 
         self._productions.append(
-            Production("production_%i" % len(self._productions), pattern, replacement, initializer=initializer)
+            Production(
+                "production_%i" % len(self._productions),
+                pattern,
+                replacement,
+                initializer=initializer,
+            )
         )
 
     def _sample(self, symbol: Graph, max_iterations: int, sampler: Sampler):
@@ -292,7 +297,7 @@ class GraphGrammar(Grammar):
             if not valid_productions:
                 return symbol
 
-            production_ids = {p.production_id: p for p in valid_productions} 
+            production_ids = {p.production_id: p for p in valid_productions}
             production = production_ids[sampler.choice(list(production_ids))]
             symbol = production.apply(symbol)
 
@@ -356,7 +361,7 @@ class GraphSpace(Grammar):
             if not next_nodes:
                 raise ValueError("Cannot continue sampling. Graph is disconnected.")
 
-            names_values = { x.__name__: x for x in next_nodes }
+            names_values = {x.__name__: x for x in next_nodes}
 
             next_node = names_values[sampler.choice(list(names_values))]
             path.append(next_node)

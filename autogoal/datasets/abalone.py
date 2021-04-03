@@ -4,7 +4,7 @@ from sklearn.feature_extraction import DictVectorizer
 from autogoal.datasets import datapath, download
 
 
-def load(representation='numeric'):
+def load(representation="numeric"):
     """
     Loads corpora from [ABALONE uci dataset](https://archive.ics.uci.edu/ml/datasets/Abalone).
 
@@ -23,7 +23,9 @@ def load(representation='numeric'):
     try:
         download("abalone")
     except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
         raise
 
     f = open(datapath("abalone") / "abalone.data", "r")
@@ -47,9 +49,9 @@ def load(representation='numeric'):
         X.append(temp)
         y.append(clean_line[8])
 
-    if representation == 'numeric':
+    if representation == "numeric":
         return _load_numeric(X, y)
-    elif representation == 'onehot':
+    elif representation == "onehot":
         return _load_onehot(X, y)
 
     raise ValueError("Invalid value for represenation: %s" % representation)
@@ -61,7 +63,7 @@ def _load_numeric(X, y):
     for d in X:
         new_d = d.copy()
 
-        v = d['Sex']
+        v = d["Sex"]
         if v == "M":
             new_d["Sex"] = 3
         elif v == "F":

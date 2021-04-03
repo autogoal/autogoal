@@ -5,6 +5,7 @@ import numpy as np
 from scipy import sparse as sp
 from autogoal.datasets import datapath, download
 
+
 def load():
     """
     Loads train and valid datasets from [Gisette uci dataset](https://archive.ics.uci.edu/ml/datasets/Gisette).
@@ -24,7 +25,9 @@ def load():
     try:
         download("gisette")
     except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
         raise
 
     train_data = open(datapath("gisette") / "gisette_train.data", "r")
@@ -41,13 +44,13 @@ def load():
         for j, value in enumerate(line.split()):
             value = int(value)
             if value > 0:
-                Xtrain[i,j] = value
+                Xtrain[i, j] = value
 
     for i, line in enumerate(valid_data):
         for j, value in enumerate(line.split()):
             value = int(value)
             if value > 0:
-                Xvalid[i,j] = value
+                Xvalid[i, j] = value
 
     for line in train_labels:
         ytrain.append(int(line) > 0)

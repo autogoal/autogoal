@@ -9,7 +9,7 @@
 #     `"movie_reviews"` corpus from `nltk`. Refer to the documentation on
 #     [dependencies](/dependencies/) for further information.
 
-import autogoal.contrib.sklearn # :hide:
+import autogoal.contrib.sklearn  # :hide:
 
 # ## Importing the necessary classes
 #
@@ -49,7 +49,7 @@ from autogoal.grammar import (
 # Next, we will also use two different search strategies, from the `autogoal.search` module.
 
 from autogoal.search import RandomSearch, PESearch
-from autogoal.search import ProgressLogger # for logging
+from autogoal.search import RichLogger  # for logging
 
 # Finally, we will use a toy dataset that comes pre-packaged with `autogoal`.
 # This is the famous [Movie Reviews dataset from Pang & Lee](https://www.cs.cornell.edu/people/pabo/movie-review-data/).
@@ -147,7 +147,9 @@ class NoDec:
 
 
 class LR(LogisticRegression):
-    def __init__(self, penalty: CategoricalValue("l1", "l2"), reg: ContinuousValue(0.1, 10)):
+    def __init__(
+        self, penalty: CategoricalValue("l1", "l2"), reg: ContinuousValue(0.1, 10)
+    ):
         super().__init__(penalty=penalty, C=reg, solver="liblinear")
         self.penalty = penalty
         self.reg = reg
@@ -155,7 +157,9 @@ class LR(LogisticRegression):
 
 class SVM(SVC):
     def __init__(
-        self, kernel: CategoricalValue("rbf", "linear", "poly"), reg: ContinuousValue(0.1, 10)
+        self,
+        kernel: CategoricalValue("rbf", "linear", "poly"),
+        reg: ContinuousValue(0.1, 10),
     ):
         super().__init__(C=reg, kernel=kernel)
         self.kernel = kernel
@@ -207,7 +211,7 @@ class Pipeline(SkPipeline):
 # that class, based on the parameters' annotations and recursively building the corresponding
 # rules for all classes down to basic parameter types.
 
-grammar =  generate_cfg(Pipeline)
+grammar = generate_cfg(Pipeline)
 print(grammar)
 
 # If you run the code up to this point, it should print something like:
@@ -296,7 +300,7 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # of `1000` different random pipelines. To see what's actually going on we will use
 # the wonderfull `enlighten` library through our implementation `EnlightenLogger`.
 
-logger = ProgressLogger()
+logger = RichLogger()
 
 random_search = RandomSearch(grammar, fitness_fn, random_state=0)
 best_rand, fn_rand = random_search.run(1000, logger=logger)
@@ -324,7 +328,9 @@ best_rand, fn_rand = random_search.run(1000, logger=logger)
 # which is a complicated topic, to say the least, in evolutionary optimization.
 # Here we set them to sensible values, but when in doubt, just use the defaults.
 
-pge = PESearch(grammar, fitness_fn, pop_size=10, selection=0.2, learning_factor=0.1, random_state=0)
+pge = PESearch(
+    grammar, fitness_fn, pop_size=10, selection=0.2, learning_factor=0.1, random_state=0
+)
 best_pge, fn_pge = pge.run(1000, logger=logger)
 
 # Finally let's see what came through:

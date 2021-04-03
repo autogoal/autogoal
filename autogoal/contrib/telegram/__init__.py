@@ -7,7 +7,7 @@ from telegram import ParseMode
 
 
 class TelegramLogger(Logger):
-    def __init__(self, token, channel:str=None, name=""):
+    def __init__(self, token, channel: str = None, name=""):
         self.name = name
         self.channel = int(channel) if channel and channel.isdigit() else channel
         self.last_time = time.time()
@@ -18,7 +18,9 @@ class TelegramLogger(Logger):
         self.best = 0.0
         self.current = ""
         self.message = self.message = self.dispatcher.bot.send_message(
-            chat_id=self.channel, text=f"**{self.name}**\nStarting...", parse_mode=ParseMode.MARKDOWN,
+            chat_id=self.channel,
+            text=f"**{self.name}**\nStarting...",
+            parse_mode=ParseMode.MARKDOWN,
         )
 
     def begin(self, generations, pop_size):

@@ -38,7 +38,7 @@ def load_raw(max_examples=None):
     return train_df, test_df
 
 
-def load(target='is_humor', max_examples=None):
+def load(target="is_humor", max_examples=None):
     """
     Loads the train and test datasets for the [HAHA 2019 corpus](https://www.fing.edu.uy/inco/grupos/pln/haha/index.html#data)
     as lists of texts and target values.
@@ -84,9 +84,9 @@ def load(target='is_humor', max_examples=None):
     """
 
     train_df, test_df = load_raw(max_examples)
-    X_train = list(train_df['text'])
+    X_train = list(train_df["text"])
     y_train = list(train_df[target])
-    X_test = list(test_df['text'])
+    X_test = list(test_df["text"])
     y_test = list(test_df[target])
 
-    return X_train, np.asarray(y_train),  X_test, np.asarray(y_test)
+    return X_train, np.asarray(y_train), X_test, np.asarray(y_test)

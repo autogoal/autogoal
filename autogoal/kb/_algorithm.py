@@ -27,6 +27,7 @@ class Supervised(SemanticType):
     # False
     
     """
+
     __internal_types = {}
 
     @classmethod
@@ -62,7 +63,9 @@ def algorithm(*annotations):
             return False
 
         signature = inspect.signature(cls.run)
-        input_types = [v.annotation for k,v in signature.parameters.items() if k != "self"]
+        input_types = [
+            v.annotation for k, v in signature.parameters.items() if k != "self"
+        ]
         output_type = signature.return_annotation
 
         if len(inputs) != len(input_types):
@@ -75,7 +78,7 @@ def algorithm(*annotations):
         if not issubclass(output_type, output):
             return False
 
-        return True       
+        return True
 
     @classmethod
     def generate_cfg(cls, grammar, head):
@@ -87,7 +90,9 @@ def algorithm(*annotations):
                 compatible.append(other_cls)
 
         if not compatible:
-            raise ValueError(f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}")
+            raise ValueError(
+                f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}"
+            )
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
@@ -103,6 +108,7 @@ class Algorithm(abc.ABC):
     Provides introspection for the expected semantic input and output types.
     Users should inherit from `AlgorithmBase` instead of this class.
     """
+
     @abc.abstractclassmethod
     def input_types(cls) -> Tuple[type]:
         """Returns an ordered list of the expected semantic input types of the `run` method.
@@ -157,19 +163,26 @@ class AlgorithmBase(Algorithm):
     Automatically implements the input and output introspection methods using the `inspect` module.
     Users inheriting from this class must provide type annotations in the `run` method.
     """
+
     @classmethod
     def input_types(cls) -> Tuple[type]:
         if not hasattr(cls, "__run_signature__"):
             cls.__run_signature__ = inspect.signature(cls.run)
 
-        return tuple(param.annotation for name, param in cls.__run_signature__.parameters.items() if name != 'self')
+        return tuple(
+            param.annotation
+            for name, param in cls.__run_signature__.parameters.items()
+            if name != "self"
+        )
 
     @classmethod
     def input_args(cls) -> Tuple[str]:
         if not hasattr(cls, "__run_signature__"):
             cls.__run_signature__ = inspect.signature(cls.run)
 
-        return tuple(name for name in cls.__run_signature__.parameters if name != 'self')
+        return tuple(
+            name for name in cls.__run_signature__.parameters if name != "self"
+        )
 
     @classmethod
     def output_type(cls) -> type:
@@ -179,8 +192,7 @@ class AlgorithmBase(Algorithm):
         return cls.__run_signature__.return_annotation
 
 
-
-def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
+def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
     """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
 
     The input can be a class that inherits from `Algorithm` or an instance of such a class.
@@ -209,7 +221,6 @@ def build_input_args(algorithm:Algorithm, values:Dict[type,Any]):
             else:
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
-
     return result
 
 
@@ -220,14 +231,17 @@ class Pipeline:
     Each algorithm must have a `run` method declaring it's input and output type.
     The pipeline instance also receives the input and output types.
     """
-    def __init__(self, algorithms:List[Algorithm], input_types:List[Type[SemanticType]]) -> None:
+
+    def __init__(
+        self, algorithms: List[Algorithm], input_types: List[Type[SemanticType]]
+    ) -> None:
         self.algorithms = algorithms
         self.input_types = input_types
 
     def run(self, *inputs):
         data = {}
 
-        for i,t in zip(inputs, self.input_types):
+        for i, t in zip(inputs, self.input_types):
             data[t] = i
 
         for algorithm in self.algorithms:
@@ -282,7 +296,7 @@ def make_seq_algorithm(algorithm: Algorithm):
     {'x': [1, 2], 'y': ['hello', 'world']}
     
     """
-    
+
     output_type = algorithm.output_type()
 
     name = f"SeqAlgorithm[{algorithm.__name__}]"
@@ -303,7 +317,7 @@ def make_seq_algorithm(algorithm: Algorithm):
     @classmethod
     def input_types_method(cls):
         return tuple(Seq[t] for t in algorithm.input_types())
-    
+
     @classmethod
     def input_args_method(cls):
         return algorithm.input_args()
@@ -355,10 +369,10 @@ def _make_list_args_and_kwargs(*args, **kwargs):
     inner_kwargs = []
 
     for i in range(length):
-        inner_kwargs.append({k:v[i] for k,v in kwargs.items()})
+        inner_kwargs.append({k: v[i] for k, v in kwargs.items()})
 
     return [Akw(xs, ks) for xs, ks in zip(inner_args, inner_kwargs)]
-    
+
 
 class PipelineNode:
     def __init__(self, algorithm, input_types, output_types, registry=None) -> None:
@@ -375,10 +389,9 @@ class PipelineNode:
         return self.algorithm.__name__
 
     def __eq__(self, o: object) -> bool:
-        return isinstance(o, PipelineNode) and all([
-            o.algorithm == self.algorithm,
-            o.input_types == self.input_types,
-        ])
+        return isinstance(o, PipelineNode) and all(
+            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
+        )
 
     def __repr__(self) -> str:
         return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
@@ -400,7 +413,12 @@ class PipelineSpace(GraphSpace):
         return Pipeline(path, input_types=self.input_types)
 
 
-def build_pipeline_graph(input_types: List[type], output_type: type, registry: List[type], max_list_depth: int=3):
+def build_pipeline_graph(
+    input_types: List[type],
+    output_type: type,
+    registry: List[type],
+    max_list_depth: int = 3,
+):
     """Build a graph of algorithms.
 
     Every node in the graph corresponds to a <autogoal.grammar.ContextFreeGrammar> that
@@ -411,7 +429,7 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
         def run(self, a: type_1, b: type_2, ...) -> type_n:
             # ...
     """
-    
+
     if not isinstance(input_types, (list, tuple)):
         input_types = [input_types]
 
@@ -420,7 +438,7 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
     pool = set(registry)
 
     for algorithm in registry:
-        for _ in range(max_list_depth):            
+        for _ in range(max_list_depth):
             algorithm = make_seq_algorithm(algorithm)
             pool.add(algorithm)
 
@@ -434,12 +452,14 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
         if not algorithm.is_compatible_with(input_types):
             continue
 
-        open_nodes.append(PipelineNode(
-            algorithm = algorithm,
-            input_types = input_types,
-            output_types = set(input_types) | set([algorithm.output_type()]),
-            registry=registry,
-        ))
+        open_nodes.append(
+            PipelineNode(
+                algorithm=algorithm,
+                input_types=input_types,
+                output_types=set(input_types) | set([algorithm.output_type()]),
+                registry=registry,
+            )
+        )
 
     G = Graph()
 
@@ -466,16 +486,18 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
                 continue
 
             # And we never want an algorithm that doesn't provide a novel output type...
-            if (algorithm.output_type() in guaranteed_types and 
+            if (
+                algorithm.output_type() in guaranteed_types
+                and
                 # ... unless it is an idempotent algorithm
                 [algorithm.output_type()] != algorithm.input_types()
-            ) :
+            ):
                 continue
 
             p = PipelineNode(
-                algorithm = algorithm,
-                input_types = guaranteed_types,
-                output_types = guaranteed_types | set([algorithm.output_type()]),
+                algorithm=algorithm,
+                input_types=guaranteed_types,
+                output_types=guaranteed_types | set([algorithm.output_type()]),
                 registry=registry,
             )
 
@@ -490,9 +512,11 @@ def build_pipeline_graph(input_types: List[type], output_type: type, registry: L
 
         closed_nodes.add(node)
 
-    # Remove all nodes that are not connected to the end node    
+    # Remove all nodes that are not connected to the end node
     try:
-        reachable_from_end = set(nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End))
+        reachable_from_end = set(
+            nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End)
+        )
         unreachable_nodes = set(G.nodes) - reachable_from_end
         G.remove_nodes_from(unreachable_nodes)
     except KeyError:
@@ -514,4 +538,5 @@ __all__ = [
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

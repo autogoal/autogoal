@@ -4,7 +4,12 @@ from sklearn_crfsuite import CRF
 
 from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnEstimator
 from autogoal.kb import *
-from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    DiscreteValue,
+    ContinuousValue,
+)
 from autogoal.utils import nice_repr
 from autogoal.kb import AlgorithmBase, Supervised
 
@@ -53,6 +58,7 @@ class _FeatureVectorizer(SklearnTransformer):
     def transform(self, X, y=None):
         return self.vectorizer.transform(X, y=y)
 
+
 @nice_repr
 class FeatureSparseVectorizer(_FeatureVectorizer):
     def __init__(self):
@@ -73,11 +79,15 @@ class FeatureDenseVectorizer(_FeatureVectorizer):
 
 @nice_repr
 class CRFTagger(CRF, SklearnEstimator):
-    def __init__(self, algorithm: CategoricalValue('lbfgs', 'l2sgd', 'ap', 'pa', 'arow')) -> None:
+    def __init__(
+        self, algorithm: CategoricalValue("lbfgs", "l2sgd", "ap", "pa", "arow")
+    ) -> None:
         SklearnEstimator.__init__(self)
         super().__init__(algorithm=algorithm)
 
-    def run(self, X: Seq[Seq[FeatureSet]], y: Supervised[Seq[Seq[Label]]]) -> Seq[Seq[Label]]:
+    def run(
+        self, X: Seq[Seq[FeatureSet]], y: Supervised[Seq[Seq[Label]]]
+    ) -> Seq[Seq[Label]]:
         return SklearnEstimator.run(self, X, y)
 
 
@@ -85,5 +95,5 @@ __all__ = [
     "CountVectorizerNoTokenize",
     "FeatureSparseVectorizer",
     "FeatureDenseVectorizer",
-    "CRFTagger"
+    "CRFTagger",
 ]

@@ -1,19 +1,24 @@
 from autogoal.grammar import Union, Subset, generate_cfg
 from autogoal.utils import nice_repr
 
+
 @nice_repr
 class A:
     pass
+
 
 @nice_repr
 class B:
     pass
 
+
 @nice_repr
 class C:
     pass
 
+
 D = Union("D", B, C)
+
 
 @nice_repr
 class Main:

@@ -49,6 +49,8 @@
 # We will need `argparse` for passing arguments to the script and `json` for serialization of results.
 
 import argparse
+from autogoal.kb import Supervised
+from autogoal.logging import logger
 import json
 
 # From `sklearn` we will use `train_test_split` to build train and validation sets.
@@ -70,7 +72,7 @@ from autogoal.datasets import (
 
 # We will also import this annotation type.
 
-from autogoal.kb import MatrixContinuousDense, CategoricalVector
+from autogoal.kb import MatrixContinuousDense, VectorCategorical
 
 # This is the real deal, the class `AutoML` does all the work.
 
@@ -80,11 +82,9 @@ from autogoal.ml import AutoML
 # and the `PESearch` class.
 
 from autogoal.search import (
-    ConsoleLogger,
-    Logger,
+    RichLogger,
     MemoryLogger,
     PESearch,
-    ProgressLogger,
 )
 
 # ## Parsing arguments
@@ -139,8 +139,8 @@ for epoch in range(args.epochs):
         print("=============================================")
         data = getattr(datasets, dataset).load()
 
-# Here we dynamically load the corresponding dataset and,
-# if necesary, split it into training and testing sets.
+        # Here we dynamically load the corresponding dataset and,
+        # if necesary, split it into training and testing sets.
 
         if len(data) == 4:
             X_train, X_test, y_train, y_test = data
@@ -148,33 +148,27 @@ for epoch in range(args.epochs):
             X, y = data
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-# Finally we can instantiate out `AutoML` with all the custom
-# parameters we received from the command line.
+        # Finally we can instantiate out `AutoML` with all the custom
+        # parameters we received from the command line.
 
         classifier = AutoML(
-            output=CategoricalVector(),
+            input=(MatrixContinuousDense, Supervised[VectorCategorical]),
+            output=VectorCategorical,
             search_algorithm=PESearch,
             search_iterations=args.iterations,
-            search_kwargs=dict(
-                pop_size=args.popsize,
-                selection=args.selection,
-                evaluation_timeout=args.timeout,
-                memory_limit=args.memory * 1024 ** 3,
-                early_stop=args.early_stop,
-                search_timeout=args.global_timeout,
-                target_fn=args.target,
-            ),
+            pop_size=args.popsize,
+            selection=args.selection,
+            evaluation_timeout=args.timeout,
+            memory_limit=args.memory * 1024 ** 3,
+            early_stop=args.early_stop,
+            search_timeout=args.global_timeout,
+            target_fn=args.target,
         )
 
-# Here we configure all the logging strategies we will use.
-# `MemoryLogger` stores each generation's info in a list that we can
-# later dump into a JSON log file.
-# `ProgressLogger` and `ConsoleLogger` are for pretty printing the results on the console.
-
         logger = MemoryLogger()
-        loggers = [ProgressLogger(), ConsoleLogger(), logger]
+        loggers = [RichLogger()]
 
-# `TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
+        # `TelegramLogger` outputs debug information to a custom Telegram channel, if configured.
 
         if args.token:
             from autogoal.contrib.telegram import TelegramLogger
@@ -186,7 +180,7 @@ for epoch in range(args.epochs):
             )
             loggers.append(telegram)
 
-# Finally, we run the AutoML classifier once and compute the score on an independent test-set.
+        # Finally, we run the AutoML classifier once and compute the score on an independent test-set.
 
         classifier.fit(X_train, y_train, logger=loggers)
         score = classifier.score(X_test, y_test)
@@ -195,7 +189,7 @@ for epoch in range(args.epochs):
         print(logger.generation_best_fn)
         print(logger.generation_mean_fn)
 
-# And store the results on a log file.
+        # And store the results on a log file.
 
         with open("uci_datasets.log", "a") as fp:
             fp.write(
@@ -207,14 +201,12 @@ for epoch in range(args.epochs):
                         generation_mean=logger.generation_mean_fn,
                         best_pipeline=repr(classifier.best_pipeline_),
                         search_iterations=args.iterations,
-                        search_kwargs=dict(
-                            pop_size=args.popsize,
-                            selection=args.selection,
-                            evaluation_timeout=args.timeout,
-                            memory_limit=args.memory * 1024 ** 3,
-                            early_stop=args.early_stop,
-                            search_timeout=args.global_timeout,
-                        ),
+                        pop_size=args.popsize,
+                        selection=args.selection,
+                        evaluation_timeout=args.timeout,
+                        memory_limit=args.memory * 1024 ** 3,
+                        early_stop=args.early_stop,
+                        search_timeout=args.global_timeout,
                     )
                 )
             )

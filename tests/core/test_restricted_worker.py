@@ -40,23 +40,23 @@ def test_handles_exc():
 def test_restrict_memory():
     fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Gb)
 
-    if (platform.system() == 'Linux'):
+    if platform.system() == "Linux":
         with pytest.raises(MemoryError):
             fn(0, 10 ** 8)
-    
-    if (platform.system() == 'Windows'):
+
+    if platform.system() == "Windows":
         fn(0, 10 ** 8)
 
 
 def test_restrict_memory_fails():
     fn = RestrictedWorkerByJoin(func, timeout=None, memory=1 * Mb)
 
-    if (platform.system() == 'Linux'):
+    if platform.system() == "Linux":
         with pytest.raises(ValueError) as e:
             fn(0, 10 ** 8)
 
-    if (platform.system() == 'Windows'):
-        #TODO: implement memory restriction for Windows systems
+    if platform.system() == "Windows":
+        # TODO: implement memory restriction for Windows systems
         pass
 
     assert isinstance(e.value, ValueError)

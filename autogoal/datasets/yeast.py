@@ -3,6 +3,7 @@ import os
 from autogoal.datasets import datapath, download
 from sklearn.feature_extraction import DictVectorizer
 
+
 def load():
     """
     Loads corpora from [Yeast uci dataset](https://archive.ics.uci.edu/ml/datasets/Yeast).
@@ -22,7 +23,9 @@ def load():
     try:
         download("yeast")
     except:
-        print("Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry")
+        print(
+            "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
+        )
         raise
 
     f = open(datapath("yeast") / "yeast.data", "r")
