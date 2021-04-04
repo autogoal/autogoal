@@ -22,6 +22,10 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --extras dev
 
+      - name: Setup vendor libs
+        run: |
+          pip install https://github.com/apiad/illiterate.git
+
       - name: Build docs
         run: make docs-dev
         env:
