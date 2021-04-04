@@ -1,67 +1,64 @@
-# # Predefined Pipelines
+# Auto GOAL permite a los investigadores y profesionales desarrollar
+# rápidamente algoritmos de referencia optimizados en diversos
+# problemas de aprendizaje automático.
+# Para utilizar AutoGOAL de la forma más sencilla posible es necesario definir 3 componentes:
+# - Entrada
+# - Salida
+# - Métrica a optimizar (Función objetivo)
+# Que se le definen a la clase AutoML
 
-# AutoGOAL is first and foremost a framework for Automatic Machine Learning.
-# As such, it comes pre-packaged with hundreds of low-level machine learning
-# algorithms that can be automatically assembled into pipelines for different problems.
-
-# The core of this functionality lies in the [`AutoML`](/api/autogoal.ml#automl) class.
-
-# To illustrate the simplicity of its use, we will first load a dataset.
-
-from autogoal.datasets import cars
-
-X, y = cars.load()
-
-# Next, we import and instantiate the [`AutoML`](/api/autogoal.ml#automl) class.
+# El primer paso es importar la clase AutoML
 
 from autogoal.ml import AutoML
 
-automl = AutoML(errors="ignore")
+# El segundo paso es tener un dataset representado en alguno de los tipos definidos en AutoGOAL.
+# Por ejemplo en este caso utilizaremos HAHA un corpus de mensajes de Twitter en español
+# que queremos clasificar en humorísticos o no.
 
-# Finally, we just call its `fit` method. AutoGOAL will automatically infer the input and
-# output type.
+from autogoal.datasets import haha
 
-automl.fit(X, y)
+# Cargando los datos
+X_train, y_train, X_test, y_test = haha.load()
 
-# Sensible defaults are defined for each of the many parameters of `AutoML`.
-# Make sure to read the documentation for more information on the parameters.
+# Como tenemos que representarlo según los tipos definidos en AutoGOAL
+# Vamos a importar los tipos que nos hacen falta para HAHA
+# En este caso podemos verlo como un listado (que se representa con el tipo Seq de Sequence)
+# de oraciones (que se representa con el tipo Sentence) , ya que los mensajes son muy cortos.
+# De las que conocemos (al menos para una parte para modelar como supervisado con el tipo Supervised)
+# la categoría de humor (esta categoría podemos representarla con el tipo VectorCategorical).
 
-# ## Automatic pipeline discovery
+# Definir el tipo de entrada como las oraciones + las clases supervisadas de las mismas, le deja claro a
+# AutoGOAL que queremos resolver el problema de forma supervisada con un entrenamiento.
 
-# AutoGOAL' automatic pipeline discovery relies on suitable type annotations
-# for the input and output of each algorithm.
-# For this functionality to work, all possible algorithms to use should
-# be defined following the "algorithm" protocol.
+from autogoal.kb import Seq, Sentence, VectorCategorical, Supervised
 
-# For example, a typical classifier has the following interface:
+# ¿Cómo utilizamos esto en la clase AutoML?
+automl = AutoML(
+    input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
+    output=VectorCategorical,  # **tipo de salida**
+    # tenemos el parámetro score_metric  para definir la función objetivo,
+    # que si no le fijamos un valor utiliza por defecto la función `autogoal.ml.metrics.accuracy`.
+)
 
-from autogoal.kb import DenseMatrix, CategoricalVector
+# Ya hasta aquí hemos definido el problema que queremos resolver
+# ahora solo nos resta ejecutar nuestro algoritmo, llamando al método `fit`.
 
+# Para monitorear el estado del proceso de AutoML, podemos pasar un logger al método `fit`.
+from autogoal.search import RichLogger
 
-class MyClassifier:
-    def run(self, input: DenseMatrix()) -> CategoricalVector():
-        # implementation of the algorithm
-        pass
+# Entrenando...
+automl.fit(X_train, y_train, logger=RichLogger())
 
+# Conociemdo que tan bueno es nuestro algoritmo
+score = automl.score(X_test, y_test)
+print(f"Score: {score:0.3f}")
 
-# This protocol allows AutoGOAL to automatically connect algorithms with compatible data types.
-# A set of predefined data types are available in [`autogoal.kb`](/api/autogoal.kb),
-# but custom data types can be defined easily.
+# Esto significa que nuestro algoritmo el mejor pipeline que encontró reportó un accuracy "result"
 
-# Here is a representation of the current data type hierarchy:
+# También puede llamarse al método predict que nos hace la predicción para un conjunto de ejemplos
 
-# <a href="/guide/datatypes.png", target="_blank">
-#   <img src="/guide/datatypes.png" alt="Data types in AutoGOAL">
-# </a>
+# Prediciendo...
+predictions = automl.predict(X_test)
 
-# !!! note
-#     Click the image to see a full-size version.
-
-# ## Bundled algorithms
-
-# AutoGOAL bundles over 100 algorithm implementations, based on multiple machine learning
-# frameworks. An exhaustive list of the available algorithms is provided next. The dependencies
-# that each algorithm has are also shown. Read the section on [dependencies](/dependencies/)
-# for more information.
-
-# {!docs/guide/algorithms.md!}
+for sentence, real, predicted in zip(X_test[:10], y_test, predictions):
+    print(sentence, "-->", real, "vs", predicted)

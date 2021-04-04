@@ -4,7 +4,6 @@
 
 [<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/autogoal/autogoal/CI/main?label=unit tests&logo=github">](https://github.com/autogoal/autogoal/actions)
 [<img src="https://codecov.io/gh/autogoal/autogoal/branch/main/graph/badge.svg" />](https://codecov.io/gh/autogoal/autogoal/)
-[<img alt="Docker Cloud Build Status" src="https://img.shields.io/docker/cloud/build/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
 [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
 [<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
 
@@ -30,14 +29,31 @@ algorithms that can be automatically assembled into pipelines for different prob
 The core of this functionality lies in the [`AutoML`](https://autogoal.github.io/api/autogoal.ml#automl) class.
 
 To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
+The following code will run for approximately 5 minutes on a classic dataset.
 
 ```python
 from autogoal.datasets import cars
+from autogoal.kb import (MatrixContinuousDense, 
+                         Supervised, 
+                         VectorCategorical)
 from autogoal.ml import AutoML
 
+# Load dataset
 X, y = cars.load()
-automl = AutoML()
+
+# Instantiate AutoML and define input/output types
+automl = AutoML(
+    input=(MatrixContinuousDense, 
+           Supervised[VectorCategorical]),
+    output=VectorCategorical
+)
+
+# Run the pipeline search process
 automl.fit(X, y)
+
+# Report the best pipeline
+print(automl.best_pipeline_)
+print(automl.best_score_)
 ```
 
 Sensible defaults are defined for each of the many parameters of `AutoML`.
@@ -91,6 +107,44 @@ To run the demo locally, simply type:
     docker run -p 8501:8501 autogoal/autogoal
 
 And navigate to [localhost:8501](http://localhost:8501).
+
+## ⚖️ API stability
+
+We make a conscious effort to maintain a consistent public API across versions, but the private API can change at any time.
+In general, everything you can import from `autogoal` without underscores is considered public. 
+
+For example:
+
+```python
+# "clean" imports are part of the public API
+from autogoal import optimize   
+from autogoal.ml import AutoML  
+from autogoal.contrib.sklearn import find_classes
+
+# public members of public types as well
+automl = AutoML
+automl.fit(...) 
+
+# underscored imports are part of the private API
+from autogoal.ml._automl import ...
+from autogoal.contrib.sklearn._generated import ...
+
+# as well as private members of any type
+automl._input_type(...)
+
+```
+
+These are our consistency rules:
+
+- Major breaking changes are introduced between major version updates, e.g., `x.0` and `y.0`. These can be additions, removals, or modifications of any kind in any part of the API.
+
+- Between minor version updates, e.g., `1.x` and `1.y`, you can expect to find new functionality, but anything you can use from the   public API will still be there with a consistent semantic (save for bugfixes).
+
+- Between micro version updates, e.g., `1.3.x` and `1.3.y`, the public API is frozen even for additions.
+
+- The private API can be changed at all times.
+
+⚠️ While AutoGOAL is on public beta (versions `0.x`) the public API is considered unstable and thus everything can change. However, we try to keep breaking changes to a minimum.
 
 ## 📚 Documentation
 
@@ -146,22 +200,25 @@ Here are all the current contributions.
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/sestevez"><img src="https://avatars3.githubusercontent.com/u/6156391?v=4" width="100px;" alt=""/><br /><sub><b>Suilan Estevez-Velarde</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Tests">⚠️</a> <a href="#ideas-sestevez" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://apiad.net"><img src="https://avatars3.githubusercontent.com/u/1778204?v=4" width="100px;" alt=""/><br /><sub><b>Alejandro Piad</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Tests">⚠️</a> <a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/yudivian"><img src="https://avatars1.githubusercontent.com/u/5324359?v=4" width="100px;" alt=""/><br /><sub><b>Yudivián Almeida Cruz</b></sub></a><br /><a href="#ideas-yudivian" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=yudivian" title="Documentation">📖</a></td>
-    <td align="center"><a href="http://orcid.org/0000-0002-4052-7427"><img src="https://avatars2.githubusercontent.com/u/25705914?v=4" width="100px;" alt=""/><br /><sub><b>ygutierrez</b></sub></a><br /><a href="#ideas-joogvzz" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=joogvzz" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/EEstevanell"><img src="https://avatars0.githubusercontent.com/u/45082075?v=4" width="100px;" alt=""/><br /><sub><b>Ernesto Luis Estevanell Valladares</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=EEstevanell" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=EEstevanell" title="Tests">⚠️</a></td>
-    <td align="center"><a href="http://alexfertel.netlify.app"><img src="https://avatars3.githubusercontent.com/u/22298999?v=4" width="100px;" alt=""/><br /><sub><b>Alexander Gonzalez</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alexfertel" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=alexfertel" title="Tests">⚠️</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/anshu-trivedi-501a7b146/"><img src="https://avatars1.githubusercontent.com/u/47869948?v=4" width="100px;" alt=""/><br /><sub><b>Anshu Trivedi</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=AnshuTrivedi" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/sestevez"><img src="https://avatars3.githubusercontent.com/u/6156391?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Suilan Estevez-Velarde</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Tests">⚠️</a> <a href="#ideas-sestevez" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=sestevez" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://apiad.net"><img src="https://avatars3.githubusercontent.com/u/1778204?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alejandro Piad</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Tests">⚠️</a> <a href="https://github.com/autogoal/autogoal/commits?author=apiad" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/yudivian"><img src="https://avatars1.githubusercontent.com/u/5324359?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Yudivián Almeida Cruz</b></sub></a><br /><a href="#ideas-yudivian" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=yudivian" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://orcid.org/0000-0002-4052-7427"><img src="https://avatars2.githubusercontent.com/u/25705914?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ygutierrez</b></sub></a><br /><a href="#ideas-joogvzz" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/autogoal/autogoal/commits?author=joogvzz" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/EEstevanell"><img src="https://avatars0.githubusercontent.com/u/45082075?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ernesto Luis Estevanell Valladares</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=EEstevanell" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=EEstevanell" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://alexfertel.netlify.app"><img src="https://avatars3.githubusercontent.com/u/22298999?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alexander Gonzalez</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alexfertel" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=alexfertel" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/anshu-trivedi-501a7b146/"><img src="https://avatars1.githubusercontent.com/u/47869948?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Anshu Trivedi</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=AnshuTrivedi" title="Code">💻</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="http://alxrcs.github.io"><img src="https://avatars1.githubusercontent.com/u/8171561?v=4" width="100px;" alt=""/><br /><sub><b>Alex Coto</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alxrcs" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/geblanco"><img src="https://avatars3.githubusercontent.com/u/6652222?v=4" width="100px;" alt=""/><br /><sub><b>Guillermo Blanco</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ageblanco" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://alxrcs.github.io"><img src="https://avatars1.githubusercontent.com/u/8171561?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alex Coto</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=alxrcs" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/geblanco"><img src="https://avatars3.githubusercontent.com/u/6652222?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Guillermo Blanco</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ageblanco" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Code">💻</a> <a href="https://github.com/autogoal/autogoal/commits?author=geblanco" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=yacth" title="Code">💻</a></td>
+    <td align="center"><a href="https://sourceplusplus.com"><img src="https://avatars0.githubusercontent.com/u/3278877?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Fergerson</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3ABFergerson" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://adityanikhil.github.io/main/"><img src="https://avatars2.githubusercontent.com/u/30192967?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aditya Nikhil</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3AAdityaNikhil" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
-<!-- markdownlint-enable -->
+<!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
  

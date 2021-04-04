@@ -1,0 +1,58 @@
+site_name: AutoGOAL
+site_url: https://autogoal.github.io
+repo_url: https://github.com/autogoal/autogoal
+edit_uri: edit/main/docs
+google_analytics: 
+  - UA-172957751-1
+  - auto
+
+theme:
+    name: material
+    logo: autogoal-logo.svg
+    favicon: autogoal-logo-embedded.png
+    feature:
+        tabs: true
+    palette:
+        primary: deep orange
+        accent: deep orange
+
+markdown_extensions:
+    - codehilite
+    - toc:
+        permalink: true
+    - admonition
+    - markdown_include.include
+
+nav:
+    - Home: index.md
+    - CLI: cli.md
+    - FAQ: faq.md
+    - Dependencies: dependencies.md
+    - Contributing: contributing.md
+    - User Guide:
+        - First steps: guide/index.md
+        - Predefined pipelines: guide/tests.guide.predefined.md
+        - Using custom algorithms: guide/tests.guide.include_algorithm.md
+        - Class-based API: guide/tests.guide.cfg.md
+        - Graph-based API: guide/tests.guide.graph.md
+        - Functional API: guide/tests.guide.functional.md
+    - Examples:
+        - Index: examples/index.md
+        - Solving UCI datasets: examples/tests.examples.solving_uci_datasets.md
+        - Solving HAHA 2019: examples/tests.examples.solving_haha_2019.md
+        - Solving MEDDOCAN 2019: examples/tests.examples.solving_meddocan_2019.md
+    - Demo: https://autogoal.github.io/demo
+    - Dashboard: https://autogoal.github.io/dashboard
+    - API:
+        - Top level: 
+            - autogoal: api/autogoal.__init__.md
+            - cli: api/autogoal.__main__.md
+        
+        - Grammars: 
+            - autogoal.grammar: api/autogoal.grammar.__init__.md
+        
+        - Contrib:
+            - autogoal.contrib: api/autogoal.contrib.__init__.md
+            - scikit-learn:
+                - autogoal.contrib.sklearn: api/autogoal.contrib.sklearn.__init__.md
+
