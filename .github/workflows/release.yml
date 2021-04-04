@@ -16,6 +16,10 @@ jobs:
           python-version: 3.6
           architecture: x64
 
+      - name: Setup vendor libs
+        run: |
+          pip install https://github.com/apiad/illiterate/archive/refs/heads/master.zip
+
       - name: Setup dependencies and build
         run: |
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
@@ -30,5 +34,15 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
 
+      - name: Build docs
+        run: make docs
+        env:
+          BUILD_ENVIRONMENT: development
+  
       - name: Deploy docs
-        run: make gh-deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GH_PAGES_TOKEN }}
+          external_repository: autogoal/autogoal.github.io
+          publish_branch: master
+          publish_dir: ./site
