@@ -24,7 +24,7 @@ jobs:
 
       - name: Setup vendor libs
         run: |
-          pip install https://github.com/apiad/illiterate.git
+          pip install https://github.com/apiad/illiterate/archive/refs/heads/master.zip
 
       - name: Build docs
         run: make docs-dev
