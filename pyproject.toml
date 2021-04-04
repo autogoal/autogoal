@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "autogoal"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["Suilan Estevez-Velarde <suilanestevez@gmail.com>", "Alejandro Piad-Morffis <apiad@apiad.net>"]
 description = "Automatic Generation Optimization And Learning"
 license = "MIT"
