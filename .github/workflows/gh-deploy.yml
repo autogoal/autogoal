@@ -27,7 +27,7 @@ jobs:
           pip install https://github.com/apiad/illiterate/archive/refs/heads/master.zip
 
       - name: Build docs
-        run: make docs-dev
+        run: make docs
         env:
           BUILD_ENVIRONMENT: development
   
