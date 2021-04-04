@@ -22,5 +22,15 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --extras dev
 
-      - name: Deploy docs
-        run: make gh-deploy
+      - name: Build docs
+        run: make docs-dev
+        env:
+          BUILD_ENVIRONMENT: development
+  
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GH_PAGES_TOKEN }}
+          external_repository: autogoal/autogoal.github.io
+          publish_branch: master
+          publish_dir: ./site
