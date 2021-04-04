@@ -1,8 +1,7 @@
-name: Release to PyPI
+name: Update docs
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch
 
 jobs:
   build:
@@ -22,13 +21,6 @@ jobs:
           source $HOME/.poetry/env
           poetry config virtualenvs.create false
           poetry install --extras dev
-          poetry build
-
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Deploy docs
         run: make gh-deploy
