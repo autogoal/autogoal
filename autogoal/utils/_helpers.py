@@ -18,6 +18,7 @@ from autogoal.grammar import generate_cfg
 
 # The following function defines a black-box optimization that can be applied to any function.
 
+
 def optimize(
     fn,
     search_strategy=PESearch,
@@ -60,10 +61,12 @@ def optimize(
 
     return best, best_fn
 
+
 # ### Implementation details
 
 # To make `optimize` work we need to define both a grammar and a callable function
 # to pass to the search algorithm
+
 
 class _ParamsDict(dict):
     pass
