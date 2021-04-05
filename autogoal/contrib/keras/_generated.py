@@ -67,6 +67,7 @@ class Seq2VecLSTM(_LSTM):
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
 
+
 @nice_repr
 class Seq2SeqBiLSTM(Bidirectional):
     def __init__(
@@ -93,6 +94,7 @@ class Seq2SeqBiLSTM(Bidirectional):
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
 
+
 @nice_repr
 class Seq2VecBiLSTM(Bidirectional):
     def __init__(
@@ -118,6 +120,7 @@ class Seq2VecBiLSTM(Bidirectional):
 
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
+
 
 @nice_repr
 class Reshape2D(_Reshape):

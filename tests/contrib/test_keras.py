@@ -50,4 +50,3 @@ def test_algorithms_report_correct_types():
         Seq[MatrixContinuousDense],
         Supervised[Seq[Seq[Postag]]],
     )
-

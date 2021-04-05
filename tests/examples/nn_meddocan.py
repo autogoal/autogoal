@@ -32,10 +32,9 @@ classifier = AutoML(
     output=Seq[Seq[Postag]],
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
-
-    # Since we only want to try neural networks, we restrict 
+    # Since we only want to try neural networks, we restrict
     # the contrib registry to algorithms matching with `Keras`.
-    registry= find_classes("Keras"),
+    registry=find_classes("Keras"),
 )
 
 # Basic logging configuration.

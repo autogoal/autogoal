@@ -29,10 +29,10 @@ classifier = AutoML(
     input=(Tensor4, Supervised[VectorCategorical]),
     output=VectorCategorical,
     cross_validation_steps=1,
-    # Since we only want to try neural networks, we restrict 
+    # Since we only want to try neural networks, we restrict
     # the contrib registry to algorithms matching with `Keras`.
-    registry= find_classes("Keras"),
-    errors='raise',
+    registry=find_classes("Keras"),
+    errors="raise",
     # Since image classifiers are heavy to train, let's give them a longer timeout...
     evaluation_timeout=5 * Min,
     search_timeout=1 * Hour,

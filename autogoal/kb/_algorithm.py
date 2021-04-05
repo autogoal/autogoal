@@ -411,7 +411,11 @@ class PipelineSpace(GraphSpace):
     def nodes(self) -> Set[Type[Algorithm]]:
         """Returns a list of all algorithms (types) that exist in the graph.
         """
-        return set(node.algorithm for node in self.graph.nodes if isinstance(node, PipelineNode))
+        return set(
+            node.algorithm
+            for node in self.graph.nodes
+            if isinstance(node, PipelineNode)
+        )
 
     def sample(self, *args, **kwargs):
         path = super().sample(*args, **kwargs)
