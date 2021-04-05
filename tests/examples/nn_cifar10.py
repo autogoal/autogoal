@@ -8,8 +8,8 @@
 # |--|--|
 # | CIFAR| <https://> |
 
+from autogoal.utils import Hour, Min
 from autogoal.ml import AutoML
-from autogoal.datasets import meddocan
 from autogoal.search import (
     RichLogger,
     PESearch,
@@ -32,16 +32,19 @@ classifier = AutoML(
     # Since we only want to try neural networks, we restrict 
     # the contrib registry to algorithms matching with `Keras`.
     registry= find_classes("Keras"),
+    errors='raise',
+    # Since image classifiers are heavy to train, let's give them a longer timeout...
+    evaluation_timeout=5 * Min,
+    search_timeout=1 * Hour,
 )
 
 # Basic logging configuration.
 
 loggers = [RichLogger()]
 
-# Finally, loading the MEDDOCAN dataset, running the `AutoML` instance,
+# Finally, loading the CIFAR dataset, running the `AutoML` instance,
 # and printing the results.
 
-from autogoal import datasets
 from autogoal.datasets import cifar10
 
 X_train, y_train, X_test, y_test = cifar10.load()
