@@ -1,7 +1,6 @@
 from autogoal.kb import AlgorithmBase, Supervised
 from typing import Optional
 
-import collections
 import numpy as np
 from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
 from tensorflow.keras.layers import Dense, Input, TimeDistributed, concatenate
@@ -212,7 +211,7 @@ class KerasClassifier(KerasNeuralNetwork):
     def run(
         self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
     ) -> VectorCategorical:
-        return super().run(input)
+        return super().run(X, y)
 
 
 @nice_repr
@@ -294,7 +293,7 @@ class KerasImageClassifier(KerasClassifier):
         )
 
     def run(self, X: Tensor4, y: Supervised[VectorCategorical]) -> VectorCategorical:
-        return super().run(input)
+        return super().run(X, y)
 
     def _build_input(self, X):
         return Input(shape=X.shape[1:])
@@ -308,7 +307,7 @@ class KerasSequenceClassifier(KerasClassifier):
         return Input(shape=(None, X.shape[2]))
 
     def run(self, X: Tensor3, y: Supervised[VectorCategorical]) -> VectorCategorical:
-        return super().run(input)
+        return super().run(X, y)
 
 
 # !!! warning

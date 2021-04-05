@@ -4,7 +4,7 @@ from autogoal.kb import (
     MatrixContinuousDense,
     MatrixContinuousSparse,
 )
-from autogoal.kb import algorithm
+from autogoal.kb import AlgorithmBase
 
 
 def test_matrix_hierarchy():
@@ -15,26 +15,24 @@ def test_matrix_hierarchy():
     assert issubclass(MatrixContinuousDense, MatrixContinuous)
 
 
-class ExactAlgorithm:
+class ExactAlgorithm(AlgorithmBase):
     def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         pass
 
 
-class HigherInputAlgorithm:
+class HigherInputAlgorithm(AlgorithmBase):
     def run(self, input: MatrixContinuous) -> MatrixContinuousDense:
         pass
 
 
-class LowerOutputAlgorithm:
+class LowerOutputAlgorithm(AlgorithmBase):
     def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         pass
 
 
-# NOTE: This functionality doesn't currently exist
-# def test_polimorphic_interface():
-#     interface = algorithm(MatrixContinuousDense, MatrixContinuousDense)
-#     assert interface.is_compatible(ExactAlgorithm)
-#     assert interface.is_compatible(HigherInputAlgorithm)
+def test_exact_compatibilty():
+    assert ExactAlgorithm.is_compatible_with([MatrixContinuousDense])
 
-#     interface = algorithm(MatrixContinuousDense, MatrixContinuous)
-#     assert interface.is_compatible(LowerOutputAlgorithm)
+
+def test_subtype_compatibility():
+    assert HigherInputAlgorithm.is_compatible_with([MatrixContinuousDense])
