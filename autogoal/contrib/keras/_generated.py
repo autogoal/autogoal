@@ -27,19 +27,22 @@ class Seq2SeqLSTM(_LSTM):
     def __init__(
         self,
         units: DiscreteValue(32, 1024),
-        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             units=units,
-            activation=activation,
-            recurrent_activation=recurrent_activation,
+            activation=activation_fn,
+            recurrent_activation=recurrent_activation_fn,
             dropout=dropout,
             recurrent_dropout=recurrent_dropout,
             return_sequences=True,
         )
+
+        self.activation_fn = activation_fn
+        self.recurrent_activation_fn = recurrent_activation_fn
 
 
 @nice_repr
@@ -47,20 +50,22 @@ class Seq2VecLSTM(_LSTM):
     def __init__(
         self,
         units: DiscreteValue(32, 1024),
-        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             units=units,
-            activation=activation,
-            recurrent_activation=recurrent_activation,
+            activation=activation_fn,
+            recurrent_activation=recurrent_activation_fn,
             dropout=dropout,
             recurrent_dropout=recurrent_dropout,
             return_sequences=False,
         )
 
+        self.activation_fn = activation_fn
+        self.recurrent_activation_fn = recurrent_activation_fn
 
 @nice_repr
 class Seq2SeqBiLSTM(Bidirectional):
@@ -68,16 +73,16 @@ class Seq2SeqBiLSTM(Bidirectional):
         self,
         merge_mode: CategoricalValue("sum", "mul", "concat", "ave"),
         units: DiscreteValue(32, 1024),
-        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             layer=_LSTM(
                 units=units,
-                activation=activation,
-                recurrent_activation=recurrent_activation,
+                activation=activation_fn,
+                recurrent_activation=recurrent_activation_fn,
                 dropout=dropout,
                 recurrent_dropout=recurrent_dropout,
                 return_sequences=True,
@@ -85,6 +90,8 @@ class Seq2SeqBiLSTM(Bidirectional):
             merge_mode=merge_mode,
         )
 
+        self.activation_fn = activation_fn
+        self.recurrent_activation_fn = recurrent_activation_fn
 
 @nice_repr
 class Seq2VecBiLSTM(Bidirectional):
@@ -92,16 +99,16 @@ class Seq2VecBiLSTM(Bidirectional):
         self,
         merge_mode: CategoricalValue("sum", "mul", "concat", "ave"),
         units: DiscreteValue(32, 1024),
-        activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
-        recurrent_activation: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
+        recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
     ):
         super().__init__(
             layer=_LSTM(
                 units=units,
-                activation=activation,
-                recurrent_activation=recurrent_activation,
+                activation=activation_fn,
+                recurrent_activation=recurrent_activation_fn,
                 dropout=dropout,
                 recurrent_dropout=recurrent_dropout,
                 return_sequences=False,
@@ -109,6 +116,8 @@ class Seq2VecBiLSTM(Bidirectional):
             merge_mode=merge_mode,
         )
 
+        self.activation_fn = activation_fn
+        self.recurrent_activation_fn = recurrent_activation_fn
 
 @nice_repr
 class Reshape2D(_Reshape):
