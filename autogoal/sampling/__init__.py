@@ -602,7 +602,7 @@ class ExhaustiveSampler:
     Performs an exhaustive sampling of the parameter space.
     """
 
-    # The way this sampler works is by building an explicit representation of 
+    # The way this sampler works is by building an explicit representation of
     # a parameter space in the form a search tree. As you sample values it will
     # create nodes that represent each decision and the possible outcomes.
 
@@ -612,11 +612,11 @@ class ExhaustiveSampler:
 
     # For example, if our parameter space has two variables, `X=[1,2,3]` and `Y=['a', 'b']`,
     # we'll represent it in a tree that looks like this:
-    # 
+    #
     # ```
     #  [ 1   ,   2   ,   3 ]
     #    |       |       |
-    #  [a,b]   [a,b]   [a,b]              
+    #  [a,b]   [a,b]   [a,b]
     #  /   \   /   \   /   \
     # 1,a 1,b 2,a 2,b 3,a 3,b
     # ```
@@ -626,15 +626,14 @@ class ExhaustiveSampler:
     # The challenge here is build the paramter tree at the same time that we are sampling.
     # Since we don't know beforehand what of the structure of the parameter space,
     # we have to discover it as the different sampling methods are being invoked.
-    
+
     # However, since sampling is a never-ending process, we will have to explicitely
     # tell this sampler when we finished with one instance. Otherwise we can't know when
     # did we reach a leaf.
-    
+
     def __init__(self) -> None:
         self._root = ExhaustiveSampler.Node()
         self._current_node = self._root
-
 
     def _sample_next(self, distribution, params, handle):
         # At any moment when we call a sampling method, we are at some node in the parameter space.
@@ -650,7 +649,6 @@ class ExhaustiveSampler:
         self._current_node, value = self._current_node.sample()
         return value
 
-    
     class Node:
         def is_initialized(self) -> bool:
             return hasattr(self, "handle")

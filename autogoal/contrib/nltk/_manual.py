@@ -282,7 +282,9 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, X: Seq[Seq[Word]], y: Supervised[Seq[Seq[Chunktag]]]) -> Seq[Chunktag]:
+    def run(
+        self, X: Seq[Seq[Word]], y: Supervised[Seq[Seq[Chunktag]]]
+    ) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
 
 
@@ -308,9 +310,9 @@ class FeatureSeqExtractor(AlgorithmBase):
 
     ```
     """
-    def __init__(self, 
-        extract_word: BooleanValue() = True,
-        window_size: DiscreteValue(0, 5) = 0,
+
+    def __init__(
+        self, extract_word: BooleanValue() = True, window_size: DiscreteValue(0, 5) = 0,
     ):
         self.extract_word = extract_word
         self.window_size = window_size
@@ -318,7 +320,8 @@ class FeatureSeqExtractor(AlgorithmBase):
     def extract_features(self, w):
         features = {}
 
-        if self.extract_word: features["word"] = w
+        if self.extract_word:
+            features["word"] = w
 
         return features
 
@@ -333,14 +336,14 @@ class FeatureSeqExtractor(AlgorithmBase):
         for i, f in enumerate(features):
             expanded = dict(f)
 
-            for j in range(i - self.window_size,  i + self.window_size+1):
+            for j in range(i - self.window_size, i + self.window_size + 1):
                 if j == i:
                     continue
-                    
-                ff = features[j] if 0 <= j < len(features) else {}
-                idx = f"+{j-i}" if j > i else str(j-i) 
 
-                for k,v in ff.items():
+                ff = features[j] if 0 <= j < len(features) else {}
+                idx = f"+{j-i}" if j > i else str(j - i)
+
+                for k, v in ff.items():
                     expanded[k + idx] = v
 
             expanded_features.append(expanded)

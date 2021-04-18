@@ -110,8 +110,6 @@ class BertEmbedding(AlgorithmBase):
 
         return matrix
 
-
-
     def _merge(self, vectors):
         if not vectors.size(0):
             return np.zeros(vectors.size(1), dtype="float32")
@@ -167,7 +165,9 @@ class BertTokenizeEmbedding(AlgorithmBase):
                 )
 
         self.print("Tokenizing...", end="", flush=True)
-        tokens = [ self.tokenizer(x, max_length=32, pad_to_max_length=True) for x in input]
+        tokens = [
+            self.tokenizer(x, max_length=32, pad_to_max_length=True) for x in input
+        ]
         self.print("done")
 
         ids = torch.tensor(tokens).to(self.device)

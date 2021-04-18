@@ -1,5 +1,14 @@
 from autogoal.contrib import find_classes
-from autogoal.kb import algorithm, Sentence, Seq, Word, Stem, build_pipeline_graph, Supervised, Label
+from autogoal.kb import (
+    algorithm,
+    Sentence,
+    Seq,
+    Word,
+    Stem,
+    build_pipeline_graph,
+    Supervised,
+    Label,
+)
 from autogoal.grammar import generate_cfg, Symbol
 
 
@@ -31,7 +40,7 @@ def test_crf_pipeline():
     graph = build_pipeline_graph(
         input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
         output_type=Seq[Seq[Label]],
-        registry=[FeatureSeqExtractor, CRFTagger]
+        registry=[FeatureSeqExtractor, CRFTagger],
     )
 
     pipeline = graph.sample()

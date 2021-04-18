@@ -2,7 +2,16 @@ from autogoal.contrib.sklearn import CountVectorizer
 from autogoal.contrib.sklearn._generated import SGDClassifier
 from autogoal.contrib.nltk._generated import ClassifierBasedPOSTagger
 from autogoal.kb import Supervised
-from autogoal.kb import Categorical, Dense, Pipeline, Sentence, Seq, Tensor, Word, Postag
+from autogoal.kb import (
+    Categorical,
+    Dense,
+    Pipeline,
+    Sentence,
+    Seq,
+    Tensor,
+    Word,
+    Postag,
+)
 
 
 def test_count_vectorizer_sgd():
@@ -39,16 +48,11 @@ def test_count_vectorizer_sgd():
 
 def test_classifier_tagger():
     p = Pipeline(
-        algorithms=[
-            ClassifierBasedPOSTagger(),
-        ],
+        algorithms=[ClassifierBasedPOSTagger(),],
         input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
     )
 
-    p.run(
-        [["hello", "world"]],
-        [["A", "B"]]
-    )
+    p.run([["hello", "world"]], [["A", "B"]])
 
     p.send("eval")
 
