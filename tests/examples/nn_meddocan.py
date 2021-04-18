@@ -28,8 +28,8 @@ from autogoal.contrib import find_classes
 
 classifier = AutoML(
     search_algorithm=PESearch,
-    input=(Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
-    output=Seq[Seq[Postag]],
+    input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+    output=Seq[Seq[Label]],
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,
     # Since we only want to try neural networks, we restrict

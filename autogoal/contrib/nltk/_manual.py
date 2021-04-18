@@ -290,6 +290,68 @@ class GlobalChunker(SklearnWrapper):
         return SklearnWrapper.run(self, input)
 
 
+@nice_repr
+class FeatureSeqExtractor(AlgorithmBase):
+    """
+    A simple feature extractor for tokenized sentences based on NLTK.
+
+    It receives a tokenized sentence (i.e., a list of str) and outputs a 
+    list of syntactic features. For each word in the sentence, it builds a
+    dictionary of features of that word, plus features of surrounding words
+    in a pre-defined window (of size 1 to 5).
+
+    **Parameters**
+
+    * `extract_word`: whether to extract words as features.
+    * `window_size`: size of the window around the current word to also look for features.
+
+    ```python
+    >>> extractor = FeatureSeqExtractor(window_size=2)
+    >>> extractor.run(["Hello", "World"])
+    [{'word': 'Hello', 'word+1': 'World'}, {'word': 'World', 'word-1': 'Hello'}]
+
+    ```
+    """
+    def __init__(self, 
+        extract_word: BooleanValue() = True,
+        window_size: DiscreteValue(0, 5) = 0,
+    ):
+        self.extract_word = extract_word
+        self.window_size = window_size
+
+    def extract_features(self, w):
+        features = {}
+
+        if self.extract_word: features["word"] = w
+
+        return features
+
+    def run(self, sentence: Seq[Word]) -> Seq[FeatureSet]:
+        features = []
+
+        for w in sentence:
+            features.append(self.extract_features(w))
+
+        expanded_features = []
+
+        for i, f in enumerate(features):
+            expanded = dict(f)
+
+            for j in range(i - self.window_size,  i + self.window_size+1):
+                if j == i:
+                    continue
+                    
+                ff = features[j] if 0 <= j < len(features) else {}
+                idx = f"+{j-i}" if j > i else str(j-i) 
+
+                for k,v in ff.items():
+                    expanded[k + idx] = v
+
+            expanded_features.append(expanded)
+
+        return expanded_features
+
+
 __all__ = [
     "Doc2Vec",
     "StopwordRemover",
@@ -298,4 +360,5 @@ __all__ = [
     "SentimentWord",
     "NEChunkParserTagger",
     "GlobalChunker",
+    "FeatureSeqExtractor",
 ]

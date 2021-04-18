@@ -7,7 +7,7 @@ from autogoal.kb import (
     Tensor3,
     Tensor4,
     Seq,
-    Postag,
+    Label,
 )
 
 from autogoal.contrib.keras import (
@@ -48,5 +48,5 @@ def test_algorithms_report_correct_types():
     )
     assert KerasSequenceTagger.input_types() == (
         Seq[MatrixContinuousDense],
-        Supervised[Seq[Seq[Postag]]],
+        Supervised[Seq[Seq[Label]]],
     )

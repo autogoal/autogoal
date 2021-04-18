@@ -156,7 +156,7 @@ class DocumentFeatureExtractor(AlgorithmBase):
 
 #     def run(
 #         self, input: Tuple(Sentence, Seq[Entity])
-#     ) -> Tuple(Seq[Word], Seq[Postag]:
+#     ) -> Tuple(Seq[Word], Seq[Label]:
 #         pass
 
 

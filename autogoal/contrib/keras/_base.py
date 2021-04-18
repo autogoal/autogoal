@@ -24,7 +24,7 @@ from autogoal.kb import (
     VectorCategorical,
     Seq,
     MatrixContinuousDense,
-    Postag,
+    Label,
     Tensor3,
     Tensor4,
 )
@@ -425,6 +425,6 @@ class KerasSequenceTagger(KerasNeuralNetwork):
         return self._decode(predictions)
 
     def run(
-        self, X: Seq[MatrixContinuousDense], y: Supervised[Seq[Seq[Postag]]]
-    ) -> Seq[Seq[Postag]]:
+        self, X: Seq[MatrixContinuousDense], y: Supervised[Seq[Seq[Label]]]
+    ) -> Seq[Seq[Label]]:
         return super().run(X, y)
