@@ -77,10 +77,13 @@ print(args)
 # Note that the input and output types here are defined to match the problem statement,
 # i.e., entity recognition.
 
+from autogoal.contrib import find_classes
+
 classifier = AutoML(
     search_algorithm=PESearch,
     input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
     output=Seq[Seq[Label]],
+    registry=find_classes(exclude="Keras|Bert"),
     search_iterations=args.iterations,
     score_metric=meddocan.F1_beta,
     cross_validation_steps=1,

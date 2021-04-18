@@ -228,9 +228,7 @@ class GlobalChunker(SklearnWrapper):
 
         SklearnWrapper.__init__(self)
 
-    def _train(self, input):
-        X, y = input
-
+    def _train(self, X, y):
         postagged_sentences = []
         for i in range(len(X)):
             sentence = []
@@ -266,9 +264,7 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_sentences, tagged_sentences))
 
-    def _eval(self, input):
-        X, y = input
-
+    def _eval(self, X, y=None):
         postagged_document = []
         for i in range(len(X)):
             sentence = []
@@ -286,7 +282,7 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: Seq[Seq[Word]]) -> Seq[Chunktag]:
+    def run(self, X: Seq[Seq[Word]], y: Supervised[Seq[Seq[Chunktag]]]) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
 
 
