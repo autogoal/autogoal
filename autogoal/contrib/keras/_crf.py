@@ -14,16 +14,18 @@
 #
 # Orginal implementation from keras_contrib/layers/crf
 # ==============================================================================
-"""Implementing Conditional Random Field layer."""
+
+"""Implementing Conditional Random Field layer.
+"""
 
 # !!! warning
-# This code is taken verbatim from <https://github.com/tensorflow/addons/pull/377>
-# since the CRF layer has not yet landed in tensorflow
-# TODO: Make sure to replace this when tensorflow merges this commit
+#     This code is taken verbatim from <https://github.com/tensorflow/addons/pull/377>
+#     since the CRF layer has not yet landed in tensorflow
+#     TODO: Make sure to replace this when tensorflow merges this commit
 
-# Files:
-# <https://github.com/tensorflow/addons/blob/e0b5e0f056d24b95546970acd4aedc3a5530d466/tensorflow_addons/layers/crf.py>
-# <https://github.com/tensorflow/addons/blob/e0b5e0f056d24b95546970acd4aedc3a5530d466/tensorflow_addons/losses/crf.py>
+#     Files:
+#     <https://github.com/tensorflow/addons/blob/e0b5e0f056d24b95546970acd4aedc3a5530d466/tensorflow_addons/layers/crf.py>
+#     <https://github.com/tensorflow/addons/blob/e0b5e0f056d24b95546970acd4aedc3a5530d466/tensorflow_addons/losses/crf.py>
 
 from __future__ import absolute_import, division, print_function
 
