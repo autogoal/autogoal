@@ -34,7 +34,10 @@ classifier = AutoML(
     cross_validation_steps=1,
     # Since we only want to try neural networks, we restrict
     # the contrib registry to algorithms matching with `Keras`.
-    registry=find_classes("Keras"),
+    registry=find_classes("Keras|Bert"),
+    # We need to give some extra time because neural networks are slow
+    evaluation_timeout=300,
+    search_timeout=1800,
 )
 
 # Basic logging configuration.
