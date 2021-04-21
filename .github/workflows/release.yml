@@ -28,16 +28,16 @@ jobs:
           poetry install --extras dev
           poetry build
 
+      - name: Build docs
+        run: make docs
+        env:
+          BUILD_ENVIRONMENT: development
+
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
-
-      - name: Build docs
-        run: make docs
-        env:
-          BUILD_ENVIRONMENT: development
   
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
