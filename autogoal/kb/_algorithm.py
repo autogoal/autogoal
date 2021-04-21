@@ -81,12 +81,16 @@ def algorithm(*annotations):
         return True
 
     @classmethod
+    def is_compatible(cls, other):
+        return match(other)
+
+    @classmethod
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
         compatible = []
 
         for _, other_cls in grammar.namespace.items():
-            if match(other_cls):
+            if cls.is_compatible(other_cls):
                 compatible.append(other_cls)
 
         if not compatible:
@@ -98,6 +102,7 @@ def algorithm(*annotations):
 
     def build(ns):
         ns["generate_cfg"] = generate_cfg
+        ns["is_compatible"] = is_compatible
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 

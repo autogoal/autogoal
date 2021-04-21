@@ -170,6 +170,8 @@ def status():
     except ImportError as e:
         status["autogoal.contrib.wikipedia"] = ContribStatus.RequiresDependency
 
+    modules.sort(key=lambda m: m.__name__)
+
     for module in modules:
         if hasattr(module, "status"):
             status[module.__name__] = module.status()

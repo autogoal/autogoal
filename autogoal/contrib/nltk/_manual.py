@@ -85,7 +85,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
 
 @nice_repr
-class StopwordRemover(AlgorithmBase):
+class StopwordRemover(SklearnTransformer):
     def __init__(
         self,
         language: CategoricalValue(
@@ -109,32 +109,22 @@ class StopwordRemover(AlgorithmBase):
         from nltk.corpus import stopwords
 
         self.words = stopwords.words(language)
-        SklearnWrapper.__init__(self)
+        SklearnTransformer.__init__(self)
 
-    def _train(self, input):
+    def fit_transform(self, X, y=None):
         return [word for word in input if word not in self.words]
 
-    def _eval(self, input):
-        return [word for word in input if word not in self.words]
+    def transform(self, X, y=None):
+        return self.fit_transform(X, y)
 
     def run(self, input: Seq[Word]) -> Seq[Word]:
         """This methods receive a word list list and transform this into a word list list without stopwords.
        """
         return SklearnTransformer.run(self, input)
 
-    def __str__(self):
-        name = StopwordRemover.__name__
-        return f"{name}({self.language})"
-
 
 @nice_repr
-class TextLowerer(AlgorithmBase):
-    def __init__(self):
-        pass
-
-    def fit(self, X, y=None):
-        pass
-
+class TextLowerer(SklearnTransformer):
     def fit_transform(self, X, y=None):
         self.fit(X, y=None)
         return self.transform(X)
@@ -195,8 +185,8 @@ class SentimentWord(AlgorithmBase):
         swn_synset = self.swn.senti_synset(input)
 
         sentiment = {}
-        sentiments["positive"] = swn_synset.pos_score()
-        sentiments["negative"] = swn_synset.neg_score()
+        sentiment["positive"] = swn_synset.pos_score()
+        sentiment["negative"] = swn_synset.neg_score()
 
         return sentiment
 
