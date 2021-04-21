@@ -38,9 +38,13 @@ nav:
         - Functional API: guide/tests.guide.functional.md
     - Examples:
         - Index: examples/index.md
-        - Solving UCI datasets: examples/tests.examples.solving_uci_datasets.md
-        - Solving HAHA 2019: examples/tests.examples.solving_haha_2019.md
-        - Solving MEDDOCAN 2019: examples/tests.examples.solving_meddocan_2019.md
+        - General-purpose AutoML:
+            - Solving UCI datasets: examples/tests.examples.solving_uci_datasets.md
+            - Solving HAHA 2019: examples/tests.examples.solving_haha_2019.md
+            - Solving MEDDOCAN 2019: examples/tests.examples.solving_meddocan_2019.md
+        - Using Neural Networks:
+            - Solving CARS with Keras: examples/tests.examples.nn_cars.md 
+            - Solving MEDDOCAN with Keras: examples/tests.examples.nn_meddocan.md 
     - Demo: https://autogoal.github.io/demo
     - Dashboard: https://autogoal.github.io/dashboard
     - API:

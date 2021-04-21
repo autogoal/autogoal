@@ -50,9 +50,9 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
             pass
 
         try:
-            from autogoal.contrib import torch
+            from autogoal.contrib import transformers
 
-            modules.append(torch)
+            modules.append(transformers)
         except ImportError as e:
             pass
 
@@ -150,11 +150,11 @@ def status():
         status["autogoal.contrib.keras"] = ContribStatus.RequiresDependency
 
     try:
-        from autogoal.contrib import torch
+        from autogoal.contrib import transformers
 
-        modules.append(torch)
+        modules.append(transformers)
     except ImportError as e:
-        status["autogoal.contrib.torch"] = ContribStatus.RequiresDependency
+        status["autogoal.contrib.transformers"] = ContribStatus.RequiresDependency
 
     try:
         from autogoal.contrib import spacy
@@ -169,6 +169,8 @@ def status():
         modules.append(wikipedia)
     except ImportError as e:
         status["autogoal.contrib.wikipedia"] = ContribStatus.RequiresDependency
+
+    modules.sort(key=lambda m: m.__name__)
 
     for module in modules:
         if hasattr(module, "status"):
@@ -211,9 +213,9 @@ def download(contrib: str):
         pass
 
     try:
-        from autogoal.contrib import torch
+        from autogoal.contrib import transformers
 
-        modules["torch"] = torch
+        modules["transformers"] = transformers
     except ImportError as e:
         pass
 

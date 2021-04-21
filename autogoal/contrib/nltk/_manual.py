@@ -85,7 +85,7 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
 
 
 @nice_repr
-class StopwordRemover(AlgorithmBase):
+class StopwordRemover(SklearnTransformer):
     def __init__(
         self,
         language: CategoricalValue(
@@ -109,32 +109,22 @@ class StopwordRemover(AlgorithmBase):
         from nltk.corpus import stopwords
 
         self.words = stopwords.words(language)
-        SklearnWrapper.__init__(self)
+        SklearnTransformer.__init__(self)
 
-    def _train(self, input):
+    def fit_transform(self, X, y=None):
         return [word for word in input if word not in self.words]
 
-    def _eval(self, input):
-        return [word for word in input if word not in self.words]
+    def transform(self, X, y=None):
+        return self.fit_transform(X, y)
 
     def run(self, input: Seq[Word]) -> Seq[Word]:
         """This methods receive a word list list and transform this into a word list list without stopwords.
        """
         return SklearnTransformer.run(self, input)
 
-    def __str__(self):
-        name = StopwordRemover.__name__
-        return f"{name}({self.language})"
-
 
 @nice_repr
-class TextLowerer(AlgorithmBase):
-    def __init__(self):
-        pass
-
-    def fit(self, X, y=None):
-        pass
-
+class TextLowerer(SklearnTransformer):
     def fit_transform(self, X, y=None):
         self.fit(X, y=None)
         return self.transform(X)
@@ -195,8 +185,8 @@ class SentimentWord(AlgorithmBase):
         swn_synset = self.swn.senti_synset(input)
 
         sentiment = {}
-        sentiments["positive"] = swn_synset.pos_score()
-        sentiments["negative"] = swn_synset.neg_score()
+        sentiment["positive"] = swn_synset.pos_score()
+        sentiment["negative"] = swn_synset.neg_score()
 
         return sentiment
 
@@ -228,9 +218,7 @@ class GlobalChunker(SklearnWrapper):
 
         SklearnWrapper.__init__(self)
 
-    def _train(self, input):
-        X, y = input
-
+    def _train(self, X, y):
         postagged_sentences = []
         for i in range(len(X)):
             sentence = []
@@ -266,9 +254,7 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_sentences, tagged_sentences))
 
-    def _eval(self, input):
-        X, y = input
-
+    def _eval(self, X, y=None):
         postagged_document = []
         for i in range(len(X)):
             sentence = []
@@ -286,8 +272,73 @@ class GlobalChunker(SklearnWrapper):
 
         return self.inner_chunker.run((postagged_document, y))
 
-    def run(self, input: Seq[Seq[Word]]) -> Seq[Chunktag]:
+    def run(
+        self, X: Seq[Seq[Word]], y: Supervised[Seq[Seq[Chunktag]]]
+    ) -> Seq[Chunktag]:
         return SklearnWrapper.run(self, input)
+
+
+@nice_repr
+class FeatureSeqExtractor(AlgorithmBase):
+    """
+    A simple feature extractor for tokenized sentences based on NLTK.
+
+    It receives a tokenized sentence (i.e., a list of str) and outputs a 
+    list of syntactic features. For each word in the sentence, it builds a
+    dictionary of features of that word, plus features of surrounding words
+    in a pre-defined window (of size 1 to 5).
+
+    **Parameters**
+
+    * `extract_word`: whether to extract words as features.
+    * `window_size`: size of the window around the current word to also look for features.
+
+    ```python
+    >>> extractor = FeatureSeqExtractor(window_size=2)
+    >>> extractor.run(["Hello", "World"])
+    [{'word': 'Hello', 'word+1': 'World'}, {'word': 'World', 'word-1': 'Hello'}]
+
+    ```
+    """
+
+    def __init__(
+        self, extract_word: BooleanValue() = True, window_size: DiscreteValue(0, 5) = 0,
+    ):
+        self.extract_word = extract_word
+        self.window_size = window_size
+
+    def extract_features(self, w):
+        features = {}
+
+        if self.extract_word:
+            features["word"] = w
+
+        return features
+
+    def run(self, sentence: Seq[Word]) -> Seq[FeatureSet]:
+        features = []
+
+        for w in sentence:
+            features.append(self.extract_features(w))
+
+        expanded_features = []
+
+        for i, f in enumerate(features):
+            expanded = dict(f)
+
+            for j in range(i - self.window_size, i + self.window_size + 1):
+                if j == i:
+                    continue
+
+                ff = features[j] if 0 <= j < len(features) else {}
+                idx = f"+{j-i}" if j > i else str(j - i)
+
+                for k, v in ff.items():
+                    expanded[k + idx] = v
+
+            expanded_features.append(expanded)
+
+        return expanded_features
 
 
 __all__ = [
@@ -298,4 +349,5 @@ __all__ = [
     "SentimentWord",
     "NEChunkParserTagger",
     "GlobalChunker",
+    "FeatureSeqExtractor",
 ]

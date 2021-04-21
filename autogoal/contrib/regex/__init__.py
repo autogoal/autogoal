@@ -7,7 +7,7 @@ from autogoal.grammar import BooleanValue
 from autogoal.kb import AlgorithmBase
 
 
-class _Regex(abc.ABC):
+class _Regex(AlgorithmBase):
     def __init__(self, full: BooleanValue):
         self.full = full
         self._name = self.__class__.__name__[: -len("Regex")].lower()
@@ -23,7 +23,7 @@ class _Regex(abc.ABC):
 
 
 @nice_repr
-class UrlRegex(AlgorithmBase, _Regex):
+class UrlRegex(_Regex):
     """
     Finds if a URL is contained inside a word using regular expressions.
 
@@ -50,7 +50,7 @@ class UrlRegex(AlgorithmBase, _Regex):
 
 
 @nice_repr
-class IPRegex(AlgorithmBase, _Regex):
+class IPRegex(_Regex):
     """
     Finds if an IP-address is contained inside a word using regular expressions.
 
@@ -77,7 +77,7 @@ class IPRegex(AlgorithmBase, _Regex):
 
 
 @nice_repr
-class MACRegex(AlgorithmBase, _Regex):
+class MACRegex(_Regex):
     """
     Finds if a MAC-address is contained inside a word using regular expressions.
 
@@ -104,7 +104,7 @@ class MACRegex(AlgorithmBase, _Regex):
 
 
 @nice_repr
-class EmailRegex(AlgorithmBase, _Regex):
+class EmailRegex(_Regex):
     """
     Finds if an email is contained inside a word using regular expressions.
 
@@ -131,7 +131,7 @@ class EmailRegex(AlgorithmBase, _Regex):
 
 
 @nice_repr
-class PhoneRegex(AlgorithmBase, _Regex):
+class PhoneRegex(_Regex):
     """
     Finds if a phone number is contained inside a word using regular expressions.
 

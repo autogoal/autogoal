@@ -3,7 +3,7 @@ import inspect
 import abc
 import types
 import warnings
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any, Dict, List, Set, Tuple, Type
 import types
 
 import networkx as nx
@@ -81,12 +81,16 @@ def algorithm(*annotations):
         return True
 
     @classmethod
+    def is_compatible(cls, other):
+        return match(other)
+
+    @classmethod
     def generate_cfg(cls, grammar, head):
         symbol = head or Symbol(cls.__name__)
         compatible = []
 
         for _, other_cls in grammar.namespace.items():
-            if match(other_cls):
+            if cls.is_compatible(other_cls):
                 compatible.append(other_cls)
 
         if not compatible:
@@ -98,6 +102,7 @@ def algorithm(*annotations):
 
     def build(ns):
         ns["generate_cfg"] = generate_cfg
+        ns["is_compatible"] = is_compatible
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
@@ -166,30 +171,30 @@ class AlgorithmBase(Algorithm):
 
     @classmethod
     def input_types(cls) -> Tuple[type]:
-        if not hasattr(cls, "__run_signature__"):
-            cls.__run_signature__ = inspect.signature(cls.run)
+        # if not hasattr(cls, "__run_signature__"):
+        #     cls.__run_signature__ = inspect.signature(cls.run)
 
         return tuple(
             param.annotation
-            for name, param in cls.__run_signature__.parameters.items()
+            for name, param in inspect.signature(cls.run).parameters.items()
             if name != "self"
         )
 
     @classmethod
     def input_args(cls) -> Tuple[str]:
-        if not hasattr(cls, "__run_signature__"):
-            cls.__run_signature__ = inspect.signature(cls.run)
+        # if not hasattr(cls, "__run_signature__"):
+        #     cls.__run_signature__ = inspect.signature(cls.run)
 
         return tuple(
-            name for name in cls.__run_signature__.parameters if name != "self"
+            name for name in inspect.signature(cls.run).parameters if name != "self"
         )
 
     @classmethod
     def output_type(cls) -> type:
-        if not hasattr(cls, "__run_signature__"):
-            cls.__run_signature__ = inspect.signature(cls.run)
+        # if not hasattr(cls, "__run_signature__"):
+        #     cls.__run_signature__ = inspect.signature(cls.run)
 
-        return cls.__run_signature__.return_annotation
+        return inspect.signature(cls.run).return_annotation
 
 
 def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
@@ -402,11 +407,20 @@ class PipelineNode:
 
 class PipelineSpace(GraphSpace):
     def __init__(self, graph: Graph, input_types):
-        super().__init__(graph, initializer=self.initialize)
+        super().__init__(graph, initializer=self._initialize)
         self.input_types = input_types
 
-    def initialize(self, item: PipelineNode, sampler):
+    def _initialize(self, item: PipelineNode, sampler):
         return item.sample(sampler)
+
+    def nodes(self) -> Set[Type[Algorithm]]:
+        """Returns a list of all algorithms (types) that exist in the graph.
+        """
+        return set(
+            node.algorithm
+            for node in self.graph.nodes
+            if isinstance(node, PipelineNode)
+        )
 
     def sample(self, *args, **kwargs):
         path = super().sample(*args, **kwargs)
@@ -418,7 +432,7 @@ def build_pipeline_graph(
     output_type: type,
     registry: List[type],
     max_list_depth: int = 3,
-):
+) -> PipelineSpace:
     """Build a graph of algorithms.
 
     Every node in the graph corresponds to a <autogoal.grammar.ContextFreeGrammar> that

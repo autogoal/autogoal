@@ -372,6 +372,8 @@ class Tensor(SemanticType):
     True
     >>> issubclass(Tensor[2, Continuous, Sparse], Tensor[2, None, Dense])
     False
+    >>> issubclass(Tensor[2, Continuous, Sparse], Tensor[3, None, None])
+    False
 
     Each specific specialization is a singleton class:
     

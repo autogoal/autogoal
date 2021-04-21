@@ -157,7 +157,7 @@ from nltk.tag.sequential import AffixTagger as _AffixTagger
 class AffixTagger(NltkTagger):
     def __init__(
         self,
-        affix_length: DiscreteValue(min=-2, max=-6),
+        affix_length: DiscreteValue(min=2, max=6),
         min_stem_length: DiscreteValue(min=1, max=4),
         cutoff: DiscreteValue(min=0, max=10),
         backoff: algorithm(
