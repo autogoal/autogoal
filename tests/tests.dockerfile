@@ -19,7 +19,7 @@ ENV BUILD_ENVIRONMENT="development"
 
 WORKDIR /autogoal
 
-COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
+COPY pyproject.toml poetry.lock makefile /autogoal/
 
 # Use system's Python for installing dev tools
 RUN make env
