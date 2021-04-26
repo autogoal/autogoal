@@ -46,4 +46,3 @@ def test_cars():
         evaluation_timeout=5,
         expected_fitness=0.9,
     )
-
