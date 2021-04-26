@@ -1,6 +1,6 @@
 from enum import auto
 from autogoal.ml import AutoML
-from autogoal.kb import MatrixContinuousDense, VectorCategorical, Supervised
+from autogoal.kb import MatrixContinuousDense, VectorCategorical, Supervised, Seq, Sentence
 
 from autogoal.datasets import (
     abalone,
@@ -45,4 +45,17 @@ def test_cars():
         search_timeout=60,
         evaluation_timeout=5,
         expected_fitness=0.9,
+    )
+
+
+def test_movie_reviews():
+    X, y = movie_reviews.load(max_examples=100)
+
+    run_automl_test(
+        dataset=(X, y),
+        input=(Seq[Sentence], Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        search_timeout=60,
+        evaluation_timeout=5,
+        expected_fitness=0.6,
     )
