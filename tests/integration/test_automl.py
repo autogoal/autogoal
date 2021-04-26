@@ -1,6 +1,12 @@
 from enum import auto
 from autogoal.ml import AutoML
-from autogoal.kb import MatrixContinuousDense, VectorCategorical, Supervised, Seq, Sentence
+from autogoal.kb import (
+    MatrixContinuousDense,
+    VectorCategorical,
+    Supervised,
+    Seq,
+    Sentence,
+)
 
 from autogoal.datasets import (
     abalone,
