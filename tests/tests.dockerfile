@@ -26,7 +26,6 @@ RUN make env
 RUN poetry install -E dev -E contrib
 
 COPY ./ /autogoal
-RUN sudo ln -s /autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
 
 # Download all necessary contrib data
 RUN python -m autogoal contrib download all
