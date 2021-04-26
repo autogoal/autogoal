@@ -28,7 +28,8 @@ RUN poetry install -E dev -E contrib
 COPY ./ /autogoal
 
 # Download all necessary contrib data
-RUN python -m autogoal contrib download all
+RUN python -m autogoal contrib download nltk
+RUN python -m autogoal contrib download transformers
 RUN python -m autogoal data download all
 
 RUN make test-full
