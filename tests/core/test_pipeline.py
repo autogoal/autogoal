@@ -114,17 +114,6 @@ def test_when_pipeline_second_step_receives_two_input_one_from_previous_and_one_
     assert result == 121
 
 
-@pytest.mark.slow
-def test_build_real_pipeline():
-    graph = build_pipeline_graph(
-        input_types=(MatrixContinuous, Supervised[VectorCategorical]),
-        output_type=VectorCategorical,
-        registry=find_classes(),
-    )
-    pipeline = graph.sample(sampler=Sampler(random_state=42))
-    pipeline.run(np.ones(shape=(2, 2)), [0, 1])
-
-
 class A(AlgorithmBase):
     def run(self, x: MatrixContinuous):
         pass

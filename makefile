@@ -123,7 +123,7 @@ test-core: ensure-dev
 # test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full
 test-full: ensure-dev
-	python -m pytest autogoal tests --doctest-modules --cov=autogoal --cov-report=term-missing -v
+	python -m pytest autogoal tests/core tests/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental --cov=autogoal --cov-report=term-missing -v
 
 # cov          Run the coverage analysis.
 .PHONY: cov
