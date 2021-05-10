@@ -2,11 +2,14 @@ import inspect
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels
+
 METRICS = []
+
 
 def register_metric(func):
     METRICS.append(func)
     return func
+
 
 def find_metric(*types):
     for metric_func in METRICS:
@@ -23,8 +26,18 @@ def find_metric(*types):
 
     raise ValueError("No metric found for types: %r" % types)
 
+
 def supervised_fitness_fn(score_metric_fn):
-    def fitness_fn(pipeline, X, y, *args, validation_split = 0.3, cross_validation_steps = 3, cross_validation = "median", **kwargs):
+    def fitness_fn(
+        pipeline,
+        X,
+        y,
+        *args,
+        validation_split=0.3,
+        cross_validation_steps=3,
+        cross_validation="median",
+        **kwargs
+    ):
         scores = []
         for _ in range(cross_validation_steps):
             len_x = len(X) if isinstance(X, list) else X.shape[0]
@@ -55,7 +68,9 @@ def supervised_fitness_fn(score_metric_fn):
             y_pred = pipeline.run(X_test, None)
             scores.append(score_metric_fn(y_test, y_pred))
         return getattr(statistics, cross_validation)(scores)
+
     return fitness_fn
+
 
 def unsupervised_fitness_fn(score_metric_fn):
     def fitness_fn(pipeline, X, *args, **kwargs):
@@ -65,11 +80,14 @@ def unsupervised_fitness_fn(score_metric_fn):
         pipeline.send("eval")
         y_pred = pipeline.run(X)
         return score_metric_fn(X, y_pred)
+
     return fitness_fn
+
 
 @supervised_fitness_fn
 def accuracy(ytrue, ypred) -> float:
     return np.mean([1 if yt == yp else 0 for yt, yp in zip(ytrue, ypred)])
+
 
 @unsupervised_fitness_fn
 def calinski_harabasz_score(X, labels):
@@ -111,7 +129,7 @@ def calinski_harabasz_score(X, labels):
 
     check_number_of_labels(n_labels, n_samples)
 
-    extra_disp, intra_disp = 0., 0.
+    extra_disp, intra_disp = 0.0, 0.0
     mean = np.mean(X, axis=0)
     for k in range(n_labels):
         cluster_k = X[labels == k]
@@ -119,6 +137,8 @@ def calinski_harabasz_score(X, labels):
         extra_disp += len(cluster_k) * np.sum((mean_k - mean) ** 2)
         intra_disp += np.sum((cluster_k - mean_k) ** 2)
 
-    return (1. if intra_disp == 0. else
-            extra_disp * (n_samples - n_labels) /
-            (intra_disp * (n_labels - 1.)))
+    return (
+        1.0
+        if intra_disp == 0.0
+        else extra_disp * (n_samples - n_labels) / (intra_disp * (n_labels - 1.0))
+    )

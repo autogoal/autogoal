@@ -71,10 +71,10 @@ class AutoML:
             input_types=self.input, output_type=self.output, registry=registry,
         )
 
-    def fit(self, X, y = None, **kwargs):
+    def fit(self, X, y=None, **kwargs):
         self.input = self._input_type(X)
-        
-        if (y != None):
+
+        if y != None:
             self.output = self._output_type(y)
 
         search = self.search_algorithm(
@@ -131,12 +131,20 @@ class AutoML:
     def _output_type(self, y):
         return self.output or SemanticType.infer(y)
 
-    def make_fitness_fn(self, X, y = None):
-        if (y != None):
+    def make_fitness_fn(self, X, y=None):
+        if y != None:
             y = np.asarray(y)
 
         def fitness_fn(pipeline):
-            return self.score_metric(pipeline, X, y, self.validation_split, self.cross_validation_steps, self.cross_validation)
+            return self.score_metric(
+                pipeline,
+                X,
+                y,
+                self.validation_split,
+                self.cross_validation_steps,
+                self.cross_validation,
+            )
+
         return fitness_fn
 
     def predict(self, X):

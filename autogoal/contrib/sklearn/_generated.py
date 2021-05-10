@@ -103,9 +103,7 @@ class KMeans(_KMeans, SklearnEstimator):
             precompute_distances=precompute_distances,
         )
 
-    def run(
-        self, X: MatrixContinuous
-    ) -> VectorCategorical:
+    def run(self, X: MatrixContinuous) -> VectorCategorical:
         return SklearnEstimator.run(self, X)
 
 
@@ -134,9 +132,7 @@ class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
             reassignment_ratio=reassignment_ratio,
         )
 
-    def run(
-        self, X: MatrixContinuous
-    ) -> VectorCategorical:
+    def run(self, X: MatrixContinuous) -> VectorCategorical:
         return SklearnEstimator.run(self, X)
 
 
@@ -151,9 +147,7 @@ class MeanShift(_MeanShift, SklearnEstimator):
         SklearnEstimator.__init__(self)
         _MeanShift.__init__(self, bin_seeding=bin_seeding, cluster_all=cluster_all)
 
-    def run(
-        self, X: MatrixContinuousDense
-    ) -> VectorCategorical:
+    def run(self, X: MatrixContinuousDense) -> VectorCategorical:
         return SklearnEstimator.run(self, X)
 
 
