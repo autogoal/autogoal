@@ -74,7 +74,7 @@ class AutoML:
     def fit(self, X, y=None, **kwargs):
         self.input = self._input_type(X)
 
-        if y != None:
+        if y is None:
             self.output = self._output_type(y)
 
         search = self.search_algorithm(
@@ -132,7 +132,7 @@ class AutoML:
         return self.output or SemanticType.infer(y)
 
     def make_fitness_fn(self, X, y=None):
-        if y != None:
+        if y is None:
             y = np.asarray(y)
 
         def fitness_fn(pipeline):
