@@ -11,7 +11,7 @@ X, y = cars.load()
 automl = AutoML(
     input=MatrixContinuousDense,
     output=VectorCategorical,
-    score_metric=calinski_harabasz_score
+    score_metric=calinski_harabasz_score,
 )
 
 # Run the pipeline search process
@@ -20,4 +20,3 @@ automl.fit(X)
 # Report the best pipeline
 print(automl.best_pipeline_)
 print(automl.best_score_)
-    
