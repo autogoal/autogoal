@@ -24,6 +24,8 @@ for py in Path(sys.argv[1]).rglob("*.py"):
                 for line in block.content:
                     fp.write(" " * 4 + line)
 
-                fp.write("    \"\"\"\n    pass\n\n")
+                fp.write('    """\n    pass\n\n')
 
-    black.format_file_in_place(output_file, fast=True, mode=black.FileMode(), write_back=black.WriteBack.YES)
+    black.format_file_in_place(
+        output_file, fast=True, mode=black.FileMode(), write_back=black.WriteBack.YES
+    )

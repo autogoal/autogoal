@@ -489,25 +489,30 @@ Tensor4 = Tensor[4, Continuous, Dense]
 
 # Beyond aliases, we will define some explicit semantic representations that are often encoded as tensors.
 
+
 class MonoImage(Tensor[2, Continuous, Dense]):
     @classmethod
     def _name(cls):
         return "MonoImage"
+
 
 class ColorImage(Tensor[3, Continuous, Dense]):
     @classmethod
     def _name(cls):
         return "ColorImage"
 
+
 class TokenEmbedding(Tensor[1, Continuous, Dense]):
     @classmethod
     def _name(cls):
         return "TokenEmbedding"
 
+
 class SequenceEmbedding(Tensor[2, Continuous, Dense]):
     @classmethod
     def _name(cls):
         return "SequenceEmbedding"
+
 
 # Finally we define the publicly export classes
 
