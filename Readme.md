@@ -33,8 +33,8 @@ The following code will run for approximately 5 minutes on a classic dataset.
 
 ```python
 from autogoal.datasets import cars
-from autogoal.kb import (MatrixContinuousDense, 
-                         Supervised, 
+from autogoal.kb import (MatrixContinuousDense,
+                         Supervised,
                          VectorCategorical)
 from autogoal.ml import AutoML
 
@@ -43,7 +43,7 @@ X, y = cars.load()
 
 # Instantiate AutoML and define input/output types
 automl = AutoML(
-    input=(MatrixContinuousDense, 
+    input=(MatrixContinuousDense,
            Supervised[VectorCategorical]),
     output=VectorCategorical
 )
@@ -81,7 +81,7 @@ This will install the core library but you won't be able to use any of the under
 
 To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.github.io/dependencies/).
 
-> ⚠️ **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. 
+> ⚠️ **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version.
 >
 > The development version is mostly up-to-date with the `main` branch, hence it will probably contain more features, but also more bugs, than the release version.
 
@@ -111,19 +111,19 @@ And navigate to [localhost:8501](http://localhost:8501).
 ## ⚖️ API stability
 
 We make a conscious effort to maintain a consistent public API across versions, but the private API can change at any time.
-In general, everything you can import from `autogoal` without underscores is considered public. 
+In general, everything you can import from `autogoal` without underscores is considered public.
 
 For example:
 
 ```python
 # "clean" imports are part of the public API
-from autogoal import optimize   
-from autogoal.ml import AutoML  
+from autogoal import optimize
+from autogoal.ml import AutoML
 from autogoal.contrib.sklearn import find_classes
 
 # public members of public types as well
 automl = AutoML
-automl.fit(...) 
+automl.fit(...)
 
 # underscored imports are part of the private API
 from autogoal.ml._automl import ...
@@ -165,13 +165,12 @@ And navigating to [localhost:8000](http://localhost:8000).
 If you use AutoGOAL in academic research, please cite the following paper:
 
 ```bibtex
-@article{estevez2020general,
-  title={General-purpose hierarchical optimisation of machine learning pipelines with grammatical evolution},
-  author={Est{\'e}vez-Velarde, Suilan and Guti{\'e}rrez, Yoan and Almeida-Cruz, Yudivi{\'a}n and Montoyo, Andr{\'e}s},
-  journal={Information Sciences},
+@inproceedings{estevez2020solving,
+  title={Solving Heterogeneous AutoML Problems with AutoGOAL},
+  author={Estevez-Velarde, Suilan and Piad-Morffis, Alejandro and Guti{\'e}rrez, Yoan and Montoyo, Andr{\'e}s and Munoz, Rafael and Almeida-Cruz, Yudivian},
+  booktitle={Proceedings of the 7th ICML workshop on Automated Machine Learning},
   year={2020},
-  publisher={Elsevier},
-  doi={10.1016/j.ins.2020.07.035}
+  organization={ICML}
 }
 ```
 
@@ -185,13 +184,17 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 
 - [Solving Heterogeneous AutoML Problems with AutoGOAL](https://www.automl.org/wp-content/uploads/2020/07/AutoML_2020_paper_20.pdf) is the first actual description of AutoGOAL as a framework, unifying the ideas presented in the previous papers.
 
+- [Demo Application for the AutoGOAL Framework](http://hdl.handle.net/10045/110741) is a short paper highlighting some of the key characteristics of AutoGOAL based on the demo app.
+
+- [Automatic Discovery of Heterogeneous Machine Learning Pipelines: An Application to Natural Language Processing](https://www.aclweb.org/anthology/2020.coling-main.317/) presents AutoGOAL with a focus on solving Natural Language Processing problems.
+
 ## 🤝 Contribution
 
 Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.github.io/contributing).
 
-This project follows the [all-contributors](https://allcontributors.org) specification. Any contribution will be given credit, from fixing typos, to reporting bugs, to implementing new core functionalities. 
+This project follows the [all-contributors](https://allcontributors.org) specification. Any contribution will be given credit, from fixing typos, to reporting bugs, to implementing new core functionalities.
 
-Here are all the current contributions. 
+Here are all the current contributions.
 
 > **🙏 Thanks!**
 
@@ -221,4 +224,3 @@ Here are all the current contributions.
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
- 

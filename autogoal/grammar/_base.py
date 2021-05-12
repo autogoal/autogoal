@@ -7,9 +7,9 @@ class Grammar:
     def __init__(self, start):
         self._start = start
 
-    def sample(self, *, max_iterations: int = 100, sampler: Sampler = None):
+    def sample(self, *, max_iterations: int = 100, sampler: Sampler = None, random_state = None):
         if sampler is None:
-            sampler = Sampler()
+            sampler = Sampler(random_state=random_state)
 
         return self._sample(
             symbol=self._start, max_iterations=max_iterations, sampler=sampler

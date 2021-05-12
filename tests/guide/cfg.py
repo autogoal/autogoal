@@ -25,20 +25,29 @@ X, y = make_classification(random_state=0)  # Fixed seed for reproducibility
 from sklearn.linear_model import LogisticRegression
 
 
-def evaluate(estimator, iters=30):
+def evaluate(estimator, iters=5):
     scores = []
 
     for i in range(iters):
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.25, random_state=0
+        )
         estimator.fit(X_train, y_train)
         scores.append(estimator.score(X_test, y_test))
 
     return sum(scores) / len(scores)
 
 
-lr = LogisticRegression()
-score = evaluate(lr)  # around 0.83
-print(score)  # :hide:
+# Let's test it!
+
+"""
+```python
+>>> lr = LogisticRegression()
+>>> evaluate(lr)
+0.92...
+
+```
+"""
 
 # So far so good, but maybe we could do better with a different set of parameters.
 # Logistic regression has at least two parameters that influence heavily its performance: the penalty function
@@ -74,14 +83,18 @@ class LR(LogisticRegression):
 
 from autogoal.grammar import generate_cfg
 
-grammar = generate_cfg(LR)
-print(grammar)
 
-# ```bash
-# <LR>         := LR (penalty=<LR_penalty>, C=<LR_C>)
-# <LR_penalty> := categorical (options=['l1', 'l2'])
-# <LR_C>       := continuous (min=0.1, max=10)
-# ```
+grammar = generate_cfg(LR)
+
+"""
+```python
+>>> print(grammar)
+<LR>         := LR (penalty=<LR_penalty>, C=<LR_C>)
+<LR_penalty> := categorical (options=['l1', 'l2'])
+<LR_C>       := continuous (min=0.1, max=10)
+
+```
+"""
 
 # As you can see, this grammar describes the set of all possible instances of `LR` by
 # describing how to call the constructor, and how to generate random values for its parameters.
@@ -95,17 +108,21 @@ print(grammar)
 #     You can read more in [Wikipedia](https://en.wikipedia.org/wiki/Context-free_grammar).
 
 # You can use this grammar to generate a bunch of random instances.
+# We're fixing the `random_state` to ensure reproducible results.
 
-for _ in range(5):
-    print(grammar.sample())
+"""
+```python
+>>> for i in range(5):
+...     print(grammar.sample(random_state=i))
+LR(C=7.603748589108994, penalty='l2')
+LR(C=5.735118360739901, penalty='l1')
+LR(C=1.0066893953102285, penalty='l1')
+LR(C=5.967145015208939, penalty='l1')
+LR(C=3.10265600026655, penalty='l1')
 
-# ```bash
-# LR(C=4.015231900472649, penalty='l2')
-# LR(C=9.556786605505499, penalty='l2')
-# LR(C=4.05716261883461, penalty='l1')
-# LR(C=3.2786487445120858, penalty='l1')
-# LR(C=4.655510386502897, penalty='l2')
-# ```
+```
+"""
+
 
 # Now we can search for the best combination of constructor parameters by
 # trying a bunch of different instances and see which one obtains the best score.
@@ -113,18 +130,19 @@ for _ in range(5):
 
 from autogoal.search import RandomSearch
 
-search = RandomSearch(grammar, evaluate, random_state=0)  # Fixed seed
-best, score = search.run(100)
-
-print("Best:", best, "\nScore:", score)
-
 # The `RandomSearch` will try 100 different random instances, and for each one
 # run the `evaluate` method we defined earlier. It returns the best one and the corresponding score.
 
-# ```
-# Best: LR(C=0.7043201482743121, penalty='l1')
-# Score: 0.8853333333333337
-# ```
+"""
+```python
+>>> search = RandomSearch(grammar, evaluate, random_state=0)  # Fixed seed
+>>> best, score = search.run(100)
+>>> best
+LR(C=7.603748589108994, penalty='l2')
+>>> score
+
+```
+"""
 
 # So we can do a little bit better by carefully selecting the right parameters.
 # However, maybe we can do even better.
@@ -174,7 +192,7 @@ class NB(GaussianNB):
 from autogoal.grammar import Union
 from autogoal.grammar import generate_cfg
 
-grammar = generate_cfg(Union("Classifier", LR, SVM, NB, DT))
+grammar2 = generate_cfg(Union("Classifier", LR, SVM, NB, DT))
 
 # !!! note
 #     The method [`generate_cfg`](/api/grammar/#generate_cfg) works not only with annotated classes
@@ -184,49 +202,55 @@ grammar = generate_cfg(Union("Classifier", LR, SVM, NB, DT))
 # by instantiating one of the classes we gave it with a suitable value for each parameter.
 # We can test it by generating a few of them.
 
-print(grammar)
+"""
+```python
+>>> print(grammar2)
+<Classifier>       := <LR> | <SVM> | <NB> | <DT>
+<LR>               := LR (penalty=<LR_penalty>, C=<LR_C>)
+<LR_penalty>       := categorical (options=['l1', 'l2'])
+<LR_C>             := continuous (min=0.1, max=10)
+<SVM>              := SVM (kernel=<SVM_kernel>, C=<SVM_C>)
+<SVM_kernel>       := categorical (options=['rbf', 'linear', 'poly'])
+<SVM_C>            := continuous (min=0.1, max=10)
+<NB>               := NB (var_smoothing=<NB_var_smoothing>)
+<NB_var_smoothing> := continuous (min=1e-10, max=0.1)
+<DT>               := DT (criterion=<DT_criterion>)
+<DT_criterion>     := categorical (options=['gini', 'entropy'])
 
-# ```bash
-# <Classifier>       := <LR> | <SVM> | <NB> | <DT>
-# <LR>               := LR (penalty=<LR_penalty>, C=<LR_C>)
-# <LR_penalty>       := categorical (options=['l1', 'l2'])
-# <LR_C>             := continuous (min=0.1, max=10)
-# <SVM>              := SVM (kernel=<SVM_kernel>, C=<SVM_C>)
-# <SVM_kernel>       := categorical (options=['rbf', 'linear', 'poly'])
-# <SVM_C>            := continuous (min=0.1, max=10)
-# <NB>               := NB (var_smoothing=<NB_var_smoothing>)
-# <NB_var_smoothing> := continuous (min=1e-10, max=0.1)
-# <DT>               := DT (criterion=<DT_criterion>)
-# <DT_criterion>     := categorical (options=['gini', 'entropy'])
-# ```
+```
+"""
 
 # !!! note
 #     The constructor for `Union` requires as first parameter a `name` so that in the grammar
 #     a suitable production can be defined. Think of it as the name of an abstract class that
 #     groups all your classes, just there is no actual type ever created, it's just for organizational purposes.
 
-for _ in range(5):
-    print(grammar.sample())
+"""
+```python
+>>> for i in range(5):
+...     print(grammar2.sample(random_state=i))
+DT(criterion='entropy')
+SVM(C=8.489593995678604, kernel='poly')
+LR(C=0.9402327520733241, penalty='l1')
+SVM(C=5.487869330429923, kernel='poly')
+SVM(C=1.1213437388840866, kernel='linear')
 
-# ```bash
-# NB(var_smoothing=0.04620465447733762)
-# DT(criterion='gini')
-# SVM(C=3.2914771222720116, kernel='rbf')
-# LR(C=7.809744923904822, penalty='l1')
-# DT(criterion='gini')
-# ```
+```
+"""
 
 # Now that we have a bunch of possible algorithms, let's see which one is best.
 
-search = RandomSearch(grammar, evaluate, random_state=0)
-best, score = search.run(100)
+"""
+```python
+>>> search = RandomSearch(grammar, evaluate, random_state=0)
+>>> best, score = search.run(100)
+>>> best
+LR(C=7.603748589108994, penalty='l2')
+>>> score
+0.92...
 
-print("Best:", best, "\nScore:", score)
-
-# ```bash
-# Best: NB(var_smoothing=0.08450775758264377)
-# Score: 0.8840000000000003
-# ```
+```
+"""
 
 # So it doesn't really seem that we can do much better, which is unsurprising given that we are only
 # doing a random search (there are [better search methods](/api/search/) in AutoGOAL), and this
@@ -365,7 +389,7 @@ class Pipeline(_Pipeline):
 # that class, based on the parameters' annotations and recursively building the corresponding
 # rules for all classes down to basic parameter types.
 
-grammar = generate_cfg(Pipeline)
+grammar3 = generate_cfg(Pipeline)
 
 # Notice how the grammar specifies all the possible ways to build a `Pipeline`,
 # both considering the different implementations we have for vectorizers, decomposers and classifiers;
@@ -373,32 +397,34 @@ grammar = generate_cfg(Pipeline)
 # two levels of recursion, Pipeline and its parameters; but this same process can be applied to any
 # hierarchy of any complexity, including circular references.
 
-print(grammar)
+"""
+```python
+>>> print(grammar3)
+<Pipeline>         := Pipeline (vectorizer=<Vectorizer>, decomposer=<Decomposer>, classifier=<Classifier>)
+<Vectorizer>       := <Count> | <TfIdf>
+<Count>            := Count (ngram=<Count_ngram>)
+<Count_ngram>      := discrete (min=1, max=3)
+<TfIdf>            := TfIdf (ngram=<TfIdf_ngram>, use_idf=<TfIdf_use_idf>)
+<TfIdf_ngram>      := discrete (min=1, max=3)
+<TfIdf_use_idf>    := boolean ()
+<Decomposer>       := <Noop> | <SVD>
+<Noop>             := Noop ()
+<SVD>              := SVD (n=<SVD_n>)
+<SVD_n>            := discrete (min=50, max=200)
+<Classifier>       := <LR> | <SVM> | <DT> | <NB>
+<LR>               := LR (penalty=<LR_penalty>, C=<LR_C>)
+<LR_penalty>       := categorical (options=['l1', 'l2'])
+<LR_C>             := continuous (min=0.1, max=10)
+<SVM>              := SVM (kernel=<SVM_kernel>, C=<SVM_C>)
+<SVM_kernel>       := categorical (options=['rbf', 'linear', 'poly'])
+<SVM_C>            := continuous (min=0.1, max=10)
+<DT>               := DT (criterion=<DT_criterion>)
+<DT_criterion>     := categorical (options=['gini', 'entropy'])
+<NB>               := NB (var_smoothing=<NB_var_smoothing>)
+<NB_var_smoothing> := continuous (min=1e-10, max=0.1)
 
-# ```bash
-# <Pipeline>         := Pipeline (vectorizer=<Vectorizer>, decomposer=<Decomposer>, classifier=<Classifier>)
-# <Vectorizer>       := <Count> | <TfIdf>
-# <Count>            := Count (ngram=<Count_ngram>)
-# <Count_ngram>      := discrete (min=1, max=3)
-# <TfIdf>            := TfIdf (ngram=<TfIdf_ngram>, use_idf=<TfIdf_use_idf>)
-# <TfIdf_ngram>      := discrete (min=1, max=3)
-# <TfIdf_use_idf>    := boolean ()
-# <Decomposer>       := <Noop> | <SVD>
-# <Noop>             := Noop ()
-# <SVD>              := SVD (n=<SVD_n>)
-# <SVD_n>            := discrete (min=50, max=200)
-# <Classifier>       := <LR> | <SVM> | <DT> | <NB>
-# <LR>               := LR (penalty=<LR_penalty>, C=<LR_C>)
-# <LR_penalty>       := categorical (options=['l1', 'l2'])
-# <LR_C>             := continuous (min=0.1, max=10)
-# <SVM>              := SVM (kernel=<SVM_kernel>, C=<SVM_C>)
-# <SVM_kernel>       := categorical (options=['rbf', 'linear', 'poly'])
-# <SVM_C>            := continuous (min=0.1, max=10)
-# <DT>               := DT (criterion=<DT_criterion>)
-# <DT_criterion>     := categorical (options=['gini', 'entropy'])
-# <NB>               := NB (var_smoothing=<NB_var_smoothing>)
-# <NB_var_smoothing> := continuous (min=1e-10, max=0.1)
-# ```
+```
+"""
 
 # Now we can start to see the power of the class-based API. Just with a few annotations
 # in the same classes that we anyway have to write, we automatically obtain a computational representation
@@ -409,33 +435,33 @@ print(grammar)
 # Let's take a look at how different pipelines can be generated with this grammar by sampling
 # 10 random pipelines.
 
-for _ in range(10):
-    print(grammar.sample())
+"""
+```python
+>>> for i in range(10):
+...     print(grammar3.sample(random_state=i))
+Pipeline(classifier=DT(criterion='entropy'), decomposer=SVD(n=153),
+         vectorizer=TfIdf(ngram=2, use_idf=True))
+Pipeline(classifier=DT(criterion='gini'), decomposer=Noop(),
+         vectorizer=Count(ngram=3))
+Pipeline(classifier=DT(criterion='gini'), decomposer=Noop(),
+         vectorizer=Count(ngram=1))
+Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
+         vectorizer=Count(ngram=3))
+Pipeline(classifier=NB(var_smoothing=0.04788783954450193), decomposer=Noop(),
+         vectorizer=Count(ngram=2))
+Pipeline(classifier=NB(var_smoothing=0.07759585676597583), decomposer=Noop(),
+         vectorizer=TfIdf(ngram=3, use_idf=True))
+Pipeline(classifier=LR(C=6.661903772549299, penalty='l1'), decomposer=SVD(n=59),
+         vectorizer=Count(ngram=2))
+Pipeline(classifier=LR(C=3.720320277434597, penalty='l1'), decomposer=Noop(),
+         vectorizer=TfIdf(ngram=1, use_idf=True))
+Pipeline(classifier=SVM(C=0.5334067280838942, kernel='poly'),
+         decomposer=SVD(n=82), vectorizer=Count(ngram=2))
+Pipeline(classifier=SVM(C=0.16370703540312093, kernel='poly'),
+         decomposer=Noop(), vectorizer=TfIdf(ngram=3, use_idf=True))
 
-# You should see something like this, but your exact pipelines will be different due to random sampling.
-
-# ```bash
-# Pipeline(classifier=SVM(C=4.09762837283166, kernel='rbf'), decomposer=Noop(),
-#          vectorizer=Count(ngram=1))
-# Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
-#          vectorizer=Count(ngram=2))
-# Pipeline(classifier=LR(C=5.309978916527087, penalty='l2'), decomposer=Noop(),
-#          vectorizer=Count(ngram=3))
-# Pipeline(classifier=LR(C=9.776994352626533, penalty='l1'), decomposer=Noop(),
-#          vectorizer=TfIdf(ngram=2, use_idf=True))
-# Pipeline(classifier=SVM(C=5.973033047496386, kernel='rbf'),
-#          decomposer=SVD(n=197), vectorizer=Count(ngram=3))
-# Pipeline(classifier=NB(var_smoothing=0.07941925220053651),
-#          decomposer=SVD(n=183), vectorizer=TfIdf(ngram=3, use_idf=False))
-# Pipeline(classifier=DT(criterion='entropy'), decomposer=SVD(n=144),
-#          vectorizer=TfIdf(ngram=1, use_idf=True))
-# Pipeline(classifier=SVM(C=6.052775609636756, kernel='poly'),
-#          decomposer=SVD(n=160), vectorizer=TfIdf(ngram=1, use_idf=True))
-# Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
-#          vectorizer=Count(ngram=1))
-# Pipeline(classifier=DT(criterion='entropy'), decomposer=Noop(),
-#          vectorizer=TfIdf(ngram=3, use_idf=True))
-# ```
+```
+"""
 
 # ## Finding the best pipeline
 
@@ -452,11 +478,19 @@ fitness_fn = movie_reviews.make_fn(examples=100)
 # and stores the best performing pipeline. It has no intelligence whatsoever,
 # but it serves as a good baseline implementation.
 
-# We will run it for a total of `1000` fitness evaluations, or equivalently, a total
-# of `1000` different random pipelines.
+# We will run it for a total of `100` fitness evaluations, or equivalently, a total
+# of `100` different random pipelines.
 
-random_search = RandomSearch(grammar, fitness_fn, random_state=0)
-best, score = random_search.run(1000)
+"""
+```python
+>>> random_search = RandomSearch(grammar3, fitness_fn, random_state=0)
+>>> best, score = random_search.run(100)
+>>> best
+
+>>> score
+
+```
+"""
 
 # !!! note
 #     For reproducibility purposes we can pass a fixed random seed in `random_state`.

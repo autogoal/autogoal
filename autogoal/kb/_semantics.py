@@ -78,7 +78,7 @@ class SemanticType(metaclass=SemanticTypeMeta):
     @staticmethod
     def infer(x):
         """Automatically determines the semantic type of a given value.
-        
+
         >>> SemanticType.infer("word")
         Word
         >>> SemanticType.infer("hello world")
@@ -230,7 +230,7 @@ class Seq(SemanticType):
     >>> from pickle import dumps, loads
     >>> loads(dumps(Seq[Word]))
     Seq[Word]
-   
+
     """
 
     __internal_types = {}
@@ -376,7 +376,7 @@ class Tensor(SemanticType):
     False
 
     Each specific specialization is a singleton class:
-    
+
     >>> id(Tensor[2, Continuous, Dense]) == id(Tensor[2, Continuous, Dense])
     True
 
@@ -431,6 +431,15 @@ class Tensor(SemanticType):
                 if other == Tensor:
                     return True
 
+                if not cls._name().startswith("Tensor["):
+                    return False
+
+                if other in cls.__bases__:
+                    return True
+
+                if cls in other.__bases__:
+                    return False
+
                 if not hasattr(other, "_TensorImp__flags"):
                     return False
 
@@ -462,7 +471,7 @@ class Tensor(SemanticType):
 # as they are *exactly* the same class.
 
 Vector = Tensor[1, None, None]
-VectorContinuous = Tensor[1, Continuous, None]
+VectorContinuous = Tensor[1, Continuous, Dense]
 VectorCategorical = Tensor[1, Categorical, Dense]
 VectorDiscrete = Tensor[1, Discrete, Dense]
 
@@ -477,6 +486,28 @@ MatrixDiscrete = Tensor[2, Discrete, Dense]
 
 Tensor3 = Tensor[3, Continuous, Dense]
 Tensor4 = Tensor[4, Continuous, Dense]
+
+# Beyond aliases, we will define some explicit semantic representations that are often encoded as tensors.
+
+class MonoImage(Tensor[2, Continuous, Dense]):
+    @classmethod
+    def _name(cls):
+        return "MonoImage"
+
+class ColorImage(Tensor[3, Continuous, Dense]):
+    @classmethod
+    def _name(cls):
+        return "ColorImage"
+
+class TokenEmbedding(Tensor[1, Continuous, Dense]):
+    @classmethod
+    def _name(cls):
+        return "TokenEmbedding"
+
+class SequenceEmbedding(Tensor[2, Continuous, Dense]):
+    @classmethod
+    def _name(cls):
+        return "SequenceEmbedding"
 
 # Finally we define the publicly export classes
 
@@ -512,6 +543,10 @@ __all__ = [
     "Categorical",
     "Continuous",
     "Discrete",
+    "MonoImage",
+    "ColorImage",
+    "TokenEmbedding",
+    "SequenceEmbedding",
 ]
 
 
