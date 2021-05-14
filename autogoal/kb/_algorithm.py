@@ -162,6 +162,19 @@ class Algorithm(abc.ABC):
         return True
 
 
+class SeqWrapper(abc.ABC):
+    """ Represents an abstract sequence algorithm wrapper
+
+    The class provides methods that should be implemented by sequence algorithms
+    """
+
+    @abc.abstractclassmethod
+    def get_inner_signature(cls) -> inspect.Signature:
+        """ Gets the signature of the inner class __init__ method.
+        """
+        pass
+
+
 class AlgorithmBase(Algorithm):
     """Represents an algorithm,
 
@@ -320,6 +333,12 @@ def make_seq_algorithm(algorithm: Algorithm):
         return getattr(self.inner, attr)
 
     @classmethod
+    def get_inner_signature_method(cls):
+        if getattr(algorithm, "get_inner_signature", None):
+            return algorithm.get_inner_signature()
+        return inspect.signature(algorithm.__init__)
+
+    @classmethod
     def input_types_method(cls):
         return tuple(Seq[t] for t in algorithm.input_types())
 
@@ -339,8 +358,9 @@ def make_seq_algorithm(algorithm: Algorithm):
         ns["input_types"] = input_types_method
         ns["input_args"] = input_args_method
         ns["output_type"] = output_types_method
+        ns["get_inner_signature"] = get_inner_signature_method
 
-    return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
+    return types.new_class(name=name, bases=(Algorithm, SeqWrapper), exec_body=body)
 
 
 Akw = namedtuple("Akw", ["args", "kwargs"])
@@ -491,7 +511,7 @@ def build_pipeline_graph(
         guaranteed_types = node.output_types
 
         # Here are all the algorithms that could be added new at this point in the graph
-        for algorithm in registry:
+        for algorithm in pool:
             if not algorithm.is_compatible_with(guaranteed_types):
                 continue
 
