@@ -33,12 +33,12 @@ parser.add_argument("--channel", default=None)
 parser.add_argument("--target", default=1.0, type=float)
 args = parser.parse_args()
 
-random_state = 0
 n_samples = 1000
 for n_features in [2, 20, 100]:
     for centers in [3, 10, 20]:
         for cluster_std in [0.2, 0.5, 1.0]:
             for execution in range(args.executions):
+                random_state = execution
                 X, y = make_blobs(n_samples=n_samples, 
                                 n_features=n_features, 
                                 centers=centers, 
@@ -59,7 +59,7 @@ for n_features in [2, 20, 100]:
                                 search_timeout=args.global_timeout,
                                 target_fn=args.target)
                 
-                loggers = [JsonLogger(f"execution-{execution}-log-({n_features}, {centers}, {cluster_std}, {random_state}).json")]
+                loggers = [JsonLogger(f"unsupervised-log-({n_features}, {centers}, {cluster_std}, {random_state}).json")]
                 automl.fit(X, logger=loggers)
 
             #generated dataset seed
