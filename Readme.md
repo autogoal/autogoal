@@ -217,6 +217,7 @@ Here are all the current contributions.
     <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=yacth" title="Code">💻</a></td>
     <td align="center"><a href="https://sourceplusplus.com"><img src="https://avatars0.githubusercontent.com/u/3278877?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Fergerson</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3ABFergerson" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://adityanikhil.github.io/main/"><img src="https://avatars2.githubusercontent.com/u/30192967?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aditya Nikhil</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3AAdityaNikhil" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/lucas-FP"><img src="https://avatars.githubusercontent.com/u/39564125?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lucas-FP</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Alucas-FP" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=lucas-FP" title="Code">💻</a></td>
   </tr>
 </table>
 
