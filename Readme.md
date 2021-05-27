@@ -2,7 +2,6 @@
 
 ---
 
-<center>
 [<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="GitHub stars" src="https://img.shields.io/github/stars/autogoal/autogoal?style=social">](https://github.com/autogoal/autogoal/stargazers) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Followers&style=social">](https://twitter.com/auto_goal)
 
 [<img src="https://codecov.io/gh/autogoal/autogoal/branch/main/graph/badge.svg" />](https://codecov.io/gh/autogoal/autogoal/)
@@ -12,7 +11,7 @@
 [![Build and Push to Docker (main branch)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml)
 [![Test Core (main branch)](https://github.com/autogoal/autogoal/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/autogoal/autogoal/actions/workflows/test.yml)
 [![Release to PyPI](https://github.com/autogoal/autogoal/actions/workflows/release.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/release.yml)
-</center>
+
 ---
 
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
