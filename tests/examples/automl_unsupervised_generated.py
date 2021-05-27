@@ -19,6 +19,7 @@ def get_cmap(n, name='hsv'):
     return plt.cm.get_cmap(name, n)
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--executions", type=int, default=1)
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=300)
 parser.add_argument("--memory", type=int, default=10)
@@ -37,28 +38,29 @@ n_samples = 1000
 for n_features in [2, 20, 100]:
     for centers in [3, 10, 20]:
         for cluster_std in [0.2, 0.5, 1.0]:
-            X, y = make_blobs(n_samples=n_samples, 
-                              n_features=n_features, 
-                              centers=centers, 
-                              cluster_std=cluster_std, 
-                              random_state=random_state)
-            
+            for execution in range(args.executions):
+                X, y = make_blobs(n_samples=n_samples, 
+                                n_features=n_features, 
+                                centers=centers, 
+                                cluster_std=cluster_std, 
+                                random_state=random_state)
+                
 
-            # # Instantiate AutoML, define input/output types and the score metric
-            automl = AutoML(input=MatrixContinuousDense,
-                            output=VectorCategorical,
-                            score_metric=silhouette_score,
-                            search_iterations=args.iterations,
-                            pop_size=args.popsize,
-                            selection=args.selection,
-                            evaluation_timeout=args.timeout,
-                            memory_limit=args.memory * 1024 ** 3,
-                            early_stop=args.early_stop,
-                            search_timeout=args.global_timeout,
-                            target_fn=args.target)
-            
-            loggers = [JsonLogger(f"unsupervised-log-({n_features}, {centers}, {cluster_std}, {random_state}).json")]
-            automl.fit(X, logger=loggers)
+                # # Instantiate AutoML, define input/output types and the score metric
+                automl = AutoML(input=MatrixContinuousDense,
+                                output=VectorCategorical,
+                                score_metric=silhouette_score,
+                                search_iterations=args.iterations,
+                                pop_size=args.popsize,
+                                selection=args.selection,
+                                evaluation_timeout=args.timeout,
+                                memory_limit=args.memory * 1024 ** 3,
+                                early_stop=args.early_stop,
+                                search_timeout=args.global_timeout,
+                                target_fn=args.target)
+                
+                loggers = [JsonLogger(f"execution-{execution}-log-({n_features}, {centers}, {cluster_std}, {random_state}).json")]
+                automl.fit(X, logger=loggers)
 
             #generated dataset seed
             # name = f"features:{n_features}, centers:{centers}, cluster_std:{cluster_std}, rs:{random_state}"
