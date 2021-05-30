@@ -162,19 +162,6 @@ class Algorithm(abc.ABC):
         return True
 
 
-class SeqWrapper(abc.ABC):
-    """ Represents an abstract sequence algorithm wrapper
-
-    The class provides methods that should be implemented by sequence algorithms
-    """
-
-    @abc.abstractclassmethod
-    def get_inner_signature(cls) -> inspect.Signature:
-        """ Gets the signature of the inner class __init__ method.
-        """
-        pass
-
-
 class AlgorithmBase(Algorithm):
     """Represents an algorithm,
 
@@ -312,7 +299,8 @@ def make_seq_algorithm(algorithm: Algorithm):
     Seq[<class 'float'>]
     >>> build_input_args(B, {Seq[int]: [1, 2], Seq[str]: ["hello", "world"]})
     {'x': [1, 2], 'y': ['hello', 'world']}
-    
+    >>> b.get_inner_signature()
+    <Signature (self, alpha)>
     """
 
     output_type = algorithm.output_type()
@@ -360,7 +348,7 @@ def make_seq_algorithm(algorithm: Algorithm):
         ns["output_type"] = output_types_method
         ns["get_inner_signature"] = get_inner_signature_method
 
-    return types.new_class(name=name, bases=(Algorithm, SeqWrapper), exec_body=body)
+    return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
 
 
 Akw = namedtuple("Akw", ["args", "kwargs"])
