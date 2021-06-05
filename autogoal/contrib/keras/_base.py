@@ -27,6 +27,7 @@ from autogoal.kb import (
     Label,
     Tensor3,
     Tensor4,
+    AudioFeatures,
 )
 
 from autogoal.utils import nice_repr
@@ -93,7 +94,6 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
     def sample(self, sampler: Sampler = None, max_iterations=100):
         if sampler is None:
             sampler = Sampler()
-
         self._graph = self._grammar.sample(
             sampler=sampler, max_iterations=max_iterations
         )
@@ -110,7 +110,6 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
                 incoming = concatenate(previous_layers)
             else:
                 incoming = previous_layers[0]
-
             return layer(incoming)
 
         output_y = graph.apply(build_model) or [input_x]
@@ -150,7 +149,7 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
             verbose=0,
             **kwargs,
         )
-
+        
     def predict(self, X):
         return self.model.predict(X)
 
@@ -197,7 +196,7 @@ class KerasClassifier(KerasNeuralNetwork):
         y = [self._classes[yi] for yi in y]
         y = to_categorical(y)
         return super(KerasClassifier, self).fit(X, y)
-
+        
     def predict(self, X):
         if self._classes is None:
             raise TypeError(
@@ -299,6 +298,23 @@ class KerasImageClassifier(KerasClassifier):
         return Input(shape=X.shape[1:])
 
 
+@nice_repr
+class KerasAudioClassifier(KerasClassifier):
+    def __init__(self, **kwargs):
+        super().__init__(optimizer="adam", **kwargs)
+    
+    def _build_grammar(self):
+        return generate_grammar(
+            Modules.Preprocessing.Conv1D()
+        )
+
+    def run(self, X: AudioFeatures, y: Supervised[VectorCategorical] ) -> VectorCategorical:
+        return super().run(X, y)
+
+    def _build_input(self, X):
+        return Input(shape=X.shape[1:])
+
+
 class KerasSequenceClassifier(KerasClassifier):
     def _build_grammar(self):
         return build_grammar(preprocessing=True, reduction=True, features=True)
@@ -308,6 +324,8 @@ class KerasSequenceClassifier(KerasClassifier):
 
     def run(self, X: Tensor3, y: Supervised[VectorCategorical]) -> VectorCategorical:
         return super().run(X, y)
+
+
 
 
 # !!! warning
