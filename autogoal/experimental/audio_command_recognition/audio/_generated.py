@@ -1,7 +1,7 @@
 import librosa
-from autogoal.kb import MatrixContinuousDense
 from autogoal.grammar import DiscreteValue
 from autogoal.utils import nice_repr
+from autogoal.experimental.audio_command_recognition.kb._semantics import AudioFile, AudioCommand
 
 
 @nice_repr
@@ -12,7 +12,7 @@ class AudioCommandReader():
     def __init__(self, sample_rate = 8000):
         self._sample_rate = sample_rate
 
-    def run(self, audio_file):
+    def run(self, audio_file: AudioFile) -> AudioCommand:
         audio_signal, _ = librosa.load(audio_file, sr=self._sample_rate)
         return audio_signal[:self._sample_rate]
 

@@ -1,6 +1,6 @@
 import numpy as np
-from autogoal.contrib.audio._generated import *
-from autogoal.contrib.keras import KerasAudioClassifier
+from ._generated import *
+from autogoal.experimental.audio_command_recognition.kb._semantics import AudioFile, AudioFeatures
 from autogoal.kb import *
 from autogoal.grammar import DiscreteValue, CategoricalValue
 from autogoal.kb import algorithm
