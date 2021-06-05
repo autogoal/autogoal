@@ -27,7 +27,6 @@ from autogoal.kb import (
     Label,
     Tensor3,
     Tensor4,
-    AudioFeatures,
 )
 
 from autogoal.utils import nice_repr
@@ -292,23 +291,6 @@ class KerasImageClassifier(KerasClassifier):
         )
 
     def run(self, X: Tensor4, y: Supervised[VectorCategorical]) -> VectorCategorical:
-        return super().run(X, y)
-
-    def _build_input(self, X):
-        return Input(shape=X.shape[1:])
-
-
-@nice_repr
-class KerasAudioClassifier(KerasClassifier):
-    def __init__(self, **kwargs):
-        super().__init__(optimizer="adam", **kwargs)
-    
-    def _build_grammar(self):
-        return generate_grammar(
-            Modules.Preprocessing.Conv1D()
-        )
-
-    def run(self, X: AudioFeatures, y: Supervised[VectorCategorical] ) -> VectorCategorical:
         return super().run(X, y)
 
     def _build_input(self, X):

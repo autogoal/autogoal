@@ -1,6 +1,7 @@
 from tensorflow.keras.layers import Conv1D as _Conv1D
 from tensorflow.keras.layers import MaxPooling1D as _MaxPooling1D
 from autogoal.grammar import DiscreteValue, CategoricalValue
+from autogoal.utils import nice_repr
 
 @nice_repr
 class Conv1D(_Conv1D):
