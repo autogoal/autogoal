@@ -45,6 +45,25 @@ class Modules:
 
                 grammar.add("Conv2DCell", Path(Conv2D, Activation, BatchNormalization))
                 grammar.add("Conv2DCell", Path(Conv2D, Activation))
+        
+        class Conv1D(Module):
+            def make_top_level(self, top_level):
+                if "PreprocessingModule" not in top_level:
+                    top_level.append("PreprocessingModule")
+                
+            def add_productions(self, grammar: GraphGrammar):
+                grammar.add("PreprocessingModule", Path("Conv1DModule", Flatten))
+
+                grammar.add("Conv1DModule", Path("Conv1DModule", "Conv1DModule"))
+                grammar.add("Conv1DModule", "Conv1DBlock")
+
+                grammar.add("Conv1DBlock", Path("Conv1DCells", MaxPooling1D))
+                grammar.add("Conv1DBlock", Path("Conv1DCells", MaxPooling1D, Dropout))
+
+                grammar.add("Conv1DCells", Path("Conv1DCells", Conv1D))
+                grammar.add("Conv1DCells", Conv1D)
+
+                # grammar.add("Conv1DCell", Conv1D)
 
     class Features:
         class Dense(Module):
@@ -61,6 +80,7 @@ class Modules:
                 grammar.add("DenseModule", Epsilon())
                 grammar.add("DenseCell", Path(Dense, Activation, Dropout))
                 grammar.add("DenseCell", Path(Dense, Activation))
+    
 
 
 def generate_grammar(*modules):
