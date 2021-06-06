@@ -21,4 +21,4 @@ class AudioCommand(SemanticType):
         pass
 
 
-AudioFeatures = Tensor[3, Continuous, Dense]
+AudioFeatures = Tensor[2, Continuous, Dense]
