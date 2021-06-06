@@ -45,7 +45,6 @@ class Modules:
 
                 grammar.add("Conv2DCell", Path(Conv2D, Activation, BatchNormalization))
                 grammar.add("Conv2DCell", Path(Conv2D, Activation))
-        
 
     class Features:
         class Dense(Module):
@@ -62,7 +61,6 @@ class Modules:
                 grammar.add("DenseModule", Epsilon())
                 grammar.add("DenseCell", Path(Dense, Activation, Dropout))
                 grammar.add("DenseCell", Path(Dense, Activation))
-    
 
 
 def generate_grammar(*modules):

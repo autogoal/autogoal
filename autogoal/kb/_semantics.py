@@ -17,7 +17,6 @@ from functools import reduce
 import inspect
 import copyreg
 from typing import Type
-from os import path
 
 
 # We start by defining the base class of our hierarchy.
@@ -119,9 +118,6 @@ copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
 
 
 # Let's start with the natural language hierarchy.
-
-
-
 
 
 class Text(SemanticType):
@@ -481,9 +477,6 @@ MatrixDiscrete = Tensor[2, Discrete, Dense]
 
 Tensor3 = Tensor[3, Continuous, Dense]
 Tensor4 = Tensor[4, Continuous, Dense]
-
-
-
 
 # Finally we define the publicly export classes
 
