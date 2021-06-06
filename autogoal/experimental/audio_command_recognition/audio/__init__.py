@@ -1,1 +1,1 @@
-from ._base import AudioPreprocessor, AudioClassifier
+from ._base import AudioCommandPreprocessor, AudioClassifier

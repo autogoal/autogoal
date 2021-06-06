@@ -19,6 +19,5 @@ from ._base import (
     KerasSequenceTagger,
     KerasImageClassifier,
     KerasImagePreprocessor,
-    KerasAudioClassifier,
 )
 from ._grammars import build_grammar
