@@ -9,7 +9,7 @@ class Modules:
         def make_top_level(self, top_level):
             if "PreprocessingModule" not in top_level:
                 top_level.append("PreprocessingModule")
-            
+
         def add_productions(self, grammar: GraphGrammar):
             grammar.add("PreprocessingModule", Path("Conv1DModule", Flatten))
 
