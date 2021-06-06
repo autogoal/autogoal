@@ -70,7 +70,6 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
         except ImportError as e:
             pass
 
-
         from autogoal.contrib import wrappers
 
         modules.append(wrappers)
