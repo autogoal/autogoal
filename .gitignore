@@ -153,3 +153,6 @@ demo-short.webm
 metalearning.json
 *.bin
 output.csv
+
+# Ignore wav audio files for testing speech recognizers
+*.wav
