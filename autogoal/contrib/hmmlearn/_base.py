@@ -3,10 +3,10 @@ from scipy.io import wavfile
 from hmmlearn import hmm
 from python_speech_features import mfcc
 from os import listdir
+
 from autogoal.kb import AlgorithmBase
 from autogoal.contrib.sklearn._builder import SklearnWrapper
 from autogoal.grammar import DiscreteValue, ContinuousValue
-from typing import Tuple
 from autogoal.kb._semantics import Discrete, VectorDiscrete, Word, Seq, AudioFile
 
 
@@ -87,26 +87,18 @@ class HMMLearnSpeechRecognizer(SklearnWrapper):
         return answers
 
 
-if __name__ == '__main__':
-    X_train, y_train, X_test, y_test = [], [], [], []
-    for subfolder in listdir('./autogoal/autogoal/contrib/hmmlearn/data'):
-        base_path = f'./autogoal/autogoal/contrib/hmmlearn/data/{subfolder}/'
-        for audio_file in listdir(base_path)[:-1]:
-            file_path = base_path + audio_file
-            X_train.append(file_path)
-            y_train.append(subfolder)
-        test_audio_file = base_path + listdir(base_path)[-1]
-        X_test.append(test_audio_file)
-        y_test.append(subfolder)
+# if __name__ == '__main__':
+#     X_train, y_train, X_test, y_test = [], [], [], []
+#     for subfolder in listdir('./autogoal/autogoal/contrib/hmmlearn/data'):
+#         base_path = f'./autogoal/autogoal/contrib/hmmlearn/data/{subfolder}/'
+#         for audio_file in listdir(base_path)[:-1]:
+#             file_path = base_path + audio_file
+#             X_train.append(file_path)
+#             y_train.append(subfolder)
+#         test_audio_file = base_path + listdir(base_path)[-1]
+#         X_test.append(test_audio_file)
+#         y_test.append(subfolder)
 
-# print('Train data:\n')
-# for i in range(len(X_train)):
-#     print(X_train[i][1][:10], y_train[i])
-
-# print('Test data:\n')
-# for i in range(len(X_test)):
-#     print(X_test[i][1][:10], y_test[i])
-
-    speech_recognizer = HMMLearnSpeechRecognizer(4, 1000)
-    speech_recognizer._train(X_train, y_train)
-    print(speech_recognizer._eval(X_test, y_test))
+#     speech_recognizer = HMMLearnSpeechRecognizer(4, 1000)
+#     speech_recognizer._train(X_train, y_train)
+#     print(speech_recognizer._eval(X_test, y_test))
