@@ -85,20 +85,3 @@ class HMMLearnSpeechRecognizer(SklearnWrapper):
                     best_label = label
             answers.append(best_label)
         return answers
-
-
-# if __name__ == '__main__':
-#     X_train, y_train, X_test, y_test = [], [], [], []
-#     for subfolder in listdir('./autogoal/autogoal/contrib/hmmlearn/data'):
-#         base_path = f'./autogoal/autogoal/contrib/hmmlearn/data/{subfolder}/'
-#         for audio_file in listdir(base_path)[:-1]:
-#             file_path = base_path + audio_file
-#             X_train.append(file_path)
-#             y_train.append(subfolder)
-#         test_audio_file = base_path + listdir(base_path)[-1]
-#         X_test.append(test_audio_file)
-#         y_test.append(subfolder)
-
-#     speech_recognizer = HMMLearnSpeechRecognizer(4, 1000)
-#     speech_recognizer._train(X_train, y_train)
-#     print(speech_recognizer._eval(X_test, y_test))
