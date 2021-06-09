@@ -3,11 +3,11 @@ from scipy.io import wavfile
 from hmmlearn import hmm
 from python_speech_features import mfcc
 from os import listdir
-
-from autogoal.kb import AlgorithmBase
+from autogoal.experimental.hmmlearn_speech_recognition.util import AudioFile
+from autogoal.kb import AlgorithmBase, Supervised
 from autogoal.contrib.sklearn._builder import SklearnWrapper
 from autogoal.grammar import DiscreteValue, ContinuousValue
-from autogoal.kb._semantics import Discrete, VectorDiscrete, Word, Seq, AudioFile
+from autogoal.kb._semantics import Discrete, VectorDiscrete, Word, Seq
 
 
 class HMMTrainer:
@@ -55,7 +55,7 @@ class HMMLearnSpeechRecognizer(SklearnWrapper):
         return new_input
 
 
-    def run(self, X: Seq[AudioFile], y: Seq[Word]) -> Seq[Word]:
+    def run(self, X: Seq[AudioFile], y: Supervised[Seq[Word]]) -> Seq[Word]:
         super().run(X, y)
 
 
