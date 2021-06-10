@@ -19,7 +19,6 @@ automl = AutoML(
 )
 
 X_train, y_train, X_test, y_test = load()
-print(y_test)
 automl.fit(X_train, y_train, logger=[RichLogger()])
 score = automl.score(X_test, y_test)
 print(f'Score: {score}' )

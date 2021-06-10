@@ -28,8 +28,7 @@ class HMMLearnSpeechRecognizer(AlgorithmBase):
         self, 
         n_components: DiscreteValue(min=1, max=20), 
         n_iter: DiscreteValue(min=500, max=1500),
-        covariance_type='diag'):
-        
+        covariance_type='diag'):        
         self._mode = 'train'
         self.n_components = n_components
         self.covariance_type = covariance_type
@@ -70,10 +69,6 @@ class HMMLearnSpeechRecognizer(AlgorithmBase):
             return self._eval(X)
 
     def _train(self, X, y):
-        """X is a vector of tuples<Float, DiscreteVector> and y is a vector of labels"""
-        print('Training...')
-        print(f'X({len(X)}): {X}')
-        print(f'y({len(y)}): {y}')
         preprocessed_input = self._preprocess_input(X, y)
         for label in preprocessed_input:
             self.models[label] = HMMTrainer(self.n_components, self.n_iter, self.covariance_type)
@@ -81,9 +76,6 @@ class HMMLearnSpeechRecognizer(AlgorithmBase):
         return y
 
     def _eval(self, X):
-        print('Evaluating...')
-        # print(f'X({len(X)}): {X}')
-        # print(f'y({len(y)}): {y}')
         answers = []
         for audio_file in X:
             # read the data
