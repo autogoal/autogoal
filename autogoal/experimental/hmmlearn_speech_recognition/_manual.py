@@ -22,7 +22,7 @@ class HMMTrainer:
         return self.model.score(X)
 
 
-class HMMLearnSpeechRecognizer(SklearnWrapper):
+class HMMLearnSpeechRecognizer(AlgorithmBase):
 
     def __init__(
         self, 
@@ -30,11 +30,12 @@ class HMMLearnSpeechRecognizer(SklearnWrapper):
         n_iter: DiscreteValue(min=500, max=1500),
         covariance_type='diag'):
         
-        super().__init__()
+        self._mode = 'train'
         self.n_components = n_components
         self.covariance_type = covariance_type
         self.n_iter = n_iter
         self.models = {}
+        super().__init__()
        
 
     def _preprocess_input(self, X, y):
@@ -54,21 +55,37 @@ class HMMLearnSpeechRecognizer(SklearnWrapper):
 
         return new_input
 
+    def train(self):
+        self._mode = 'train'
+    
+    def eval(self):
+        self._mode = 'eval'
+
 
     def run(self, X: Seq[AudioFile], y: Supervised[Seq[Word]]) -> Seq[Word]:
-        super().run(X, y)
-
+        if (self._mode == 'train'):
+            self._train(X, y)
+            return y
+        else:
+            return self._eval(X)
 
     def _train(self, X, y):
         """X is a vector of tuples<Float, DiscreteVector> and y is a vector of labels"""
+        print('Training...')
+        print(f'X({len(X)}): {X}')
+        print(f'y({len(y)}): {y}')
         preprocessed_input = self._preprocess_input(X, y)
         for label in preprocessed_input:
             self.models[label] = HMMTrainer(self.n_components, self.n_iter, self.covariance_type)
             self.models[label].fit(preprocessed_input[label])
+        return y
 
-    def _eval(self, X, y=None):
+    def _eval(self, X):
+        print('Evaluating...')
+        # print(f'X({len(X)}): {X}')
+        # print(f'y({len(y)}): {y}')
         answers = []
-        for audio_file, true_label in zip(X,y):
+        for audio_file in X:
             # read the data
             sampling_freq, audio = wavfile.read(audio_file)
 
