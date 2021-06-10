@@ -1,0 +1,5 @@
+FROM docker.uclv.cu/autogoal/autogoal
+
+RUN sudo apt update && sudo apt install libsndfile-dev -y
+RUN sudo pip install soundfile
+RUN sudo pip install librosa
