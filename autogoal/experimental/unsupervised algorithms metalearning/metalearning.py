@@ -37,3 +37,24 @@ def attributes_amount_log_2(X, y=None):
 @feature_extractor
 def attributes_amount_log_10(X, y=None):
     return math.log10(len(X[0]))
+
+
+# Returns the amount of continuous attributes.
+@feature_extractor
+def continuous_amount(X, y=None):
+    amount = 0
+    for val in X[0]:
+        if isinstance(val, (float))
+            amount += 1
+    return amount
+
+# Returns the proportion of continuous attributes.
+@feature_extractor
+def continuous_proportion(X, y=None):
+    amount = 0
+    for val in X[0]:
+        if isinstance(val, (float))
+            amount += 1
+    return (float)amount / (float)len(X[0])
+
+
