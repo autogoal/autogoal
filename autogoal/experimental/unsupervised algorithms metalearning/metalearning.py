@@ -40,3 +40,19 @@ def examples_amount_log_2(X, y=None):
 @feature_extractor
 def examples_amount_log_10(X, y=None):
     return math.log10(len(X))
+
+# Returns the amount of binary attributes.
+@feature_extractor
+def binary_amount(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        binary = True
+        for j in range(0, len(X)):
+            if(X[i][j] == True or X[i][j] == False or X[i][j] == 0 or X[i][j] == 1):
+                pass
+            else:
+                binary = False
+                break
+        if(binary):
+           count+=1 
+    return count
