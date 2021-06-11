@@ -48,7 +48,7 @@ def binary_amount(X, y=None):
     for i in range(0, len(X[0])):
         binary = True
         for j in range(0, len(X)):
-            if(X[i][j] == True or X[i][j] == False or X[i][j] == 0 or X[i][j] == 1):
+            if(not( X[j][i] is None) or X[j][i] == True or X[j][i] == False or X[j][i] == 0 or X[j][i] == 1):
                 pass
             else:
                 binary = False
@@ -64,7 +64,7 @@ def binary_proportion(X, y=None):
     for i in range(0, len(X[0])):
         binary = True
         for j in range(0, len(X)):
-            if(X[i][j] == True or X[i][j] == False or X[i][j] == 0 or X[i][j] == 1):
+            if(not( X[j][i] is None) or X[j][i] == True or X[j][i] == False or X[j][i] == 0 or X[j][i] == 1):
                 pass
             else:
                 binary = False
