@@ -2,3 +2,5 @@ FROM docker.uclv.cu/autogoal/autogoal
 
 RUN sudo apt update && sudo apt install libsndfile-dev -y
 RUN pip install librosa
+COPY ./ /home/coder/autogoal
+RUN python -m pytest autogoal tests/experimental/audio_command_recognition
