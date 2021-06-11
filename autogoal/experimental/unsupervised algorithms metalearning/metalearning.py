@@ -24,3 +24,9 @@ def feature_extractor(func):
 @feature_extractor
 def dimensions(X, y=None):
     return len(X[0])
+
+# Returns the amount of data examples. A raw indication of the available amount of data.
+@feature_extractor
+def examples_amount(X, y=None):
+    return len(X)
+
