@@ -1,4 +1,5 @@
 import functools
+import math
 
 _EXTRACTORS = []
 
@@ -20,7 +21,19 @@ def feature_extractor(func):
 # Feature extractor methods
 
 
-# Returns the amount of attributes.
+# Returns the amount of data attributes.
 @feature_extractor
-def dimensions(X, y=None):
+def attributes_amount(X, y=None):
     return len(X[0])
+
+
+# Returns log_2 of the amount of data attributes.
+@feature_extractor
+def attributes_amount_log_2(X, y=None):
+    return math.log2(len(X[0]))
+
+
+# Returns log_10 of the amount of data attributes.
+@feature_extractor
+def attributes_amount_log_10(X, y=None):
+    return math.log10(len(X[0]))
