@@ -1,4 +1,5 @@
 import functools
+import math
 
 _EXTRACTORS = []
 
@@ -30,3 +31,7 @@ def dimensions(X, y=None):
 def examples_amount(X, y=None):
     return len(X)
 
+# Returns log_2 of the amount of data examples. A raw indication of the available amount of data.
+@feature_extractor
+def examples_amount_log_2(X, y=None):
+    return math.log2(len(X))
