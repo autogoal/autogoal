@@ -104,3 +104,11 @@ def discrete_proportion(X, y=None):
         if(discrete):
            count+=1 
     return count/len(X[0])
+
+# Returns the ratio of the number of examples by the number of attributes. An indicator of 
+# the number of examples available to the number of attributes.
+@feature_extractor
+def examples_by_attributes_ratio(X, y=None):
+    attributesCount = len(X[0])
+    examples = attributesCount * len(X)
+    return examples/attributesCount
