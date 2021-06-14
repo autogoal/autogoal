@@ -88,3 +88,19 @@ def discrete_amount(X, y=None):
         if(discrete):
            count+=1 
     return count
+
+# Returns the proportion of discrete attributes.
+@feature_extractor
+def discrete_proportion(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        discrete = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (int))):
+                pass
+            else:
+                discrete = False
+                break
+        if(discrete):
+           count+=1 
+    return count/len(X[0])
