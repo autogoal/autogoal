@@ -122,3 +122,10 @@ def missing_values_percentage(X, y=None):
             if(X[j][i] is None):
                 count+=1 
     return (count/(len(X[0])*len(X)))*100
+
+# Percentage of attributes kept after the application of the attribute selection filter.
+@feature_extractor
+def kept_attributes_percentage(X, X_before, y=None):
+    attributesBefore = len(X_before[0])
+    attributesAfter = len(X[0])
+    return (attributesAfter/attributesBefore)*100
