@@ -1,6 +1,7 @@
 from os import path
 from autogoal.kb import SemanticType
 
+
 class AudioFile(SemanticType):
     """Semantic type for wav audio files"""
 
