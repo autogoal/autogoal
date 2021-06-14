@@ -174,3 +174,107 @@ def continuous_mean_kurtosis(X, y=None):
     
     return kurtosis_sum / len(continuous_attributes)
     
+########## MULTIVALUATED META-FEATURES ###############
+
+# Returns the minimum values of each numeric attribute
+@feature_extractor
+def minimum_values(X, y=None):
+    min_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            min_value = X[0][j]
+            for i in range(1, len(X)):
+                min_value = min(min_value, X[i][j])
+            min_values.append(min_value)
+    return min_values
+
+
+# Returns the maximum values of each numeric attribute
+@feature_extractor
+def maximum_values(X, y=None):
+    max_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            max_value = X[0][j]
+            for i in range(1, len(X)):
+                max_value = max(max_value, X[i][j])
+            max_values.append(max_value)
+    return max_values
+
+
+# Returns the range lenght of each numeric attribute
+@feature_extractor
+def range_lenghts(X, y=None):
+    range_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            min_value = X[0][j]
+            max_value = X[0][j]
+            for i in range(1, len(X)):
+                min_value = min(min_value, X[i][j])
+                max_value = max(max_value, X[i][j])
+            range_values.append(max_value - min_value)
+    return range_values
+
+
+# Returns the mean values of each numeric attribute
+@feature_extractor
+def mean_values(X, y=None):
+    mean_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            val_sum = 0
+            for i in range(0, len(X)):
+                val_sum += X[i][j]
+            mean_values.append(val_sum / len(X))
+    return mean_values
+
+
+# Returns the median values of each numeric attribute
+@feature_extractor
+def median_values(X, y=None):
+    median_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            values = []
+            for i in range(0, len(X)):
+                values.append(X[i][j])
+            values.sort()
+            if len(values) % 2 != 0:
+                median.append(values[len(values) / 2])
+            else:
+                median.append((values[len(values) / 2 + 1] + values[len(values) / 2]) / 2)
+    return median_values
+
+
+# Returns the variance values of each numeric attribute
+@feature_extractor
+def variance_values(X, y=None):
+    variances = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            squares_sum = 0
+            mean = 0
+            for i in range(0, len(X)):
+                squares_sum += X[i][j] ** 2
+                mean += X[i][j]
+            mean /= len(X)
+            variances.append(squares_sum / len(X) - mean ** 2)
+    return variances
+
+
+# Returns the standard deviation values of each numeric attribute
+@feature_extractor
+def standard_deviation_values(X, y=None):
+    standard_desviations = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            squares_sum = 0
+            mean = 0
+            for i in range(0, len(X)):
+                squares_sum += X[i][j] ** 2
+                mean += X[i][j]
+            mean /= len(X)
+            variance = squares_sum / len(X) - mean ** 2
+            standard_desviations.append(variance ** 0.5)
+    return standard_desviations
