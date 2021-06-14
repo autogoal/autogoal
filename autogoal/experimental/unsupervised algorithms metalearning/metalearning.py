@@ -112,3 +112,13 @@ def examples_by_attributes_ratio(X, y=None):
     attributesCount = len(X[0])
     examples = attributesCount * len(X)
     return examples/attributesCount
+
+# Percentage of missing values. An indicator of the quality of the data.
+@feature_extractor
+def missing_values_percentage(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        for j in range(0, len(X)):
+            if(X[j][i] is None):
+                count+=1 
+    return (count/(len(X[0])*len(X)))*100
