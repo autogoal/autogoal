@@ -129,3 +129,34 @@ def kept_attributes_percentage(X, X_before, y=None):
     attributesBefore = len(X_before[0])
     attributesAfter = len(X[0])
     return (attributesAfter/attributesBefore)*100
+
+# Returns the mean entropy of discrete attributes.
+@feature_extractor
+def discrete_mean_entropy(X, y=None):
+    discreteAttributes = []
+    for i in range(0, len(X[0])):
+        discrete = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (int))):
+                pass
+            else:
+                discrete = False
+                break
+        if(discrete):
+            discreteAttributes.append(i)
+    entropy = []
+    for attributeColumn in discreteAttributes:
+        entropyPi = {}
+        for j  in range(0, len(X)):
+            if (entropyPi.__contains__(X[j][attributeColumn])):
+                entropyPi[X[j][attributeColumn]] += 1
+            else:
+                entropyPi[X[j][attributeColumn]] = 1
+        entropyValue = 0
+        for key in entropyPi:
+            entropyValue += (entropyPi[key]*math.log2(entropyPi[key]))
+        entropy.append(entropyValue)
+    entropyValue = 0
+    for value in entropy:
+        entropyValue += value
+    return entropyValue/len(entropy)
