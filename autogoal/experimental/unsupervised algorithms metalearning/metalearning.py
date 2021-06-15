@@ -20,6 +20,7 @@ def feature_extractor(func):
 
 # Feature extractor methods
 
+###################################### SINGLE VALUED META-FEATURES ########################################
 
 # Returns the amount of data attributes.
 @feature_extractor
@@ -58,7 +59,7 @@ def continuous_proportion(X, y=None):
     return (float)amount / (float)len(X[0])
 
 
-# Returns the mean absolute correlation between continuous attributes.
+# Returns the mean absolute correlation (Pearson coefficient) between continuous attributes.
 @feature_extractor
 def continuous_mean_absolute_correlation(X, y=None):
     continuous_attributes = []
@@ -173,8 +174,56 @@ def continuous_mean_kurtosis(X, y=None):
         kurtosis_sum += kurtosis[len(kurtosis) - 1]
     
     return kurtosis_sum / len(continuous_attributes)
+
+# Returns the number of attribute pairs with high correlation (Pearson coefficient)
+@feature_extractor
+def number_of_high_correlated_pairs(X, y=None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
     
-########## MULTIVALUATED META-FEATURES ###############
+    means = []
+    variances = []
+    for i in range(0, len(numeric_attributes)):
+        mean = 0
+        squares_sum = 0
+        for j in range(0, len(X)):
+            squares_sum += X[j][numeric_attributes[i]] ** 2
+            mean += X[j][numeric_attributes[i]]
+        mean /= len(X)
+        means.append(mean)
+        variances.append(squares_sum / len(X) - mean ** 2)
+    
+    correlations = []
+    for i in range(0, len(numeric_attributes - 1)):
+        for j in range(i + 1, len(numeric_attributes)):
+            product_sum = 0
+            for k in range(0, len(X)):
+                product_sum += X[k][numeric_attributes[i]] * X[k][numeric_attributes[j]]
+            covariance = product_sum / len(X) - means[i] * means[j]
+            correlations.append(covariance / (variances[i] * variances[j]) ** 0.5)
+    
+    number_of_high = 0
+    for x in correlations:
+        if x > 0.5:
+            number_of_high += 1
+    
+    return number_of_high
+
+
+# Returns the sparcity level of the dataset
+@feature_extractor
+def sparcity_level(X, y=None):
+    valuated = 0
+    for row in X:
+        for data in row:
+            if data is not None:
+                valuated += 1
+    return valuated / (len(X) * len(X[0]))
+
+    
+####################################### MULTIVALUED META-FEATURES ###########################################
 
 # Returns the minimum values of each numeric attribute
 @feature_extractor
@@ -230,6 +279,25 @@ def mean_values(X, y=None):
     return mean_values
 
 
+# Returns the trimmed mean values of each numeric attribute, which is the arithmetic 
+# mean excluding the 20% of the lowest and highest instances
+@feature_extractor
+def trimmed_values(X, y=None):
+    trimmed_mean_values = []
+    for j in range(0, len(X[0])):
+        if isinstance(X[0][j], (int, float)):
+            values = []
+            for i in range(0, len(X)):
+                values.append(X[i][j])
+            values.sort()
+            20_percent = len(values) / 5
+            val_sum = 0
+            for x in values[20_percent : len(values) - 20_percent]:
+                val_sum += x
+            trimmed_mean_values.append(val_sum / (len(values) - 2 * 20_percent))
+    return trimmed_mean_values
+
+
 # Returns the median values of each numeric attribute
 @feature_extractor
 def median_values(X, y=None):
@@ -278,3 +346,56 @@ def standard_deviation_values(X, y=None):
             variance = squares_sum / len(X) - mean ** 2
             standard_desviations.append(variance ** 0.5)
     return standard_desviations
+
+
+# Returns the skewness of numeric attributes.
+@feature_extractor
+def attributes_skewness(X, y=None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
+    
+    means = []
+    variances = []
+    standard_desviations = []
+    for i in range(0, len(numeric_attributes)):
+        mean = 0
+        squares_sum = 0
+        for j in range(0, len(X)):
+            squares_sum += X[j][numeric_attributes[i]] ** 2
+            mean += X[j][numeric_attributes[i]]
+        mean /= len(X)
+        means.append(mean)
+        variances.append(squares_sum / len(X) - mean ** 2)
+        standard_desviations.append(variances[len(variances) - 1] ** 0.5)
+
+
+    skewness = []
+    n = len(X)
+
+    for i in range(0, len(numeric_attributes)):
+        S_above = 0
+        S_below = 0
+        for j in range(0, n):
+            mirror_val = (X[j][numeric_attributes[i]] - means[i]) ** 3
+            if mirror_val > 0:
+                S_above += mirror_val
+            else:
+                S_above += -mirror_val
+        skewness.append((n / (standard_desviations[i] ** 3 * (n - 1) * (n - 2))) * (S_above - S_below))
+    
+    return skewness
+
+
+# Resturns the attributes sparcity
+@feature_extractor
+def attributes_sparcity(X, y=None):
+    attributes_sparcity = []
+    for j in range(0, len(X[0]));
+        valuated = 0
+        for i in range(0, len(X)):
+            if X[i][j] is not None:
+                valuated += 1
+        attributes_sparcity.append(valuated / len(X))
+    return attributes_sparcity
