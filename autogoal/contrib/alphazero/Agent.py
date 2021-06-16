@@ -4,10 +4,10 @@ from collections import deque
 from random import shuffle
 from tqdm import tqdm
 
-from MCTS import MCTS
-from GameManager import God
-from config import *
-from NeuralNet import NeuralNetwork
+from .MCTS import MCTS
+from .GameManager import God
+from .config import *
+from .NeuralNet import NeuralNetwork
 
 
 class AlphaZeroPlayer():
