@@ -1,6 +1,9 @@
 import functools
 import math
 
+from numpy import linalg as LA
+import numpy as np
+
 _EXTRACTORS = []
 
 def feature_extractor(func):
@@ -221,6 +224,41 @@ def sparcity_level(X, y=None):
             if data is not None:
                 valuated += 1
     return valuated / (len(X) * len(X[0]))
+
+
+# Returns the eigenvalues of the attributes correlation matrix
+@feature_extractor
+def correlation_matrix_eigenvalues(X, y = None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
+    
+    means = []
+    for j in numeric_attributes:
+        val_sum = 0
+        for i in range(0, len(X)):
+            val_sum += X[i][j]
+        means.append(val_sum / len(X))
+
+    correlation_matrix = []
+    for i in range(0, len(numeric_attributes)):
+        product_sum = 0
+        row = []
+        for j in range(0, len(numeric_attributes)):
+            for k in range(0, len(X)):
+                product_sum += X[k][i] * X[k][j]
+            row.append(product_sum / len(X) - mean[i] * mean[j])
+        correlation_matrix.append(row)
+    
+    w, v = LA.eig(np.array(correlation_matrix))
+
+    eigenvalues = []
+    for e in w:
+        eigenvalues.append(e)
+    
+    return eigenvalues.sort()
+
 
     
 ####################################### MULTIVALUED META-FEATURES ###########################################
