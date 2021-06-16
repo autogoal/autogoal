@@ -125,14 +125,14 @@ def continuos_amount(X, y=None):
 def discrete_proportion(X, y=None):
     count = 0
     for i in range(0, len(X[0])):
-        discrete = True
+        continuos = True
         for j in range(0, len(X)):
-            if(not(X[j][i] is None) and not isinstance(X[j][i], (int))):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (float))):
                 pass
             else:
-                discrete = False
+                continuos = False
                 break
-        if(discrete):
+        if(continuos):
            count+=1 
     return count/len(X[0])
 
@@ -153,6 +153,16 @@ def missing_values_percentage(X, y=None):
             if(X[j][i] is None):
                 count+=1 
     return (count/(len(X[0])*len(X)))*100
+
+# Instances Amount. An indicator of the quality of the data.
+@feature_extractor
+def instances_amount(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None)):
+                count+=1 
+    return count
 
 # Percentage of attributes kept after the application of the attribute selection filter.
 @feature_extractor
