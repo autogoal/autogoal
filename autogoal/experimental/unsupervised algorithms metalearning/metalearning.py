@@ -1,8 +1,9 @@
 import functools
 import math
+import numpy as np
 
 from numpy import linalg as LA
-import numpy as np
+from scipy.stats import shapiro
 
 _EXTRACTORS = []
 
@@ -260,7 +261,58 @@ def correlation_matrix_eigenvalues(X, y = None):
     return eigenvalues.sort()
 
 
+# Returns the number of atributes with ouliers values
+@feature_extractor
+def attributes_with_outliers(X, y = None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
     
+    result = 0
+
+    for j in numeric_attributes:
+        values = []
+        has_outliers = False
+        for i in range(0, len(X)):
+            values.append(X[i][j])
+        threshold = 3
+        mean = np.mean(np.array(values))
+        standard_deviation = np.std(np.array(values))
+
+        for x in values:
+            z_score = (y - mean) / standard_deviation
+            if np.abs(z_score) > threshold:
+                has_outliers = True
+                break
+        
+        if has_outliers:
+            result += 1
+    
+    return result
+
+
+# Returns the number of attributes with a normal distribution (with Shapiro-Wilk test)
+@feature_extractor
+def normal_distributed_count(X, y=None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
+    
+    result = 0
+    
+    for j in numeric_attributes:
+        values = []
+        for i in range(0, len(X)):
+            values.append(X[i][j])
+        stat, p = shapiro(np.array(values))
+        alpha = 0.05
+        if p > alpha:
+            result += 1
+    
+    return result
+
 ####################################### MULTIVALUED META-FEATURES ###########################################
 
 # Returns the minimum values of each numeric attribute
@@ -437,3 +489,32 @@ def attributes_sparcity(X, y=None):
                 valuated += 1
         attributes_sparcity.append(valuated / len(X))
     return attributes_sparcity
+
+
+# Returns the number of outlier values of each numeric atribute
+@feature_extractor
+def attributes_outliers(X, y = None):
+    numeric_attributes = []
+    for i in range(0, len(X[0])):
+        if isinstance(X[0][i], (int, float))
+            numeric_attributes.append(i)
+    
+    result = []
+
+    for j in numeric_attributes:
+        values = []
+        outlier_number = 0
+        for i in range(0, len(X)):
+            values.append(X[i][j])
+        threshold = 3
+        mean = np.mean(np.array(values))
+        standard_deviation = np.std(np.array(values))
+
+        for x in values:
+            z_score = (y - mean) / standard_deviation
+            if np.abs(z_score) > threshold:
+                outlier_number += 1
+        
+        result.append(outlier_number)
+    
+    return result
