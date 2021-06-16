@@ -105,6 +105,37 @@ def discrete_proportion(X, y=None):
            count+=1 
     return count/len(X[0])
 
+# Returns the amount of continuos attributes.
+def continuos_amount(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        continuos = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (float))):
+                pass
+            else:
+                continuos = False
+                break
+        if(continuos):
+           count+=1 
+    return count
+
+# Returns the proportion of continuos attributes.
+@feature_extractor
+def discrete_proportion(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        discrete = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (int))):
+                pass
+            else:
+                discrete = False
+                break
+        if(discrete):
+           count+=1 
+    return count/len(X[0])
+
 # Returns the ratio of the number of examples by the number of attributes. An indicator of 
 # the number of examples available to the number of attributes.
 @feature_extractor
