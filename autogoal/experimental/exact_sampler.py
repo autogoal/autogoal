@@ -37,7 +37,7 @@ class ExactSampler(Sampler):
 
     def discrete(self, min=0, max=10, handle=None):
         param = self._get_model_params(handle)
-        if param >= min and param <= max and param:
+        if int(param) >= min and int(param) <= max:
             return param
         else:
             raise ValueError(
@@ -46,7 +46,7 @@ class ExactSampler(Sampler):
 
     def continuous(self, min=0, max=1, handle=None):
         param = self._get_model_params(handle)
-        if param >= min and param <= max and param:
+        if param >= min and param <= max:
             return param
         else:
             raise ValueError(

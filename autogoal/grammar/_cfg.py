@@ -152,6 +152,14 @@ class Callable(Production):
     def __repr__(self):
         return "Callable(name=%r, parameters=%r)" % (self._name, self._parameters)
 
+    @property
+    def parameters(self) -> Dict[str, Symbol]:
+        return self._parameters
+
+    @property
+    def name(self) -> str:
+        return self._name
+
     def to_string(
         self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
     ):
