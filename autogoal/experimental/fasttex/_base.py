@@ -84,10 +84,6 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         self.lr = lr
         self.model = None
 
-    def fit_transform(self, X: Seq[Sentences], y: Seq[Words]):
-        self.fit(X)
-        return self.transform(X, y)
-
     def fit(self, X: Seq[Sentences], y=None):
         file = f'uwr_test_{time_ns()}.test'
         with open(file, 'w') as f:
@@ -101,11 +97,16 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
                                 epoch=self.epoch,
                                 lr=self.lr,
         )
+
         remove(file)
         return self
 
-    def transform(self, X, y):
+    def transform(self, _, y):
         return [self.model.get_word_vector(x) for x in y]
 
-    def run(self,  X:Seq[Sentence], y:Seq[Word]) -> MatrixContinuousDense :
+    def fit_transform(self, X: Seq[Sentences], y: Seq[Words]):
+        self.fit(X, y)
+        return self.transform(X, y)
+    
+    def run(self, corpus:Seq[Sentence], inputs:Seq[Word]) -> MatrixContinuousDense :
         self.fit_transform(X, y)
