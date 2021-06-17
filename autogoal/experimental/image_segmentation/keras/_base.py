@@ -1,10 +1,9 @@
-from autogoal.utils import nice_repr
 from autogoal.contrib.keras._base import KerasNeuralNetwork
 from autogoal.contrib.keras._grammars import generate_grammar
 from ._grammar import Modules
 from tensorflow.keras.layers import Input, Dense, concatenate
-from autogoal.kb._semantics import MatrixContinuousDense, VectorCategorical
-from autogoal.kb._algorithm import Supervised
+from autogoal.kb._semantics import MatrixContinuousDense
+from autogoal.kb import Supervised
 
 
 class KerasImageSegmenter(KerasNeuralNetwork):
@@ -24,7 +23,7 @@ class KerasImageSegmenter(KerasNeuralNetwork):
             self._compile_kwargs["loss"] = "categorical_crossentropy"
             self._compile_kwargs["metrics"] = ["accuracy"]
 
-        return Dense(units=self._num_classes, activation="softmax")
+        return Dense(units=2, activation="softmax")
 
     def _build_output(self, outputs, y):
         if len(outputs) > 1:
