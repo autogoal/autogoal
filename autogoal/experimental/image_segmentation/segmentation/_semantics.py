@@ -1,7 +1,3 @@
-from autogoal.kb._semantics import SemanticType, MatrixContinuousDense
-
+from autogoal.kb._semantics import MatrixContinuousDense
 
 Image = MatrixContinuousDense
-
-
-

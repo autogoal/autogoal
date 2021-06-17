@@ -33,7 +33,6 @@ class KerasImageSegmenter(KerasNeuralNetwork):
             outputs = outputs[0]
 
         return self._build_output_layer(y)(outputs)
-    
-    def run(self, X: Image, y: Supervised[Image]
-            ) -> Image:
+
+    def run(self, X: Image, y: Supervised[Image]) -> Image:
         return super().run(X, y)
