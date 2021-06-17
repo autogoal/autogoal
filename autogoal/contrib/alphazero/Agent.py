@@ -1,7 +1,8 @@
 import numpy as np
+import time
 
 from collections import deque
-from random import shuffle
+from random import shuffle, sample
 from tqdm import tqdm
 
 from .MCTS import MCTS
@@ -89,6 +90,7 @@ class AlphaZeroAgent:
     def train(
         self,
         num_iters=NUM_ITERS,
+        time_limit=TIME_LIMIT,
         queue_len=QUEUE_LEN,
         episodes=EPISODES,
         memory_size=MEMORY_SIZE,
@@ -102,8 +104,11 @@ class AlphaZeroAgent:
         It then pits the new neural network against the old one and accepts it
         only if it wins >= updateThreshold fraction of games.
         """
-
-        for i in range(1, num_iters + 1):
+        start_time = time.time()
+        time_lapsed = 0
+        i = 1
+        while i < num_iters + 1 and time_lapsed < time_limit:
+        #for i in range(1, num_iters + 1):
             if not self.skipFirstSelfPlay or i > 1:
                 iterationTrainExamples = deque([], maxlen=queue_len)
 
@@ -113,13 +118,16 @@ class AlphaZeroAgent:
 
                 self.trainExamplesHistory.append(iterationTrainExamples)
 
-            if len(self.trainExamplesHistory) > memory_size:
-                self.trainExamplesHistory.pop(0)
+            #if len(self.trainExamplesHistory) > memory_size:
+            #    self.trainExamplesHistory.pop(0)
 
             trainExamples = []
             for e in self.trainExamplesHistory:
                 trainExamples.extend(e)
             shuffle(trainExamples)
+
+            if len(trainExamples) > memory_size:
+                trainExamples = sample(trainExamples, memory_size)
 
             # training new network
             self.nnet.save_checkpoint(
@@ -158,6 +166,9 @@ class AlphaZeroAgent:
                 self.nnet.save_checkpoint(
                     folder=self.game.name + "_trainedPlayer/", filename="best"
                 )
+            
+            i += 1
+            time_lapsed = time.time() - start_time
 
     def play(self, board):
         return np.argmax(self.mcts.getActionProb(board, temp=0))

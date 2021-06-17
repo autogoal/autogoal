@@ -8,6 +8,7 @@ QUEUE_LEN = 20000	# Max number of train examples that can be returned by one epi
 MEMORY_SIZE = 300	# Max ammount of train example sets that can be provided to the net after the self play episodes are done
 					## NOTE: when the self play episodes are completed, a list of size <= MEMORY_SIZE * QUEUE_LEN is passed to the nnet as training input
 					## each element in that list is an example of the form (board, pi, v)
+TIME_LIMIT = 900
 CPUCT = 1
 EPSILON = 0.2
 CHECKPOINT = './checkpoints'
