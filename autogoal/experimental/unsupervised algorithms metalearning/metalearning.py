@@ -73,6 +73,38 @@ def binary_proportion(X, y=None):
            count+=1 
     return count/len(X[0])
 
+# Returns the amount of categorical attributes.
+@feature_extractor
+def categorical_amount(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        categorical = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (str))):
+                pass
+            else:
+                categorical = False
+                break
+        if(categorical):
+           count+=1 
+    return count
+
+# Returns the proportion of categorical attributes.
+@feature_extractor
+def categorical_proportion(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        categorical = True
+        for j in range(0, len(X)):
+            if(not(X[j][i] is None) and not isinstance(X[j][i], (str))):
+                pass
+            else:
+                categorical = False
+                break
+        if(categorical):
+           count+=1 
+    return count/len(X[0])
+
 # Returns the amount of discrete attributes.
 @feature_extractor
 def discrete_amount(X, y=None):
