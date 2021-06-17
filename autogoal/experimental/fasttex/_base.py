@@ -4,16 +4,14 @@ import fasttext
 
 from autogoal.grammar import CategoricalValue, BooleanValue, ContinuousValue, DiscreteValue
 from autogoal.kb import Sentence, Word, FeatureSet, Seq
-from autogoal.kb import Supervised ,VectorCategorical
+from autogoal.kb import Supervised ,VectorCategorical, VectorContinuous, MatrixContinuousDense
 from autogoal.utils import nice_repr
-from autogoal.contrib.sklearn._builder import SklearnWrapper
+from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
 import abc
 import numpy as np
 
-
-
-
-
+from os import remove
+from time import time_ns
 
 class SupervisedTextClassifier(AlgorithmBase):
     
@@ -45,8 +43,7 @@ class SupervisedTextClassifier(AlgorithmBase):
             text = [str(j) +" " +str(i) for i, j in zip(X,y) ]
             g.writelines(text)
             self.model = fasttext.train_supervised(input="test.train",epoch=self.epoch,lr=self.lr,wordNgrams=self.wordNgrams)
-        import os
-        os.remove("test.train")
+        remove("test.train")
         return y
 
     def _eval(self, X):
@@ -69,3 +66,46 @@ class Text_Descriptor:
         return False
     def __str__(self):
         return " ".join(self.labels)
+
+class UnsupervisedWordRepresentation(AlgorithmBase):   
+    def __init__ (self,
+                    min_subword: DiscreteValue(min=1, max=3),
+                    max_subword: DiscreteValue(min=3, max=6),
+                    dimension: DiscreteValue(min=100, max=300)
+                    model: CategoricalValue("skipgram", "cbow")
+                    epoch:DiscreteValue(min=5, max=25),
+                    lr:ContinuousValue(0.1,1.0)
+        ):
+        self.min_subword = min_subword
+        self.max_subword = max_subword
+        self.dimension = dimension
+        self.repr_model = model
+        self.epoch = epoch
+        self.lr = lr
+        self.model = None
+
+    def fit_transform(self, X: Seq[Sentences], y: Seq[Words]):
+        self.fit(X)
+        return self.transform(X, y)
+
+    def fit(self, X: Seq[Sentences], y=None):
+        file = f'uwr_test_{time_ns()}.test'
+        with open(file, 'w') as f:
+            f.writelines(X)
+        
+        self.model = fasttext.train_unsupervised(
+                                file, self.repr_model,
+                                minn=self.min_subword,
+                                maxn=self.max_subword, 
+                                dim=self.dimension,
+                                epoch=self.epoch,
+                                lr=self.lr,
+        )
+        remove(file)
+        return self
+
+    def transform(self, X, y):
+        return [self.model.get_word_vector(x) for x in y]
+
+    def run(self,  X:Seq[Sentence], y:Seq[Word]) -> MatrixContinuousDense :
+        self.fit_transform(X, y)
