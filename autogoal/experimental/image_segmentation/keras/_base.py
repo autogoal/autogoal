@@ -4,6 +4,7 @@ from ._grammar import Modules
 from tensorflow.keras.layers import Input, Dense, concatenate
 from autogoal.kb._semantics import MatrixContinuousDense
 from autogoal.kb import Supervised
+from ..segmentation._semantics import Image
 
 
 class KerasImageSegmenter(KerasNeuralNetwork):
@@ -33,6 +34,6 @@ class KerasImageSegmenter(KerasNeuralNetwork):
 
         return self._build_output_layer(y)(outputs)
     
-    def run(self, X: MatrixContinuousDense, y: Supervised[MatrixContinuousDense]
-            ) -> MatrixContinuousDense:
+    def run(self, X: Image, y: Supervised[Image]
+            ) -> Image:
         return super().run(X, y)
