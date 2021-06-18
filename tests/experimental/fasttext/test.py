@@ -40,11 +40,11 @@ with open('cooking.valid',"r") as f:
         text = re.split("__label__[a-z,A-Z,-]+ ", line)[-1]
         X_test.append(text)
         y_test.append(Text_Descriptor( *labels))
-            
+
 
 automl = AutoML(
     input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
-    output= VectorCategorical,  # **tipo de salida**    
+    output= VectorCategorical,  # **tipo de salida**
     registry= [SupervisedTextClassifier],#+find_classes() ,
     evaluation_timeout= 5 * Min,
     memory_limit=3.5 * Gb,
