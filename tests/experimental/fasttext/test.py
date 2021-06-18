@@ -3,7 +3,7 @@ from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
 from autogoal.utils import Min, Gb
 
-def test_supervised()
+def test_supervised():
     from autogoal.experimental.fasttex.datasets.text_classification import load
     X_train, y_train , X_test , y_test = load()
                 
@@ -23,8 +23,6 @@ def test_supervised()
     automl.fit(X_train,y_train,logger=RichLogger())
     score = automl.score(X_test, y_test)
     print(score)
-
-
 
 
 def test_transformers():
