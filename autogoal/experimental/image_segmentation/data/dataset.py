@@ -3,25 +3,65 @@ import os
 import requests
 import shutil
 
-DOWNLOAD_PATH = "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/images.tar.gz"
+IMAGES_URL = "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/images.tar.gz"
 
-TEST_DOWNLOAD_PATH = (
+MASKS_URL = (
     "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/annotations.tar.gz"
 )
 
-TRAIN_DIR = "segmentation_training"
-TEST_DIR = "segmentation_test"
+IMAGES_DIR = "segmentation_training"
+MASKS_DIR = "segmentation_test"
 
 
-def download_training():
-    dir_to_save = datapath(TRAIN_DIR)
-    save_path = datapath(TRAIN_DIR + ".tar.gz")
+def load():
+    download_images()
+    download_masks()
+    images = load_images()
+    masks = load_masks()
+    assert len(images) == len(masks)
+
+    test_count = len(images) // 10
+
+    return images[test_count:], masks[test_count:], images[:test_count], masks[:test_count]
+
+
+def load_images():
+    x = []
+    for file in os.listdir(datapath(IMAGES_DIR)):
+        if file.endswith(".jpg"):
+            x.append(file)
+    return sorted(x)
+
+
+def load_masks():
+    x = []
+    for file in os.listdir(datapath(MASKS_DIR)):
+        if file.endswith(".png"):
+            x.append(file)
+    return sorted(x)
+
+
+def download_images():
+    dir_to_save = datapath(IMAGES_DIR)
+    save_path = datapath(IMAGES_DIR + ".tar.gz")
 
     if not os.path.isfile(save_path):
         print("Downloading training images...")
-        download_file(DOWNLOAD_PATH, save_path)
+        download_file(IMAGES_URL, save_path)
 
     if not os.path.isdir(dir_to_save):
+        unpack(str(save_path), dir_to_save)
+
+
+def download_masks():
+    dir_to_save = datapath(MASKS_DIR)
+    save_path = datapath(MASKS_DIR + ".tar.gz")
+
+    if not os.path.isfile(save_path):
+        print("Downloading test images...")
+        download_file(MASKS_URL, save_path)
+
+    if not os.path.isfile(dir_to_save):
         unpack(str(save_path), dir_to_save)
 
 
@@ -34,20 +74,3 @@ def download_file(url, save_path):
 
 def unpack(file, dir):
     shutil.unpack_archive(file, dir)
-
-
-def download_test():
-    dir_to_save = datapath(TEST_DIR)
-    save_path = datapath(TEST_DIR + ".tar.gz")
-
-    if not os.path.isfile(save_path):
-        print("Downloading test images...")
-        download_file(TEST_DOWNLOAD_PATH, save_path)
-
-    if not os.path.isfile(dir_to_save):
-        unpack(str(save_path), dir_to_save)
-
-
-def load():
-    download_training()
-    download_test()
