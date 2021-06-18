@@ -1,3 +1,4 @@
-from autogoal.kb._semantics import MatrixContinuousDense
+from tensorflow.python.framework.ops import Tensor
+from autogoal.kb._semantics import Continuous, Dense
 
-Image = MatrixContinuousDense
+Image = Tensor[2, Continuous, Dense]
