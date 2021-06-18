@@ -106,7 +106,7 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         return self.transform(X, y)
 
     def run(self, corpus:Seq[Sentence], inputs:Seq[Word]) -> MatrixContinuousDense :
-        self.fit_transform(X, y)
+        self.fit_transform(corpus, inputs)
 
 class PreTrainedUnsupervisedWordRepresentation(AlgorithmBase):
 
