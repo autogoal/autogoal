@@ -1,15 +1,11 @@
-from numpy.lib.function_base import select
 from autogoal.kb import AlgorithmBase
 import fasttext
-import fasttex.util
+import fasttext.util
 
-from autogoal.grammar import CategoricalValue, BooleanValue, ContinuousValue, DiscreteValue
-from autogoal.kb import Sentence, Word, FeatureSet, Seq
-from autogoal.kb import Supervised ,VectorCategorical, VectorContinuous, MatrixContinuousDense
+from autogoal.grammar import CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.kb import Sentence, Word, Seq
+from autogoal.kb import Supervised ,VectorCategorical, MatrixContinuousDense
 from autogoal.utils import nice_repr
-from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
-import abc
-import numpy as np
 
 from os import remove
 from time import time
@@ -113,6 +109,7 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         self.fit_transform(X, y)
 
 class PreTrainedUnsupervisedWordRepresentation(AlgorithmBase):
+
     def __init__ (self,
                     dimension: DiscreteValue(min=100, max=300),
                     corpus: CategoricalValue('cc', 'wiki')='cc',
