@@ -5,6 +5,7 @@ from ._semantics import Image
 import numpy as np
 from ..kb._generated import ImageReader
 from ..kb._semantics import ImageFile
+from ..segmentation._semantics import Image
 
 
 
@@ -14,9 +15,10 @@ class ImageSegmenter(AlgorithmBase):
     Receives images and returns segmentation masks with same size
     """
 
-    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[Image]], Seq[Image])):
+    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[Image]], Seq[Image]), preprocessor: algorithm(ImageFile, Image)):
         self._segmenter = segmenter
         self._mode = "train"
+        self._preprocessor=preprocessor
 
     def train(self):
         self._mode = "train"
@@ -27,12 +29,18 @@ class ImageSegmenter(AlgorithmBase):
         self._segmenter.eval()
 
     def fit(self, images, masks):
-        images = np.array(images)
-        self._segmenter.fit(images, masks)
+        self._segmenter.fit(self._preprocess(images), self._preprocess(masks))
+    
+    def _preprocess(self, images):
+        p_images=[]
+        for image in images:
+            p_images.append(self._preprocessor.run(image))
+            
+        return np.array(p_images)
+        
 
     def predict(self, images):
-        images = np.array(images)
-        return self._segmenter.predict(images)
+        return self._segmenter.predict(self._preprocess(images))
 
     def run(self, data: Seq[Image], masks: Seq[Image]) -> Seq[Image]:
         if self._mode == "train":
