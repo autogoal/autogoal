@@ -156,3 +156,4 @@ output.csv
 
 # AlphaZero specific temp folders
 checkpoints*
+*_trainedPlayer

@@ -107,7 +107,6 @@ class AlphaZeroAgent:
         start_time = time.time()
         time_lapsed = 0
         i = 1
-        print(num_iters, time_limit)
         while i < num_iters + 1 and time_lapsed < time_limit:
         #for i in range(1, num_iters + 1):
             if not self.skipFirstSelfPlay or i > 1:
@@ -119,7 +118,7 @@ class AlphaZeroAgent:
 
                 self.trainExamplesHistory.append(iterationTrainExamples)
 
-            #if len(self.trainExamplesHistory) > memory_size:
+            # if len(self.trainExamplesHistory) > memory_size:
             #    self.trainExamplesHistory.pop(0)
 
             trainExamples = []
@@ -150,6 +149,8 @@ class AlphaZeroAgent:
                 lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
                 lambda x: np.argmax(nmcts.getActionProb(x, temp=0)),
                 self.game,
+                display=self.game.display,
+                verbose=True
             )
 
             if (

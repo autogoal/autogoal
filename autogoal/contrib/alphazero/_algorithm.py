@@ -11,13 +11,13 @@ class AlphaZeroAlgorithm(AlgorithmBase):
     def __init__(
         self,
         reg_const: ContinuousValue(0.0001, 0.001),
-        learning_rate: ContinuousValue(0.0001, 0.5),
+        learning_rate: ContinuousValue(0.0001, 0.05),
         batch_size: CategoricalValue(8, 16, 32, 64, 128, 256),
         epochs: DiscreteValue(10, 100),
         num_iters: DiscreteValue(10, 100),
         queue_len: DiscreteValue(20000, 40000),
         episodes: DiscreteValue(50, 100),
-        memory_size: DiscreteValue(300, 1000),
+        memory_size: DiscreteValue(3000, 10000),
         arena_games: DiscreteValue(40, 100),
         update_threshold: ContinuousValue(0.6, 0.99),
         time_limit: DiscreteValue(5 * 60, 60 * 60 * 24) # Define a time limit of 5 minutes - 1 day
@@ -42,18 +42,23 @@ class AlphaZeroAlgorithm(AlgorithmBase):
         self.arena_games = arena_games
         self.update_threshold = update_threshold
         self.time_limit = time_limit
+        self._mode = "train"
+        self.agent = None
 
-    def run(self, game: GameStructure) -> Player:
-        # First step, construct a CNN model
-        # and train it with the hyperparameters
-        # defined for this algorithm instance
+    def train(self):
+        self._mode = "train"
+
+    def eval(self):
+        self._mode = "eval"
+
+    def fit(self, X):
         cnn = NeuralNetwork(
-            self.reg_const, self.learning_rate, self.batch_size, self.epochs, game
+            self.reg_const, self.learning_rate, self.batch_size, self.epochs, X
         )
-        agent = AlphaZeroAgent(game, cnn)
 
-        # Train the agent
-        agent.train(
+        self.agent = AlphaZeroAgent(X, cnn)
+
+        self.agent.train(
             num_iters=self.num_iters,
             arena_games=self.arena_games,
             episodes=self.episodes,
@@ -62,4 +67,14 @@ class AlphaZeroAlgorithm(AlgorithmBase):
             time_limit=self.time_limit
         )
 
-        return agent
+    def run(self, game: GameStructure) -> Player:
+        if self._mode == "train":
+           self.fit(game)
+
+        if self._mode == "eval":
+            if self.agent is None:
+                raise TypeError(
+                "You must call `fit` before `predict` to learn class mappings."
+            )
+        
+            return self.agent

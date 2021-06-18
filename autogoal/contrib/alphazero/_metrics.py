@@ -10,12 +10,11 @@
 
 from typing import Any, Callable
 from .GameManager import God
-from .GameInterface import Game
 
 
-def create_win_rate_metric(game) -> Callable[[Any, Any], float]:
+def create_win_rate_metric(game, display=None, verbose=False) -> Callable[[Any, Any], float]:
     def win_rate(model_player, test_player):
-        wins, _, _ = God.playMatch(100, model_player, test_player, game)
+        wins, _, _ = God.playMatch(100, model_player.play, test_player.play, game, display=display, verbose=verbose)
         return wins / 100
 
     return win_rate

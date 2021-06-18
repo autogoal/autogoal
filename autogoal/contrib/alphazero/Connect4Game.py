@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 sys.path.append('..')
-from GameInterface import Game
+from .GameInterface import Game
 from collections import namedtuple
 
 
