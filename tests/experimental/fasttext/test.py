@@ -12,7 +12,6 @@ from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
 from autogoal.experimental.fasttex._base import  SupervisedTextClassifier , Text_Descriptor
 from autogoal.contrib.spacy import SpacyNLP
-from autogoal.experimental.fasttex.datasets.text_classification import load
 from autogoal.datasets import haha
 from autogoal.utils import Min, Gb
 import numpy as np
