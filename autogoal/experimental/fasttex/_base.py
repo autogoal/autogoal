@@ -1,6 +1,7 @@
 from numpy.lib.function_base import select
 from autogoal.kb import AlgorithmBase
 import fasttext
+import fasttex.util
 
 from autogoal.grammar import CategoricalValue, BooleanValue, ContinuousValue, DiscreteValue
 from autogoal.kb import Sentence, Word, FeatureSet, Seq
@@ -110,6 +111,51 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
 
     def run(self, corpus:Seq[Sentence], inputs:Seq[Word]) -> MatrixContinuousDense :
         self.fit_transform(X, y)
+
+class PreTrainedUnsupervisedWordRepresentation(AlgorithmBase):
+    def __init__ (self,
+                    dimension: DiscreteValue(min=100, max=300),
+                    corpus: CategoricalValue('cc', 'wiki')='cc',
+                    lang: CategoricalValue(
+                                    'da', 'nl', 'en', 'fi', 'fr', 'de', 'hu',
+                                    'it', 'no', 'pt', 'ru', 'es', 'sv', 'tr'
+                                )='en',
+        ):
+        self.dimension = dimension
+        self.corpus = corpus
+        self.lang = lang
+        self.model = None
+
+    @classmethod
+    def download(cls, lang='en'):
+        try:
+            fasttext.util.download_model(lang, if_exists='ignore')
+        except Exception as ex:
+            print(f"(!) [fasttext] Can't download pre-trained binary file with lang={lang}")
+            raise ex
+
+    def fit(self):
+        if self.model is None:
+            file = f'{self.corpus}.{self.lang}.300.bin'
+            try:
+                self.model = fasttext.load_model(f'{self.corpus}.{self.lang}.300.bin')
+            except OSError:
+                raise TypeError(
+                    f"(!) [fasttext] Must download pre-trained binary file {file} first"
+                )
+
+            if self.model.get_dimension() > self.dimension:
+                fasttext.util.reduce_model(self.model, self.dimension)
+
+    def transform(self, X: Seq[Word]) -> MatrixContinuousDense :
+        return [self.model.get_word_vector(x) for x in X]
+
+    def fit_transform(self, X: Seq[Word]):
+        self.fit()
+        return self.transform(X)
+
+    def run(self, inputs:Seq[Word]) -> MatrixContinuousDense :
+        self.fit_transform(inputs)
 
 class UnsupervisedWordAnalogies(AlgorithmBase):
     def __init__ (self,
