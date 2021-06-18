@@ -10,7 +10,7 @@ from autogoal.grammar import BooleanValue, DiscreteValue
 from autogoal.kb import *
 from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
-from autogoal.contrib.fasttex._base import  SupervisedTextClassifier , Text_Descriptor
+from autogoal.experimental.fasttex._base import  SupervisedTextClassifier , Text_Descriptor
 from autogoal.contrib.spacy import SpacyNLP
 
 from autogoal.datasets import haha
