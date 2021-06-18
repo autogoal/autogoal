@@ -11,7 +11,24 @@ from os import remove
 from time import time
 
 class SupervisedTextClassifier(AlgorithmBase):
+    """
+    
+    Assigns documents (such as emails, posts, text messages, product reviews, etc...) to one or multiple categories.
+    
+    It needs to be trained.
+    
+    All the labels start by the __label__ prefix, which is how fastText recognize what is a label or what is a word.
+    
+    If you want to assign multiple labels you can use Text_Descriptor 
 
+    Params:
+        
+        -epoch: The number of times each examples is seen
+        
+        -lr:  How much the model changes after processing each example
+        
+        -wordNgrams: to refer to the concatenation any n consecutive tokens.
+    """
     def __init__ (self,
                     epoch:DiscreteValue(min=5, max=25),
                     lr:ContinuousValue(0.1,1.0),
