@@ -65,6 +65,25 @@ class Text_Descriptor:
         return " ".join(self.labels)
 
 class UnsupervisedWordRepresentation(AlgorithmBase):
+    """
+    Transform words to vectors. These vectors capture hidden information about a language, 
+    like word analogies or semantic. 
+    
+    It uses a collection of documents to be trained.
+
+    Params:
+
+    - min_subword , max_subword: The subwords are all the substrings contained in a word 
+    between the minimum size (`min_subword`) and the maximal size (`max_subword`).
+
+    - dimension: controls the size of the vectors, the larger they are the more information 
+    they can capture but requires more data to be learned.
+
+    - model: The `skipgram` model learns to predict a target word thanks to a nearby word. 
+    On the other hand, the `cbow` model predicts the target word according to its context.
+
+    You can perform the transformation with `run(self, corpus, inputs)`.
+    """
     def __init__ (self,
                     min_subword: DiscreteValue(min=1, max=3),
                     max_subword: DiscreteValue(min=3, max=6),
@@ -106,12 +125,28 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         return self.transform(X, y)
 
     def run(self, corpus:Seq[Sentence], inputs:Seq[Word]) -> MatrixContinuousDense :
-        self.fit_transform(X, y)
+        self.fit_transform(corpus, inputs)
 
-class PreTrainedUnsupervisedWordRepresentation(AlgorithmBase):
+class UnsupervisedWordRepresentationPT(AlgorithmBase):
+    """
+    Version of class `UnsupervisedWordRepresentation` using pre-trained models.
 
+    Params:
+
+    - dimension: downloads models always contains word vectors of size 300, you can resize
+    them using this param. Default 300.
+
+    - corpus: The source of pre-trained model, two options: `cc`(Common Crawl) or `wiki`(Wikipedia).
+    Default `cc`.
+
+    - lang: language code of the documents taken in the pre-trained model. Deafult `en`(English)
+
+    You can perform the transformation with `run(self, inputs)`.
+
+    In order to download the models, use class method: `download(lang)`.
+    """
     def __init__ (self,
-                    dimension: DiscreteValue(min=100, max=300),
+                    dimension: DiscreteValue(min=100, max=300)=300,
                     corpus: CategoricalValue('cc', 'wiki')='cc',
                     lang: CategoricalValue(
                                     'da', 'nl', 'en', 'fi', 'fr', 'de', 'hu',
