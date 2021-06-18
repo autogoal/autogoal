@@ -15,24 +15,23 @@ class DatasetFeatureExtractor:
         features = {}
 
         for extractor in self.feature_extractors:
-            #features.update(**extractor(X, y))
-            print(extractor.__name__ + " " + extractor(X, y))
+            features.update(**extractor(X, y))
 
         return features
-        
+    
 
 _EXTRACTORS = []
 
 def feature_extractor(func):
     @functools.wraps(func)
     def wrapper(X, y=None):
-        #try:
-        result = func(X, y)
-        #except:
-        #    result = None
+        try:
+            result = func(X, y)
+        except:
+            print("Cannot apply " + func.__name__ + " extractor to the given dataset")
+            result = None
 
-        return str(result)
-        #return {func.__name__: result}
+        return {func.__name__: result}
 
     _EXTRACTORS.append(wrapper)
     return wrapper
@@ -42,8 +41,12 @@ def specific_types_attributes_index(X, types):
     N, M = get_dimentions(X)
     attributes_index = []
     for j in range(0, M):
-        if isinstance(X[0][j], types):
-            attributes_index.append(j)
+        for i in range(0, N):
+            if X[i][j] is None:
+                continue
+            if isinstance(X[i][j], types):
+                attributes_index.append(j)
+                break
     return attributes_index
 
 
@@ -57,6 +60,8 @@ def values_from_rows(X, attr):
     for j in attr:
         vals = []
         for i in range(0, N):
+            if X[i][j] is None:
+                continue
             vals.append(X[i][j])
         values.append(vals)
     return values
@@ -92,6 +97,14 @@ def calculate_medians(values):
 
 ###################################### SINGLE VALUED META-FEATURES ########################################
 
+
+# Instances Amount. An indicator of the quality of the data.
+@feature_extractor
+def instances_amount(X, y=None):
+    N, M = get_dimentions(X)
+    return N
+
+
 # Returns the amount of data attributes.
 @feature_extractor
 def attributes_amount(X, y=None):
@@ -113,25 +126,130 @@ def attributes_amount_log_10(X, y=None):
     return math.log10(M)
 
 
-# Returns the amount of continuous attributes.
+# Returns the amount of data examples. A raw indication of the available amount of data.
 @feature_extractor
-def continuous_amount(X, y=None):
+def examples_amount(X, y=None):
+    if y is None:
+        return 0
+    return len(y)
+
+
+# Returns log_2 of the amount of data examples. A raw indication of the available amount of data.
+@feature_extractor
+def examples_amount_log_2(X, y=None):
+    if y is None:
+        return 0
+    return math.log2(len(y))
+
+
+# Returns log_10 of the amount of data examples. A raw indication of the available amount of data.
+@feature_extractor
+def examples_amount_log_10(X, y=None):
+    if y is None:
+        return 0
+    return math.log10(len(y))
+
+
+# Returns the amount of binary attributes.
+@feature_extractor
+def binary_amount(X, y=None):
+    count = 0
+    for i in range(0, len(X[0])):
+        binary = True
+        for j in range(0, len(X)):
+            if not( X[j][i] is None) and (X[j][i] == True or X[j][i] == False or X[j][i] == 0 or X[j][i] == 1):
+                continue
+            else:
+                binary = False
+                break
+        if binary:
+           count += 1 
+    return count
+
+
+# Returns the proportion of binary attributes.
+@feature_extractor
+def binary_proportion(X, y=None):
     N, M = get_dimentions(X)
-    amount = 0
-    for val in X[0]:
-        if isinstance(val, (float)):
-            amount += 1
-    return amount
+    count = 0
+    for i in range(0, M):
+        binary = True
+        for j in range(0, N):
+            if not (X[j][i] is None) and (X[j][i] == True or X[j][i] == False or X[j][i] == 0 or X[j][i] == 1):
+                continue
+            else:
+                binary = False
+                break
+        if binary:
+           count += 1 
+    return count / M
+
+
+# Returns the amount of categorical attributes.
+@feature_extractor
+def categorical_amount(X, y=None):
+    categorical = specific_types_attributes_index(X, (str))
+    return len(categorical)
+
+
+# Returns the proportion of categorical attributes.
+@feature_extractor
+def categorical_proportion(X, y=None):
+    N, M = get_dimentions(X)
+    categorical = specific_types_attributes_index(X, (str))
+    return len(categorical) / M
+
+
+# Returns the amount of discrete attributes.
+@feature_extractor
+def discrete_amount(X, y=None):
+    discrete = specific_types_attributes_index(X, (int))
+    return len(discrete)
+
+
+# Returns the proportion of discrete attributes.
+@feature_extractor
+def discrete_proportion(X, y=None):
+    N, M = get_dimentions(X)
+    discrete = specific_types_attributes_index(X, (int))
+    return len(discrete) / M
+
+
+# Returns the amount of continuous attributes.
+def continuous_amount(X, y=None):
+    continuous = specific_types_attributes_index(X, (float))
+    return len(continuous)
+
 
 # Returns the proportion of continuous attributes.
 @feature_extractor
 def continuous_proportion(X, y=None):
     N, M = get_dimentions(X)
-    amount = 0
-    for val in X[0]:
-        if isinstance(val, (float)):
-            amount += 1
-    return float(amount) / float(M)
+    continuous = specific_types_attributes_index(X, (float))
+    return len(continuous) / M
+
+
+# Returns the ratio of the number of examples by the number of attributes. An indicator of 
+# the number of examples available to the number of attributes.
+@feature_extractor
+def examples_by_attributes_ratio(X, y=None):
+    if y is None:
+        return 0
+    N, M = get_dimentions(X)
+    examples = len(y)
+    return examples / M
+
+
+# Percentage of missing values. An indicator of the quality of the data.
+@feature_extractor
+def missing_values_percentage(X, y=None):
+    N, M = get_dimentions(X)
+    count = 0
+    for i in range(0, M):
+        for j in range(0, N):
+            if(X[j][i] is None):
+                count += 1 
+    return (count * 100) / (M * N)
 
 
 # Returns the mean absolute correlation (Pearson coefficient) between continuous attributes.
@@ -147,7 +265,11 @@ def continuous_mean_absolute_correlation(X, y=None):
     correlations = []
 
     for i in range(0, len(values) - 1):
+        if len(values[i]) != N:
+                continue
         for j in range(i + 1, len(values)):
+            if len(values[j]) != N:
+                continue
             product_sum = 0
             for k in range(0, N):
                 product_sum += values[i][k] * values[j][k]
@@ -315,6 +437,30 @@ def normal_distributed_count(X, y=None):
             result += 1
     
     return result
+
+
+# Returns the mean entropy of discrete attributes.
+@feature_extractor
+def discrete_mean_entropy(X, y=None):
+    N, M = get_dimentions(X)
+    discreteAttributes = specific_types_attributes_index(X, (int))
+    entropy = []
+    for attributeColumn in discreteAttributes:
+        entropyPi = {}
+        for j  in range(0, N):
+            if (entropyPi.__contains__(X[j][attributeColumn])):
+                entropyPi[X[j][attributeColumn]] += 1
+            else:
+                entropyPi[X[j][attributeColumn]] = 1
+        entropyValue = 0
+        for key in entropyPi:
+            entropyValue += (entropyPi[key] * math.log2(entropyPi[key]))
+        entropy.append(entropyValue)
+    entropyValue = 0
+    for value in entropy:
+        entropyValue += value
+    return entropyValue / len(entropy)
+
 
 ####################################### MULTIVALUED META-FEATURES ###########################################
 
