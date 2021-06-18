@@ -127,10 +127,26 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
     def run(self, corpus:Seq[Sentence], inputs:Seq[Word]) -> MatrixContinuousDense :
         self.fit_transform(corpus, inputs)
 
-class PreTrainedUnsupervisedWordRepresentation(AlgorithmBase):
+class UnsupervisedWordRepresentationPT(AlgorithmBase):
+    """
+    Version of class `UnsupervisedWordRepresentation` using pre-trained models.
 
+    Params:
+
+    - dimension: downloads models always contains word vectors of size 300, you can resize
+    them using this param. Default 300.
+
+    - corpus: The source of pre-trained model, two options: `cc`(Common Crawl) or `wiki`(Wikipedia).
+    Default `cc`.
+
+    - lang: language code of the documents taken in the pre-trained model. Deafult `en`(English)
+
+    You can perform the transformation with `run(self, inputs)`.
+
+    In order to download the models, use class method: `download(lang)`.
+    """
     def __init__ (self,
-                    dimension: DiscreteValue(min=100, max=300),
+                    dimension: DiscreteValue(min=100, max=300)=300,
                     corpus: CategoricalValue('cc', 'wiki')='cc',
                     lang: CategoricalValue(
                                     'da', 'nl', 'en', 'fi', 'fr', 'de', 'hu',
