@@ -65,6 +65,25 @@ class Text_Descriptor:
         return " ".join(self.labels)
 
 class UnsupervisedWordRepresentation(AlgorithmBase):
+    """
+    Transform words to vectors. These vectors capture hidden information about a language, 
+    like word analogies or semantic. 
+    
+    It uses a collection of documents to be trained.
+
+    Params:
+
+    - min_subword , max_subword: The subwords are all the substrings contained in a word 
+    between the minimum size (`min_subword`) and the maximal size (`max_subword`).
+
+    - dimension: controls the size of the vectors, the larger they are the more information 
+    they can capture but requires more data to be learned.
+
+    - model: The `skipgram` model learns to predict a target word thanks to a nearby word. 
+    On the other hand, the `cbow` model predicts the target word according to its context.
+
+    You can perform the transformation with `run(self, corpus, inputs)`.
+    """
     def __init__ (self,
                     min_subword: DiscreteValue(min=1, max=3),
                     max_subword: DiscreteValue(min=3, max=6),
