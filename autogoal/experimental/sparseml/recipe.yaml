@@ -1,0 +1,22 @@
+version: 0.1.0
+modifiers:
+    - !EpochRangeModifier
+        start_epoch: 0.0
+        end_epoch: 70.0
+
+    - !LearningRateModifier
+        start_epoch: 0
+        end_epoch: -1.0
+        update_frequency: -1.0
+        init_lr: 0.005
+        lr_class: MultiStepLR
+        lr_kwargs: {'milestones': [43, 60], 'gamma': 0.1}
+
+    - !GMPruningModifier
+        start_epoch: 0
+        end_epoch: 40
+        update_frequency: 1.0
+        init_sparsity: 0.05
+        final_sparsity: 0.85
+        mask_type: unstructured
+        params: ['sections.0.0.conv1.weight', 'sections.0.0.conv2.weight', 'sections.0.0.conv3.weight']
