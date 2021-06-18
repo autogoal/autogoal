@@ -1,7 +1,5 @@
 from __future__ import print_function
-import sys
-sys.path.append('..')
-from GameInterface import Game
+from .GameInterface import Game
 import numpy as np
 
 """

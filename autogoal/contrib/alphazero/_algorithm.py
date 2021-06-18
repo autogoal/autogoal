@@ -1,10 +1,12 @@
 from autogoal.kb import AlgorithmBase
 from autogoal.grammar import ContinuousValue, CategoricalValue, DiscreteValue
+from autogoal.utils import nice_repr
 from ._semantics import GameStructure, Player
 from .NeuralNet import NeuralNetwork
 from .Agent import AlphaZeroAgent
 
 
+@nice_repr
 class AlphaZeroAlgorithm(AlgorithmBase):
     def __init__(
         self,
@@ -18,17 +20,28 @@ class AlphaZeroAlgorithm(AlgorithmBase):
         memory_size: DiscreteValue(300, 1000),
         arena_games: DiscreteValue(40, 100),
         update_threshold: ContinuousValue(0.6, 0.99),
+        time_limit: DiscreteValue(5 * 60, 60 * 60 * 24) # Define a time limit of 5 minutes - 1 day
     ) -> None:
+        """
+        AlphaZero algorithm representation for arbitrary games
+        implementing the Game Interface.
+
+        WARN: *time_limit* param should be configured on demand,
+        inheriting from AlphaZeroAlgorithm and overriding init call
+        to accept all parameters except time_limit if is not desire
+        that AutoGoal try all different values for optimization.
+        """
         self.reg_const = reg_const
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.epochs = epochs
-        self.num_iters = (num_iters,)
+        self.num_iters = num_iters
         self.queue_len = queue_len
         self.episodes = episodes
         self.memory_size = memory_size
         self.arena_games = arena_games
         self.update_threshold = update_threshold
+        self.time_limit = time_limit
 
     def run(self, game: GameStructure) -> Player:
         # First step, construct a CNN model
@@ -46,6 +59,7 @@ class AlphaZeroAlgorithm(AlgorithmBase):
             episodes=self.episodes,
             queue_len=self.queue_len,
             update_threshold=self.update_threshold,
+            time_limit=self.time_limit
         )
 
         return agent

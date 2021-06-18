@@ -107,6 +107,7 @@ class AlphaZeroAgent:
         start_time = time.time()
         time_lapsed = 0
         i = 1
+        print(num_iters, time_limit)
         while i < num_iters + 1 and time_lapsed < time_limit:
         #for i in range(1, num_iters + 1):
             if not self.skipFirstSelfPlay or i > 1:

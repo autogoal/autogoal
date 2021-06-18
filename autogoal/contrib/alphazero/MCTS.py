@@ -2,7 +2,7 @@ import logging
 import math
 import numpy as np
 
-from config import CPUCT, EPSILON, MCTS_SIMS
+from .config import CPUCT, EPSILON, MCTS_SIMS
 
 log = logging.getLogger(__name__)
 

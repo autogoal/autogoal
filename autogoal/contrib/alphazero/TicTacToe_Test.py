@@ -1,7 +1,7 @@
-from GameManager import God
-from ramdomAgent import RandomPlayer
-from Agent import AlphaZeroPlayer
-from TicTacToeGame import TicTacToeGame
+from .GameManager import God
+from .ramdomAgent import RandomPlayer
+from .Agent import AlphaZeroPlayer
+from .TicTacToeGame import TicTacToeGame
 
 game = TicTacToeGame()
 

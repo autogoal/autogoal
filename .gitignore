@@ -153,3 +153,6 @@ demo-short.webm
 metalearning.json
 *.bin
 output.csv
+
+# AlphaZero specific temp folders
+checkpoints*
