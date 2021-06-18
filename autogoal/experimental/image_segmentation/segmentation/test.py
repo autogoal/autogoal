@@ -5,9 +5,16 @@ from ._semantics import Image
 from autogoal.contrib import find_classes
 from ..keras._base import KerasImageSegmenter
 from ._base import ImageSegmenter
+from ..data.dataset import load
+from autogoal.search import RichLogger
 
 
-def run_example():
-    automl = AutoML(input=(Seq[Image], Seq[Image]), output=Image, cross_validation_steps=1,
+def test():
+    automl = AutoML(input=(Seq[Image], Seq[Image]), output=Seq[Image], cross_validation_steps=1,
                     registry=find_classes() + [ImageSegmenter, KerasImageSegmenter])
     
+    x_train, y_train, x_test, y_test = load()
+
+    automl.fit(x_train, y_train, logger=[RichLogger()])
+    score = automl.score(x_test, y_test)
+    print(score)

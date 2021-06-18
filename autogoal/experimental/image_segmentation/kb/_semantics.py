@@ -11,3 +11,4 @@ class ImageFile(SemanticType):
             return path.isfile(x) and x.split(".")[-1] == "jpg"
         except TypeError:
             return False
+
