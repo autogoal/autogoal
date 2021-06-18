@@ -26,23 +26,24 @@ print(score)
 
 
 
-from autogoal.experimental.fasttex._base import UnsupervisedWordRepresentationPT
+def test_transformers():
+    from autogoal.experimental.fasttex._base import UnsupervisedWordRepresentationPT
 
-# Descargando los modelos preentrenados en idioma espanhol
-UnsupervisedWordRepresentationPT.download(lang='es') 
+    # Descargando los modelos preentrenados en idioma espanhol
+    UnsupervisedWordRepresentationPT.download(lang='es') 
 
-# Usando el modelo con fuente en wikipedia en espanhol, y vectores de tamanho 250
-uwr = UnsupervisedWordRepresentationPT(250, 'wiki', 'es') 
+    # Usando el modelo con fuente en wikipedia en espanhol, y vectores de tamanho 250
+    uwr = UnsupervisedWordRepresentationPT(250, 'wiki', 'es') 
 
-# Transformando palabras a vectores
-vectors = uwr.run(["hola", "mundo", "planeta"])
+    # Transformando palabras a vectores
+    vectors = uwr.run(["hola", "mundo", "planeta"])
 
-print(vectors)
+    print(vectors)
 
 
-# Luego de hacer uwr.fit() o uwr.run() la instancia contiene el modelo en el atributo model
-print(uwr.model.words)
+    # Luego de hacer uwr.fit() o uwr.run() la instancia contiene el modelo en el atributo model
+    print(uwr.model.words)
 
-# Y usar metodos de esa instancia tales como like get_nearest_neighbors() y get_analogies()
-print(uwr.model.get_nearest_neighbors("vegetal"))
-print(uwr.model.get_analogies("cuchara", "tenedor", "escudo"))
+    # Y usar metodos de esa instancia tales como like get_nearest_neighbors() y get_analogies()
+    print(uwr.model.get_nearest_neighbors("vegetal"))
+    print(uwr.model.get_analogies("cuchara", "tenedor", "escudo"))
