@@ -7,23 +7,37 @@ import statistics as st
 from scipy.stats import shapiro
 
 
+class DatasetFeatureExtractor:
+    def __init__(self, features_extractors=None):
+        self.feature_extractors = list(features_extractors or _EXTRACTORS)
+
+    def extract_features(self, X, y=None):
+        features = {}
+
+        for extractor in self.feature_extractors:
+            #features.update(**extractor(X, y))
+            print(extractor.__name__ + " " + extractor(X, y))
+
+        return features
+        
+
 _EXTRACTORS = []
 
 def feature_extractor(func):
     @functools.wraps(func)
     def wrapper(X, y=None):
-        try:
-            result = func(X, y)
-        except:
-            result = None
-            print("Cannot apply the " + func.__name__ + " extractor to this dataset")
+        #try:
+        result = func(X, y)
+        #except:
+        #    result = None
 
-        return {func.__name__: result}
+        return str(result)
+        #return {func.__name__: result}
 
     _EXTRACTORS.append(wrapper)
     return wrapper
-
-
+    
+    
 def specific_types_attributes_index(X, types):
     N, M = get_dimentions(X)
     attributes_index = []
@@ -34,7 +48,7 @@ def specific_types_attributes_index(X, types):
 
 
 def get_dimentions(X):
-    return N, M
+    return len(X), len(X[0])
 
 
 def values_from_rows(X, attr):
@@ -105,7 +119,7 @@ def continuous_amount(X, y=None):
     N, M = get_dimentions(X)
     amount = 0
     for val in X[0]:
-        if isinstance(val, (float))
+        if isinstance(val, (float)):
             amount += 1
     return amount
 
@@ -115,9 +129,9 @@ def continuous_proportion(X, y=None):
     N, M = get_dimentions(X)
     amount = 0
     for val in X[0]:
-        if isinstance(val, (float))
+        if isinstance(val, (float)):
             amount += 1
-    return (float)amount / (float)M
+    return float(amount) / float(M)
 
 
 # Returns the mean absolute correlation (Pearson coefficient) between continuous attributes.
@@ -129,10 +143,10 @@ def continuous_mean_absolute_correlation(X, y=None):
 
     means = calculate_means(values)
     variances = calculate_variances(values)
-    
+
     correlations = []
 
-    for i in range(0, len(values - 1)):
+    for i in range(0, len(values) - 1):
         for j in range(i + 1, len(values)):
             product_sum = 0
             for k in range(0, N):
@@ -147,7 +161,7 @@ def continuous_mean_absolute_correlation(X, y=None):
 @feature_extractor
 def continuous_mean_skewness(X, y=None):
     N, M = get_dimentions(X)
-    continuous_attributes = specific_types_attributes_index(X, (float))
+    continuous_attributes = specific_types_attributes_index(X, (int, float))
     values = values_from_rows(X, continuous_attributes)
     means = calculate_means(values)
     variances = calculate_variances(values)
@@ -173,7 +187,7 @@ def continuous_mean_skewness(X, y=None):
 @feature_extractor
 def continuous_mean_kurtosis(X, y=None):
     N, M = get_dimentions(X)
-    continuous_attributes = specific_types_attributes_index(X, (float))
+    continuous_attributes = specific_types_attributes_index(X, (int, float))
     values = values_from_rows(X, continuous_attributes)
     means = calculate_means(values)
     variances = calculate_variances(values)
@@ -239,22 +253,23 @@ def correlation_matrix_eigenvalues(X, y = None):
     means = calculate_means(values)
 
     correlation_matrix = []
-    for i in range(0, len(numeric_attributes)):
-        product_sum = 0
+    for i in range(0, len(values)):
         row = []
-        for j in range(0, len(numeric_attributes)):
+        for j in range(0, len(values)):
+            product_sum = 0
             for k in range(0, N):
-                product_sum += X[k][i] * X[k][j]
-            row.append(product_sum / N - mean[i] * mean[j])
+                product_sum += X[k][numeric_attributes[i]] * X[k][numeric_attributes[j]]
+            row.append(product_sum / N - means[i] * means[j])
         correlation_matrix.append(row)
-    
-    w, v = LA.eig(np.array(correlation_matrix))
 
+    w, v = LA.eig(np.array(correlation_matrix))
+    
+    
     eigenvalues = []
     for e in w:
         eigenvalues.append(e)
-    
-    return eigenvalues.sort()
+
+    return eigenvalues
 
 
 # Returns the number of atributes with ouliers values
@@ -266,14 +281,14 @@ def attributes_with_outliers(X, y = None):
 
     result = 0
 
-    for i in numeric_attributes:
+    for i in range(0, len(values)):
         has_outliers = False
         threshold = 3
         mean = st.mean(values[i])
         standard_deviation = st.stdev(values[i])
 
-        for x in values:
-            z_score = (y - mean) / standard_deviation
+        for x in values[i]:
+            z_score = (x - mean) / standard_deviation
             if np.abs(z_score) > threshold:
                 has_outliers = True
                 break
@@ -293,7 +308,7 @@ def normal_distributed_count(X, y=None):
 
     result = 0
 
-    for i in numeric_attributes:
+    for i in range(0, len(values)):
         stat, p = shapiro(np.array(values[i]))
         alpha = 0.05
         if p > alpha:
@@ -366,12 +381,12 @@ def trimmed_values(X, y=None):
     values = values_from_rows(X, numeric_attributes)
     trimmed_mean_values = []
     for x in values:
-        values[i].sort()
-        20_percent = N / 5
+        x.sort()
+        tw_percent = int(len(x) / 5)
         val_sum = 0
-        for z in values[i][20_percent : N - 20_percent]:
+        for z in x[tw_percent : len(x) - tw_percent]:
             val_sum += z
-        trimmed_mean_values.append(val_sum / (N - 2 * 20_percent))
+        trimmed_mean_values.append(val_sum / (len(x) - 2 * tw_percent))
     return trimmed_mean_values
 
 
@@ -437,7 +452,7 @@ def attributes_skewness(X, y=None):
 def attributes_sparcity(X, y=None):
     N, M = get_dimentions(X)
     attributes_sparcity = []
-    for j in range(0, M);
+    for j in range(0, M):
         valuated = 0
         for i in range(0, N):
             if X[i][j] is not None:
@@ -460,9 +475,8 @@ def attributes_outliers(X, y = None):
     for i in range(0, len(values)):
         outlier_number = 0
         threshold = 3
-
         for x in values[i]:
-            z_score = (y - means[i]) / standard_deviations[i]
+            z_score = (x - means[i]) / standard_deviations[i]
             if np.abs(z_score) > threshold:
                 outlier_number += 1
         
