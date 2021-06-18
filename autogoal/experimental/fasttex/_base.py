@@ -150,7 +150,7 @@ class UnsupervisedWordRepresentationPT(AlgorithmBase):
 
     Params:
 
-    - dimension: downloads models always contains word vectors of size 300, you can resize
+    - dimension: downloaded models always contains word vectors of size 300, you can resize
     them using this param. Default 300.
 
     - corpus: The source of pre-trained model, two options: `cc`(Common Crawl) or `wiki`(Wikipedia).
@@ -185,9 +185,9 @@ class UnsupervisedWordRepresentationPT(AlgorithmBase):
 
     def fit(self):
         if self.model is None:
-            file = f'{self.corpus}.{self.lang}.300.bin'
+            file = f"{self.corpus}.{self.lang}.300.bin"
             try:
-                self.model = fasttext.load_model(f'{self.corpus}.{self.lang}.300.bin')
+                self.model = fasttext.load_model(file)
             except OSError:
                 raise TypeError(
                     f"(!) [fasttext] Must download pre-trained binary file {file} first"
