@@ -4,7 +4,7 @@ services:
   autogoal:
     container_name: autogoal
     hostname: autogoal
-    image: autogoal/autogoal
+    image: docker.uclv.cu/autogoal/autogoal
     ports:
       - 8501:8501
       - 8000:8000
