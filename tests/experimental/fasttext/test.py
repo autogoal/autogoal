@@ -8,14 +8,14 @@ def test_supervised():
     X_train, y_train , X_test , y_test = load()
                 
 
-    from autogoal.experimental.fasttex._base import  SupervisedTextClassifier
+    from autogoal.experimental.fasttex._base import  SupervisedTextClassifier , DataPreprocessing
     automl = AutoML(
         input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
         output= VectorCategorical,  # **tipo de salida**    
-        registry= [SupervisedTextClassifier]+find_classes() ,
-        evaluation_timeout= 30 * Min,
+        registry= [SupervisedTextClassifier,DataPreprocessing]+find_classes() ,
+        evaluation_timeout= 2 * Min,
         memory_limit=3.5 * Gb,
-        search_timeout= 2 * Min,
+        search_timeout= 15 * Min,
         #errors="raise"
     )
 

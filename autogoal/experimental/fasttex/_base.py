@@ -1,8 +1,9 @@
 from autogoal.kb import AlgorithmBase
 import fasttext
 import fasttext.util
+from autogoal.kb import algorithm
 
-from autogoal.grammar import CategoricalValue, ContinuousValue, DiscreteValue
+from autogoal.grammar import CategoricalValue, ContinuousValue, DiscreteValue, BooleanValue
 from autogoal.kb import Sentence, Word, Seq
 from autogoal.kb import Supervised ,VectorCategorical, MatrixContinuousDense
 from autogoal.utils import nice_repr
@@ -10,6 +11,7 @@ from autogoal.utils import nice_repr
 from os import remove
 from time import time
 
+@nice_repr
 class SupervisedTextClassifier(AlgorithmBase):
     """
     
@@ -30,10 +32,12 @@ class SupervisedTextClassifier(AlgorithmBase):
         -wordNgrams: to refer to the concatenation any n consecutive tokens.
     """
     def __init__ (self,
+                    preprocessor    : algorithm(Seq[Sentence], Seq[Sentence]),
                     epoch:DiscreteValue(min=5, max=25),
                     lr:ContinuousValue(0.1,1.0),
                     wordNgrams:DiscreteValue(1,3)
         ):
+        self.preprocessor = preprocessor
         self.epoch = epoch
         self.lr = lr
         self.wordNgrams = wordNgrams
@@ -53,8 +57,9 @@ class SupervisedTextClassifier(AlgorithmBase):
             return self._eval(X)
 
     def _train(self, X, y):
+        self.preprocessor.run(X)
         with open('test.train','w') as g:
-            text = [str(j) +" " +str(i) for i, j in zip(X,y) ]
+            text = [str(j) +" " + str(i) for i, j in zip(X,y) ]
             g.writelines(text)
             self.model = fasttext.train_supervised(input="test.train",epoch=self.epoch,lr=self.lr,wordNgrams=self.wordNgrams)
         remove("test.train")
@@ -69,6 +74,7 @@ class SupervisedTextClassifier(AlgorithmBase):
 
 
 class Text_Descriptor:
+    
     def __init__(self,*labels) -> None:
         self.labels =labels
 
@@ -84,19 +90,20 @@ class Text_Descriptor:
 
 from re import compile as re_compile
 
-class DataPreprocessing:
+@nice_repr
+class DataPreprocessing(AlgorithmBase):
     """
     Apply some simple pre-processing to severals sentences.
 
     Params:
-    - re: regular expression used to remove unwanted chars.
     - to_lower: if `True` text will be set to lowercase.
     """
-    def __init__(self, re=r'[\?\!\,\.\:\;\{\}(\)\[\]\'\"]+', to_lower=True):
-        self.re = re_compile(re)
+    def __init__(self, to_lower:BooleanValue()):
+        self.re = re_compile(r'[\?\!\,\.\:\;\{\}(\)\[\]\'\"]+')
         self.to_lower = to_lower
+        
 
-    def run(self, X: Seq[Sentence]):
+    def run(self, X: Seq[Sentence])-> Seq[Sentence]:
         return [' '.join(self.re.split(s.lower() if self.to_lower else s)) for s in X]
 
 class UnsupervisedWordRepresentation(AlgorithmBase):
