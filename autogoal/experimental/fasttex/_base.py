@@ -11,7 +11,7 @@ import abc
 import numpy as np
 
 from os import remove
-#from time import time_ns
+from time import time
 
 class SupervisedTextClassifier(AlgorithmBase):
     
@@ -85,7 +85,7 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         self.model = None
 
     def fit(self, X: Seq[Sentence], y=None):
-        file = f'uwr_test_{time_ns()}.test'
+        file = f'uwr_test_{time()}.test'
         with open(file, 'w') as f:
             f.writelines(X)
         
