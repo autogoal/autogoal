@@ -71,8 +71,8 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
     def __init__ (self,
                     min_subword: DiscreteValue(min=1, max=3),
                     max_subword: DiscreteValue(min=3, max=6),
-                    dimension: DiscreteValue(min=100, max=300)
-                    model: CategoricalValue("skipgram", "cbow")
+                    dimension: DiscreteValue(min=100, max=300),
+                    model: CategoricalValue("skipgram", "cbow"),
                     epoch:DiscreteValue(min=5, max=25),
                     lr:ContinuousValue(0.1,1.0)
         ):
@@ -84,7 +84,7 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
         self.lr = lr
         self.model = None
 
-    def fit(self, X: Seq[Sentences], y=None):
+    def fit(self, X: Seq[Sentence], y=None):
         file = f'uwr_test_{time_ns()}.test'
         with open(file, 'w') as f:
             f.writelines(X)
@@ -104,7 +104,7 @@ class UnsupervisedWordRepresentation(AlgorithmBase):
     def transform(self, _, y):
         return [self.model.get_word_vector(x) for x in y]
 
-    def fit_transform(self, X: Seq[Sentences], y: Seq[Words]):
+    def fit_transform(self, X: Seq[Sentence], y: Seq[Word]):
         self.fit(X, y)
         return self.transform(X, y)
     
