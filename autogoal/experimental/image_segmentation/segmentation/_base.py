@@ -3,6 +3,9 @@ from autogoal.kb._algorithm import Supervised
 from autogoal.kb import AlgorithmBase, algorithm, Seq
 from ._semantics import Image
 import numpy as np
+from ..kb._generated import ImageReader
+from ..kb._semantics import ImageFile
+
 
 
 @nice_repr
@@ -43,4 +46,8 @@ class ImagePreprocessor(AlgorithmBase):
     """
     Receives image file and converts it into appropriate input
     """
-    pass
+    def __init__(self) -> None:
+        self.reader=ImageReader()
+        
+    def run(self, image_file: ImageFile):
+        return self.reader.run(image_file)
