@@ -5,10 +5,10 @@ from ._generated import Conv2DTranspose
 
 
 class Modules:
-    class ImageSegmenter(Module):
-        def make_top_level(self, top_level: list):
-            if "ImageSegmenter" not in top_level:
-                top_level.append("ImageSegmenter")
+    class ConvNN(Module):
+        def make_top_level(self, top_level):
+            if "PreprocessingModule" not in top_level:
+                top_level.append("PreprocessingModule")
 
         def add_productions(self, grammar: GraphGrammar):
             grammar.add("ImageSegmenter", "DownBlock")

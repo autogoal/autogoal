@@ -12,7 +12,7 @@ class KerasImageSegmenter(KerasNeuralNetwork):
         super().__init__(grammar=self._build_grammar(), **kwargs)
 
     def _build_grammar(self):
-        return generate_grammar(Modules.ImageSegmenter())
+        return generate_grammar(Modules.ConvNN())
 
     def _build_input(self, X):
         return Input(shape=X.shape[1:])
