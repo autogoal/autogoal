@@ -81,6 +81,24 @@ class Text_Descriptor:
     def __str__(self):
         return " ".join(self.labels)
 
+
+from re import compile as re_compile
+
+class DataPreprocessing:
+    """
+    Apply some simple pre-processing to severals sentences.
+
+    Params:
+    - re: regular expression used to remove unwanted chars.
+    - to_lower: if `True` text will be set to lowercase.
+    """
+    def __init__(self, re=r'[\?\!\,\.\:\;\{\}(\)\[\]\'\"]+', to_lower=True):
+        self.re = re_compile(re)
+        self.to_lower = to_lower
+
+    def run(self, X: Seq[Sentence]):
+        return [' '.join(self.re.split(s.lower() if self.to_lower else s)) for s in X]
+
 class UnsupervisedWordRepresentation(AlgorithmBase):
     """
     Transform words to vectors. These vectors capture hidden information about a language, 
