@@ -11,7 +11,7 @@ class ImageSegmenter(AlgorithmBase):
     Receives images and returns segmentation masks with same size
     """
 
-    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[Image]], Image)):
+    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[Image]], Seq[Image])):
         self._segmenter = segmenter
         self._mode = "train"
 
@@ -31,7 +31,7 @@ class ImageSegmenter(AlgorithmBase):
         images = np.array(images)
         return self._segmenter.predict(images)
 
-    def run(self, data: Seq[Image], masks: Seq[Image]) -> Image:
+    def run(self, data: Seq[Image], masks: Seq[Image]) -> Seq[Image]:
         if self._mode == "train":
             self.fit(data, masks)
             return masks
