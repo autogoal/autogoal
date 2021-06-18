@@ -30,10 +30,10 @@ def test_supervised()
 def test_transformers():
     from autogoal.experimental.fasttex._base import UnsupervisedWordRepresentationPT
 
-    # Descargando los modelos preentrenados en idioma espanhol
+    # Descargando los modelos preentrenados en idioma español
     UnsupervisedWordRepresentationPT.download(lang='es') 
 
-    # Usando el modelo con fuente en wikipedia en espanhol, y vectores de tamanho 250
+    # Usando el modelo con fuente en wikipedia en español, y vectores de tamaño 250
     uwr = UnsupervisedWordRepresentationPT(250, 'wiki', 'es') 
 
     # Transformando palabras a vectores
