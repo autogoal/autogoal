@@ -16,6 +16,7 @@ from autogoal.datasets import haha
 from autogoal.utils import Min, Gb
 import numpy as np
 import re
+from autogoal.experimental.fasttex.datasets.text_classification import load
 
 
 X_train, y_train , X_test , y_test = load()
