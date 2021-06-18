@@ -11,7 +11,7 @@ import abc
 import numpy as np
 
 from os import remove
-from time import time_ns
+#from time import time_ns
 
 class SupervisedTextClassifier(AlgorithmBase):
     
