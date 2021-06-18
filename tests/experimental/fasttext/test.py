@@ -3,25 +3,26 @@ from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
 from autogoal.utils import Min, Gb
 
-from autogoal.experimental.fasttex.datasets.text_classification import load
-X_train, y_train , X_test , y_test = load()
-            
+def test_supervised()
+    from autogoal.experimental.fasttex.datasets.text_classification import load
+    X_train, y_train , X_test , y_test = load()
+                
 
-from autogoal.experimental.fasttex._base import  SupervisedTextClassifier
-automl = AutoML(
-    input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
-    output= VectorCategorical,  # **tipo de salida**    
-    registry= [SupervisedTextClassifier]+find_classes() ,
-    evaluation_timeout= 30 * Min,
-    memory_limit=3.5 * Gb,
-    search_timeout= 2 * Min,
-    #errors="raise"
-)
+    from autogoal.experimental.fasttex._base import  SupervisedTextClassifier
+    automl = AutoML(
+        input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
+        output= VectorCategorical,  # **tipo de salida**    
+        registry= [SupervisedTextClassifier]+find_classes() ,
+        evaluation_timeout= 30 * Min,
+        memory_limit=3.5 * Gb,
+        search_timeout= 2 * Min,
+        #errors="raise"
+    )
 
-from autogoal.search import RichLogger
-automl.fit(X_train,y_train,logger=RichLogger())
-score = automl.score(X_test, y_test)
-print(score)
+    from autogoal.search import RichLogger
+    automl.fit(X_train,y_train,logger=RichLogger())
+    score = automl.score(X_test, y_test)
+    print(score)
 
 
 
