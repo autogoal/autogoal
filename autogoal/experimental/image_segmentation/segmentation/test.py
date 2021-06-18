@@ -1,4 +1,3 @@
-from autogoal.utils import Min
 from autogoal.ml import AutoML
 from autogoal.kb import *
 from ._semantics import Image

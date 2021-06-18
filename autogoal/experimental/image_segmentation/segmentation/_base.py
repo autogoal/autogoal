@@ -37,3 +37,10 @@ class ImageSegmenter(AlgorithmBase):
             return masks
         if self._mode == "eval":
             return self.predict(data)
+
+@nice_repr
+class ImagePreprocessor(AlgorithmBase):
+    """
+    Receives image file and converts it into appropriate input
+    """
+    pass
