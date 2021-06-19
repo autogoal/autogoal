@@ -1,7 +1,7 @@
 from autogoal.ml import AutoML
 from autogoal.kb import *
 from autogoal.experimental.image_segmentation.kb._semantics import ImageFile
-from autogoal.experimental.image_segmentation.segmentation._semantics import Image
+from autogoal.experimental.image_segmentation.segmentation._semantics import ImageMask
 from autogoal.contrib import find_classes
 from autogoal.experimental.image_segmentation.segmentation._base import ImageSegmenter, ImagePreprocessor
 from autogoal.experimental.image_segmentation.keras._base import KerasImageSegmenter
@@ -11,8 +11,8 @@ from autogoal.search import RichLogger
 
 def test():
     automl = AutoML(
-        input=(Seq[ImageFile], Supervised[Seq[Image]]),
-        output=Seq[Image],
+        input=(Seq[ImageFile], Supervised[Seq[ImageFile]]),
+        output=Seq[ImageMask],
         registry=find_classes() + [ImagePreprocessor, ImageSegmenter, KerasImageSegmenter]
     )
 
