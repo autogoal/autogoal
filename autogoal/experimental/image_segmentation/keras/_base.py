@@ -1,11 +1,9 @@
-import numpy as np
-
 from autogoal.contrib.keras._base import KerasNeuralNetwork
 from autogoal.contrib.keras._grammars import generate_grammar
 from ._grammar import Modules
 from tensorflow.keras.layers import Input, Dense, concatenate
 from autogoal.kb import Supervised
-from autogoal.kb._semantics import Tensor3, Tensor4
+from autogoal.kb._semantics import Tensor3, Tensor, Seq
 
 
 class KerasImageSegmenter(KerasNeuralNetwork):
@@ -16,7 +14,6 @@ class KerasImageSegmenter(KerasNeuralNetwork):
         return generate_grammar(Modules.ConvNN())
 
     def _build_input(self, X):
-        X = np.array(X)
         return Input(shape=X.shape[1:])
 
     def _build_output_layer(self, y):
@@ -36,5 +33,5 @@ class KerasImageSegmenter(KerasNeuralNetwork):
 
         return self._build_output_layer(y)(outputs)
 
-    def run(self, X: Tensor4, y: Supervised[Tensor3]) -> Tensor3:
+    def run(self, X: Seq[Tensor3], y: Supervised[Seq[Tensor]]) -> Seq[Tensor]:
         return super().run(X, y)
