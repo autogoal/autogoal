@@ -1,7 +1,7 @@
 from autogoal.contrib.keras._grammars import Module
-from autogoal.contrib.keras._generated import Conv2D, MaxPooling2D, Activation
+from autogoal.contrib.keras._generated import MaxPooling2D, Activation
 from autogoal.grammar import Path, GraphGrammar
-from ._generated import Conv2DTranspose
+from ._generated import Conv2DTranspose, Conv2D
 
 
 class Modules:
@@ -16,4 +16,4 @@ class Modules:
             grammar.add("DownBlock", Path("DoubleConv2DBlock", "UpBlock"))
             grammar.add("UpBlock", Path(Conv2DTranspose, "DoubleConv2DBlock", "UpBlock"))
             grammar.add("UpBlock", Path(Conv2DTranspose, "DoubleConv2DBlock"))
-            grammar.add("DoubleConv2DBlock", Path(Conv2D, Activation, Conv2D, Activation))
+            grammar.add("DoubleConv2DBlock", Path(Conv2D, Conv2D))
