@@ -3,7 +3,8 @@ from autogoal.kb._algorithm import Supervised
 from autogoal.kb import AlgorithmBase, algorithm, Seq
 from ._semantics import Image
 import numpy as np
-from ..kb._generated import ImageReader, ImageMaskReader
+from tensorflow import io
+from ..kb._generated import ImageReader
 from ..kb._semantics import ImageFile
 from ..segmentation._semantics import Image, ImageMask
 
@@ -15,11 +16,10 @@ class ImageSegmenter(AlgorithmBase):
     Receives images and returns segmentation masks with same size
     """
 
-    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[ImageMask]], Seq[ImageMask]), image_preprocessor: algorithm(ImageFile, Image), mask_preprocessor: algorithm(ImageFile, ImageMask)):
+    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[ImageMask]], Seq[ImageMask]), image_preprocessor: algorithm(ImageFile, Image)):
         self._segmenter = segmenter
         self._mode = "train"
         self.image_preprocessor=image_preprocessor
-        self.mask_preprocessor=mask_preprocessor
 
     def train(self):
         self._mode = "train"
@@ -41,8 +41,9 @@ class ImageSegmenter(AlgorithmBase):
     
     def _preprocess_masks(self, images):
         p_images=[]
-        for image in images:
-            p_images.append(self.mask_preprocessor.run(image))
+        for image_file in images:
+            file = open(image_file, 'rb')
+            p_images.append(io.decode_image(file.read()))
             
         return np.array(p_images)
         
@@ -64,17 +65,6 @@ class ImagePreprocessor(AlgorithmBase):
     """
     def __init__(self) -> None:
         self.reader=ImageReader()
-        
-    def run(self, image_file: ImageFile) -> Image:
-        return self.reader.run(image_file)
-    
-@nice_repr
-class ImageMaskPreprocessor(AlgorithmBase):
-    """
-    Receives image mask file and converts it into appropriate input
-    """
-    def __init__(self) -> None:
-        self.reader=ImageMaskReader()
         
     def run(self, image_file: ImageFile) -> Image:
         return self.reader.run(image_file)

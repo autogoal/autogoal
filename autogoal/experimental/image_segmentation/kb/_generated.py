@@ -17,16 +17,6 @@ class ImageReader(AlgorithmBase):
         image = io.decode_image(file.read())
         return image
 
-@nice_repr
-class ImageMaskReader(AlgorithmBase):
-    """
-    Reader of imageMask files.
-    """
-    def run(self, image_file: ImageFile) -> ImageMask:
-        file = open(image_file, 'rb')
-        image = io.decode_image(file.read())
-        return image
-
 # @nice_repr
 # class GaussianFilter:
 #     """
