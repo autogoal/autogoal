@@ -123,6 +123,10 @@ class AutoML:
         y_pred = self.best_pipeline_.run(X, np.zeros_like(y))
         return self.score_metric(y, y_pred)
 
+    def generate(self, x):
+        self.best_pipeline_.send("eval")
+        return self.best_pipeline_.run(x, x)
+
     def _input_type(self, X):
         return self.input or SemanticType.infer(X)
 
