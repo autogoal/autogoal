@@ -57,5 +57,5 @@ class ImagePreprocessor(AlgorithmBase):
     def __init__(self) -> None:
         self.reader=ImageReader()
         
-    def run(self, image_file: ImageFile):
+    def run(self, image_file: ImageFile) -> Image:
         return self.reader.run(image_file)

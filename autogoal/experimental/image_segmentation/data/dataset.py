@@ -29,7 +29,7 @@ def load_images():
     x = []
     for file in os.listdir(datapath(IMAGES_DIR)):
         if file.endswith(".jpg"):
-            x.append(file)
+            x.append(f'{datapath(IMAGES_DIR)}{os.path.sep}{file}')
     return sorted(x)
 
 
@@ -37,7 +37,7 @@ def load_masks():
     x = []
     for file in os.listdir(datapath(MASKS_DIR)):
         if file.endswith(".png"):
-            x.append(file)
+            x.append(f'{datapath(MASKS_DIR)}{os.path.sep}{file}')
     return sorted(x)
 
 
