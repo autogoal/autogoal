@@ -8,7 +8,6 @@ class ImageFile(SemanticType):
     @classmethod
     def _match(cls, x):
         try:
-            return path.isfile(x) and x.split(".")[-1] == "jpg"
+            return path.isfile(x) and x.split(".")[-1] in ["jpg", "png"]
         except TypeError:
             return False
-
