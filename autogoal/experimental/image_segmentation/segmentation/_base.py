@@ -66,5 +66,5 @@ class ImagePreprocessor(AlgorithmBase):
     def __init__(self) -> None:
         self.reader=ImageReader()
         
-    def run(self, image_file: ImageFile) -> Image:
+    def run(self, image_file: ImageFile) -> Tensor3:
         return self.reader.run(image_file)
