@@ -11,9 +11,9 @@ from autogoal.search import RichLogger
 
 def test():
     automl = AutoML(
-        input=(Seq[Image], Supervised[Seq[Image]]),
+        input=(Seq[ImageFile], Supervised[Seq[Image]]),
         output=Seq[Image],
-        registry=find_classes() + [ImageSegmenter, ImagePreprocessor, KerasImageSegmenter]
+        registry=find_classes() + [ImagePreprocessor, ImageSegmenter, KerasImageSegmenter]
     )
 
     x_train, y_train, x_test, y_test = load()
