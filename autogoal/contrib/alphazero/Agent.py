@@ -148,9 +148,7 @@ class AlphaZeroAgent:
                 arena_games,
                 lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
                 lambda x: np.argmax(nmcts.getActionProb(x, temp=0)),
-                self.game,
-                display=self.game.display,
-                verbose=True
+                self.game
             )
 
             if (

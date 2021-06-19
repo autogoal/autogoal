@@ -86,7 +86,7 @@ class MCTS():
             else:
                 # if all valid moves were masked make all valid moves equally probable
    
-                log.error("All valid moves were masked, doing a workaround.")
+                #log.error("All valid moves were masked, doing a workaround.")
                 self.Ps[s] = self.Ps[s] + valids
                 self.Ps[s] /= np.sum(self.Ps[s])
 
