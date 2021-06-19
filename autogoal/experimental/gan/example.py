@@ -3,9 +3,7 @@ from autogoal.kb import *
 from autogoal.search import RichLogger
 from autogoal.utils import Min, Gb
 from autogoal.experimental.gan.utils import ImageFile
-from autogoal.experimental.gan.gan import (
-    GAN,
-)
+from autogoal.experimental.gan.gan import GAN
 from autogoal.contrib import find_classes
 from autogoal.experimental.gan.dataset import load
 
@@ -29,10 +27,10 @@ def main():
     image = automl.generate(x_train)
 
     plt.figure(figsize=(10, 10))
-    plt.imshow(image.astype('uint8'), interpolation='nearest')
-    plt.axis('off')
+    plt.imshow(image.astype("uint8"), interpolation="nearest")
+    plt.axis("off")
     plt.waitforbuttonpress()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

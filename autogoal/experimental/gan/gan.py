@@ -12,18 +12,19 @@ from autogoal.grammar import DiscreteValue
 from autogoal.kb._semantics import Seq
 
 import numpy as np
+
 np.random.seed(5)
 
 
 class GAN(AlgorithmBase):
     def __init__(
-            self,
-            n_components: DiscreteValue(min=1, max=20),
-            n_iter: DiscreteValue(min=3000, max=4000),
-            covariance_type="diag",
-            ERROR='binary_crossentropy',
-            TAM_LOTE=128,
-            TAM_IN=100
+        self,
+        n_components: DiscreteValue(min=1, max=20),
+        n_iter: DiscreteValue(min=3000, max=4000),
+        covariance_type="diag",
+        ERROR="binary_crossentropy",
+        TAM_LOTE=128,
+        TAM_IN=100,
     ):
         self.TAM_IN = TAM_IN
         self.TAM_LOTE = TAM_LOTE
@@ -38,7 +39,9 @@ class GAN(AlgorithmBase):
         self.model.add(self.generator.model)
         self.discriminator.model.trainable = False
         self.model.add(self.discriminator.model)
-        self.model.compile(optimizer=adam_v2.Adam(learning_rate=0.0002, beta_1=0.5), loss=ERROR)
+        self.model.compile(
+            optimizer=adam_v2.Adam(learning_rate=0.0002, beta_1=0.5), loss=ERROR
+        )
 
         super().__init__()
 
@@ -70,10 +73,12 @@ class GAN(AlgorithmBase):
             # Train discriminator with fake and real images, in every case calculate error
             self.discriminator.model.trainable = True
 
-            d_real_errors = self.discriminator.model.train_on_batch(real_batch,
-                                                                    np.ones(self.TAM_LOTE) * 0.9)
-            d_fake_errors = self.discriminator.model.train_on_batch(fake_batch,
-                                                                    np.zeros(self.TAM_LOTE) * 0.1)
+            d_real_errors = self.discriminator.model.train_on_batch(
+                real_batch, np.ones(self.TAM_LOTE) * 0.9
+            )
+            d_fake_errors = self.discriminator.model.train_on_batch(
+                fake_batch, np.zeros(self.TAM_LOTE) * 0.1
+            )
 
             self.discriminator.model.trainable = False
 
@@ -83,16 +88,19 @@ class GAN(AlgorithmBase):
 
             # Save Generator
             if i == 1 or i % 1000 == 0:
-                self.generator.model.save('generador.h5')
+                self.generator.model.save("generador.h5")
 
         return None
 
     def _eval(self, x: Seq[ImageFile]) -> ImageFile:
-        example_path = './'
+        example_path = "./"
         noise = np.random.normal(0, 1, [1, 100])
         generated_images = self.generator.model.predict(noise)
         generated_images.reshape(1, 128, 128, 3)
         generated_images = generated_images * 127.5 + 127.5
-        generated_images.astype('uint8')
-        imwrite(os.path.join(example_path, 'example_0.png'), generated_images[0].reshape(128, 128, 3))
+        generated_images.astype("uint8")
+        imwrite(
+            os.path.join(example_path, "example_0.png"),
+            generated_images[0].reshape(128, 128, 3),
+        )
         return generated_images[0].reshape(128, 128, 3)

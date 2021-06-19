@@ -5,7 +5,9 @@ import os
 
 from autogoal.experimental.gan.utils import ConsoleColors
 
-data_url = "https://github.com/stdevMac/datasets/releases/download/image-dataset/dataset.zip"
+data_url = (
+    "https://github.com/stdevMac/datasets/releases/download/image-dataset/dataset.zip"
+)
 
 dataset = "dataset"
 
@@ -34,7 +36,7 @@ def load():
     x_train = np.zeros((n_images, 128, 128, 3))
 
     for i, file_name in enumerate(file_list):
-        if file_name != '.DS_Store':
+        if file_name != ".DS_Store":
             image = imread(os.path.join(dataset, file_name))
             x_train[i, :] = (image - 127.5) / 127.5
     print(f"{ConsoleColors.OKGREEN}Done!")

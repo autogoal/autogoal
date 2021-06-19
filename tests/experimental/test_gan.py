@@ -1,7 +1,5 @@
 from autogoal.kb import build_pipeline_graph, AlgorithmBase
-from autogoal.experimental.gan.gan import (
-    GAN,
-)
+from autogoal.experimental.gan.gan import GAN
 from autogoal.contrib import find_classes
 from autogoal.experimental.gan.utils import ImageFile
 from autogoal.kb import Seq, Word, Supervised
@@ -18,9 +16,6 @@ def test_algorithm_in_pipeline_graph():
 
 
 def test_algorithm_report_correct_types():
-    assert GAN.input_types() == (
-        Seq[ImageFile],
-        Seq[ImageFile],
-    )
+    assert GAN.input_types() == (Seq[ImageFile], Seq[ImageFile],)
 
     assert GAN.output_type() == ImageFile
