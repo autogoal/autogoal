@@ -6,7 +6,7 @@ import numpy as np
 from tensorflow import io
 from ..kb._generated import ImageReader
 from ..kb._semantics import ImageFile
-from ..segmentation._semantics import Image, ImageMask
+from autogoal.kb._semantics import Tensor4, Tensor3
 
 
 
@@ -16,7 +16,7 @@ class ImageSegmenter(AlgorithmBase):
     Receives images and returns segmentation masks with same size
     """
 
-    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[ImageMask]], Seq[ImageMask]), image_preprocessor: algorithm(ImageFile, Image)):
+    def __init__(self, segmenter: algorithm(Tensor4, Supervised[Tensor3], Seq[Tensor3]), image_preprocessor: algorithm(ImageFile, Tensor3)):
         self._segmenter = segmenter
         self._mode = "train"
         self.image_preprocessor=image_preprocessor
@@ -51,7 +51,7 @@ class ImageSegmenter(AlgorithmBase):
     def predict(self, images):
         return self._segmenter.predict(self._preprocess_images(images))
 
-    def run(self, data: Seq[ImageFile], masks: Supervised[Seq[ImageMask]]) -> Seq[ImageMask]:
+    def run(self, data: Seq[ImageFile], masks: Supervised[Tensor3]) -> Tensor3:
         if self._mode == "train":
             self.fit(data, masks)
             return masks

@@ -1,8 +1,7 @@
-from tensorflow.python.ops.gen_io_ops import read_file
 from autogoal.kb import AlgorithmBase
 from autogoal.utils import nice_repr
 from ._semantics import ImageFile
-from ..segmentation._semantics import Image, ImageMask
+from autogoal.kb._semantics import Tensor3
 from tensorflow import io
 # from os import open, read
 # from skimage import filters
@@ -12,7 +11,7 @@ class ImageReader(AlgorithmBase):
     """
     Reader of image files.
     """
-    def run(self, image_file: ImageFile) -> Image:
+    def run(self, image_file: ImageFile) -> Tensor3:
         file = open(image_file, 'rb')
         image = io.decode_image(file.read())
         return image
