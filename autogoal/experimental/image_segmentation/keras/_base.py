@@ -1,3 +1,5 @@
+import numpy as np
+
 from autogoal.contrib.keras._base import KerasNeuralNetwork
 from autogoal.contrib.keras._grammars import generate_grammar
 from ._grammar import Modules
@@ -9,12 +11,13 @@ from ..segmentation._semantics import Image, ImageMask
 
 class KerasImageSegmenter(KerasNeuralNetwork):
     def __init__(self, **kwargs):
-        super().__init__(grammar=self._build_grammar(), **kwargs)
+        super().__init__(grammar=self._build_grammar(), optimizer="adam", **kwargs)
 
     def _build_grammar(self):
         return generate_grammar(Modules.ConvNN())
 
     def _build_input(self, X):
+        X = np.array(X)
         return Input(shape=X.shape[1:])
 
     def _build_output_layer(self, y):

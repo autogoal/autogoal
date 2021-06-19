@@ -11,7 +11,7 @@ class Modules:
                 top_level.append("PreprocessingModule")
 
         def add_productions(self, grammar: GraphGrammar):
-            grammar.add("ImageSegmenter", "DownBlock")
+            grammar.add("PreprocessingModule", "DownBlock")
             grammar.add("DownBlock", Path("DoubleConv2DBlock", MaxPooling2D, "DownBlock"))
             grammar.add("DownBlock", Path("DoubleConv2DBlock", "UpBlock"))
             grammar.add("UpBlock", Path(Conv2DTranspose, "DoubleConv2DBlock", "UpBlock"))

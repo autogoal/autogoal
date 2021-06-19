@@ -7,13 +7,17 @@ from autogoal.experimental.image_segmentation.segmentation._base import ImageSeg
 from autogoal.experimental.image_segmentation.keras._base import KerasImageSegmenter
 from autogoal.experimental.image_segmentation.data.dataset import load
 from autogoal.search import RichLogger
+from autogoal.utils import Min, Gb
 
 
 def test():
     automl = AutoML(
-        input=(Seq[ImageFile], Supervised[Seq[ImageFile]]),
+        input=(Seq[ImageFile], Supervised[Seq[ImageMask]]),
         output=Seq[ImageMask],
-        registry=find_classes() + [ImagePreprocessor, ImageSegmenter, KerasImageSegmenter]
+        registry=find_classes() + [ImageSegmenter, ImagePreprocessor, KerasImageSegmenter],
+        evaluation_timeout=10 * Min,
+        memory_limit=3.5 * Gb,
+        search_timeout=30 * Min,
     )
 
     x_train, y_train, x_test, y_test = load()
