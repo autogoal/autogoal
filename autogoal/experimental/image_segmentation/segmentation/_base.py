@@ -6,6 +6,7 @@ from ..kb._generated import ImageReader
 from ..kb._semantics import ImageFile
 from autogoal.kb._semantics import Tensor3
 import tensorflow as tf
+from autogoal.kb._semantics import Tensor
 
 
 @nice_repr
