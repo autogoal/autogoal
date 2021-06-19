@@ -15,7 +15,7 @@ class ImageSegmenter(AlgorithmBase):
     Receives images and returns segmentation masks with same size
     """
 
-    def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[Image]], Seq[Image]), preprocessor: algorithm(ImageFile, Image)):
+    def __init__(self, segmenter: algorithm(Seq[ImageFile], Supervised[Seq[Image]], Seq[Image]), preprocessor: algorithm(ImageFile, Image)):
         self._segmenter = segmenter
         self._mode = "train"
         self._preprocessor=preprocessor
