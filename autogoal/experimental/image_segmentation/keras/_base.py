@@ -4,7 +4,7 @@ from ._grammar import Modules
 from tensorflow.keras.layers import Input, Dense, concatenate
 
 from autogoal.kb import Supervised, Seq
-from ..segmentation._semantics import Image
+from ..segmentation._semantics import Image, ImageMask
 
 
 class KerasImageSegmenter(KerasNeuralNetwork):
@@ -34,5 +34,5 @@ class KerasImageSegmenter(KerasNeuralNetwork):
 
         return self._build_output_layer(y)(outputs)
 
-    def run(self, X: Seq[Image], y: Supervised[Seq[Image]]) -> Seq[Image]:
+    def run(self, X: Seq[Image], y: Supervised[Seq[ImageMask]]) -> Seq[ImageMask]:
         return super().run(X, y)
