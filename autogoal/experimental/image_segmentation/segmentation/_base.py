@@ -4,7 +4,7 @@ from autogoal.kb import AlgorithmBase, algorithm, Seq
 import numpy as np
 from ..kb._generated import ImageReader
 from ..kb._semantics import ImageFile
-from autogoal.kb._semantics import Tensor4, Tensor3, Tensor, Continuous, Dense
+from autogoal.kb._semantics import Tensor3
 import tensorflow as tf
 
 
