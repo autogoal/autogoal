@@ -216,6 +216,7 @@ def discrete_proportion(X, y=None):
 
 
 # Returns the amount of continuous attributes.
+@feature_extractor
 def continuous_amount(X, y=None):
     continuous = specific_types_attributes_index(X, (float))
     return len(continuous)
