@@ -51,7 +51,7 @@ class ImageSegmenter(AlgorithmBase):
     def predict(self, images):
         return self._segmenter.predict(self._preprocess_images(images))
 
-    def run(self, data: Seq[ImageFile], masks: Seq[ImageMask]) -> Seq[ImageMask]:
+    def run(self, data: Seq[ImageFile], masks: Supervised[Seq[ImageMask]]) -> Seq[ImageMask]:
         if self._mode == "train":
             self.fit(data, masks)
             return masks
