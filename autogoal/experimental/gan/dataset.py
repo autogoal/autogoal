@@ -3,17 +3,18 @@ from autogoal.datasets import download_and_save, datapath, unpack
 import numpy as np
 import os
 
-from autogoal.experimental.progressive_gan.utils import ConsoleColors
+from autogoal.experimental.gan.utils import ConsoleColors
 
-data_url = "https://github.com/AntonioJesus0398/speech-recognition-dataset/raw/master/speech-recognition-dataset.zip"
+data_url = "https://github.com/stdevMac/datasets/releases/download/image-dataset/dataset.zip"
 
-dataset = "image-dataset"
+dataset = "dataset"
 
 
 def load():
     # Download the data
     file_name = f"{dataset}.zip"
     file_path = datapath(file_name)
+    print(file_path.absolute())
     if not file_path.exists():
         print(f"{ConsoleColors.WARNING}Downloading {dataset}...")
         download_and_save(data_url, file_path, True)
