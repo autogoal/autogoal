@@ -40,10 +40,20 @@ class DeepMatcherDataset:
 
         data_dir = save_dir / self.stem / 'exp_data'
         tr, va, te = self._load_full_data(data_dir)
-        for row in va:
-            row[0] = 'v' + row[0]
-            tr.append(row)
-        
+
+        def fix_type_issue(t): # https://github.com/anhaidgroup/deepmatcher/issues/3
+            for i in range(len(t[0])):
+                if t[0][i] == 'left_type':
+                    t[0][i] = 'left_entity_type'
+                if t[0][i] == 'right_type':
+                    t[0][i] = 'right_entity_type'
+
+        fix_type_issue(tr)
+        fix_type_issue(va)
+        fix_type_issue(te)
+
+        tr += [[None, None]] + va # train and validation datasets are separated by [None, None]
+
         def get_X_y(table):
             X, y = [], []
             for row in table:
