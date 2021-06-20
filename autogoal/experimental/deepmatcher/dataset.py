@@ -51,8 +51,10 @@ class DeepMatcherDataset:
         fix_type_issue(va)
         fix_type_issue(te)
 
-        tr += [[None, None]] + va # train and validation datasets are separated by [None, None]
-        te += [[None, None]] + [row.copy() for row in te]
+        headers = tr.pop(0)
+        assert headers == va.pop(0)
+        assert headers == te.pop(0)
+        tr += va
 
         def get_X_y(table):
             X, y = [], []
@@ -64,7 +66,7 @@ class DeepMatcherDataset:
         X_train, y_train = get_X_y(tr)
         X_test, y_test = get_X_y(te)
 
-        return X_train, y_train, X_test, y_test
+        return headers, X_train, y_train, X_test, y_test
 
     def _load_full_data(self, data_dir):
         d = {
@@ -110,4 +112,4 @@ if __name__ == '__main__':
     from autogoal.experimental.deepmatcher import DATASETS
     test_name = 'Fodors-Zagats'
     dataset = DeepMatcherDataset(test_name, DATASETS[test_name])
-    X_train, y_train, X_test, y_test = dataset.load()
+    headers, X_train, y_train, X_test, y_test = dataset.load()
