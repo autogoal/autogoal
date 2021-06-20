@@ -1,4 +1,4 @@
-from os import mkdir
+from os import mkdir, remove
 from autogoal.kb import AlgorithmBase
 from autogoal.kb import algorithm
 
@@ -11,6 +11,8 @@ import deepmatcher
 from pathlib import Path
 import csv
 import pandas
+import random
+import string
 
 CACHE = Path(__file__).parent / '.cache'
 
@@ -26,6 +28,9 @@ def buildMatchingSet(file_name):
         embeddings='glove.twitter.27B.25d',
         embeddings_cache_path=(CACHE.parent / '.vector_cache')
     )
+
+def random_string():
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
 
 def split_X(X):
     idx = 0
@@ -90,19 +95,25 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         if not Path.exists(CACHE):
             mkdir(CACHE)
 
-        with open(CACHE / 'temp.train', 'w') as f:
+
+        train = CACHE / f'{random_string()}.train'
+        with open(train, 'w') as f:
             w = csv.writer(f)
             w.writerows(X)
-        with open(CACHE / 'temp.val', 'w') as f:
+        
+        val = CACHE / f'{random_string()}.val'
+        with open(val, 'w') as f:
             vw = csv.writer(f)
             vw.writerows(vX)
 
         self.model = deepmatcher.MatchingModel(attr_summarizer=self.attr_summarizer, classifier=self.classifier)
-        train_dataset = buildMatchingSet('temp.train')
-        validation_dataset = buildMatchingSet('temp.val')
+        train_dataset = buildMatchingSet(train)
+        validation_dataset = buildMatchingSet(val)
         self.model.run_train(train_dataset=train_dataset, validation_dataset=validation_dataset,
             best_save_path=CACHE/'best_model.pth', epochs=self.epoch, label_smoothing=self.label_smoothing)
 
+        remove(train)
+        remove(val)
         return y
 
     def _eval(self, X):
@@ -118,7 +129,8 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         for i in range(1, len(X)):
             X[i].insert(1, 0)
 
-        with open(CACHE / 'temp.eval', 'w') as f:
+        eval = CACHE / f'{random_string()}.eval'
+        with open(eval, 'w') as f:
             w = csv.writer(f)
             w.writerows(X)
 
@@ -129,7 +141,8 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         # with open(CACHE / 'temp.eval.txt', 'w') as f: # just to see logs
         #     self.model.run_prediction(eval_dataset, True).to_csv(f)
         
-        return list(self.model.run_prediction(eval_dataset).to_dict()['match_score'].values())
+        remove(eval)
+        return [1 if x >= 0.5 else 0 for x in self.model.run_prediction(eval_dataset).to_dict()['match_score'].values()]
         # for x in X:
         #     dataset = deepmatcher.data.MatchingDataset() # build from x
         #     ans.append(self.model.run_eval(dataset=dataset)) # use self.model.run_prediction() instead ?
