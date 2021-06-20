@@ -2,7 +2,7 @@ from autogoal.kb import Sentence, Seq, Supervised ,VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.contrib import find_classes
 from autogoal.utils import Min, Gb
-from autogoal.kb import Seq, Word, Sentence, MatrixContinuousDense, build_pipeline_graph
+from autogoal.kb import Seq, Word, Text, Sentence, MatrixContinuousDense, build_pipeline_graph
 from autogoal.contrib import find_classes
 from autogoal.experimental.deepmatcher.base import SupervisedTextMatcher
 from autogoal.search import RichLogger
@@ -12,10 +12,10 @@ from autogoal.experimental.deepmatcher import DATASETS
 
 def test_supervised_text_matcher():
     test_name = 'Fodors-Zagats'
-    X_train, y_train , X_test , y_test = DeepMatcherDataset(test_name, DATASETS[test_name]).load() # fix load
+    X_train, y_train , X_test , y_test = DeepMatcherDataset(test_name, DATASETS[test_name]).load()
 
     automl = AutoML(
-        input = (Seq[Sentence], Supervised[VectorCategorical]), # fix annotations
+        input = (Seq[Seq[Text]], Supervised[VectorCategorical]), # fix annotations
         output = VectorCategorical, # fix annotations
         registry = [SupervisedTextMatcher] + find_classes(),
         evaluation_timeout = 3 * Min,
