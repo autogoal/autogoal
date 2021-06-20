@@ -34,9 +34,11 @@ def split_X(X):
             break
         idx += 1
     
-    assert idx+1 < len(X)
-    vX = X[idx+1:]
-    X = X[:idx]
+    if idx+1 < len(X):
+        vX = X[idx+1:]
+        X = X[:idx]
+    else:
+        vX = None
     return X, vX
 
 @nice_repr
@@ -78,10 +80,12 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
             return self._eval(X)
 
     def _train(self, X, y):
+        X = X.copy()
         for i in range(len(X)):
             X[i].insert(1, y[i])
 
         X, vX = split_X(X)
+        assert vX
 
         if not Path.exists(CACHE):
             mkdir(CACHE)
@@ -102,19 +106,29 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         return y
 
     def _eval(self, X):
+        X = X.copy()
         # ans = []
         try:
             X, vX = split_X(X)
-            X += vX
+            # X += vX[1:]
         except:
             pass
+
+        X[0].insert(1, 'label') # need to switch to process_unlabeled
+        for i in range(1, len(X)):
+            X[i].insert(1, 0)
+
         with open(CACHE / 'temp.eval', 'w') as f:
             w = csv.writer(f)
             w.writerows(X)
-        # eval_dataset = buildMatchingSet('temp.eval')
-        x = self.model.meta
-        eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val', trained_model=self.model)
-        return self.model.run_prediction(eval_dataset).to_dict()['match_score'].values()
+
+        eval_dataset = buildMatchingSet('temp.eval')
+        # eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val', trained_model=self.model)
+        
+        # with open(CACHE / 'temp.eval.txt', 'w') as f: # just to see logs
+        #     self.model.run_prediction(eval_dataset, True).to_csv(f)
+        
+        return list(self.model.run_prediction(eval_dataset).to_dict()['match_score'].values())
         # for x in X:
         #     dataset = deepmatcher.data.MatchingDataset() # build from x
         #     ans.append(self.model.run_eval(dataset=dataset)) # use self.model.run_prediction() instead ?
@@ -124,7 +138,7 @@ if __name__ == '__main__':
     s = SupervisedTextMatcher(
         attr_summarizer='sif',
         classifier='2-layer-highway',
-        epoch=5,
+        epoch=15,
         label_smoothing=0.02
     )
     test_name = 'Fodors-Zagats'
