@@ -1,6 +1,7 @@
 import argparse
 import sys
 from autogoal.experimental.deepmatcher import DATASETS
+from autogoal.experimental.deepmatcher.dataset import DeepMatcherDataset
 
 DATASET_NAMES = list(DATASETS.keys())
 
@@ -18,4 +19,6 @@ if args.dataset not in DATASET_NAMES:
     print('The given dataset is not in the options')
     sys.exit(0)
 
+dataset = DeepMatcherDataset(args.dataset, DATASETS[args.dataset])
+train, validation, test = dataset.load()
 
