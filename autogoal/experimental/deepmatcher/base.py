@@ -123,7 +123,8 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
             w.writerows(X)
 
         eval_dataset = buildMatchingSet('temp.eval')
-        # eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val', trained_model=self.model)
+        # eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val',
+        #     trained_model=self.model, ignore_columns=('left_id', 'right_id'))
         
         # with open(CACHE / 'temp.eval.txt', 'w') as f: # just to see logs
         #     self.model.run_prediction(eval_dataset, True).to_csv(f)
@@ -136,9 +137,9 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
 
 if __name__ == '__main__':
     s = SupervisedTextMatcher(
-        attr_summarizer='sif',
+        attr_summarizer='attention',
         classifier='2-layer-highway',
-        epoch=15,
+        epoch=8,
         label_smoothing=0.02
     )
     test_name = 'Fodors-Zagats'
