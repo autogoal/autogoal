@@ -4,6 +4,17 @@ import tempfile
 import csv
 from autogoal.datasets import download_and_save, unpack, datapath
 
+def generate_word_vector(file_path):
+    import fasttext
+    model = fasttext.train_unsupervised(file_path)
+    with open(datapath(file_path).parent / 'word.vec', 'w') as f:
+        for word in model.get_words():
+            v = model.get_word_vector(word)
+            f.write(word)
+            for x in v:
+                f.write(f' {x}')
+            f.write('\n')
+
 class DeepMatcherDataset:
     def __init__(self, name, url):
         self.name = name
@@ -40,7 +51,8 @@ class DeepMatcherDataset:
             right_prefix='right_',
             label_attr='label',
             id_attr='id',
-            embeddings='wiki.simple.vec'
+            embeddings='glove.twitter.27B.25d',
+            embeddings_cache_path=(datapath(__file__).parent / '.vector_cache')
         )
 
         return train, validation, test
@@ -88,3 +100,7 @@ class DeepMatcherDataset:
 
         return d['train'], d['valid'], d['test']
 
+if __name__ == '__main__':
+    from autogoal.experimental.deepmatcher import DATASETS
+    dataset = DeepMatcherDataset('fedor', list(DATASETS.values())[2])
+    train, validation, test = dataset.load()

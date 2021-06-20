@@ -7,9 +7,12 @@ from autogoal.contrib import find_classes
 from autogoal.experimental.deepmatcher.base import SupervisedTextMatcher
 from autogoal.search import RichLogger
 
+from autogoal.experimental.deepmatcher.dataset import DeepMatcherDataset
+from autogoal.experimental.deepmatcher import DATASETS
+
 def test_supervised_text_matcher():
-    from autogoal.experimental.deepmatcher.datasets.text_matching import load
-    X_train, y_train , X_test , y_test = load()
+    test_name = 'Fodors-Zagats'
+    X_train, y_train , X_test , y_test = DeepMatcherDataset(test_name, DATASETS[test_name]).load() # fix load
 
     automl = AutoML(
         input = (Seq[Sentence], Supervised[VectorCategorical]), # fix annotations
