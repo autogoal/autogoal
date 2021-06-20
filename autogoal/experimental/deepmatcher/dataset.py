@@ -32,8 +32,7 @@ class DeepMatcherDataset:
 
         save_as = save_dir / self.filename
 
-        print('Dowloading')
-        if download_and_save(self.url, save_as, overwrite=False):
+        if not save_as.exists() and download_and_save(self.url, save_as, overwrite=False):
             print('Downloaded ... Unpacking')
             unpack(str(save_as))
             print('Unpacked')
