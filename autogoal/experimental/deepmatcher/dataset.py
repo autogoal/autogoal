@@ -39,7 +39,8 @@ class DeepMatcherDataset:
             left_prefix='left_',
             right_prefix='right_',
             label_attr='label',
-            id_attr='id'
+            id_attr='id',
+            embeddings='wiki.simple.vec'
         )
 
         return train, validation, test
