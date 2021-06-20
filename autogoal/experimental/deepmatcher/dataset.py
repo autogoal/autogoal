@@ -7,7 +7,7 @@ from autogoal.datasets import download_and_save, unpack, datapath
 def generate_word_vector(file_path):
     import fasttext
     model = fasttext.train_unsupervised(file_path)
-    with open(datapath(file_path).parent / 'word.vec', 'w') as f:
+    with open(pathlib.Path(file_path).parent / 'word.vec', 'w') as f:
         for word in model.get_words():
             v = model.get_word_vector(word)
             f.write(word)
@@ -40,30 +40,27 @@ class DeepMatcherDataset:
 
         data_dir = save_dir / self.stem / 'exp_data'
         tr, va, te = self._load_full_data(data_dir)
+        for row in va:
+            row[0] = 'v' + row[0]
+            tr.append(row)
+        
+        def get_X_y(table):
+            X, y = [], []
+            for row in table:
+                y.append(row.pop(1))
+                X.append(row)
+            return X, y
 
-        train, validation, test = deepmatcher.data.process(
-            path=data_dir,
-            train=tr.name,
-            validation=va.name,
-            test=te.name,
-            ignore_columns=('left_id', 'right_id'),
-            left_prefix='left_',
-            right_prefix='right_',
-            label_attr='label',
-            id_attr='id',
-            embeddings='glove.twitter.27B.25d',
-            embeddings_cache_path=(datapath(__file__).parent / '.vector_cache')
-        )
+        X_train, y_train = get_X_y(tr)
+        X_test, y_test = get_X_y(te)
 
-        return train, validation, test
+        return X_train, y_train, X_test, y_test
 
     def _load_full_data(self, data_dir):
-        csv_writer = lambda: tempfile.NamedTemporaryFile('w+t')
-
         d = {
-            'train': csv_writer(),
-            'valid': csv_writer(),
-            'test': csv_writer(),
+            'train': [],
+            'valid': [],
+            'test': [],
         }
 
         table_a = open(data_dir / 'tableA.csv', newline='')
@@ -84,15 +81,14 @@ class DeepMatcherDataset:
                 reader = csv.reader(f)
                 next(reader)
 
-                w = csv.writer(d[name])
-                w.writerow(['id', 'label'] + left_h + right_h)
+                d[name].append(['id', 'label'] + left_h + right_h)
 
                 id = 0
 
                 for left, right, label in reader:
                     left = int(left)
                     right = int(right)
-                    w.writerow([id, label] + ra[left] + rb[right])
+                    d[name].append([str(id), label] + ra[left] + rb[right])
                     id += 1
 
         table_a.close()
@@ -102,5 +98,6 @@ class DeepMatcherDataset:
 
 if __name__ == '__main__':
     from autogoal.experimental.deepmatcher import DATASETS
-    dataset = DeepMatcherDataset('fedor', list(DATASETS.values())[2])
-    train, validation, test = dataset.load()
+    test_name = 'Fodors-Zagats'
+    dataset = DeepMatcherDataset(test_name, DATASETS[test_name])
+    X_train, y_train, X_test, y_test = dataset.load()
