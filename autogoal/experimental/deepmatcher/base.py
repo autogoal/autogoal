@@ -95,7 +95,6 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         if not Path.exists(CACHE):
             mkdir(CACHE)
 
-
         train = CACHE / f'{random_string()}.train'
         with open(train, 'w') as f:
             w = csv.writer(f)
@@ -110,7 +109,7 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         train_dataset = buildMatchingSet(train)
         validation_dataset = buildMatchingSet(val)
         self.model.run_train(train_dataset=train_dataset, validation_dataset=validation_dataset,
-            best_save_path=CACHE/'best_model.pth', epochs=self.epoch, label_smoothing=self.label_smoothing)
+            best_save_path=CACHE/f'best_model{random_string()}.pth', epochs=self.epoch, label_smoothing=self.label_smoothing)
 
         remove(train)
         remove(val)
