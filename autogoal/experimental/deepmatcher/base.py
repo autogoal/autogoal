@@ -14,16 +14,26 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
     """
     
     Params:
-        -epoch: The number of times each examples is seen
-        
+        -attr_summarizer: The attribute summarizer. Takes in two word embedding sequences
+            and summarizes the information in them to produce two summary vectors as output.
+        -classifier: The neural network to perform match / mismatch classification based
+            on attribute similarity representations.
+        -epoch: Number of training epochs, i.e., number of times to cycle through the entire training set.
+        -label_smoothing: The `label_smoothing` parameter to constructor of :class:`~deepmatcher.optim.SoftNLLLoss` criterion.
     """
-    def __init__( # add more params to customize the model, ie to use in deepmatcher.MatchingModel() or self.model.run_train()
+    def __init__(
             self,
-            preprocessor: algorithm(Seq[Sentence], Seq[Sentence]), # fix annotations, what does preprocessor ?
-            epoch:DiscreteValue(min=5, max=100)
+            preprocessor: algorithm(Seq[Sentence], Seq[Sentence]), # fix annotations
+            attr_summarizer: CategoricalValue('sif', 'rnn', 'attention', 'hybrid'),
+            classifier: CategoricalValue('2-layer-highway', '2-layer-highway-tanh', '3-layer-residual', '3-layer-residual-relu'),
+            epoch: DiscreteValue(min=5, max=100),
+            label_smoothing: ContinuousValue(min=0.01, max=0.2)
         ):
         self.preprocessor = preprocessor
+        self.attr_summarizer = attr_summarizer
+        self.classifier = classifier
         self.epoch = epoch
+        self.label_smoothing = label_smoothing
         self.model = None
         self._mode = "train"
 
@@ -42,11 +52,11 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
     def _train(self, X, y):
         self.preprocessor.run(X)
 
-        self.model = deepmatcher.MatchingModel()
+        self.model = deepmatcher.MatchingModel(attr_summarizer=self.attr_summarizer, classifier=self.classifier)
         train_dataset = deepmatcher.data.MatchingDataset() # build from X
         validation_dataset = deepmatcher.data.MatchingDataset() # build from y
-        self.model.run_train(train_dataset=train_dataset, validation_dataset=validation_dataset
-            , best_save_path=path.join('./', 'datasets'), epochs=self.epoch)
+        self.model.run_train(train_dataset=train_dataset, validation_dataset=validation_dataset,
+            best_save_path=path.join('./', 'datasets'), epochs=self.epoch, label_smoothing=self.label_smoothing)
 
         return y
 
