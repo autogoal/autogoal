@@ -85,7 +85,7 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
             return self._eval(X)
 
     def _train(self, X, y):
-        X = X.copy()
+        X = [row.copy() for row in X]
         for i in range(len(X)):
             X[i].insert(1, y[i])
 
@@ -116,7 +116,7 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         return y
 
     def _eval(self, X):
-        X = X.copy()
+        X = [row.copy() for row in X]
         # ans = []
         try:
             X, vX = split_X(X)
@@ -133,7 +133,7 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
             w = csv.writer(f)
             w.writerows(X)
 
-        eval_dataset = buildMatchingSet('temp.eval')
+        eval_dataset = buildMatchingSet(eval)
         # eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val',
         #     trained_model=self.model, ignore_columns=('left_id', 'right_id'))
         
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     s = SupervisedTextMatcher(
         attr_summarizer='attention',
         classifier='2-layer-highway',
-        epoch=8,
+        epoch=2,
         label_smoothing=0.02
     )
     test_name = 'Fodors-Zagats'

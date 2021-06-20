@@ -52,7 +52,7 @@ class DeepMatcherDataset:
         fix_type_issue(te)
 
         tr += [[None, None]] + va # train and validation datasets are separated by [None, None]
-        te += [[None, None]] + va
+        te += [[None, None]] + [row.copy() for row in te]
 
         def get_X_y(table):
             X, y = [], []
