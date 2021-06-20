@@ -36,7 +36,7 @@ class ImageSegmenter(AlgorithmBase):
         p_images = []
         for image in images:
             p_images.append(self.image_preprocessor.run(image))
-        return p_images
+        return np.array(p_images)
 
     def _preprocess_masks(self, images) -> Seq[Tensor]:
         reader = ImageReader()
@@ -45,7 +45,7 @@ class ImageSegmenter(AlgorithmBase):
             t = reader.run(image_file)
             resize = tf.image.resize(t, [512, 512])
             p_images.append(np.array(resize))
-        return p_images
+        return np.array(p_images)
 
     def predict(self, images):
         return self._segmenter.predict(self._preprocess_images(images))
