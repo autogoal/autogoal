@@ -12,7 +12,7 @@ from pathlib import Path
 import csv
 import pandas
 
-CACHE = Path(__file__).parent / 'cache'
+CACHE = Path(__file__).parent / '.cache'
 
 def buildMatchingSet(file_name):
     return deepmatcher.data.process(
@@ -26,6 +26,18 @@ def buildMatchingSet(file_name):
         embeddings='glove.twitter.27B.25d',
         embeddings_cache_path=(CACHE.parent / '.vector_cache')
     )
+
+def split_X(X):
+    idx = 0
+    for row in X:
+        if row[0] == None:
+            break
+        idx += 1
+    
+    assert idx+1 < len(X)
+    vX = X[idx+1:]
+    X = X[:idx]
+    return X, vX
 
 @nice_repr
 class SupervisedTextMatcher(AlgorithmBase): # add doc strings
@@ -68,17 +80,8 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
     def _train(self, X, y):
         for i in range(len(X)):
             X[i].insert(1, y[i])
-        idx = 0
-        for row in X:
-            if row[0][0] == 'v':
-                break
-            idx += 1
-        
-        assert idx < len(X)
-        vX = X[idx:]
-        X = X[:idx]
-        for i in range(len(vX)):
-            vX[i][0] = vX[i][0][1:]
+
+        X, vX = split_X(X)
 
         if not Path.exists(CACHE):
             mkdir(CACHE)
@@ -94,15 +97,23 @@ class SupervisedTextMatcher(AlgorithmBase): # add doc strings
         train_dataset = buildMatchingSet('temp.train')
         validation_dataset = buildMatchingSet('temp.val')
         self.model.run_train(train_dataset=train_dataset, validation_dataset=validation_dataset,
-            best_save_path=CACHE, epochs=self.epoch, label_smoothing=self.label_smoothing)
+            best_save_path=CACHE/'best_model.pth', epochs=self.epoch, label_smoothing=self.label_smoothing)
 
         return y
 
     def _eval(self, X):
         # ans = []
-        w = csv.writer(CACHE / 'temp.eval')
-        w.writerows(X)
-        eval_dataset = buildMatchingSet('temp.eval')
+        try:
+            X, vX = split_X(X)
+            X += vX
+        except:
+            pass
+        with open(CACHE / 'temp.eval', 'w') as f:
+            w = csv.writer(f)
+            w.writerows(X)
+        # eval_dataset = buildMatchingSet('temp.eval')
+        x = self.model.meta
+        eval_dataset = deepmatcher.data.process_unlabeled(path=CACHE / 'temp.val', trained_model=self.model)
         return self.model.run_prediction(eval_dataset).to_dict()['match_score'].values()
         # for x in X:
         #     dataset = deepmatcher.data.MatchingDataset() # build from x
@@ -113,7 +124,7 @@ if __name__ == '__main__':
     s = SupervisedTextMatcher(
         attr_summarizer='sif',
         classifier='2-layer-highway',
-        epoch=50,
+        epoch=5,
         label_smoothing=0.02
     )
     test_name = 'Fodors-Zagats'
@@ -122,3 +133,5 @@ if __name__ == '__main__':
     X_train, y_train , X_test , y_test = DeepMatcherDataset(test_name, DATASETS[test_name]).load()
     s.train()
     s.run(X_train, y_train)
+    s.eval()
+    print(s.run(X_test, y_test)[:10])
