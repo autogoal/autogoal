@@ -29,8 +29,8 @@ def test_supervised_text_matcher():
 
 def test_supervised_text_matcher_pipeline():
     pipelines = build_pipeline_graph(
-        input_types = (Seq[Sentence], Seq[Word]),  # fix annotations
-        output_type = MatrixContinuousDense,  # fix annotations
+        input_types = (Seq[Seq[Text]], Supervised[VectorCategorical]),  # fix annotations
+        output_type = VectorCategorical,  # fix annotations
         registry = find_classes() + [SupervisedTextMatcher],
     )
     nodes = pipelines.nodes()
