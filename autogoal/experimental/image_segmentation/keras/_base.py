@@ -20,10 +20,10 @@ class KerasImageSegmenter(KerasNeuralNetwork):
         self._num_classes = y.shape[1]
 
         if "loss" not in self._compile_kwargs:
-            self._compile_kwargs["loss"] = "categorical_crossentropy"
+            self._compile_kwargs["loss"] = "binary_crossentropy"
             self._compile_kwargs["metrics"] = ["accuracy"]
 
-        return Dense(units=2, activation="softmax")
+        return Dense(units=2, activation="sigmoid")
 
     def _build_output(self, outputs, y):
         if len(outputs) > 1:
