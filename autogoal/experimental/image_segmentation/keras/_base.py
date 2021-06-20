@@ -1,7 +1,7 @@
 from autogoal.contrib.keras._base import KerasNeuralNetwork
 from autogoal.contrib.keras._grammars import generate_grammar
 from ._grammar import Modules
-from tensorflow.keras.layers import Input, Dense, concatenate
+from tensorflow.keras.layers import Input, concatenate, Conv2D
 from autogoal.kb import Supervised
 from autogoal.kb._semantics import Tensor3, Tensor, Seq
 
@@ -20,10 +20,11 @@ class KerasImageSegmenter(KerasNeuralNetwork):
         self._num_classes = y.shape[1]
 
         if "loss" not in self._compile_kwargs:
-            self._compile_kwargs["loss"] = "binary_crossentropy"
+            self._compile_kwargs["loss"] = "sparse_categorical_crossentropy"
             self._compile_kwargs["metrics"] = ["accuracy"]
 
-        return Dense(units=2, activation="sigmoid")
+        return Conv2D(3, 3, activation='softmax', padding='same')
+        # return Dense(units=2, activation="sigmoid")
 
     def _build_output(self, outputs, y):
         if len(outputs) > 1:
