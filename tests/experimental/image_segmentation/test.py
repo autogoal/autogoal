@@ -12,8 +12,8 @@ from autogoal.utils import Min, Gb
 
 def test():
     automl = AutoML(
-        input=(Seq[ImageFile], Supervised[Tensor3]),
-        output=Tensor3,
+        input=(Seq[ImageFile], Supervised[Seq[Tensor]]),
+        output=Seq[Tensor],
         registry=find_classes() + [ImageSegmenter, ImagePreprocessor, KerasImageSegmenter],
         evaluation_timeout=10 * Min,
         memory_limit=3.5 * Gb,
