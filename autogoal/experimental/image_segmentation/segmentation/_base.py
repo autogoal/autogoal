@@ -38,7 +38,7 @@ class ImageSegmenter(AlgorithmBase):
             p_images.append(self.image_preprocessor.run(image))
         return np.array(p_images)
 
-    def _preprocess_masks(self, images) -> Seq[Image]:
+    def _preprocess_masks(self, images) -> Seq[ImageMask]:
         reader = ImageReader()
         p_images = []
         for image_file in images:
