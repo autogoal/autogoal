@@ -1,7 +1,6 @@
 from autogoal.utils import nice_repr
 from autogoal.kb._algorithm import Supervised, AlgorithmBase, algorithm, Seq
 
-
 import tensorflow as tf
 import numpy as np
 
@@ -35,7 +34,9 @@ class ImageSegmenter(AlgorithmBase):
     def _preprocess_images(self, images) -> Seq[Image]:
         p_images = []
         for image in images:
-            p_images.append(self.image_preprocessor.run(image))
+            p_image = self.image_preprocessor.run(image)
+            p_image = p_image[:, :, :3]
+            p_images.append(p_image)
         return np.array(p_images)
 
     def _preprocess_masks(self, images) -> Seq[ImageMask]:
@@ -45,7 +46,7 @@ class ImageSegmenter(AlgorithmBase):
             t = reader.run(image_file)
             resize = tf.image.resize(t, [512, 512])
             resize = resize[:, :, 0]
-            p_images.append(np.array(resize) - 1)
+            p_images.append(resize)
         return np.array(p_images)
 
     def predict(self, images):
@@ -71,4 +72,6 @@ class ImagePreprocessor(AlgorithmBase):
     def run(self, image_file: ImageFile) -> Image:
         t = self.reader.run(image_file)
         resize = tf.image.resize(t, [512, 512])
+        if len(resize.shape) == 4 and resize.shape[0] == 1:
+            resize = resize[0, :, :, :]
         return np.array(resize)
