@@ -9,6 +9,16 @@ from autogoal.search import RichLogger
 from autogoal.utils import Min, Gb
 
 
+def test_uses_created_clases():
+    pipelines = build_pipeline_graph(
+        input_types=(Seq[ImageFile], Supervised[Seq[ImageMask]]),
+        output_type=Seq[ImageMask],
+        registry=find_classes("Keras") + [ImageSegmenter, ImagePreprocessor, KerasImageSegmenter]
+    )
+    nodes = pipelines.nodes()
+    assert ImageSegmenter in nodes
+
+
 def test():
     automl = AutoML(
         input=(Seq[ImageFile], Supervised[Seq[ImageMask]]),
