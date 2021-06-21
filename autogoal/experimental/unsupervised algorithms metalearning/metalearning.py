@@ -29,7 +29,7 @@ def feature_extractor(func):
             result = func(X, y)
         except Exception as inst:
             result = None
-            #print(inst)
+            print(inst)
             
 
         return {func.__name__: result}
@@ -37,7 +37,13 @@ def feature_extractor(func):
     _EXTRACTORS.append(wrapper)
     return wrapper
     
-    
+def first_not_none_value(X, attribute_index):
+    for i in range(0, len(X)):
+        if X[i][attribute_index] is None:
+            continue
+        return X[i][attribute_index]
+    return None    
+
 def specific_types_attributes_index(X, types):
     N, M = get_dimentions(X)
     attributes_index = []
@@ -249,7 +255,7 @@ def missing_values_percentage(X, y=None):
     count = 0
     for i in range(0, M):
         for j in range(0, N):
-            if(X[j][i] is None):
+            if X[j][i] is None:
                 count += 1 
     return (count * 100) / (M * N)
 
@@ -295,7 +301,9 @@ def continuous_mean_skewness(X, y=None):
     for i in range(0, len(values)):
         S_above = 0
         S_below = 0
-        for j in range(0, N):
+        for j in range(0, len(values[i])):
+            if values[i][j] is None:
+                continue
             mirror_val = (values[i][j] - means[i]) ** 3
             if mirror_val > 0:
                 S_above += mirror_val
@@ -322,7 +330,7 @@ def continuous_mean_kurtosis(X, y=None):
 
     for i in range(0, len(values)):
         central_value = 0
-        for j in range(0, N):
+        for j in range(0, len(values[i])):
             central_value += ((values[i][j] - means[i]) ** 4) / (standard_desviations[i] ** 4)
         kurtosis.append(left_coeficient * central_value - right_substractor)
     
@@ -342,7 +350,9 @@ def number_of_high_correlated_pairs(X, y=None):
     for i in range(0, len(values) - 1):
         for j in range(i + 1, len(values)):
             product_sum = 0
-            for k in range(0, N):
+            for k in range(0, min(len(values[i]), len(values[j]))):
+                if values[i][k] is None or values[j][k] is None:
+                    continue
                 product_sum += values[i][k] * values[j][k]
             covariance = product_sum / N - means[i] * means[j]
             correlations.append(covariance / (variances[i] * variances[j]) ** 0.5)
@@ -380,13 +390,14 @@ def correlation_matrix_eigenvalues(X, y = None):
         row = []
         for j in range(0, len(values)):
             product_sum = 0
-            for k in range(0, N):
-                product_sum += X[k][numeric_attributes[i]] * X[k][numeric_attributes[j]]
+            for k in range(0, min(len(values[i]), len(values[j]))):
+                if values[i][k] is None or values[j][k] is None:
+                    continue
+                product_sum += values[i][k] * values[i][k]
             row.append(product_sum / N - means[i] * means[j])
         correlation_matrix.append(row)
 
     w, v = LA.eig(np.array(correlation_matrix))
-    
     
     eigenvalues = []
     for e in w:
@@ -469,13 +480,15 @@ def discrete_mean_entropy(X, y=None):
 @feature_extractor
 def minimum_values(X, y=None):
     N, M = get_dimentions(X)
+    numeric_attributes = specific_types_attributes_index(X, (int, float))
     min_values = []
-    for j in range(0, M):
-        if isinstance(X[0][j], (int, float)):
-            min_value = X[0][j]
-            for i in range(1, N):
-                min_value = min(min_value, X[i][j])
-            min_values.append(min_value)
+    for j in numeric_attributes:
+        min_value = first_not_none_value(X, j)
+        for i in range(0, N):
+            if X[i][j] is None:
+                continue
+            min_value = min(min_value, X[i][j])
+        min_values.append(min_value)
     return min_values
 
 
@@ -483,13 +496,15 @@ def minimum_values(X, y=None):
 @feature_extractor
 def maximum_values(X, y=None):
     N, M = get_dimentions(X)
+    numeric_attributes = specific_types_attributes_index(X, (int, float))
     max_values = []
-    for j in range(0, M):
-        if isinstance(X[0][j], (int, float)):
-            max_value = X[0][j]
-            for i in range(1, N):
-                max_value = max(max_value, X[i][j])
-            max_values.append(max_value)
+    for j in numeric_attributes:
+        max_value = first_not_none_value(X, j)
+        for i in range(0, N):
+            if X[i][j] is None:
+                continue
+            max_value = max(max_value, X[i][j])
+        max_values.append(max_value)
     return max_values
 
 
@@ -497,15 +512,17 @@ def maximum_values(X, y=None):
 @feature_extractor
 def range_lenghts(X, y=None):
     N, M = get_dimentions(X)
+    numeric_attributes = specific_types_attributes_index(X, (int, float))
     range_values = []
-    for j in range(0, M):
-        if isinstance(X[0][j], (int, float)):
-            min_value = X[0][j]
-            max_value = X[0][j]
-            for i in range(1, N):
-                min_value = min(min_value, X[i][j])
-                max_value = max(max_value, X[i][j])
-            range_values.append(max_value - min_value)
+    for j in numeric_attributes:
+        min_value = first_not_none_value(X, j)
+        max_value = first_not_none_value(X, j)
+        for i in range(0, N):
+            if X[i][j] is None:
+                continue
+            min_value = min(min_value, X[i][j])
+            max_value = max(max_value, X[i][j])
+        range_values.append(max_value - min_value)
     return range_values
 
 
@@ -583,7 +600,9 @@ def attributes_skewness(X, y=None):
     for i in range(0, len(values)):
         S_above = 0
         S_below = 0
-        for j in range(0, N):
+        for j in range(0, len(values[i])):
+            if values[i][j] is None:
+                continue
             mirror_val = (values[i][j] - means[i]) ** 3
             if mirror_val > 0:
                 S_above += mirror_val
