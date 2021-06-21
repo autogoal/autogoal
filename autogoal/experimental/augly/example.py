@@ -1,6 +1,3 @@
-from os import SCHED_OTHER
-from autogoal.logging import logger
-from autogoal import search
 from autogoal.kb import (
     Sentence,
     Seq,
@@ -19,10 +16,8 @@ from autogoal.experimental.augly import (
 
 from autogoal.datasets import movie_reviews
 
-# load dataset
-sentences, classes = movie_reviews.load()
-
-X_train, y_train, X_test, y_test = movie_reviews.make_fn()
+# load fitness
+fn = movie_reviews.make_fn() 
 
 # automl and io types
 automl = AutoML(
@@ -30,11 +25,9 @@ automl = AutoML(
     output=Seq[Sentence],
     registry=[SimulateTypos] + find_classes(), # using a augment model on the training data
     evaluation_timeout=Min,
-    memory_limit =4 * Gb,
-    search_timeout =Min,
+    memory_limit=4 * Gb,
+    search_timeout=Min,
 )
 
-automl.fit(X_train, y_train, logger=[RichLogger()])
-
-score = automl.score(X_test, y_test)
-print(f"Score: {score}")
+acc = fn(automl)
+print(acc)
