@@ -1,12 +1,13 @@
 import argparse
 import sys
 from autogoal.experimental.deepmatcher import DATASETS
-from autogoal.utils import Min, Gb
-from autogoal.kb import Sentence, Seq, Supervised ,VectorCategorical
+from autogoal.utils import Min, Gb, nice_repr
+from autogoal.kb import AlgorithmBase, Text, Seq, Supervised ,VectorCategorical
 from autogoal.experimental.deepmatcher.base import SupervisedTextMatcher
 from autogoal.contrib import find_classes
 from autogoal.experimental.deepmatcher.dataset import DeepMatcherDataset
 from autogoal.search import RichLogger
+from autogoal.ml import AutoML
 
 DATASET_NAMES = list(DATASETS.keys())
 
@@ -25,12 +26,20 @@ if args.dataset not in DATASET_NAMES:
     sys.exit(0)
 
 dataset = DeepMatcherDataset(args.dataset, DATASETS[args.dataset])
-train, validation, test = dataset.load()
+
+headers, X_train, y_train , X_test , y_test = dataset.load()
+
+@nice_repr
+class ProcessData(AlgorithmBase):
+    HEADERS=headers
+    def run(self, X: Seq[Seq[Text]]) -> Seq[Seq[Text]]:
+        X.insert(0, ProcessData.HEADERS)
+        return X
 
 automl = AutoML(
-    input = (Seq[Sentence], Supervised[VectorCategorical]),
+    input = (Seq[Seq[Text]], Supervised[VectorCategorical]),
     output = VectorCategorical,
-    registry = [SupervisedTextMatcher] + find_classes(),
+    registry = [SupervisedTextMatcher,ProcessData] + find_classes(),
     evaluation_timeout = 3 * Min,
     memory_limit = 3 * Gb,
     search_timeout = 10 * Min
