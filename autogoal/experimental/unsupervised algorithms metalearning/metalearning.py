@@ -27,9 +27,10 @@ def feature_extractor(func):
     def wrapper(X, y=None):
         try:
             result = func(X, y)
-        except:
-            print("Cannot apply " + func.__name__ + " extractor to the given dataset")
+        except Exception as inst:
             result = None
+            #print(inst)
+            
 
         return {func.__name__: result}
 
@@ -218,7 +219,7 @@ def discrete_proportion(X, y=None):
 # Returns the amount of continuous attributes.
 @feature_extractor
 def continuous_amount(X, y=None):
-    continuous = specific_types_attributes_index(X, (float))
+    continuous = specific_types_attributes_index(X, (int, float))
     return len(continuous)
 
 
@@ -226,7 +227,7 @@ def continuous_amount(X, y=None):
 @feature_extractor
 def continuous_proportion(X, y=None):
     N, M = get_dimentions(X)
-    continuous = specific_types_attributes_index(X, (float))
+    continuous = specific_types_attributes_index(X, (int, float))
     return len(continuous) / M
 
 
@@ -257,7 +258,7 @@ def missing_values_percentage(X, y=None):
 @feature_extractor
 def continuous_mean_absolute_correlation(X, y=None):
     N, M = get_dimentions(X)
-    continuous_attributes = specific_types_attributes_index(X, (float))
+    continuous_attributes = specific_types_attributes_index(X, (int, float))
     values = values_from_rows(X, continuous_attributes)
 
     means = calculate_means(values)
@@ -289,7 +290,6 @@ def continuous_mean_skewness(X, y=None):
     means = calculate_means(values)
     variances = calculate_variances(values)
     standard_desviations = calculate_stds(values)
-
     skewness = []
 
     for i in range(0, len(values)):
@@ -302,7 +302,7 @@ def continuous_mean_skewness(X, y=None):
             else:
                 S_above += -mirror_val
         skewness.append((N / (standard_desviations[i] ** 3 * (N - 1) * (N - 2))) * (S_above - S_below))
-
+    
     return st.mean(skewness)
 
 
