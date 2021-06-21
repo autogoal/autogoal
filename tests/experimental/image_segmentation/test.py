@@ -1,6 +1,6 @@
 from autogoal.ml import AutoML
 from autogoal.kb import *
-from autogoal.experimental.image_segmentation.segmentation._semantics import ImageFile, ImageMask
+from autogoal.experimental.image_segmentation.segmentation._semantics import ImageFile, ImageMask, Image
 from autogoal.contrib import find_classes
 from autogoal.experimental.image_segmentation.segmentation._base import ImageSegmenter, ImagePreprocessor
 from autogoal.experimental.image_segmentation.keras._base import KerasImageSegmenter
@@ -17,6 +17,25 @@ def test_uses_created_clases():
     )
     nodes = pipelines.nodes()
     assert ImageSegmenter in nodes
+
+    pipelines = build_pipeline_graph(
+        input_types=ImageFile,
+        output_type=Image,
+        registry=find_classes("Keras") + [ImageSegmenter, ImagePreprocessor, KerasImageSegmenter]
+    )
+    nodes = pipelines.nodes()
+    assert ImagePreprocessor in nodes
+
+
+def test_algotithm_correct_types():
+    assert ImageSegmenter.input_types() == (
+        Seq[ImageFile],
+        Supervised[Seq[ImageMask]],
+    )
+    assert ImageSegmenter.output_type() == Seq[ImageMask]
+
+    assert ImagePreprocessor.input_types() == (ImageFile,)
+    assert ImagePreprocessor.output_type() == Image
 
 
 def test():
