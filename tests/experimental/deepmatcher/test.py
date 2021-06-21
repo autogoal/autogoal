@@ -48,15 +48,28 @@ def test_supervised_text_matcher():
 
 
 def test_supervised_text_matcher_pipeline():
+    test_name = "Fodors-Zagats"
+    headers, X_train, y_train, X_test, y_test = DeepMatcherDataset(
+        test_name, DATASETS[test_name]
+    ).load()
+
+    @nice_repr
+    class ProcessData(AlgorithmBase):
+        HEADERS = headers
+
+        def run(self, X: Seq[Seq[Text]]) -> Seq[Seq[Text]]:
+            X.insert(0, ProcessData.HEADERS)
+            return X
+
     pipelines = build_pipeline_graph(
         input_types=(Seq[Seq[Text]], Supervised[VectorCategorical]),
         output_type=VectorCategorical,
-        registry=find_classes() + [SupervisedTextMatcher],
+        registry=find_classes() + [SupervisedTextMatcher, ProcessData],
     )
     nodes = pipelines.nodes()
     assert SupervisedTextMatcher in nodes
 
 
 if __name__ == "__main__":
-    # test_supervised_text_matcher_pipeline() # add ProcessData in registry
+    test_supervised_text_matcher_pipeline()
     test_supervised_text_matcher()
