@@ -64,7 +64,7 @@ class DeepMatcherDataset:
         def get_X_y(table):
             X, y = [], []
             for row in table:
-                y.append(row.pop(1))
+                y.append(row[1])
                 X.append(row)
             return X, y
 

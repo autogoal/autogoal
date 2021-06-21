@@ -92,8 +92,6 @@ class SupervisedTextMatcher(AlgorithmBase):
 
     def _train(self, X, y):
         X = [row.copy() for row in X]
-        for i in range(len(X)):
-            X[i].insert(1, y[i])
 
         X, vX = split_X(X)
         self.preprocessor.run(X)
@@ -133,8 +131,6 @@ class SupervisedTextMatcher(AlgorithmBase):
     def _eval(self, X):
         X = [row.copy() for row in X]
         self.preprocessor.run(X)
-        for i in range(1, len(X)):
-            X[i].insert(1, 0)
 
         eval = CACHE / f"{random_string()}.eval"
         with open(eval, "w") as f:
