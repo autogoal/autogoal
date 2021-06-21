@@ -1,5 +1,5 @@
 from autogoal.contrib.keras._grammars import Module
-from autogoal.contrib.keras._generated import MaxPooling2D, Activation
+from autogoal.contrib.keras._generated import MaxPooling2D
 from autogoal.grammar import Path, GraphGrammar
 from ._generated import Conv2DTranspose, Conv2D
 

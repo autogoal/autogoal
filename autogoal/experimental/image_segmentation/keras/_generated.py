@@ -1,9 +1,10 @@
 from tensorflow.keras.layers import Conv2DTranspose as _Conv2DTranspose
 from tensorflow.keras.layers import Conv2D as _Conv2D
-from autogoal.utils import nice_repr
-from autogoal.grammar import DiscreteValue
-from autogoal.grammar._cfg import ContinuousValue, CategoricalValue
 from tensorflow.keras import regularizers
+
+from autogoal.utils import nice_repr
+from autogoal.grammar._cfg import DiscreteValue, ContinuousValue, CategoricalValue
+
 
 
 @nice_repr

@@ -1,9 +1,12 @@
 from autogoal.contrib.keras._base import KerasNeuralNetwork
 from autogoal.contrib.keras._grammars import generate_grammar
-from ._grammar import Modules
-from tensorflow.keras.layers import Input, concatenate, Conv2D
 from autogoal.kb import Supervised
-from autogoal.kb._semantics import Tensor3, Tensor, Seq
+from autogoal.kb._semantics import Seq
+
+from ..segmentation._semantics import Image, ImageMask
+from ._grammar import Modules
+
+from tensorflow.keras.layers import Input, concatenate, Conv2D
 
 
 class KerasImageSegmenter(KerasNeuralNetwork):
@@ -24,7 +27,6 @@ class KerasImageSegmenter(KerasNeuralNetwork):
             self._compile_kwargs["metrics"] = ["accuracy"]
 
         return Conv2D(3, 3, activation='softmax', padding='same')
-        # return Dense(units=2, activation="sigmoid")
 
     def _build_output(self, outputs, y):
         if len(outputs) > 1:
@@ -34,5 +36,5 @@ class KerasImageSegmenter(KerasNeuralNetwork):
 
         return self._build_output_layer(y)(outputs)
 
-    def run(self, X: Seq[Tensor3], y: Supervised[Seq[Tensor]]) -> Seq[Tensor]:
+    def run(self, X: Seq[Image], y: Supervised[Seq[ImageMask]]) -> Seq[ImageMask]:
         return super().run(X, y)
