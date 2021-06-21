@@ -1,9 +1,9 @@
-from autogoal.kb._semantics import Tensor3, Tensor, SemanticType
+from autogoal.kb._semantics import Tensor3, Tensor, SemanticType, Discrete, Dense
 from os import path
 
 
 Image = Tensor3
-ImageMask = Tensor
+ImageMask = Tensor[2, Discrete, Dense]
 
 class ImageFile(SemanticType):
     """Semantic type for JPG and PNG image files"""
