@@ -52,6 +52,3 @@ def test():
     automl.fit(x_train, y_train, logger=[RichLogger()])
     score = automl.score(x_test, y_test)
     print(score)
-
-
-test()
