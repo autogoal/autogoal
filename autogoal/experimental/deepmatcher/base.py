@@ -65,7 +65,7 @@ class SupervisedTextMatcher(AlgorithmBase):
             "3-layer-residual",
             "3-layer-residual-relu",
         ),
-        epoch: DiscreteValue(min=5, max=10),
+        epoch: DiscreteValue(min=5, max=100),
         label_smoothing: ContinuousValue(min=0.01, max=0.2),
     ):
         self.preprocessor = preprocessor
@@ -91,7 +91,11 @@ class SupervisedTextMatcher(AlgorithmBase):
             return self._eval(X)
 
     def _train(self, X, y):
-        X = [[col for col in row] for row in X]
+        X_ = []
+        for row in X:
+            if row != self.preprocessor.HEADERS:
+                X_.append([col for col in row])
+        X = X_
 
         X, vX = split_X(X)
         self.preprocessor.run(X)
@@ -129,7 +133,11 @@ class SupervisedTextMatcher(AlgorithmBase):
         return y
 
     def _eval(self, X):
-        X = [[col for col in row] for row in X]
+        X_ = []
+        for row in X:
+            if row != self.preprocessor.HEADERS:
+                X_.append([col for col in row])
+        X = X_
         self.preprocessor.run(X)
 
         eval = CACHE / f"{random_string()}.eval"
