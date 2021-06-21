@@ -15,7 +15,7 @@ class KerasImageSegmenter(KerasNeuralNetwork):
     Class that represents an Image Segmenter with a Keras-based CNN architecture. 
     """
     def __init__(self, **kwargs):
-        super().__init__(grammar=self._build_grammar(), optimizer="adam", **kwargs)
+        super().__init__(grammar=self._build_grammar(), optimizer="rmsprop", **kwargs)
 
     def _build_grammar(self):
         return generate_grammar(Modules.ConvNN())
