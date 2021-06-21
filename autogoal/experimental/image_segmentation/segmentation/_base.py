@@ -44,7 +44,8 @@ class ImageSegmenter(AlgorithmBase):
         for image_file in images:
             t = reader.run(image_file)
             resize = tf.image.resize(t, [512, 512])
-            p_images.append(np.array(resize))
+            resize = resize[:, :, 0]
+            p_images.append(np.array(resize) - 1)
         return np.array(p_images)
 
     def predict(self, images):
