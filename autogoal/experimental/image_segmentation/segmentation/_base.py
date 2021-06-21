@@ -12,7 +12,7 @@ from ..kb._generated import ImageReader
 @nice_repr
 class ImageSegmenter(AlgorithmBase):
     """
-    Receives images and returns segmentation masks with same size
+    Class for a generic image segmenter, receives images and returns segmentation masks with same size
     """
 
     def __init__(self, segmenter: algorithm(Seq[Image], Supervised[Seq[ImageMask]], Seq[ImageMask]),
@@ -61,7 +61,7 @@ class ImageSegmenter(AlgorithmBase):
 @nice_repr
 class ImagePreprocessor(AlgorithmBase):
     """
-    Receives image file and converts it into appropriate input
+    Receives image file and properly preprocesses it 
     """
 
     def __init__(self) -> None:

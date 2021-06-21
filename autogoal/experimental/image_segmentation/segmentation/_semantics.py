@@ -6,7 +6,7 @@ Image = Tensor3
 ImageMask = Tensor
 
 class ImageFile(SemanticType):
-    """Semantic type for JPG image files"""
+    """Semantic type for JPG and PNG image files"""
 
     @classmethod
     def _match(cls, x):
