@@ -5,9 +5,7 @@ import shutil
 
 IMAGES_URL = "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/images.tar.gz"
 
-MASKS_URL = (
-    "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/annotations.tar.gz"
-)
+MASKS_URL = "https://www.robots.ox.ac.uk/%7Evgg/data/pets/data/annotations.tar.gz"
 
 IMAGES_DIR = "segmentation_training"
 MASKS_DIR = "segmentation_test"
@@ -27,7 +25,7 @@ def load():
 
 def load_images():
     x = []
-    for file in os.listdir(datapath(IMAGES_DIR)):
+    for file in os.listdir(datapath(IMAGES_DIR) / "images"):
         if file.endswith(".jpg"):
             x.append(f'{datapath(IMAGES_DIR)}{os.path.sep}{file}')
     return sorted(x)
@@ -35,7 +33,7 @@ def load_images():
 
 def load_masks():
     x = []
-    for file in os.listdir(datapath(MASKS_DIR)):
+    for file in os.listdir(datapath(MASKS_DIR) / "annotations" / "trimaps"):
         if file.endswith(".png"):
             x.append(f'{datapath(MASKS_DIR)}{os.path.sep}{file}')
     return sorted(x)
@@ -73,4 +71,5 @@ def download_file(url, save_path):
 
 
 def unpack(file, dir):
+    print(f'Unpacking file {file} in {dir}')
     shutil.unpack_archive(file, dir)
