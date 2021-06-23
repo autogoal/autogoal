@@ -16,6 +16,7 @@ Also with ``example.py`` you have an example of how to use the transformers in t
 ## Install dependency
 
 ```bash
+sudo apt-get install python3-magic
 pip install -U augly 
 ```
  

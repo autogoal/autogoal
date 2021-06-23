@@ -2,7 +2,8 @@ FROM docker.uclv.cu/autogoal/autogoal
 
 WORKDIR /home/coder/autogoal
 
-RUN sudo apt update 
+RUN sudo apt update
+RUN sudo apt install python3-magic
 RUN pip install -U augly
 
 COPY . /home/coder/autogoal/autogoal/expermiental/
