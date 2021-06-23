@@ -3,7 +3,7 @@ from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, Cont
 
 from autogoal.utils import nice_repr
 
-import augly.text import (
+from augly.text import (
     insert_punctuation_chars,
     insert_zero_width_chars,
     replace_bidirectional,

@@ -4,7 +4,7 @@ from autogoal.experimental.augly._semantics import Image
 
 from autogoal.utils import nice_repr
 
-import augly.image import (
+from augly.image import (
     brightness,
     change_aspect_ratio,
     contrast,

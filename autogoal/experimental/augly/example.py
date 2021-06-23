@@ -1,3 +1,4 @@
+from autogoal.logging import logger
 from autogoal.kb import (
     Sentence,
     Seq,
@@ -16,18 +17,20 @@ from autogoal.experimental.augly import (
 
 from autogoal.datasets import movie_reviews
 
-# load fitness
-fn = movie_reviews.make_fn() 
+# load data
+X, y = movie_reviews.load() 
 
 # automl and io types
 automl = AutoML(
-    input(Seq[Sentence], Supervised[Categorical]),
+    input=(Seq[Sentence], Supervised[Categorical]),
     output=Seq[Sentence],
-    registry=[SimulateTypos] + find_classes(), # using an augment model on the training data
+    registry=[SimulateTypos] + find_classes(),
     evaluation_timeout=Min,
     memory_limit=2.5 * Gb,
     search_timeout=Min,
 )
 
-acc = fn(automl)
-print(acc)
+# transform the training set X
+automl.fit(X, y, logger=[RichLogger()])
+augX = automl.predict(X)
+print(augX[:3])
