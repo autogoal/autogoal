@@ -1,5 +1,6 @@
-from autogoal.kb._semantics import Sentence, Seq
-from autogoal.grammar import BooleanValue, CategoricalValue, DiscreteValue, ContinuousValue
+from autogoal.kb._semantics import Seq
+from autogoal.grammar import CategoricalValue, DiscreteValue, ContinuousValue
+from autogoal.experimental.augly._semantics import Image
 
 from autogoal.utils import nice_repr
 
@@ -36,7 +37,7 @@ class Brightness(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -57,7 +58,7 @@ class ChangeAspectRatio(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -78,7 +79,7 @@ class Contrast(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -109,7 +110,7 @@ class Crop(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -130,7 +131,7 @@ class Grayscale(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -151,7 +152,7 @@ class Opacity(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -172,7 +173,7 @@ class Pixelization(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -197,7 +198,7 @@ class Resize(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -218,7 +219,7 @@ class Rotate(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
 
 @nice_repr
@@ -239,5 +240,5 @@ class Saturation(AugLyTransformer):
     def fit_transform(self, X, y=None):
         return self.transform(X)
 
-    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+    def run(self, X: Image) -> Image:
         return super().run(X)
