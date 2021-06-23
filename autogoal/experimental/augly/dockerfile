@@ -7,4 +7,4 @@ RUN pip install -U augly
 
 COPY . /home/coder/autogoal/autogoal/expermiental/
 
-CMD [ "python", "-m", "pytest", "autogoal/expermiental/augly/test.py"]
+CMD [ "python", "-m", "pytest", "autogoal/expermiental/augly/test_augly.py" ]

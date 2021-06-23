@@ -23,9 +23,9 @@ fn = movie_reviews.make_fn()
 automl = AutoML(
     input(Seq[Sentence], Supervised[Categorical]),
     output=Seq[Sentence],
-    registry=[SimulateTypos] + find_classes(), # using a augment model on the training data
+    registry=[SimulateTypos] + find_classes(), # using an augment model on the training data
     evaluation_timeout=Min,
-    memory_limit=4 * Gb,
+    memory_limit=2.5 * Gb,
     search_timeout=Min,
 )
 
