@@ -26,8 +26,25 @@ class ExactSampler(Sampler):
         else:
             raise ValueError("Incomplete exact sampler model")
 
+    def _get_algorithm_options_params(self, options):
+        chosen = None
+        for option in options:
+            if option in self._model:
+                if chosen is not None:
+                    raise ValueError(
+                        f"Ambiguous model algorithm values {chosen} and {option}"
+                    )
+                chosen = option
+        if chosen is None:
+            raise ValueError("Incomplete exact sampler model.")
+        return chosen
+
     def choice(self, options, handle=None):
-        param = self._get_model_params(handle)
+        param = None
+        if handle is None:
+            param = self._get_algorithm_options_params(options)
+        else:
+            param = self._get_model_params(handle)
         if param in options:
             return param
         else:
