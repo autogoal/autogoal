@@ -130,13 +130,13 @@ class Document(Text):
     pass
 
 
-class Sentence(Document):
+class Sentence(Text):
     @classmethod
     def _match(cls, x):
         return super()._match(x) and x.count(".") <= 1
 
 
-class Word(Sentence):
+class Word(Text):
     @classmethod
     def _match(cls, x):
         return super()._match(x) and " " not in x

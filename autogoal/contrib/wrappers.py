@@ -7,7 +7,7 @@ import numpy as np
 
 
 @nice_repr
-class VectorAggregator(AlgorithmBase):
+class VectorRowAggregator(AlgorithmBase):
     def __init__(self, mode: CategoricalValue("mean", "max")):
         self.mode = mode
 
@@ -18,6 +18,22 @@ class VectorAggregator(AlgorithmBase):
             return input.mean(axis=1)
         elif self.mode == "max":
             return input.max(axis=1)
+
+        raise ValueError("Invalid mode: %s" % self.mode)
+
+
+@nice_repr
+class VectorColumnAggregator(AlgorithmBase):
+    def __init__(self, mode: CategoricalValue("mean", "max")):
+        self.mode = mode
+
+    def run(self, input: Seq[VectorContinuous]) -> VectorContinuous:
+        input = np.vstack(input)
+
+        if self.mode == "mean":
+            return input.mean(axis=0)
+        elif self.mode == "max":
+            return input.max(axis=0)
 
         raise ValueError("Invalid mode: %s" % self.mode)
 
