@@ -272,7 +272,7 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
 
-def make_seq_algorithm(algorithm: Algorithm):
+def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
 
     The generated class correctly defines the input and output types.
@@ -438,7 +438,7 @@ class PipelineSpace(GraphSpace):
 def build_pipeline_graph(
     input_types: List[type],
     output_type: type,
-    registry: List[type],
+    registry: List[Algorithm],
     max_list_depth: int = 3,
 ) -> PipelineSpace:
     """Build a graph of algorithms.
@@ -498,6 +498,9 @@ def build_pipeline_graph(
         # These are the types that are available at this node
         guaranteed_types = node.output_types
 
+        # The node's output type
+        node_output_type = node.algorithm.output_type()
+
         # Here are all the algorithms that could be added new at this point in the graph
         for algorithm in pool:
             if not algorithm.is_compatible_with(guaranteed_types):
@@ -514,6 +517,19 @@ def build_pipeline_graph(
                 # ... unless it is an idempotent algorithm
                 [algorithm.output_type()] != algorithm.input_types()
             ):
+                continue
+
+            # BUG: this validation ensures no redundant nodes are added.
+            #      The downside is that it prevents pipelines that need two algorithms
+            #      to generate the input of another one.
+
+            # And we do not want to ignore the last node's output type
+            is_using_last_output = False
+            for input_type in algorithm.input_types():
+                if issubclass(node_output_type, input_type):
+                    is_using_last_output = True
+                    break
+            if not is_using_last_output:
                 continue
 
             p = PipelineNode(
