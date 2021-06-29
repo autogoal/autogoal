@@ -136,14 +136,18 @@ class AutoML:
             scores = []
 
             for _ in range(self.cross_validation_steps):
-                len_x = len(X) if isinstance(X, list) else X.shape[0]
+                len_x = (
+                    len(X)
+                    if isinstance(X, list) or isinstance(X, tuple)
+                    else X.shape[0]
+                )
                 indices = np.arange(0, len_x)
                 np.random.shuffle(indices)
                 split_index = int(self.validation_split * len(indices))
                 train_indices = indices[:-split_index]
                 test_indices = indices[-split_index:]
 
-                if isinstance(X, list):
+                if isinstance(X, list) or isinstance(X, tuple):
                     X_train, y_train, X_test, y_test = (
                         [X[i] for i in train_indices],
                         y[train_indices],
