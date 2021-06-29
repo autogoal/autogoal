@@ -60,10 +60,10 @@ def pack(folder: str):
     shutil.make_archive(filename, "zip", root_dir=rootdir)
 
 
-def unpack(zipfile: str):
+def unpack(zipfile: str, format="zip", targetfile=None):
     filename = datapath(zipfile)
-    rootdir = datapath(zipfile[:-4])
-    shutil.unpack_archive(filename, extract_dir=rootdir, format="zip")
+    rootdir = datapath(zipfile[:-4]) if targetfile is None else datapath(targetfile)
+    shutil.unpack_archive(filename, extract_dir=rootdir, format=format)
 
 
 def download(dataset: str, unpackit: bool = True):
@@ -102,3 +102,17 @@ def download_and_save(url, path: Path, overwrite=False, data_length=None):
     except:
         path.unlink()
         raise
+
+
+def pad(words, pad_length, pad_token="[PAD]"):
+    if len(words) > pad_length:
+        return words[:pad_length]
+    else:
+        pads = [pad_token for _ in range(len(words) - pad_length)]
+        return words + pads
+
+
+def shuffle_lists(rng, *lists):
+    data = list(zip(*lists))
+    rng.shuffle(data)
+    return zip(*data)
