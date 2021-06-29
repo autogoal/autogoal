@@ -136,3 +136,163 @@ def get_path_string(path):
         for node_step in path
     ]
     return "->".join(path_strings)
+
+
+class HyperoptStopException(RuntimeError):
+    """ Class for signaling a forced Hyperopt stop 
+    """
+
+    ...
+
+
+class HyperoptSearch:
+    def __init__(
+        self,
+        generator_fn=None,
+        fitness_fn=None,
+        search_registry=None,
+        algorithm=tpe.suggest,
+        maximize=True,
+        errors="raise",
+        early_stop=0.5,
+        evaluation_timeout: int = 10 * Sec,
+        memory_limit: int = 4 * Gb,
+        search_timeout: int = 5 * Min,
+        target_fn=None,
+        allow_duplicates=True,
+        random_state=None,
+    ):
+
+        self._generator_fn = generator_fn
+        self._fitness_fn = fitness_fn
+        self._registry = search_registry
+        self._maximize = maximize
+        self._errors = errors
+        self._evaluation_timeout = evaluation_timeout
+        self._memory_limit = memory_limit
+        self._early_stop = early_stop
+        self._search_timeout = search_timeout
+        self._target_fn = target_fn
+        self._allow_duplicates = allow_duplicates
+        self._logger = None
+        self._algo = algorithm
+
+        if self._evaluation_timeout > 0 or self._memory_limit > 0:
+            self._fitness_fn = RestrictedWorkerByJoin(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            )
+
+    def _hyperopt_fitness(self, args):
+
+        try:
+            self._logger.start_generation(self.eval_number, self.best_fn)
+            self.eval_number += 1
+            fns = []
+
+            improvement = False
+
+            try:
+                formatted_args = format_hyperopt_args(args)
+                solution = self._generator_fn(ExactSampler(formatted_args))
+            except Exception as e:
+                self._logger.error("Error while generating solution: %s" % e, args)
+                return {"status": STATUS_FAIL, "loss": math.inf}
+
+            if not self._allow_duplicates and repr(solution) in self.seen:
+                return {"status": STATUS_OK, "loss": self.seen[repr(solution)]}
+
+            try:
+                self._logger.sample_solution(solution)
+                fn = self._fitness_fn(solution)
+            except Exception as e:
+                fn = -math.inf if self._maximize else math.inf
+                self._logger.error(e, solution)
+
+                if self._errors == "raise":
+                    self._logger.end(self.best_solution, self.best_fn)
+                    raise e from None
+
+            if not self._allow_duplicates:
+                self.seen[repr(solution)] = fn
+
+            self._logger.eval_solution(solution, fn)
+            fns.append(fn)
+
+            if (
+                self.best_fn is None
+                or (fn > self.best_fn and self._maximize)
+                or (fn < self.best_fn and not self._maximize)
+            ):
+                self._logger.update_best(solution, fn, self.best_solution, self.best_fn)
+                self.best_solution = solution
+                self.best_fn = fn
+                self.improvement = True
+
+                if self._target_fn and self.best_fn >= self._target_fn:
+                    raise HyperoptStopException("Target value achieved")
+
+            if not improvement:
+                self.no_improvement += 1
+            else:
+                self.no_improvement = 0
+
+            self._logger.finish_generation(fns)
+            loss = -fn if self._maximize else fn
+            return {"status": STATUS_OK, "loss": loss}
+        except KeyboardInterrupt:
+            pass
+
+    def run(self, generations=None, logger=None):
+        """Runs the search performing at most `generations` of `fitness_fn`.
+
+        Returns:
+            Tuple `(best, fn)` of the best found solution and its corresponding fitness.
+        """
+        if logger is not None:
+            if isinstance(logger, list):
+                self._logger = MultiLogger(*logger)
+            else:
+                self._logger = logger
+
+        if generations is None:
+            generations = math.inf
+
+        if isinstance(self._early_stop, float):
+            early_stop = int(self._early_stop * generations)
+        else:
+            early_stop = self._early_stop
+
+        early_stop_fn = no_progress_loss(early_stop) if early_stop is not None else None
+
+        self.best_solution = None
+        self.best_fn = None
+        self.no_improvement = 0
+        self.start_time = time.time()
+        self.seen = {}
+        self.eval_number = 0
+
+        hp_space = self._generator_fn
+        if type(self._generator_fn) == PipelineSpace:
+            hp_space = pipeline_space_to_hp_space(self._generator_fn, [])
+        if type(self._generator_fn) == ContextFreeGrammar:
+            hp_space = cfg_to_hp_space(self._generator_fn)
+
+        self._logger.begin(generations, 1)
+        solution = None
+        try:
+            best_args = fmin(
+                self._hyperopt_fitness,
+                hp_space,
+                self._algo,
+                generations,
+                self._search_timeout,
+                early_stop_fn=early_stop_fn,
+                show_progressbar=False,
+            )
+            best_args = format_hyperopt_args(space_eval(hp_space, best_args))
+            solution = self._generator_fn.sample(sampler=ExactSampler(best_args))
+        except KeyboardInterrupt:
+            pass
+
+        self._logger.end(solution, self.best_fn)
+        return solution, self.best_fn
