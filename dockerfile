@@ -15,3 +15,4 @@ ADD . /home/coder/autogoal
 WORKDIR /home/coder/autogoal
 
 RUN pip3 install pytesseract
+RUN pip3 install cdifflib
