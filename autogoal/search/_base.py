@@ -106,7 +106,7 @@ class SearchAlgorithm:
                         logger.sample_solution(solution)
                         fn = self._fitness_fn(solution)
                     except Exception as e:
-                        fn = 0.0
+                        fn = -math.inf if self._maximize else math.inf
                         logger.error(e, solution)
 
                         if self._errors == "raise":
