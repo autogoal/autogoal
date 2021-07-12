@@ -213,7 +213,7 @@ class BiLSTMClassifier(KerasSentenceClassifier):
         self.dense_layers = int(dense_layers)
         self.dense_layer_size = int(dense_layer_size)
         self.dense_layer_activation = dense_layer_activation
-        super().__init__(optimizer)
+        super().__init__(optimizer, embedding=embedding, padding_type=padding_type)
 
     def build_model(self, n_classes):
         self.model = Sequential()
