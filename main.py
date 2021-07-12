@@ -7,6 +7,7 @@ from autogoal.contrib.nltk import (
     TreebankWordTokenizer,
     BlanklineTokenizer,
     Doc2Vec,
+    StopwordRemover,
 )
 from autogoal.contrib.wrappers import (
     MatrixBuilder,
@@ -62,21 +63,17 @@ single_registry = [
     WhitespaceTokenizer,
     Word2VecSmallEmbedding,
     MatrixBuilder,
-    TensorBuilder,
-    LSTMClassifier,
-    # LinearSVC,
-    # VectorColumnAggregator,
+    LinearSVC,
+    VectorColumnAggregator,
 ]
 
 small_registry = [
     # Tokenizers
-    PunktSentenceTokenizer,
     WordPunctTokenizer,
-    TreebankWordTokenizer,
+    StopwordRemover,
     WhitespaceTokenizer,
     # Embeddings
     Word2VecEmbedding,
-    BertEmbedding,
     # Models
     LSTMClassifier,
     BiLSTMClassifier,
@@ -114,7 +111,7 @@ large_registry = [
 ]
 
 
-registries = {"single": single_registry}
+registries = {"single": single_registry, "small": small_registry}
 
 registry = registries[args.registry]
 
@@ -163,7 +160,7 @@ classifier = AutoML(
 )
 
 # Initializing loggers
-
+telegram_logger = None
 memory = MemoryLogger()
 loggers = [ProgressLogger(), ConsoleLogger(), memory]
 if args.telegramfile is not None:
@@ -188,6 +185,11 @@ print("\nBEST EVALUATION EPOCH:")
 print(memory.generation_best_fn)
 print("\nMEAN EVALUATION EPOCH:")
 print(memory.generation_mean_fn)
+
+if telegram_logger is not None:
+    telegram_logger.send_message(f"FINISHED {run_name}")
+    telegram_logger.send_message("Score: " + str(score))
+    telegram_logger.send_message("Solution:\n" + repr(classifier.best_pipeline_))
 
 data = {
     "score": score,

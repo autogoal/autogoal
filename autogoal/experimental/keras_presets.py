@@ -206,6 +206,8 @@ class BiLSTMClassifier(KerasSentenceClassifier):
             "softsign",
             "tanh",
         ),
+        embedding: algorithm(Word, VectorContinuous, always_include=[Word2VecRandom]),
+        padding_type: CategoricalValue("Max", "Min", "Mean", "Min2Mean", "Mean2Max"),
     ) -> None:
         self.lstm_size = int(lstm_size)
         self.dense_layers = int(dense_layers)
@@ -213,15 +215,26 @@ class BiLSTMClassifier(KerasSentenceClassifier):
         self.dense_layer_activation = dense_layer_activation
         super().__init__(optimizer)
 
-    def build_model(self, shape, n_classes):
+    def build_model(self, n_classes):
         self.model = Sequential()
-        self.model.add(Bidirectional(LSTM(self.lstm_size, input_shape=shape[-2:])))
+        self.model.add(
+            Embedding(
+                self.vocab_size,
+                self.init_weights.shape[-1],
+                weights=[self.init_weights],
+            )
+        )
+        self.model.add(Bidirectional(LSTM(self.lstm_size)))
         for _ in range(self.dense_layers):
             self.model.add(
                 Dense(self.dense_layer_size, activation=self.dense_layer_activation)
             )
         self.model.add(Dense(n_classes, activation="softmax"))
-        self.model.compile(optimizer="adam", loss="mse")
+        self.model.compile(
+            loss="sparse_categorical_crossentropy",
+            optimizer="adam",
+            metrics=["accuracy"],
+        )
 
 
 @nice_repr

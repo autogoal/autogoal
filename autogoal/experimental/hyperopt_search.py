@@ -16,6 +16,8 @@ from autogoal.grammar._cfg import (
 from autogoal.kb._algorithm import PipelineSpace
 from autogoal.utils import RestrictedWorkerByJoin, Min, Gb, Sec
 from autogoal.search._base import MultiLogger
+import uuid
+import re
 
 ALGORITHM_CHOICE_HANDLE = "__CHOICE__"
 
@@ -28,8 +30,9 @@ def cfg_to_hp_space(cfg: ContextFreeGrammar):
 
 
 def _cfg_to_hp_space(cfg, symbol=None, choice_ref=None):
+    label_id = f"[{str(uuid.uuid4())}]"
     start: Symbol = cfg._start if symbol is None else symbol
-    node_name = start.name
+    node_name = label_id + start.name
     grammar_node = cfg[start]
     if type(grammar_node) == Distribution:
         ditribution_name = grammar_node.name
@@ -79,6 +82,7 @@ def format_hyperopt_args(args: Dict) -> Dict:
         if type(value) == type(dict()):
             new_args = {**new_args, **format_hyperopt_args(value)}
         else:
+            key = re.sub("^\\[.*?\\]", "", key)
             if key.startswith(ALGORITHM_CHOICE_HANDLE):
                 # anything would do, we're just interested in the key here.
                 new_args[value] = True

@@ -24,6 +24,13 @@ class TelegramLogger(Logger):
             parse_mode=ParseMode.MARKDOWN,
         )
 
+    def send_message(self, msg, escape=False):
+        if escape:
+            msg = escape_markdown(msg)
+        self.dispatcher.bot.send_message(
+            chat_id=self.channel, text=msg, parse_mode=ParseMode.MARKDOWN,
+        )
+
     def begin(self, generations, pop_size):
         self.generations = generations
         self.init_time = time.time()
