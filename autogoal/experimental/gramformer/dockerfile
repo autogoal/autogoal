@@ -6,5 +6,4 @@ RUN pip install -U pip3 install -U git+https://github.com/PrithivirajDamodaran/G
 WORKDIR /home/coder/autogoal
 
 COPY . /home/coder/autogoal/autogoal/expermiental/
-
 CMD ['ls', '/home/coder/autogoal/autogoal/experimental']
