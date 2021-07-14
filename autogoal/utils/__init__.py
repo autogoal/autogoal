@@ -8,6 +8,10 @@ MAX_REPR_DEPTH = 10
 _repr_depth = [0]
 
 
+class PreemptiveStopException(ValueError):
+    pass
+
+
 def nice_repr(cls):
     """
     A decorator that adds a nice `repr(.)` to any decorated class.

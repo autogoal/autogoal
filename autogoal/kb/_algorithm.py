@@ -272,7 +272,7 @@ class Pipeline:
 
         return data[self.algorithms[-1].output_type()]
 
-    def send(self, msg: str, *args, **kwargs):
+    def send(self, msg: str, *args, warn_not_found=True, **kwargs):
         found = False
 
         for step in self.algorithms:
@@ -283,7 +283,7 @@ class Pipeline:
                 step.send(msg, *args, **kwargs)
                 found = True
 
-        if not found:
+        if not found and warn_not_found:
             warnings.warn(f"No step answered message {msg}.")
 
 

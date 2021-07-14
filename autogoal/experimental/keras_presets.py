@@ -1,7 +1,8 @@
-from autogoal.utils import nice_repr
+from autogoal.utils import nice_repr, PreemptiveStopException
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Bidirectional, Embedding
-from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN, Callback
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from autogoal.contrib.gensim import Word2VecRandom
 
@@ -16,6 +17,60 @@ from autogoal.kb import (
 )
 from autogoal.grammar import CategoricalValue, DiscreteValue
 import numpy as np
+import time
+
+KERAS_TIMEOUT = None
+
+
+def set_keras_timeout_data(timeout, min_epochs, cross_validation_steps):
+    global KERAS_TIMEOUT
+    KERAS_TIMEOUT = {
+        "timeout": timeout,
+        "min_epochs": min_epochs,
+        "cross_validation_steps": cross_validation_steps,
+    }
+
+
+class PreemptiveTimeout(Callback):
+    def __init__(self, timeout, init_time):
+        self.timeout_data = timeout
+        self.fit_init_time = init_time
+        self.callback_init_time = time.time()
+        self.prep_time = self.callback_init_time - self.fit_init_time
+
+    def on_epoch_end(self, epoch, logs={}):
+        if self.timeout_data != None:
+            # Getting total time and time from starting the callback
+            total_time = time.time() - self.fit_init_time
+            callback_time = time.time() - self.callback_init_time
+
+            # Read timeout_data
+            timeout = self.timeout_data["timeout"]
+            min_evals = self.timeout_data["min_epochs"]
+            cross_validation_steps = self.timeout_data["cross_validation_steps"]
+
+            # define max times
+            max_epoch_time = (timeout - self.prep_time) / (
+                min_evals * cross_validation_steps
+            )
+            max_eval_time = timeout / cross_validation_steps
+
+            # First epoch tends to be a bit slower, hence the special case for it
+            epoch_mean_time = (
+                callback_time / (epoch + 1)
+                if epoch is not 0
+                else (callback_time * 1.1) / (epoch + 1)
+            )
+
+            if epoch_mean_time > max_epoch_time:
+                raise PreemptiveStopException(
+                    f"Preemptive stop: mean epoch time of {epoch_mean_time} is higher than expected {max_epoch_time}"
+                )
+
+            if total_time > max_eval_time:
+                raise PreemptiveStopException(
+                    f"Preemptive stop: total evaluation time of {total_time} is higher than expected {max_eval_time}"
+                )
 
 
 class KerasSentenceClassifier(AlgorithmBase):
@@ -43,6 +98,7 @@ class KerasSentenceClassifier(AlgorithmBase):
         self.model = None
         self.vocab_size = 2
         self.word2index = {self.pad: 0, self.oov: 1}
+        self._timeout_data = KERAS_TIMEOUT
 
     def run(
         self, X: Seq[Seq[Word]], y: Supervised[VectorCategorical]
@@ -59,10 +115,14 @@ class KerasSentenceClassifier(AlgorithmBase):
     def eval(self,):
         self._mode = "eval"
 
+    def disable_preemptive_stop(self,):
+        self._timeout_data = None
+
     def build_model(self, n_classes):
         pass
 
     def fit(self, X, y):
+        self._init_time = time.time()
         seqs = self.build_sequences(X, True)
         self.build_model(len(set(y)))
 
@@ -74,6 +134,7 @@ class KerasSentenceClassifier(AlgorithmBase):
             callbacks=[
                 EarlyStopping(patience=self._early_stop, restore_best_weights=True),
                 TerminateOnNaN(),
+                PreemptiveTimeout(self._timeout_data, self._init_time),
             ],
             validation_split=self._validation_split,
             verbose=1,

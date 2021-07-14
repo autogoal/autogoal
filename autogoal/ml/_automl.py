@@ -8,7 +8,8 @@ from autogoal.contrib import find_classes
 from autogoal.kb import build_pipeline_graph, SemanticType
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
-from autogoal.utils import nice_repr
+from autogoal.utils import PreemptiveStopException, nice_repr
+import time
 
 
 @nice_repr
@@ -35,7 +36,7 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
-        **search_kwargs
+        **search_kwargs,
     ):
         self.input = input
         self.output = output
@@ -93,6 +94,7 @@ class AutoML:
         self._check_fitted()
 
         self.best_pipeline_.send("train")
+        self.best_pipeline_.send("disable_preemptive_stop", warn_not_found=False)
         self.best_pipeline_.run(X, y)
         self.best_pipeline_.send("eval")
 
@@ -132,10 +134,16 @@ class AutoML:
     def make_fitness_fn(self, X, y):
         y = np.asarray(y)
 
-        def fitness_fn(pipeline):
+        def fitness_fn(pipeline, timeout=None):
             scores = []
-
-            for _ in range(self.cross_validation_steps):
+            init_time = time.time()
+            max_step_time = timeout / self.cross_validation_steps
+            for step in range(self.cross_validation_steps):
+                mean_step_time = (time.time() - init_time) / max(step, 1)
+                if step != 0 and mean_step_time > max_step_time:
+                    raise PreemptiveStopException(
+                        f"Preemptive stop: mean validation step time of {mean_step_time} is higher than expected {mean_step_time}"
+                    )
                 len_x = (
                     len(X)
                     if isinstance(X, list) or isinstance(X, tuple)

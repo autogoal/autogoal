@@ -104,7 +104,9 @@ class SearchAlgorithm:
 
                     try:
                         logger.sample_solution(solution)
-                        fn = self._fitness_fn(solution)
+                        fn = self._fitness_fn(
+                            solution, timeout=self._evaluation_timeout
+                        )
                     except Exception as e:
                         fn = -math.inf if self._maximize else math.inf
                         logger.error(e, solution)
@@ -373,6 +375,7 @@ class RichLogger(Logger):
 
 class MemoryLogger(Logger):
     def __init__(self):
+        self.evals = []
         self.generation_best_fn = [0]
         self.generation_mean_fn = []
 
@@ -386,6 +389,9 @@ class MemoryLogger(Logger):
             mean = 0
         self.generation_mean_fn.append(mean)
         self.generation_best_fn.append(self.generation_best_fn[-1])
+
+    def eval_solution(self, solution, fitness):
+        self.evals.append(fitness)
 
 
 class MultiLogger(Logger):

@@ -207,7 +207,7 @@ class HyperoptSearch:
 
             try:
                 self._logger.sample_solution(solution)
-                fn = self._fitness_fn(solution)
+                fn = self._fitness_fn(solution, timeout=self._evaluation_timeout)
             except Exception as e:
                 fn = -math.inf if self._maximize else math.inf
                 self._logger.error(e, solution)

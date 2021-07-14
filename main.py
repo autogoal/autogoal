@@ -35,6 +35,7 @@ from autogoal.experimental.keras_presets import (
     LSTMClassifier,
     StackedBiLSTMClassifier,
     StackedLSTMClassifier,
+    set_keras_timeout_data,
 )
 from autogoal.contrib.transformers import BertEmbedding, BertTokenizeEmbedding
 
@@ -171,6 +172,8 @@ if args.telegramfile is not None:
         )
         loggers.append(telegram_logger)
 
+
+set_keras_timeout_data(30 * Min, 4, 2)
 
 # Fitting the  classifier and evaluating the final score
 classifier.fit(X_train, y_train, logger=loggers)
