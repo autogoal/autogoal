@@ -1,9 +1,11 @@
 FROM docker.uclv.cu/autogoal/autogoal
 
 RUN sudo apt update
-RUN pip install -U pip3 install -U git+https://github.com/PrithivirajDamodaran/Gramformer.git
+RUN pip3 install -U git+https://github.com/PrithivirajDamodaran/Gramformer.git
 
 WORKDIR /home/coder/autogoal
 
 COPY . /home/coder/autogoal/autogoal/expermiental/
 CMD ['ls', '/home/coder/autogoal/autogoal/experimental']
+
+CMD ['python', 'gramformer/test_gramformer.py']
