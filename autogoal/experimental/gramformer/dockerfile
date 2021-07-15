@@ -8,4 +8,4 @@ WORKDIR /home/coder/autogoal
 COPY . /home/coder/autogoal/autogoal/expermiental/
 CMD ['ls', '/home/coder/autogoal/autogoal/experimental']
 
-CMD ['python', 'gramformer/test_gramformer.py']
+CMD [ "python", "-m", "pytest", "autogoal/expermiental/gramformer/test_gramformer.py" ]
