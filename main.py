@@ -150,7 +150,7 @@ X_train, y_train, X_test, y_test = dataset.load()
 classifier = AutoML(
     output=VectorCategorical,
     search_algorithm=search,
-    evaluation_timeout=30 * Min,
+    evaluation_timeout=max_time,
     search_timeout=None,
     memory_limit=14 * Gb,
     registry=registry,
@@ -189,11 +189,6 @@ print(memory.generation_best_fn)
 print("\nMEAN EVALUATION EPOCH:")
 print(memory.generation_mean_fn)
 
-if telegram_logger is not None:
-    telegram_logger.send_message(f"FINISHED {run_name}")
-    telegram_logger.send_message("Score: " + str(score))
-    telegram_logger.send_message("Solution:\n" + repr(classifier.best_pipeline_))
-
 data = {
     "score": score,
     "solution": repr(classifier.best_pipeline_),
@@ -203,3 +198,8 @@ data = {
 
 with open(f"{run_name}_result.p", "wb") as file:
     pickle.dump(data, file)
+
+if telegram_logger is not None:
+    telegram_logger.send_message(f"FINISHED {run_name}", True)
+    telegram_logger.send_message("Score: " + str(score), True)
+    telegram_logger.send_message("Solution:\n" + repr(classifier.best_pipeline_), True)

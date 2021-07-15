@@ -530,7 +530,7 @@ def build_pipeline_graph(
                 algorithm.output_type() in guaranteed_types
                 and
                 # ... unless it is an idempotent algorithm
-                [algorithm.output_type()] != algorithm.input_types()
+                tuple([algorithm.output_type()]) != algorithm.input_types()
             ):
                 continue
 
