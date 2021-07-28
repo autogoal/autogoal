@@ -138,6 +138,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "leynier",
+      "name": "Leynier Gutiérrez González",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36774373?v=4",
+      "profile": "http://leynier.github.io",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
