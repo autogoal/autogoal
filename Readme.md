@@ -153,7 +153,7 @@ These are our consistency rules:
 
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
 
-- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
+- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AutoGOAL.
 - [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
 - [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
