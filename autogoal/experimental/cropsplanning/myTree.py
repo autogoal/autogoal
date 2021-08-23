@@ -1,15 +1,15 @@
-# from numba import jitclass, types, typed
+from numba import jitclass, types, typed
 
-# spec = [('_data_set', types.ListType(types.int64)),
-#         ('_data_set_position_occupied', types.int64),
-#         ('_number_of_children', types.int64),
-#         ('_node_data_size', types.int64)]
+spec = [('_data_set', types.ListType(types.int64)),
+        ('_data_set_position_occupied', types.int64),
+        ('_number_of_children', types.int64),
+        ('_node_data_size', types.int64)]
 
 
-# @jitclass(spec)
+@jitclass(spec)
 class myTree:
     def __init__(self, n_size, number_of_children, node_data_size):
-        self._data_set = []
+        self._data_set = typed.List.empty_list(types.int64)
         for i in range(n_size):
             self._data_set.append(-1)
         self._data_set[0] = -55
