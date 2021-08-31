@@ -1,6 +1,9 @@
 # Ignore system files:
 *.DS_Store
 
+# Ignore Translation Models:
+autogoal/experimental/translator/data/*
+
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
 # Created by https://www.gitignore.io/api/visualstudiocode,linux,python
