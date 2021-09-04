@@ -74,7 +74,6 @@ class AutoML:
     def fit(self, X, y, **kwargs):
         self.input = self._input_type(X)
         self.output = self._output_type(y)
-        #print('input: ' + str(self.input))
         
         search = self.search_algorithm(
             self.make_pipeline_builder(),

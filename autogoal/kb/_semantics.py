@@ -116,11 +116,6 @@ def _reduce_semantic_type(t):
 
 copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
 
-# class Algorithm(SemanticType):
-#     @classmethod
-#     def _match(cls, x):
-#         print('jaja')
-#         return SemanticType.infer(cls) == Algorithm
 
 # Let's start with the natural language hierarchy.
 
@@ -463,11 +458,7 @@ class Tensor(SemanticType):
         return TensorImp
 
 
-# class Algorithm(SemanticType):
-#     @classmethod
-#     def _match(cls,x):
-#         #print('class: ',str(cls))
-#         return isinstance(x,type)
+
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
