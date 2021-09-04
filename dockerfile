@@ -68,5 +68,4 @@ RUN mkdir -p /home/coder/.autogoal/data && chown coder:coder /home/coder/.autogo
 COPY ./ /home/coder/autogoal
 
 RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
-
 CMD [ "python", "-m", "autogoal", "demo" ]

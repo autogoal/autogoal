@@ -57,6 +57,8 @@ def algorithm(*annotations):
     from autogoal.grammar import Union, Symbol
 
     *inputs, output = annotations
+    #print('inputs: ' + str(inputs))
+    #print('output: ' + str(output))
 
     def match(cls):
         if not hasattr(cls, "run"):
@@ -86,9 +88,13 @@ def algorithm(*annotations):
 
     @classmethod
     def generate_cfg(cls, grammar, head):
+        #print('class: '+ str(cls))
+        #print('grammar: ' + str(grammar))
+        #print('head' + str(head))
         symbol = head or Symbol(cls.__name__)
+        
         compatible = []
-
+        
         for _, other_cls in grammar.namespace.items():
             if cls.is_compatible(other_cls):
                 compatible.append(other_cls)
@@ -97,12 +103,13 @@ def algorithm(*annotations):
             raise ValueError(
                 f"Cannot find any suitable implementation of algorithms with inputs: {inputs} and output: {output}"
             )
-
+            
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
     def build(ns):
         ns["generate_cfg"] = generate_cfg
         ns["is_compatible"] = is_compatible
+        
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 

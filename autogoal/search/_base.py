@@ -57,7 +57,7 @@ class SearchAlgorithm:
         """
         if logger is None:
             logger = Logger()
-
+        
         if generations is None:
             generations = math.inf
 
@@ -174,6 +174,7 @@ class SearchAlgorithm:
             pass
 
         logger.end(best_solution, best_fn)
+        
         return best_solution, best_fn
 
     def _generate(self):

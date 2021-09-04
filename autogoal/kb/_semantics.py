@@ -95,7 +95,7 @@ class SemanticType(metaclass=SemanticTypeMeta):
         """
         types = inspect.getmembers(inspect.getmodule(SemanticType), inspect.isclass)
         best_type = SemanticType
-
+        
         for _, t in types:
             if isinstance(x, t) and issubclass(t, best_type):
                 best_type = t
@@ -116,6 +116,11 @@ def _reduce_semantic_type(t):
 
 copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
 
+# class Algorithm(SemanticType):
+#     @classmethod
+#     def _match(cls, x):
+#         print('jaja')
+#         return SemanticType.infer(cls) == Algorithm
 
 # Let's start with the natural language hierarchy.
 
@@ -234,9 +239,11 @@ class Seq(SemanticType):
     """
 
     __internal_types = {}
+    
 
     @classmethod
     def _specialize(cls, internal_type: Type[SemanticType]):
+        
         try:
             return Seq.__internal_types[internal_type]
         except KeyError:
@@ -456,10 +463,17 @@ class Tensor(SemanticType):
         return TensorImp
 
 
+# class Algorithm(SemanticType):
+#     @classmethod
+#     def _match(cls,x):
+#         #print('class: ',str(cls))
+#         return isinstance(x,type)
+
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
 # but keep in mind that anywhere we use `Vector` we just as well use `Tensor[1, None, None]`,
 # as they are *exactly* the same class.
+
 
 Vector = Tensor[1, None, None]
 VectorContinuous = Tensor[1, Continuous, None]
@@ -482,6 +496,7 @@ Tensor4 = Tensor[4, Continuous, Dense]
 
 __all__ = [
     "SemanticType",
+    
     "Seq",
     "Text",
     "Document",

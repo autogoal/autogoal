@@ -74,7 +74,8 @@ class AutoML:
     def fit(self, X, y, **kwargs):
         self.input = self._input_type(X)
         self.output = self._output_type(y)
-
+        #print('input: ' + str(self.input))
+        
         search = self.search_algorithm(
             self.make_pipeline_builder(),
             self.make_fitness_fn(X, y),
@@ -82,11 +83,11 @@ class AutoML:
             errors=self.errors,
             **self.search_kwargs,
         )
-
+        
         self.best_pipeline_, self.best_score_ = search.run(
             self.search_iterations, **kwargs
         )
-
+        
         self.fit_pipeline(X, y)
 
     def fit_pipeline(self, X, y):
@@ -119,7 +120,7 @@ class AutoML:
 
     def score(self, X, y):
         self._check_fitted()
-
+        
         y_pred = self.best_pipeline_.run(X, np.zeros_like(y))
         return self.score_metric(y, y_pred)
 
@@ -131,10 +132,10 @@ class AutoML:
 
     def make_fitness_fn(self, X, y):
         y = np.asarray(y)
-
+        
         def fitness_fn(pipeline):
             scores = []
-
+            
             for _ in range(self.cross_validation_steps):
                 len_x = len(X) if isinstance(X, list) else X.shape[0]
                 indices = np.arange(0, len_x)
@@ -157,7 +158,7 @@ class AutoML:
                         X[test_indices],
                         y[test_indices],
                     )
-
+                
                 pipeline.send("train")
                 pipeline.run(X_train, y_train)
                 pipeline.send("eval")
