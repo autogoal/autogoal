@@ -4,7 +4,9 @@ import abc
 import types
 import warnings
 from typing import Any, Dict, List, Set, Tuple, Type
+from pathlib import Path
 import types
+import pickle
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -227,6 +229,28 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
+
+def save(self, path: Path):
+    """
+    Serializes the Algorithm  instance.
+    """
+    fd = open(path / "model.bin","wb")
+    pickle.Pickler(fd).dump(self)
+    fd.close()
+
+@classmethod
+def load(self, path: Path) -> "AlgorithmBase":
+    """
+    Deserializes an Algorithm instance. 
+    """
+    fd = open(path / "model.bin", "rb")
+    algorithm = pickle.Unpickler(fd).load()
+    fd.close()
+
+    if not isinstance(algorithm, AlgorithmBase):
+        raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+
+    return algorithm
 
 
 @nice_repr
