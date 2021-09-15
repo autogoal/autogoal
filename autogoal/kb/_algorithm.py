@@ -242,7 +242,7 @@ def load(self, path: Path) -> "AlgorithmBase":
     """
     Deserializes an Algorithm instance. 
     """
-    with open(path / "model.bin", "rb"):
+    with open(path / "model.bin", "rb") as fd:
 
         algorithm = pickle.Unpickler(fd).load()
 
