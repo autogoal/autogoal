@@ -234,23 +234,22 @@ def save(self, path: Path):
     """
     Serializes the Algorithm  instance.
     """
-    fd = open(path / "model.bin","wb")
-    pickle.Pickler(fd).dump(self)
-    fd.close()
+    with open(path / "model.bin","wb") as fd:
+        pickle.Pickler(fd).dump(self)
 
 @classmethod
 def load(self, path: Path) -> "AlgorithmBase":
     """
     Deserializes an Algorithm instance. 
     """
-    fd = open(path / "model.bin", "rb")
-    algorithm = pickle.Unpickler(fd).load()
-    fd.close()
+    with open(path / "model.bin", "rb"):
 
-    if not isinstance(algorithm, AlgorithmBase):
-        raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+        algorithm = pickle.Unpickler(fd).load()
 
-    return algorithm
+        if not isinstance(algorithm, AlgorithmBase):
+            raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+
+        return algorithm
 
 
 @nice_repr
