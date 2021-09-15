@@ -3,6 +3,8 @@ import inspect
 import abc
 import types
 import warnings
+import yaml
+import glob
 from typing import Any, Dict, List, Set, Tuple, Type
 from pathlib import Path
 import types
@@ -433,6 +435,27 @@ class PipelineNode:
 
     def __hash__(self) -> int:
         return hash(repr(self))
+
+    def save(self, path: Path):
+        self._save_config(path)
+        self.algorithm.save(path)
+
+    @classmethod
+    def load(path: Path):
+        pipeLineNode = PipelineNode._load_config(path)
+        pipeLineNode.algorithm = AlgorithmBase.load(path)
+
+    def _save_config(self, path: Path):
+        newPipelineNode = PipelineNode(None, self.input_types, self.output_types)
+        newPipelineNode.grammar = self.grammar
+        with open(Path / f"{self.__name__}_config.yaml", "w") as fd:
+            yaml.dump(newPipelineNode, fd)
+
+    @classmethod
+    def _load_config(path: Path):
+        conf = path.glob("*.yaml")[0]
+        with open(conf, "r") as fd:
+            return yaml.load(fd)
 
 
 class PipelineSpace(GraphSpace):
