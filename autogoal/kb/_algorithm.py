@@ -198,6 +198,27 @@ class AlgorithmBase(Algorithm):
 
         return inspect.signature(cls.run).return_annotation
 
+    def save(self, path: Path):
+        """
+        Serializes the Algorithm  instance.
+        """
+        with open(path / "model.bin","wb") as fd:
+            pickle.Pickler(fd).dump(self)
+
+    @classmethod
+    def load(self, path: Path) -> "AlgorithmBase":
+        """
+        Deserializes an Algorithm instance. 
+        """
+        with open(path / "model.bin", "rb") as fd:
+
+            algorithm = pickle.Unpickler(fd).load()
+
+            if not isinstance(algorithm, AlgorithmBase):
+                raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+
+            return algorithm
+
 
 def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
     """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
@@ -229,28 +250,6 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
-
-def save(self, path: Path):
-    """
-    Serializes the Algorithm  instance.
-    """
-    with open(path / "model.bin","wb") as fd:
-        pickle.Pickler(fd).dump(self)
-
-@classmethod
-def load(self, path: Path) -> "AlgorithmBase":
-    """
-    Deserializes an Algorithm instance. 
-    """
-    with open(path / "model.bin", "rb") as fd:
-
-        algorithm = pickle.Unpickler(fd).load()
-
-        if not isinstance(algorithm, AlgorithmBase):
-            raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
-
-        return algorithm
-
 
 @nice_repr
 class Pipeline:
