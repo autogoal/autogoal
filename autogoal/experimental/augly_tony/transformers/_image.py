@@ -58,7 +58,7 @@ class BrightnessTransformer(AugLyImageTransformer):
 
     def __init__(
         self,
-        factor: ContinuousValue(-10, 10),
+        factor: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.factor = factor
@@ -112,9 +112,9 @@ class ColorJitterTransformer(AugLyImageTransformer):
 
     def __init__(
         self,
-        brightness_factor: ContinuousValue(-5, 5),
-        contrast_factor: ContinuousValue(-5, 5),
-        saturation_factor: ContinuousValue(-5, 5),
+        brightness_factor: ContinuousValue(0, 100),
+        contrast_factor:  ContinuousValue(0, 100),
+        saturation_factor: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.brightness_factor = brightness_factor
@@ -134,7 +134,7 @@ class ContrastTransformer(AugLyImageTransformer):
     Alters the contrast of the image
     """
 
-    def __init__(self, factor: ContinuousValue(-5, 5)):
+    def __init__(self, factor: ContinuousValue(0, 100)):
         super().__init__()
         self.factor = factor
 
@@ -425,7 +425,7 @@ class PerspectiveTransformTransformer(AugLyImageTransformer):
 
     def __init__(
         self,
-        sigma: ContinuousValue(0, 1000),
+        sigma: ContinuousValue(0, 100),
         dx: ContinuousValue(0, 1),
         dy: ContinuousValue(0, 1),
     ):
@@ -514,7 +514,7 @@ class SaturationTransformer(AugLyImageTransformer):
 
     def __init__(
         self,
-        factor: ContinuousValue(-10, 10),
+        factor: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.factor = factor
@@ -530,7 +530,7 @@ class ScaleTransformer(AugLyImageTransformer):
 
     def __init__(
         self,
-        factor: ContinuousValue(-10, 10),
+        factor: ContinuousValue(0, 100),
         interpolation: CategoricalValue(
             PIL.Image.NEAREST,
             PIL.Image.BOX,
@@ -553,7 +553,7 @@ class SharpenTransformer(AugLyImageTransformer):
     Alters the sharpness of an image
     """
 
-    def __init__(self, factor: ContinuousValue(-10, 10)):
+    def __init__(self, factor: ContinuousValue(0, 100)):
         super().__init__()
         self.factor = factor
 
@@ -569,7 +569,7 @@ class ShufflePixelsTransformer(AugLyImageTransformer):
     due to the probability of pixels staying in place in the course of shuffling
     """
 
-    def __init__(self, factor: ContinuousValue(-10, 10)):
+    def __init__(self, factor: ContinuousValue(0, 100)):
         super().__init__()
         self.factor = factor
 
