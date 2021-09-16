@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Set, Tuple, Type
 from pathlib import Path
 import types
 import pickle
+import os
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -307,13 +308,18 @@ class Pipeline:
 
     def _save_config(self, path: Path):
         newPipeline = Pipeline(None, self.input_types)
-        with open(Path / f"{self.__name__}_config.yaml", "w") as fd:
+        with open(path / "pipeline_config.yaml", "w") as fd:
             yaml.dump(newPipeline, fd)
+
+        for i,algoritm in enumerate(self.algorithms):
+            os.mkdir(path / i)
+            algoritm.save(path / i)
+            
 
     @classmethod
     def _load_config(path: Path):
-        conf = path.glob("*.yaml")[0]
-        with open(conf, "r") as fd:
+        # conf = path.glob("*.yaml")[0]
+        with open(path / "pipeline_config.yaml", "r") as fd:
             return yaml.load(fd)
 
 
