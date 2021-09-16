@@ -295,6 +295,27 @@ class Pipeline:
         if not found:
             warnings.warn(f"No step answered message {msg}.")
 
+    
+    def save(self, path: Path):
+        self._save_config(path)
+        self.algorithm.save(path)
+
+    @classmethod
+    def load(path: Path):
+        pipeLine = Pipeline._load_config(path)
+        pipeLine.algorithm = AlgorithmBase.load(path)
+
+    def _save_config(self, path: Path):
+        newPipeline = Pipeline(None, self.input_types)
+        with open(Path / f"{self.__name__}_config.yaml", "w") as fd:
+            yaml.dump(newPipeline, fd)
+
+    @classmethod
+    def _load_config(path: Path):
+        conf = path.glob("*.yaml")[0]
+        with open(conf, "r") as fd:
+            return yaml.load(fd)
+
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
