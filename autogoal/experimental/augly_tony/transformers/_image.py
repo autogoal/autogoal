@@ -228,6 +228,7 @@ class HFlipTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.HFlip()
 
+
 class VFlipTransformer(AugLyImageTransformer):
     """
     Vertically flips an image
@@ -409,8 +410,8 @@ class PadSquareTransformer(AugLyImageTransformer):
     """
 
     def __init__(self, color: ContinuousValue(0, 0xFFFFFF)):
-        self.color = color
         super().__init__()
+        self.color = color
 
     def get_transformer(self) -> BaseTransform:
         return transforms.PadSquare(color=self.color)
@@ -428,10 +429,10 @@ class PerspectiveTransformTransformer(AugLyImageTransformer):
         dx: ContinuousValue(0, 1),
         dy: ContinuousValue(0, 1),
     ):
+        super().__init__()
         self.sigma = sigma
         self.dx = dx
         self.dy = dy
-        super().__init__()
 
     def get_transformer(self) -> BaseTransform:
         return transforms.PerspectiveTransform(
@@ -447,8 +448,8 @@ class PixelizationTransformer(AugLyImageTransformer):
     """
 
     def __init__(self, ratio: ContinuousValue(0, 10)):
-        self.ratio = ratio
         super().__init__()
+        self.ratio = ratio
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Pixelization(ratio=self.ratio)
@@ -464,9 +465,9 @@ class RandomNoiseTransformer(AugLyImageTransformer):
         mean: ContinuousValue(0, 10),
         var: ContinuousValue(0, 10),
     ):
+        super().__init__()
         self.mean = mean
         self.var = var
-        super().__init__()
 
     def get_transformer(self) -> BaseTransform:
         return transforms.RandomNoise(mean=self.mean, var=self.var)
@@ -482,9 +483,9 @@ class ResizeTransformer(AugLyImageTransformer):
         width: DiscreteValue(10, 1000),
         height: DiscreteValue(10, 1000),
     ):
+        super().__init__()
         self.width = width
         self.height = height
-        super().__init__()
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Resize(
@@ -499,8 +500,8 @@ class RotateTransformer(AugLyImageTransformer):
     """
 
     def __init__(self, degrees: ContinuousValue(0, 360)):
-        self.degrees = degrees
         super().__init__()
+        self.degrees = degrees
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Rotate(degrees=self.degrees)
@@ -515,8 +516,8 @@ class SaturationTransformer(AugLyImageTransformer):
         self,
         factor: ContinuousValue(-10, 10),
     ):
-        self.factor = factor
         super().__init__()
+        self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Saturation(factor=self.factor)
@@ -539,9 +540,9 @@ class ScaleTransformer(AugLyImageTransformer):
             PIL.Image.LANCZOS,
         ),
     ):
+        super().__init__()
         self.factor = factor
         self.interpolation = interpolation
-        super().__init__()
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Scale(factor=self.factor, interpolation=self.interpolation)
@@ -553,8 +554,8 @@ class SharpenTransformer(AugLyImageTransformer):
     """
 
     def __init__(self, factor: ContinuousValue(-10, 10)):
-        self.factor = factor
         super().__init__()
+        self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Sharpen(factor=self.factor)
@@ -569,8 +570,8 @@ class ShufflePixelsTransformer(AugLyImageTransformer):
     """
 
     def __init__(self, factor: ContinuousValue(-10, 10)):
-        self.factor = factor
         super().__init__()
+        self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ShufflePixels(factor=self.factor)
