@@ -298,6 +298,8 @@ class Pipeline:
         if not found:
             warnings.warn(f"No step answered message {msg}.")
 
+    def save_algorithms(self, path: Path):
+        self._save_config(path)
     
     def save(self, path: Path):
         save_path = path / "storage"
@@ -311,17 +313,38 @@ class Pipeline:
         return Pipeline._load_config(path / "storage")
 
     def _save_config(self, path: Path):
-        newPipeline = Pipeline(None, self.input_types)
-        newPipeline.algorithm_description = []
+        save_path = path / "algorithms"
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path)
+        os.mkdir(save_path)
+        
+        algorithms = []
 
         for i,algorithm in enumerate(self.algorithms):
-            os.mkdir(path / str(i))
-            algorithm.save(path / str(i))
+            algorithm_path = save_path / str(i)
+            os.mkdir(algorithm_path)
+            algorithm.save(algorithm_path)
             algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
-            newPipeline.algorithm_description.append(algorithm_class)
+            algorithms.append(algorithm_class)
 
-        with open(path / "pipeline_config.yaml", "w") as fd:
-            yaml.dump(newPipeline, fd)
+        with open(path / "algorithms.yaml", "w") as fd:
+            yaml.dump(algorithms, fd)
+    
+    @classmethod
+    def load_algorithms(self, path: Path):
+        with open(path / "algorithms.yaml", "r") as fd:
+            algorithms = yaml.safe_load(fd)
+        
+        autogoal_algorithms = find_classes()
+
+        answer = []
+
+        for i,algorithm in enumerate(algorithms):
+            for cls in autogoal_algorithms:
+                if(algorithm in object.__str__(cls)):
+                    answer.append(cls.load(path / "algorithms" / str(i)))
+
+        return answer
             
     @classmethod
     def _load_config(self, path: Path):
