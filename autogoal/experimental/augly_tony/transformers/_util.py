@@ -6,7 +6,7 @@ from augly.image.transforms import BaseTransform
 
 from augly_tony.semantic import Image
 
-class AuglyTransformer(AlgorithmBase):
+class AugLyTransformer(AlgorithmBase):
     def __init__(self):
         super().__init__()
         self._transformer: BaseTransform = None

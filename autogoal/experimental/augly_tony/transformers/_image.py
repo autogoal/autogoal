@@ -1,7 +1,7 @@
 from augly.image.transforms import BaseTransform
 import augly.image.transforms as transforms
-import PIL
 
+from autogoal.experimental.augly_tony.semantic import Image
 from autogoal.utils import nice_repr
 from autogoal.grammar import (
     CategoricalValue,
@@ -10,16 +10,16 @@ from autogoal.grammar import (
     BooleanValue,
 )
 
+import PIL
 from typing import Tuple
 
 
-from autogoal.experimental.augly_tony.semantic import Image
-from _util import AuglyTransformer, discrete_to_color
+from _util import AugLyTransformer, discrete_to_color
 
 
 
 @nice_repr
-class AugLyImageTransformer(AuglyTransformer):
+class AugLyImageTransformer(AugLyTransformer):
     """
     Base class for augLy image transformers
     """
@@ -28,7 +28,6 @@ class AugLyImageTransformer(AuglyTransformer):
         if self._transformer is None:
             self._transformer = self.get_transformer()
 
-        
         return self._transformer(Image)
 
 

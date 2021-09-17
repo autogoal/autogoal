@@ -1,7 +1,7 @@
 from augly.audio.transforms import BaseTransform
 import augly.audio.transforms as transforms
-import numpy as np
 
+from autogoal.experimental.augly_tony.semantic import Audio
 from autogoal.utils import nice_repr
 from autogoal.grammar import (
     CategoricalValue,
@@ -10,13 +10,13 @@ from autogoal.grammar import (
     BooleanValue,
 )
 
-from autogoal.experimental.augly_tony.semantic import Audio
+import numpy as np
 
-from _util import AuglyTransformer
+from _util import AugLyTransformer
 
 
 @nice_repr
-class AugLyAudioTransformer(AuglyTransformer):
+class AugLyAudioTransformer(AugLyTransformer):
     """
     Base class for augLy audio transformers
     """
