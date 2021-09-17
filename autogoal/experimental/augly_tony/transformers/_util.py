@@ -1,10 +1,19 @@
 from autogoal.kb import AlgorithmBase
 
 from typing import Tuple
+from PIL.Image import Image as PLImage
+from augly.image.transforms import BaseTransform
 
+from augly_tony.semantic import Image
 
 class AuglyTransformer(AlgorithmBase):
-    pass
+    def __init__(self):
+        super().__init__()
+        self._transformer: BaseTransform = None
+
+    def get_transformer(self) -> BaseTransform:
+        pass
+   
 
 
 def discrete_to_color(color: int) -> Tuple[int, int, int]:
@@ -17,3 +26,10 @@ def discrete_to_color(color: int) -> Tuple[int, int, int]:
         color & 0x00FF00,
         color & 0x0000FF,
     )
+
+def image_to_PIL_image(image: Image) -> PLImage:
+    
+    assert(Image._match(image), "Can't not convert to image")
+
+    
+

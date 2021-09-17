@@ -16,22 +16,17 @@ from autogoal.experimental.augly_tony.semantic import Image
 from _util import AuglyTransformer, discrete_to_color
 
 
+
 class AugLyImageTransformer(AuglyTransformer):
     """
     Base class for augLy image transformers
     """
 
-    def __init__(self):
-        super().__init__()
-        self._transformer: BaseTransform = None
-
-    def get_transformer(self) -> BaseTransform:
-        pass
-
     def run(self, X: Image) -> Image:
         if self._transformer is None:
             self._transformer = self.get_transformer()
 
+        
         return self._transformer(Image)
 
 

@@ -8,11 +8,11 @@ class Image(SemanticType):
     '''
     Define a semantic type for images, currently support:
     
-    • path to the image (str)
+    • path to the image as `str`
 
-    • PIL image
+    • `Image` from `PIL.Image`
 
-    • ndarray of numpy
+    • `ndarray` from `numpy`
     '''
 
 
@@ -28,4 +28,4 @@ class Image(SemanticType):
 
         return isinstance(x, img) or isinstance(x, ndarray) or super()._match(x)
        
-
+   
