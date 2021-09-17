@@ -10,6 +10,7 @@ from pathlib import Path
 import types
 import pickle
 import os
+import shutil
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -298,8 +299,11 @@ class Pipeline:
 
     
     def save(self, path: Path):
-        self._save_config(path)
-        self.algorithm.save(path)
+        save_path = path / "storage"
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path)
+        os.mkdir(save_path)
+        self._save_config(save_path)
 
     @classmethod
     def load(path: Path):
@@ -308,19 +312,30 @@ class Pipeline:
 
     def _save_config(self, path: Path):
         newPipeline = Pipeline(None, self.input_types)
+        newPipeline.algorithm_description = []
+
+        for i,algorithm in enumerate(self.algorithms):
+            os.mkdir(path / str(i))
+            # AlgorithmBase._save_metadata(path / str(i))
+            algorithm.save(path / str(i))
+            algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
+            newPipeline.algorithm_description.append(algorithm_class)
+
         with open(path / "pipeline_config.yaml", "w") as fd:
             yaml.dump(newPipeline, fd)
-
-        for i,algoritm in enumerate(self.algorithms):
-            os.mkdir(path / i)
-            algoritm.save(path / i)
             
-
     @classmethod
     def _load_config(path: Path):
         # conf = path.glob("*.yaml")[0]
         with open(path / "pipeline_config.yaml", "r") as fd:
-            return yaml.load(fd)
+            pipeLineconfig = yaml.load(fd)
+
+        if pipeLineconfig.algorithm_count:
+            pipeLineconfig.algorithms = []
+
+            for i in range(pipeLineconfig.algorithm_count):
+                algorithm = AlgorithmBase._load_metadata(path / i)
+
 
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
