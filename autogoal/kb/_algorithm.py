@@ -16,6 +16,7 @@ import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
+from autogoal.contrib import find_classes
 
 
 class Supervised(SemanticType):
@@ -306,9 +307,8 @@ class Pipeline:
         self._save_config(save_path)
 
     @classmethod
-    def load(path: Path):
-        pipeLine = Pipeline._load_config(path)
-        pipeLine.algorithm = AlgorithmBase.load(path)
+    def load(self, path: Path):
+        return Pipeline._load_config(path / "storage")
 
     def _save_config(self, path: Path):
         newPipeline = Pipeline(None, self.input_types)
@@ -316,7 +316,6 @@ class Pipeline:
 
         for i,algorithm in enumerate(self.algorithms):
             os.mkdir(path / str(i))
-            # AlgorithmBase._save_metadata(path / str(i))
             algorithm.save(path / str(i))
             algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
             newPipeline.algorithm_description.append(algorithm_class)
@@ -325,16 +324,22 @@ class Pipeline:
             yaml.dump(newPipeline, fd)
             
     @classmethod
-    def _load_config(path: Path):
+    def _load_config(self, path: Path):
         # conf = path.glob("*.yaml")[0]
         with open(path / "pipeline_config.yaml", "r") as fd:
-            pipeLineconfig = yaml.load(fd)
+            pipeLineconfig = yaml.load_all(fd, Loader=yaml.FullLoader)
 
-        if pipeLineconfig.algorithm_count:
-            pipeLineconfig.algorithms = []
+        autogoal_algorithms = find_classes()
 
-            for i in range(pipeLineconfig.algorithm_count):
-                algorithm = AlgorithmBase._load_metadata(path / i)
+        pipeLineconfig.algorithms = []
+
+        for i,algorithm in pipeLineconfig.algorithm_description:
+            for declaration in autogoal_algorithms:
+                if(algorithm in object.__str__(declaration)):
+                    pipeLineconfig.algorithms.append(declaration.load(path / str(i)))
+                    break
+
+        return pipeLineconfig
 
 
 

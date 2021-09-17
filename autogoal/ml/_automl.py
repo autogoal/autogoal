@@ -4,8 +4,9 @@ import statistics
 
 import numpy as np
 from autogoal.contrib import find_classes
+from pathlib import Path
 
-from autogoal.kb import build_pipeline_graph, SemanticType
+from autogoal.kb import build_pipeline_graph, SemanticType, Pipeline
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
 from autogoal.utils import nice_repr
@@ -116,6 +117,10 @@ class AutoML:
             raise ValueError("The serialized file does not contain an AutoML instance.")
 
         return automl
+
+    @classmethod
+    def pipelineload(self, path: Path):
+        return Pipeline.load(path)
 
     def score(self, X, y):
         self._check_fitted()
