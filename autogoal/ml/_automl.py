@@ -1,6 +1,9 @@
 import io
+import pathlib
 import pickle
 import statistics
+import os
+import shutil
 
 import numpy as np
 from autogoal.contrib import find_classes
@@ -104,6 +107,22 @@ class AutoML:
         self._check_fitted()
         pickle.Pickler(fp).dump(self)
 
+    def folder_save(self, path: Path):
+        """
+        Serializes the AutoML into a given path.
+        """
+        self._check_fitted()
+        save_path = path / "storage"
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path)
+        os.mkdir(save_path)
+        tmp = self.best_pipeline_.algorithms
+        self.best_pipeline_.save_algorithms(save_path)
+        self.best_pipeline_.algorithms = []
+        with open(save_path / "model.bin", "wb") as fd:
+            self.save(fd)
+        self.best_pipeline_.algorithms = tmp
+
     @classmethod
     def load(self, fp: io.FileIO) -> "AutoML":
         """
@@ -118,9 +137,18 @@ class AutoML:
 
         return automl
 
-    @classmethod
-    def pipelineload(self, path: Path):
-        return Pipeline.load(path)
+    @classmethod 
+    def folder_load(self, path: Path) -> "AutoML":
+        """
+        Deserializes an AutoML instance from a given path.
+        
+        After deserialization, the best pipeline found is ready to predict.
+        """
+        load_path = path / "storage"
+        with open(load_path / "model.bin", "rb") as fd:
+            automl = self.load(fd)
+        automl.best_pipeline_.algorithms = Pipeline.load_algorithms(load_path)
+        return automl
 
     def score(self, X, y):
         self._check_fitted()
