@@ -2,6 +2,7 @@ from augly.image.transforms import BaseTransform
 import augly.image.transforms as transforms
 import PIL
 
+from autogoal.utils import nice_repr
 from autogoal.grammar import (
     CategoricalValue,
     DiscreteValue,
@@ -17,6 +18,7 @@ from _util import AuglyTransformer, discrete_to_color
 
 
 
+@nice_repr
 class AugLyImageTransformer(AuglyTransformer):
     """
     Base class for augLy image transformers
@@ -30,6 +32,7 @@ class AugLyImageTransformer(AuglyTransformer):
         return self._transformer(Image)
 
 
+@nice_repr
 class BlurTransformer(AugLyImageTransformer):
     """
     Blurs the image
@@ -46,6 +49,7 @@ class BlurTransformer(AugLyImageTransformer):
         return transforms.Blur(radius=self.radius)
 
 
+@nice_repr
 class BrightnessTransformer(AugLyImageTransformer):
     """
     Alters the brightness of the image
@@ -62,6 +66,7 @@ class BrightnessTransformer(AugLyImageTransformer):
         return transforms.Brightness(factor=self.factor)
 
 
+@nice_repr
 class ChangeAspectRatioTransformer(AugLyImageTransformer):
     """
     Alters the aspect ratio of the image
@@ -78,6 +83,7 @@ class ChangeAspectRatioTransformer(AugLyImageTransformer):
         return transforms.ChangeAspectRatio(ratio=self.ratio)
 
 
+@nice_repr
 class ClipImageSizeTransformer(AugLyImageTransformer):
     """
     Scales the image up or down if necessary to fit in the given min and max
@@ -100,6 +106,7 @@ class ClipImageSizeTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class ColorJitterTransformer(AugLyImageTransformer):
     """
     Color jitters the image
@@ -124,6 +131,7 @@ class ColorJitterTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class ContrastTransformer(AugLyImageTransformer):
     """
     Alters the contrast of the image
@@ -137,6 +145,7 @@ class ContrastTransformer(AugLyImageTransformer):
         return transforms.Contrast(factor=self.factor)
 
 
+@nice_repr
 class ConvertColorTransformer(AugLyImageTransformer):
     """
     The mode of an image is a string which defines the type and depth of a pixel in the image. Each pixel uses the full range of the bit depth. So a 1-bit pixel has a range of 0-1, an 8-bit pixel has a range of 0-255 and so on.
@@ -159,6 +168,7 @@ class ConvertColorTransformer(AugLyImageTransformer):
         return transforms.ConvertColor(mode=self.mode)
 
 
+@nice_repr
 class CropTransformer(AugLyImageTransformer):
     """
     Crops the image
@@ -186,6 +196,7 @@ class CropTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class EncodingQualityTransformer(AugLyImageTransformer):
     """
     Changes the JPEG encoding quality level
@@ -199,6 +210,7 @@ class EncodingQualityTransformer(AugLyImageTransformer):
         return transforms.EncodingQuality(quality=self.quality)
 
 
+@nice_repr
 class GrayscaleTransformer(AugLyImageTransformer):
     """
     Alters an image to be grayscale
@@ -215,6 +227,7 @@ class GrayscaleTransformer(AugLyImageTransformer):
         return transforms.Grayscale(mode=self.mode)
 
 
+@nice_repr
 class HFlipTransformer(AugLyImageTransformer):
     """
     Horizontally flips an image
@@ -224,6 +237,7 @@ class HFlipTransformer(AugLyImageTransformer):
         return transforms.HFlip()
 
 
+@nice_repr
 class VFlipTransformer(AugLyImageTransformer):
     """
     Vertically flips an image
@@ -234,6 +248,7 @@ class VFlipTransformer(AugLyImageTransformer):
 
 
 # TODO: Improve with addional grammar parameters
+@nice_repr
 class MemeFormatTransformer(AugLyImageTransformer):
     """
     Creates a new image that looks like a meme, given text and an image
@@ -246,6 +261,7 @@ class MemeFormatTransformer(AugLyImageTransformer):
         return transforms.MemeFormat()
 
 
+@nice_repr
 class OpacityTransformer(AugLyImageTransformer):
     """
     Alters the opacity of an image
@@ -262,6 +278,7 @@ class OpacityTransformer(AugLyImageTransformer):
         return transforms.Opacity(level=self.level)
 
 
+@nice_repr
 class OverlayEmojiTransformer(AugLyImageTransformer):
     """
     Overlay an emoji onto the original image
@@ -289,6 +306,7 @@ class OverlayEmojiTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class OverlayOntoScreenshotTransformer(AugLyImageTransformer):
     """
     Overlay the image onto a screenshot template so it looks like it was
@@ -311,6 +329,7 @@ class OverlayOntoScreenshotTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class OverlayStripesTransformer(AugLyImageTransformer):
     """
     Overlay stripe pattern onto the image (by default, stripes are horizontal)
@@ -345,6 +364,7 @@ class OverlayStripesTransformer(AugLyImageTransformer):
 
 
 # TODO: Improve by adding diferent text inputs
+@nice_repr
 class OverlayTextTransformer(AugLyImageTransformer):
     """
     Overlay text onto the image (by default, text is randomly overlaid)
@@ -375,6 +395,7 @@ class OverlayTextTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class PadTransformer(AugLyImageTransformer):
     """
     Pads the image and add a border
@@ -399,6 +420,7 @@ class PadTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class PadSquareTransformer(AugLyImageTransformer):
     """
     Pads the shorter edge of the image such that it is now square-shaped
@@ -412,6 +434,7 @@ class PadSquareTransformer(AugLyImageTransformer):
         return transforms.PadSquare(color=self.color)
 
 
+@nice_repr
 class PerspectiveTransformTransformer(AugLyImageTransformer):
     """
     Apply a perspective transform to the image so it looks like it was taken
@@ -437,6 +460,7 @@ class PerspectiveTransformTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class PixelizationTransformer(AugLyImageTransformer):
     """
     Pixelizes an image
@@ -450,6 +474,7 @@ class PixelizationTransformer(AugLyImageTransformer):
         return transforms.Pixelization(ratio=self.ratio)
 
 
+@nice_repr
 class RandomNoiseTransformer(AugLyImageTransformer):
     """
     Adds random noise to the image
@@ -468,6 +493,7 @@ class RandomNoiseTransformer(AugLyImageTransformer):
         return transforms.RandomNoise(mean=self.mean, var=self.var)
 
 
+@nice_repr
 class ResizeTransformer(AugLyImageTransformer):
     """
     Resizes an image
@@ -489,6 +515,7 @@ class ResizeTransformer(AugLyImageTransformer):
         )
 
 
+@nice_repr
 class RotateTransformer(AugLyImageTransformer):
     """
     Rotates the image
@@ -502,6 +529,7 @@ class RotateTransformer(AugLyImageTransformer):
         return transforms.Rotate(degrees=self.degrees)
 
 
+@nice_repr
 class SaturationTransformer(AugLyImageTransformer):
     """
     Alters the saturation of an image
@@ -518,6 +546,7 @@ class SaturationTransformer(AugLyImageTransformer):
         return transforms.Saturation(factor=self.factor)
 
 
+@nice_repr
 class ScaleTransformer(AugLyImageTransformer):
     """
     Alters the resolution of an image
@@ -543,6 +572,7 @@ class ScaleTransformer(AugLyImageTransformer):
         return transforms.Scale(factor=self.factor, interpolation=self.interpolation)
 
 
+@nice_repr
 class SharpenTransformer(AugLyImageTransformer):
     """
     Alters the sharpness of an image
@@ -556,6 +586,7 @@ class SharpenTransformer(AugLyImageTransformer):
         return transforms.Sharpen(factor=self.factor)
 
 
+@nice_repr
 class ShufflePixelsTransformer(AugLyImageTransformer):
     """
     Shuffles the pixels of an image with respect to the shuffling factor. The

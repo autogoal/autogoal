@@ -2,6 +2,7 @@ from augly.audio.transforms import BaseTransform
 import augly.audio.transforms as transforms
 import numpy as np
 
+from autogoal.utils import nice_repr
 from autogoal.grammar import (
     CategoricalValue,
     DiscreteValue,
@@ -14,6 +15,7 @@ from autogoal.experimental.augly_tony.semantic import Audio
 from _util import AuglyTransformer
 
 
+@nice_repr
 class AugLyAudioTransformer(AuglyTransformer):
     """
     Base class for augLy audio transformers
@@ -36,6 +38,7 @@ class AugLyAudioTransformer(AuglyTransformer):
 max_db_val = 110
 
 # TODO: Allow to add a background audio
+@nice_repr
 class AddBackgroundNoiseTransformer(AugLyAudioTransformer):
     """
     Mixes in a background sound into the audio
@@ -54,6 +57,7 @@ class AddBackgroundNoiseTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class ChangeVolumeTransformer(AugLyAudioTransformer):
     """
     Changes the volume of the audio
@@ -72,6 +76,7 @@ class ChangeVolumeTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class ClickseTransformer(AugLyAudioTransformer):
     """
     Adds clicks to the audio at a given regular interval
@@ -90,6 +95,7 @@ class ClickseTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class ClipTransformer(AugLyAudioTransformer):
     """
     Clips the audio using the specified offset and duration factors
@@ -110,6 +116,7 @@ class ClipTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class HarmonicTransformer(AugLyAudioTransformer):
     """
     Extracts the harmonic part of the audio
@@ -134,6 +141,7 @@ class HarmonicTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class PercussiveTransformer(AugLyAudioTransformer):
     """
     Extracts the percussive part of the audio
@@ -158,6 +166,7 @@ class PercussiveTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class HighPassFilterTransformer(AugLyAudioTransformer):
     """
     Allows audio signals with a frequency higher than the given cutoff to pass
@@ -177,6 +186,7 @@ class HighPassFilterTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class LowPassFilterTransformer(AugLyAudioTransformer):
     """
     Allows audio signals with a frequency higher than the given cutoff to pass
@@ -197,6 +207,7 @@ class LowPassFilterTransformer(AugLyAudioTransformer):
 
 
 # TODO: Allow add a custom background audio
+@nice_repr
 class InsertInBackgroundTransformer(AugLyAudioTransformer):
     """
     Mixes in a background sound into the audio
@@ -215,6 +226,7 @@ class InsertInBackgroundTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class InvertChannelsTransformer(AugLyAudioTransformer):
     """
     Inverts the channels of the audio.
@@ -224,6 +236,7 @@ class InvertChannelsTransformer(AugLyAudioTransformer):
         return transforms.InvertChannels()
 
 
+@nice_repr
 class NormalizeTransformer(AugLyAudioTransformer):
     """
     Normalizes the audio array along the chosen axis (norm(audio, axis=axis) == 1)
@@ -251,6 +264,7 @@ class NormalizeTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class PitchShiftTransformer(AugLyAudioTransformer):
     """
     Shifts the pitch of the audio by `n_steps`
@@ -269,6 +283,7 @@ class PitchShiftTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class SpeedTransformer(AugLyAudioTransformer):
     """
     Changes the speed of the audio, affecting pitch as well
@@ -287,6 +302,7 @@ class SpeedTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class TempoTransformer(AugLyAudioTransformer):
     """
     Adjusts the tempo of the audio by a given factor (without
@@ -306,6 +322,7 @@ class TempoTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class TimeStretchTransformer(AugLyAudioTransformer):
     """
     Time-stretches the audio by a fixed rate
@@ -324,6 +341,7 @@ class TimeStretchTransformer(AugLyAudioTransformer):
         )
 
 
+@nice_repr
 class ToMonoTransformer(AugLyAudioTransformer):
     """
     Converts the audio from stereo to mono by averaging samples across channels
