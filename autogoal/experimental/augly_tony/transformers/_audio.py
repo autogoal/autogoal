@@ -349,3 +349,23 @@ class ToMonoTransformer(AugLyAudioTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ToMono()
+
+
+__all__ = [
+AddBackgroundNoiseTransformer,
+ChangeVolumeTransformer,
+ClickseTransformer,
+ClipTransformer,
+HarmonicTransformer,
+PercussiveTransformer,
+HighPassFilterTransformer,
+LowPassFilterTransformer,
+InsertInBackgroundTransformer,
+InvertChannelsTransformer,
+NormalizeTransformer,
+PitchShiftTransformer,
+SpeedTransformer,
+TempoTransformer,
+TimeStretchTransformer,
+ToMonoTransformer,
+]

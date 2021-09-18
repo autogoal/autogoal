@@ -600,3 +600,36 @@ class ShufflePixelsTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ShufflePixels(factor=self.factor)
+
+
+__all__ = [
+BlurTransformer,
+BrightnessTransformer,
+ChangeAspectRatioTransformer,
+ClipImageSizeTransformer,
+ColorJitterTransformer,
+ContrastTransformer,
+ConvertColorTransformer,
+CropTransformer,
+EncodingQualityTransformer,
+GrayscaleTransformer,
+HFlipTransformer,
+VFlipTransformer,
+MemeFormatTransformer,
+OpacityTransformer,
+OverlayEmojiTransformer,
+OverlayOntoScreenshotTransformer,
+OverlayStripesTransformer,
+OverlayTextTransformer,
+PadTransformer,
+PadSquareTransformer,
+PerspectiveTransformTransformer,
+PixelizationTransformer,
+RandomNoiseTransformer,
+ResizeTransformer,
+RotateTransformer,
+SaturationTransformer,
+ScaleTransformer,
+SharpenTransformer,
+ShufflePixelsTransformer
+]
