@@ -8,7 +8,7 @@ from autogoal.contrib import find_classes
 
 from autogoal.datasets import haha
 
-from transformers._text import (
+from transformers import (
     ReplaceSimilarCharsTransformer,
     InsertPunctuationCharsTransformer,
     SplitWordsTransformer,
