@@ -20,9 +20,7 @@ class AugLyTextTransformer(AugLyTransformer):
     """
 
     def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
-        if self._transformer is None:
-            self._transformer = self.get_transformer()
-        return self._transformer(Seq[Sentence])
+        return self.run(X)
 
 
 @nice_repr
@@ -47,6 +45,9 @@ class InsertPunctuationCharsTransformer(AugLyTransformer):
             self.granulatity, self.cadence, self.vary_chars,
         )
 
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
+
 
 @nice_repr
 class InsertWhitespaceCharsTransformer(AugLyTransformer):
@@ -69,6 +70,9 @@ class InsertWhitespaceCharsTransformer(AugLyTransformer):
         return transforms.InsertWhitespaceChars(
             self.granulatity, self.cadence, self.vary_chars,
         )
+
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
 
 
 @nice_repr
@@ -93,6 +97,9 @@ class InsertZeroWidthTransformer(AugLyTransformer):
             self.granulatity, self.cadence, self.vary_chars,
         )
 
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
+
 
 @nice_repr
 class ReplaceBidirectionalTransformer(AugLyTransformer):
@@ -111,6 +118,9 @@ class ReplaceBidirectionalTransformer(AugLyTransformer):
 
     def get_transformer(self, X, y=None):
         return transforms.ReplaceBidirectional(self.granulatity, self.split_word,)
+
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
 
 
 @nice_repr
@@ -146,6 +156,9 @@ class ReplaceFunFontsTransformer(AugLyTransformer):
             self.vary_fonts,
             self.n,
         )
+
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
 
 
 @nice_repr
@@ -187,6 +200,9 @@ class ReplaceSimilarCharsTransformer(AugLyTransformer):
             self.n,
         )
 
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
+
 
 @nice_repr
 class ReplaceSimilarUnicodeChars(AugLyTransformer):
@@ -227,6 +243,9 @@ class ReplaceSimilarUnicodeChars(AugLyTransformer):
             self.n,
         )
 
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
+
 
 @nice_repr
 class ReplaceUpsideDownTransformer(AugLyTransformer):
@@ -249,6 +268,9 @@ class ReplaceUpsideDownTransformer(AugLyTransformer):
         return transforms.ReplaceUpsideDown(
             self.aug_p, self.aug_min, self.aug_max, self.granularity, self.n,
         )
+
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
 
 
 @nice_repr
@@ -286,6 +308,9 @@ class SimulateTyposTransformer(AugLyTransformer):
             self.aug_word_max,
             self.n,
         )
+
+    def run(self, X: Seq[Sentence]) -> Seq[Sentence]:
+        return self.run(X)
 
 
 @nice_repr

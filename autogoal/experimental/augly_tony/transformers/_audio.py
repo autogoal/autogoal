@@ -25,19 +25,15 @@ class AugLyAudioTransformer(AugLyTransformer):
         super().__init__()
         self._transformer: BaseTransform = None
 
-    def get_transformer(self) -> BaseTransform:
-        pass
-
     def run(self, X: Audio) -> Audio:
-        if self._transformer is None:
-            self._transformer = self.get_transformer()
-
-        return self._transformer(Audio)
+        return self.run(X)
 
 
 max_db_val = 110
 
 # TODO: Allow to add a background audio
+
+
 @nice_repr
 class AddBackgroundNoiseTransformer(AugLyAudioTransformer):
     """
@@ -45,16 +41,16 @@ class AddBackgroundNoiseTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        snr_level_db: ContinuousValue(0, max_db_val),
+        self, snr_level_db: ContinuousValue(0, max_db_val),
     ):
         super().__init__()
         self.snr_level_db = snr_level_db
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.AddBackgroundNoise(
-            snr_level_db=self.snr_level_db,
-        )
+        return transforms.AddBackgroundNoise(snr_level_db=self.snr_level_db,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -64,16 +60,16 @@ class ChangeVolumeTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        volume_db: ContinuousValue(0, max_db_val),
+        self, volume_db: ContinuousValue(0, max_db_val),
     ):
         super().__init__()
         self.volume_db = volume_db
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.ChangeVolume(
-            volume_db=self.volume_db,
-        )
+        return transforms.ChangeVolume(volume_db=self.volume_db,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -83,16 +79,16 @@ class ClickseTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        seconds_between_clicks: ContinuousValue(0.01, 5),
+        self, seconds_between_clicks: ContinuousValue(0.01, 5),
     ):
         super().__init__()
         self.seconds_between_clicks = seconds_between_clicks
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Clicks(
-            seconds_between_clicks=self.seconds_between_clicks,
-        )
+        return transforms.Clicks(seconds_between_clicks=self.seconds_between_clicks,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -111,9 +107,10 @@ class ClipTransformer(AugLyAudioTransformer):
         self.duration_factor = duration_factor
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Clip(
-            duration_factor=self.duration_factor,
-        )
+        return transforms.Clip(duration_factor=self.duration_factor,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -135,10 +132,11 @@ class HarmonicTransformer(AugLyAudioTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Harmonic(
-            kernel_size=self.kernel_size,
-            power=self.power,
-            margin=self.margin,
+            kernel_size=self.kernel_size, power=self.power, margin=self.margin,
         )
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -160,10 +158,11 @@ class PercussiveTransformer(AugLyAudioTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Percussive(
-            kernel_size=self.kernel_size,
-            power=self.power,
-            margin=self.margin,
+            kernel_size=self.kernel_size, power=self.power, margin=self.margin,
         )
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -174,16 +173,16 @@ class HighPassFilterTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        cutoff_hz: ContinuousValue(0, 3000.0),
+        self, cutoff_hz: ContinuousValue(0, 3000.0),
     ):
         super().__init__()
         self.cutoff_hz = cutoff_hz
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.HighPassFilter(
-            cutoff_hz=self.cutoff_hz,
-        )
+        return transforms.HighPassFilter(cutoff_hz=self.cutoff_hz,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -194,19 +193,19 @@ class LowPassFilterTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        cutoff_hz: ContinuousValue(0, 3000.0),
+        self, cutoff_hz: ContinuousValue(0, 3000.0),
     ):
         super().__init__()
         self.cutoff_hz = cutoff_hz
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.LowPassFilter(
-            cutoff_hz=self.cutoff_hz,
-        )
+        return transforms.LowPassFilter(cutoff_hz=self.cutoff_hz,)
+
+    # TODO: Allow add a custom background audio
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
-# TODO: Allow add a custom background audio
 @nice_repr
 class InsertInBackgroundTransformer(AugLyAudioTransformer):
     """
@@ -214,16 +213,16 @@ class InsertInBackgroundTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        offset_factor: ContinuousValue(0, 1),
+        self, offset_factor: ContinuousValue(0, 1),
     ):
         super().__init__()
         self.offset_factor = offset_factor
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.InsertInBackground(
-            offset_factor=self.offset_factor,
-        )
+        return transforms.InsertInBackground(offset_factor=self.offset_factor,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -234,6 +233,9 @@ class InvertChannelsTransformer(AugLyAudioTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.InvertChannels()
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -257,11 +259,11 @@ class NormalizeTransformer(AugLyAudioTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Normalize(
-            norm=self.norm,
-            axis=self.axis,
-            threshold=self.threshold,
-            fill=self.fill,
+            norm=self.norm, axis=self.axis, threshold=self.threshold, fill=self.fill,
         )
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -271,16 +273,16 @@ class PitchShiftTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        n_steps: ContinuousValue(0, 100),
+        self, n_steps: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.n_steps = n_steps
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.PitchShift(
-            n_steps=self.n_steps,
-        )
+        return transforms.PitchShift(n_steps=self.n_steps,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -290,16 +292,16 @@ class SpeedTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        factor: ContinuousValue(0, 4),
+        self, factor: ContinuousValue(0, 4),
     ):
         super().__init__()
         self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Speed(
-            factor=self.factor,
-        )
+        return transforms.Speed(factor=self.factor,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -310,16 +312,16 @@ class TempoTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        factor: ContinuousValue(0, 4),
+        self, factor: ContinuousValue(0, 4),
     ):
         super().__init__()
         self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Tempo(
-            factor=self.factor,
-        )
+        return transforms.Tempo(factor=self.factor,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -329,16 +331,16 @@ class TimeStretchTransformer(AugLyAudioTransformer):
     """
 
     def __init__(
-        self,
-        rate: ContinuousValue(0, 4),
+        self, rate: ContinuousValue(0, 4),
     ):
         super().__init__()
         self.rate = rate
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.TimeStretch(
-            rate=self.rate,
-        )
+        return transforms.TimeStretch(rate=self.rate,)
+
+    def run(self, X: Audio) -> Audio:
+        return self.run(X)
 
 
 @nice_repr
@@ -352,20 +354,20 @@ class ToMonoTransformer(AugLyAudioTransformer):
 
 
 __all__ = [
-AddBackgroundNoiseTransformer,
-ChangeVolumeTransformer,
-ClickseTransformer,
-ClipTransformer,
-HarmonicTransformer,
-PercussiveTransformer,
-HighPassFilterTransformer,
-LowPassFilterTransformer,
-InsertInBackgroundTransformer,
-InvertChannelsTransformer,
-NormalizeTransformer,
-PitchShiftTransformer,
-SpeedTransformer,
-TempoTransformer,
-TimeStretchTransformer,
-ToMonoTransformer,
+    AddBackgroundNoiseTransformer,
+    ChangeVolumeTransformer,
+    ClickseTransformer,
+    ClipTransformer,
+    HarmonicTransformer,
+    PercussiveTransformer,
+    HighPassFilterTransformer,
+    LowPassFilterTransformer,
+    InsertInBackgroundTransformer,
+    InvertChannelsTransformer,
+    NormalizeTransformer,
+    PitchShiftTransformer,
+    SpeedTransformer,
+    TempoTransformer,
+    TimeStretchTransformer,
+    ToMonoTransformer,
 ]

@@ -17,7 +17,6 @@ from typing import Tuple
 from _util import AugLyTransformer, discrete_to_color
 
 
-
 @nice_repr
 class AugLyImageTransformer(AugLyTransformer):
     """
@@ -25,10 +24,7 @@ class AugLyImageTransformer(AugLyTransformer):
     """
 
     def run(self, X: Image) -> Image:
-        if self._transformer is None:
-            self._transformer = self.get_transformer()
-
-        return self._transformer(Image)
+        return self.run(X)
 
 
 @nice_repr
@@ -38,14 +34,16 @@ class BlurTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        radius: ContinuousValue(0, 10),
+        self, radius: ContinuousValue(0, 10),
     ):
         super().__init__()
         self.radius = radius
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Blur(radius=self.radius)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -55,14 +53,16 @@ class BrightnessTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        factor: ContinuousValue(0, 100),
+        self, factor: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Brightness(factor=self.factor)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -72,14 +72,16 @@ class ChangeAspectRatioTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        ratio: ContinuousValue(0.1, 10),
+        self, ratio: ContinuousValue(0.1, 10),
     ):
         super().__init__()
         self.ratio = ratio
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ChangeAspectRatio(ratio=self.ratio)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -100,9 +102,11 @@ class ClipImageSizeTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ClipImageSize(
-            min_resolution=self.min_resolution,
-            max_resolution=self.max_resolution,
+            min_resolution=self.min_resolution, max_resolution=self.max_resolution,
         )
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -114,7 +118,7 @@ class ColorJitterTransformer(AugLyImageTransformer):
     def __init__(
         self,
         brightness_factor: ContinuousValue(0, 100),
-        contrast_factor:  ContinuousValue(0, 100),
+        contrast_factor: ContinuousValue(0, 100),
         saturation_factor: ContinuousValue(0, 100),
     ):
         super().__init__()
@@ -128,6 +132,9 @@ class ColorJitterTransformer(AugLyImageTransformer):
             contrast_factor=self.contrast_factor,
             saturation_factor=self.saturation_factor,
         )
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -143,6 +150,9 @@ class ContrastTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.Contrast(factor=self.factor)
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class ConvertColorTransformer(AugLyImageTransformer):
@@ -157,14 +167,16 @@ class ConvertColorTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        mode: CategoricalValue("1", "L", "RGB"),
+        self, mode: CategoricalValue("1", "L", "RGB"),
     ):
         super().__init__()
         self.mode = mode
 
     def get_transformer(self) -> BaseTransform:
         return transforms.ConvertColor(mode=self.mode)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -187,12 +199,10 @@ class CropTransformer(AugLyImageTransformer):
         self.y2 = y2
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Crop(
-            x1=self.x1,
-            x2=self.x2,
-            y1=self.y1,
-            y2=self.y2,
-        )
+        return transforms.Crop(x1=self.x1, x2=self.x2, y1=self.y1, y2=self.y2,)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -208,6 +218,9 @@ class EncodingQualityTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.EncodingQuality(quality=self.quality)
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class GrayscaleTransformer(AugLyImageTransformer):
@@ -216,14 +229,16 @@ class GrayscaleTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        mode: CategoricalValue("luminosity", "average"),
+        self, mode: CategoricalValue("luminosity", "average"),
     ):
         self.mode = mode
         super().__init__()
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Grayscale(mode=self.mode)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -235,6 +250,9 @@ class HFlipTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.HFlip()
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class VFlipTransformer(AugLyImageTransformer):
@@ -245,8 +263,11 @@ class VFlipTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.HFlip()
 
+    # TODO: Improve with addional grammar parameters
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
-# TODO: Improve with addional grammar parameters
+
 @nice_repr
 class MemeFormatTransformer(AugLyImageTransformer):
     """
@@ -259,6 +280,9 @@ class MemeFormatTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.MemeFormat()
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class OpacityTransformer(AugLyImageTransformer):
@@ -267,14 +291,16 @@ class OpacityTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        level: ContinuousValue(0, 1),
+        self, level: ContinuousValue(0, 1),
     ):
         super().__init__()
         self.level = level
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Opacity(level=self.level)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -304,6 +330,9 @@ class OverlayEmojiTransformer(AugLyImageTransformer):
             y_pos=self.y_pos,
         )
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class OverlayOntoScreenshotTransformer(AugLyImageTransformer):
@@ -326,6 +355,9 @@ class OverlayOntoScreenshotTransformer(AugLyImageTransformer):
             crop_src_to_fit=self.crop_src_to_fit,
             resize_src_to_match_template=self.resize_src_to_match_template,
         )
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -361,8 +393,11 @@ class OverlayStripesTransformer(AugLyImageTransformer):
             line_opacity=self.line_opacity,
         )
 
+    # TODO: Improve by adding diferent text inputs
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
-# TODO: Improve by adding diferent text inputs
+
 @nice_repr
 class OverlayTextTransformer(AugLyImageTransformer):
     """
@@ -393,6 +428,9 @@ class OverlayTextTransformer(AugLyImageTransformer):
             y_pos=self.y_pos,
         )
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class PadTransformer(AugLyImageTransformer):
@@ -418,6 +456,9 @@ class PadTransformer(AugLyImageTransformer):
             color=discrete_to_color(self.color),
         )
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class PadSquareTransformer(AugLyImageTransformer):
@@ -431,6 +472,9 @@ class PadSquareTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.PadSquare(color=self.color)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -453,10 +497,11 @@ class PerspectiveTransformTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.PerspectiveTransform(
-            sigma=self.sigma,
-            dx=self.dx,
-            dy=self.dy,
+            sigma=self.sigma, dx=self.dx, dy=self.dy,
         )
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -472,6 +517,9 @@ class PixelizationTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.Pixelization(ratio=self.ratio)
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class RandomNoiseTransformer(AugLyImageTransformer):
@@ -480,9 +528,7 @@ class RandomNoiseTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        mean: ContinuousValue(0, 10),
-        var: ContinuousValue(0, 10),
+        self, mean: ContinuousValue(0, 10), var: ContinuousValue(0, 10),
     ):
         super().__init__()
         self.mean = mean
@@ -490,6 +536,9 @@ class RandomNoiseTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.RandomNoise(mean=self.mean, var=self.var)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -499,19 +548,17 @@ class ResizeTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        width: DiscreteValue(10, 1000),
-        height: DiscreteValue(10, 1000),
+        self, width: DiscreteValue(10, 1000), height: DiscreteValue(10, 1000),
     ):
         super().__init__()
         self.width = width
         self.height = height
 
     def get_transformer(self) -> BaseTransform:
-        return transforms.Resize(
-            width=self.width,
-            height=self.height,
-        )
+        return transforms.Resize(width=self.width, height=self.height,)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -527,6 +574,9 @@ class RotateTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.Rotate(degrees=self.degrees)
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class SaturationTransformer(AugLyImageTransformer):
@@ -535,14 +585,16 @@ class SaturationTransformer(AugLyImageTransformer):
     """
 
     def __init__(
-        self,
-        factor: ContinuousValue(0, 100),
+        self, factor: ContinuousValue(0, 100),
     ):
         super().__init__()
         self.factor = factor
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Saturation(factor=self.factor)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -570,6 +622,9 @@ class ScaleTransformer(AugLyImageTransformer):
     def get_transformer(self) -> BaseTransform:
         return transforms.Scale(factor=self.factor, interpolation=self.interpolation)
 
+    def run(self, X: Image) -> Image:
+        return self.run(X)
+
 
 @nice_repr
 class SharpenTransformer(AugLyImageTransformer):
@@ -583,6 +638,9 @@ class SharpenTransformer(AugLyImageTransformer):
 
     def get_transformer(self) -> BaseTransform:
         return transforms.Sharpen(factor=self.factor)
+
+    def run(self, X: Image) -> Image:
+        return self.run(X)
 
 
 @nice_repr
@@ -603,33 +661,33 @@ class ShufflePixelsTransformer(AugLyImageTransformer):
 
 
 __all__ = [
-BlurTransformer,
-BrightnessTransformer,
-ChangeAspectRatioTransformer,
-ClipImageSizeTransformer,
-ColorJitterTransformer,
-ContrastTransformer,
-ConvertColorTransformer,
-CropTransformer,
-EncodingQualityTransformer,
-GrayscaleTransformer,
-HFlipTransformer,
-VFlipTransformer,
-MemeFormatTransformer,
-OpacityTransformer,
-OverlayEmojiTransformer,
-OverlayOntoScreenshotTransformer,
-OverlayStripesTransformer,
-OverlayTextTransformer,
-PadTransformer,
-PadSquareTransformer,
-PerspectiveTransformTransformer,
-PixelizationTransformer,
-RandomNoiseTransformer,
-ResizeTransformer,
-RotateTransformer,
-SaturationTransformer,
-ScaleTransformer,
-SharpenTransformer,
-ShufflePixelsTransformer
+    BlurTransformer,
+    BrightnessTransformer,
+    ChangeAspectRatioTransformer,
+    ClipImageSizeTransformer,
+    ColorJitterTransformer,
+    ContrastTransformer,
+    ConvertColorTransformer,
+    CropTransformer,
+    EncodingQualityTransformer,
+    GrayscaleTransformer,
+    HFlipTransformer,
+    VFlipTransformer,
+    MemeFormatTransformer,
+    OpacityTransformer,
+    OverlayEmojiTransformer,
+    OverlayOntoScreenshotTransformer,
+    OverlayStripesTransformer,
+    OverlayTextTransformer,
+    PadTransformer,
+    PadSquareTransformer,
+    PerspectiveTransformTransformer,
+    PixelizationTransformer,
+    RandomNoiseTransformer,
+    ResizeTransformer,
+    RotateTransformer,
+    SaturationTransformer,
+    ScaleTransformer,
+    SharpenTransformer,
+    ShufflePixelsTransformer,
 ]
