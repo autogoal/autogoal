@@ -17,6 +17,7 @@ from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
 from autogoal.contrib import find_classes
+from autogoal.utils import AlgorithmConfig
 
 
 class Supervised(SemanticType):
@@ -207,8 +208,23 @@ class AlgorithmBase(Algorithm):
         """
         Serializes the Algorithm  instance.
         """
+        self._save_info(path)
+        self.save_model(path)
+
+    def _save_info(self, path: Path):
+        params = [ name for name in inspect.signature(self.__init__).parameters if name != "self"]
+        values = [getattr(self, param, None) for param in params]
+        parameters = { params[i]:values[i]  for i in range(len(params))}
+        module = f'\'{self.__module__}.{self.__class__.__name__}\''
+        name = self.__class__.__name__
+        config = AlgorithmConfig(name, module, parameters)
+        config.to_yaml(path)
+
+
+    def save_model(self, path: Path):
         with open(path / "model.bin","wb") as fd:
             pickle.Pickler(fd).dump(self)
+
 
     @classmethod
     def load(self, path: Path) -> "AlgorithmBase":
