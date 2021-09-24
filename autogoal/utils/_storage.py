@@ -15,12 +15,12 @@ class AlgorithmConfig:
             "params": self.args
             }
         with open(path/ "algorithm.yml", "w") as fd:
-            yaml.dump(info, fd)
+            yaml.safe_dump(info, fd)
     
     @classmethod 
     def from_yaml(self, path: Path):
         with open(path/ "algorithm.yml", "r") as fd:
-            values = yaml.load(fd)
+            values = yaml.safe_load(fd)
             return AlgorithmConfig(values.get('name'), values.get('module'), values.get('params'))
 
     def __repr__(self)-> str:
@@ -37,14 +37,8 @@ def inspect_storage(path : Path) -> "str":
     algorithms_path = main_folder / 'algorithms'
     general_config = main_folder / 'algorithms.yml'
 
-
-        #      args = ", ".join(
-        #     f"{name}={repr(value)}"
-        #     for name, value in zip(parameter_names, parameter_values)
-        #     if value is not None
-        # )
-        # fr = f"{self.__class__.__name__}({args})"
-
+    with open(general_config, "r") as fd:
+        inputs = yaml.safe_load(fd)["inputs"]
 
     with open(general_config, "r") as fd:
         pipeline = yaml.safe_load(fd)
@@ -52,5 +46,5 @@ def inspect_storage(path : Path) -> "str":
 
     algorithms = [AlgorithmConfig.from_yaml(algorithms_path / str(i)) for i in range(count)]
 
-    return str(algorithms)
+    return str(algorithms) + str(inputs)
 

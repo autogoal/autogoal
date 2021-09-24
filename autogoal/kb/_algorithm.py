@@ -335,6 +335,7 @@ class Pipeline:
         os.mkdir(save_path)
         
         algorithms = []
+        info = {}
 
         for i,algorithm in enumerate(self.algorithms):
             algorithm_path = save_path / str(i)
@@ -343,15 +344,14 @@ class Pipeline:
             algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
             algorithms.append(algorithm_class)
 
-        with open(path / "algorithms.yml", "w") as fd:
-            yaml.dump(algorithms, fd)
+        info["algorithms"] = algorithms
+        
+        inputs = [str(x) for x in self.input_types]
 
-        #      args = ", ".join(
-        #     f"{name}={repr(value)}"
-        #     for name, value in zip(parameter_names, parameter_values)
-        #     if value is not None
-        # )
-        # fr = f"{self.__class__.__name__}({args})"
+        info["inputs"] = inputs
+
+        with open(path / "algorithms.yml", "w") as fd:
+            yaml.dump(info, fd)
     
     @classmethod
     def load_algorithms(self, path: Path):
@@ -362,7 +362,7 @@ class Pipeline:
 
         answer = []
 
-        for i,algorithm in enumerate(algorithms):
+        for i,algorithm in enumerate(algorithms.get('algorithms')):
             for cls in autogoal_algorithms:
                 if(algorithm in object.__str__(cls)):
                     answer.append(cls.load(path / "algorithms" / str(i)))
