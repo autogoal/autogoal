@@ -343,12 +343,19 @@ class Pipeline:
             algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
             algorithms.append(algorithm_class)
 
-        with open(path / "algorithms.yaml", "w") as fd:
+        with open(path / "algorithms.yml", "w") as fd:
             yaml.dump(algorithms, fd)
+
+        #      args = ", ".join(
+        #     f"{name}={repr(value)}"
+        #     for name, value in zip(parameter_names, parameter_values)
+        #     if value is not None
+        # )
+        # fr = f"{self.__class__.__name__}({args})"
     
     @classmethod
     def load_algorithms(self, path: Path):
-        with open(path / "algorithms.yaml", "r") as fd:
+        with open(path / "algorithms.yml", "r") as fd:
             algorithms = yaml.safe_load(fd)
         
         autogoal_algorithms = find_classes()
@@ -365,7 +372,7 @@ class Pipeline:
     @classmethod
     def _load_config(self, path: Path):
         # conf = path.glob("*.yaml")[0]
-        with open(path / "pipeline_config.yaml", "r") as fd:
+        with open(path / "pipeline_config.yml", "r") as fd:
             pipeLineconfig = yaml.load_all(fd, Loader=yaml.FullLoader)
 
         autogoal_algorithms = find_classes()
