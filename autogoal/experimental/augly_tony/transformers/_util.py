@@ -22,7 +22,7 @@ class AugLyTransformer(AlgorithmBase):
         pass
 
     def run(self, *args):
-       return self._run(*args)
+        return self._run(*args)
 
     def _run(self, X, y):
         if self._transformer is None:
@@ -45,4 +45,3 @@ def discrete_to_color(color: int) -> Tuple[int, int, int]:
 def image_to_PIL_image(image: Image) -> PLImage:
 
     assert (Image._match(image), "Can't not convert to image")
-
