@@ -20,9 +20,10 @@ from autogoal.contrib import (
 from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
-from autogoal.utils import Gb, Min
+from autogoal.utils import Gb, Min, inspect_storage
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
 import autogoal.logging
+from autogoal.experimental import run
 
 autogoal.logging.setup("WARNING")
 
