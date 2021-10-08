@@ -105,6 +105,14 @@ class SemanticType(metaclass=SemanticTypeMeta):
 
         return best_type
 
+    @classmethod
+    def from_json(x):
+        return json.loads(x)
+
+    @classmethod
+    def to_json(x):
+        return json.dumps(x)
+
 
 # To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.
 # This reduce function will just dispatch to the proper instance method
@@ -284,7 +292,7 @@ class Seq(SemanticType):
 
 from numpy import ndarray
 from scipy.sparse.base import spmatrix
-
+from json import JSONEncoder
 
 # These instances represent the two types of tensorial structure.
 
@@ -344,6 +352,17 @@ Discrete = TensorData("i", "Discrete")
 # And we want `issubclass(...)` to work in a way that `Tensor[2, Categorical, Dense]` is a subclass to `Tensor[2, None, Dense]`.
 # For this purpose we will redefine `_conforms` to match according to how those semantic flags are defined.
 
+
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, ndarray):
+            return obj.tolist()
+        else:
+            return super(NumpyArrayEncoder, self).default(obj)
 
 class Tensor(SemanticType):
     """Represents an abstract tensor type. Can be specialized into more concrete types.
@@ -455,6 +474,9 @@ class Tensor(SemanticType):
 
         return TensorImp
 
+    @classmethod
+    def to_json(x):
+        return json.dumps(x, cls=NumpyArrayEncoder)
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
