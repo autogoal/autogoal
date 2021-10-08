@@ -17,6 +17,7 @@ from functools import reduce
 import inspect
 import copyreg
 from typing import Type
+import json
 
 
 # We start by defining the base class of our hierarchy.
@@ -293,6 +294,7 @@ class Seq(SemanticType):
 from numpy import ndarray
 from scipy.sparse.base import spmatrix
 from json import JSONEncoder
+import numpy
 
 # These instances represent the two types of tensorial structure.
 
