@@ -31,6 +31,7 @@ class Seq2SeqLSTM(_LSTM):
         recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
+        **kwargs
     ):
         super().__init__(
             units=units,
@@ -39,6 +40,7 @@ class Seq2SeqLSTM(_LSTM):
             dropout=dropout,
             recurrent_dropout=recurrent_dropout,
             return_sequences=True,
+            **kwargs
         )
 
         self.activation_fn = activation_fn
@@ -54,6 +56,7 @@ class Seq2VecLSTM(_LSTM):
         recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
+        **kwargs
     ):
         super().__init__(
             units=units,
@@ -62,6 +65,7 @@ class Seq2VecLSTM(_LSTM):
             dropout=dropout,
             recurrent_dropout=recurrent_dropout,
             return_sequences=False,
+            **kwargs
         )
 
         self.activation_fn = activation_fn
@@ -78,6 +82,7 @@ class Seq2SeqBiLSTM(Bidirectional):
         recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
+        **kwargs
     ):
         super().__init__(
             layer=_LSTM(
@@ -89,6 +94,7 @@ class Seq2SeqBiLSTM(Bidirectional):
                 return_sequences=True,
             ),
             merge_mode=merge_mode,
+            **kwargs
         )
 
         self.activation_fn = activation_fn
@@ -105,6 +111,7 @@ class Seq2VecBiLSTM(Bidirectional):
         recurrent_activation_fn: CategoricalValue("tanh", "sigmoid", "relu", "linear"),
         dropout: ContinuousValue(0, 0.5),
         recurrent_dropout: ContinuousValue(0, 0.5),
+        **kwargs
     ):
         super().__init__(
             layer=_LSTM(
@@ -116,6 +123,7 @@ class Seq2VecBiLSTM(Bidirectional):
                 return_sequences=False,
             ),
             merge_mode=merge_mode,
+            **kwargs
         )
 
         self.activation_fn = activation_fn
@@ -124,14 +132,14 @@ class Seq2VecBiLSTM(Bidirectional):
 
 @nice_repr
 class Reshape2D(_Reshape):
-    def __init__(self):
-        super().__init__(target_shape=(-1, 1))
+    def __init__(self, **kwargs):
+        super().__init__(target_shape=(-1, 1), **kwargs)
 
 
 @nice_repr
 class Embedding(_Embedding):
-    def __init__(self, output_dim: DiscreteValue(32, 128)):
-        super().__init__(input_dim=1000, output_dim=output_dim)
+    def __init__(self, output_dim: DiscreteValue(32, 128), **kwargs):
+        super().__init__(input_dim=1000, output_dim=output_dim, **kwargs)
 
 
 @nice_repr
@@ -143,10 +151,13 @@ class Dense(_Dense):
 @nice_repr
 class Conv1D(_Conv1D):
     def __init__(
-        self, filters: DiscreteValue(2, 8), kernel_size: CategoricalValue(3, 5, 7)
+        self,
+        filters: DiscreteValue(2, 8),
+        kernel_size: CategoricalValue(3, 5, 7),
+        **kwargs
     ):
         super().__init__(
-            filters=2 ** filters, kernel_size=kernel_size, padding="causal"
+            filters=2 ** filters, kernel_size=kernel_size, padding="causal", **kwargs
         )
 
 
@@ -158,6 +169,7 @@ class Conv2D(_Conv2D):
         kernel_size: CategoricalValue(3, 5, 7),
         l1: ContinuousValue(0, 1e-3),
         l2: ContinuousValue(0, 1e-3),
+        **kwargs
     ):
         self.l1 = l1
         self.l2 = l2
@@ -167,33 +179,32 @@ class Conv2D(_Conv2D):
             kernel_regularizer=regularizers.l1_l2(l1=l1, l2=l2),
             padding="same",
             data_format="channels_last",
+            **kwargs
         )
 
 
 @nice_repr
 class MaxPooling2D(_MaxPooling2D):
-    def __init__(self):
-        super().__init__(
-            data_format="channels_last", padding="same",
-        )
+    def __init__(self, **kwargs):
+        super().__init__(data_format="channels_last", padding="same", **kwargs)
 
 
 @nice_repr
 class TimeDistributed(_TimeDistributed):
-    def __init__(self, layer: Dense):
-        super().__init__(layer)
+    def __init__(self, layer: Dense, **kwargs):
+        super().__init__(layer, **kwargs)
 
 
 @nice_repr
 class Dropout(_Dropout):
-    def __init__(self, rate: ContinuousValue(0, 0.5)):
-        super().__init__(rate=rate)
+    def __init__(self, rate: ContinuousValue(0, 0.5), **kwargs):
+        super().__init__(rate=rate, **kwargs)
 
 
 @nice_repr
 class BatchNormalization(_BatchNormalization):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 @nice_repr
@@ -210,12 +221,13 @@ class Activation(_Activation):
             "exponential",
             "linear",
         ),
+        **kwargs
     ):
         self.function = function
-        super().__init__(activation=function)
+        super().__init__(activation=function, **kwargs)
 
 
 @nice_repr
 class Flatten(_Flatten):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
