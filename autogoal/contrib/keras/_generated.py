@@ -46,6 +46,15 @@ class Seq2SeqLSTM(_LSTM):
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
 
+    def get_config(self):
+        config = super().get_config()
+        config["activation_fn"] = self.activation_fn
+        config["recurrent_activation_fn"] = self.recurrent_activation_fn
+        config.pop("return_sequences", None)
+        config.pop("activation", None)
+        config.pop("recurrent_activation", None)
+        return config
+
 
 @nice_repr
 class Seq2VecLSTM(_LSTM):
@@ -70,6 +79,15 @@ class Seq2VecLSTM(_LSTM):
 
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
+
+    def get_config(self):
+        config = super().get_config()
+        config["activation_fn"] = self.activation_fn
+        config["recurrent_activation_fn"] = self.recurrent_activation_fn
+        config.pop("return_sequences", None)
+        config.pop("activation", None)
+        config.pop("recurrent_activation", None)
+        return config
 
 
 @nice_repr
@@ -100,6 +118,20 @@ class Seq2SeqBiLSTM(Bidirectional):
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
 
+    def get_config(self):
+        config = super().get_config()
+        config["units"] = self.layer.units
+        config["activation_fn"] = self.activation_fn
+        config["recurrent_activation_fn"] = self.recurrent_activation_fn
+        config["dropout"] = self.layer.dropout
+        config["recurrent_dropout"] = self.layer.recurrent_dropout
+        config.pop("layer", None)
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 
 @nice_repr
 class Seq2VecBiLSTM(Bidirectional):
@@ -129,17 +161,41 @@ class Seq2VecBiLSTM(Bidirectional):
         self.activation_fn = activation_fn
         self.recurrent_activation_fn = recurrent_activation_fn
 
+    def get_config(self):
+        config = super().get_config()
+        config["units"] = self.layer.units
+        config["activation_fn"] = self.activation_fn
+        config["recurrent_activation_fn"] = self.recurrent_activation_fn
+        config["dropout"] = self.layer.dropout
+        config["recurrent_dropout"] = self.layer.recurrent_dropout
+        config.pop("layer", None)
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 
 @nice_repr
 class Reshape2D(_Reshape):
     def __init__(self, **kwargs):
         super().__init__(target_shape=(-1, 1), **kwargs)
 
+    def get_config(self):
+        config = super().get_config()
+        config.pop("target_shape", None)
+        return config
+
 
 @nice_repr
 class Embedding(_Embedding):
     def __init__(self, output_dim: DiscreteValue(32, 128), **kwargs):
         super().__init__(input_dim=1000, output_dim=output_dim, **kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config.pop("input_dim", None)
+        return config
 
 
 @nice_repr
@@ -159,6 +215,11 @@ class Conv1D(_Conv1D):
         super().__init__(
             filters=2 ** filters, kernel_size=kernel_size, padding="causal", **kwargs
         )
+
+    def get_config(self):
+        config = super().get_config()
+        config.pop("padding", None)
+        return config
 
 
 @nice_repr
@@ -182,11 +243,27 @@ class Conv2D(_Conv2D):
             **kwargs
         )
 
+    def get_config(self):
+        config = super().get_config()
+        config["l1"] = self.l1
+        config["l2"] = self.l2
+        config["kernel_size"] = self.kernel_size[0]
+        config.pop("kernel_regularizer", None)
+        config.pop("padding", None)
+        config.pop("data_format", None)
+        return config
+
 
 @nice_repr
 class MaxPooling2D(_MaxPooling2D):
     def __init__(self, **kwargs):
         super().__init__(data_format="channels_last", padding="same", **kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config.pop("data_format", None)
+        config.pop("padding", None)
+        return config
 
 
 @nice_repr
@@ -225,6 +302,12 @@ class Activation(_Activation):
     ):
         self.function = function
         super().__init__(activation=function, **kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config["function"] = config["activation"]
+        config.pop("activation", None)
+        return config
 
 
 @nice_repr
