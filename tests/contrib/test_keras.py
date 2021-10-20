@@ -104,5 +104,3 @@ def test_keras_layers_from_config():
     test_from_config(seq2SeqBiLSTM)
     timeDistributed = TimeDistributed(dense)
     test_from_config(timeDistributed)
-
-
