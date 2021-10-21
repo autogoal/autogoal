@@ -261,19 +261,23 @@ def automl_predict(
 
 
 @automl_app.command("inspect")
-def automl_inspect(model: Path = Path("automl.bin")):
+def automl_inspect(model: Path = Path(".")):
     """
     🔍 Inspect a trained AutoML model.
     """
 
-    with model.open("rb") as fp:
-        automl = AutoML.load(fp)
+    # with model.open("rb") as fp:
+    #     automl = AutoML.load(fp)
 
-    console.print(f"🔍 Inspecting AutoML model: [green]{model.absolute()}[/]")
+    # console.print(f"🔍 Inspecting AutoML model: [green]{model.absolute()}[/]")
 
-    console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
-    console.print(repr(automl.best_pipeline_))
+    # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
+    console.print(inspect_storage(model))
 
+
+@automl_app.command("serve")
+def automl_server():
+    run()
 
 @data_app.callback()
 def data_callback():
