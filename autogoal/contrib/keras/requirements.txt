@@ -1,0 +1,3 @@
+tensorflow
+tensorflow_addons==0.9.1
+keras>=2.3.1
