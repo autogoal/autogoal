@@ -13,6 +13,8 @@ from tensorflow.keras.layers import Flatten as _Flatten
 from tensorflow.keras.layers import Reshape as _Reshape
 from tensorflow.keras import regularizers
 
+from numpy import log2
+
 from autogoal.grammar import (
     BooleanValue,
     CategoricalValue,
@@ -218,6 +220,7 @@ class Conv1D(_Conv1D):
 
     def get_config(self):
         config = super().get_config()
+        config["filters"] = log2(config["filters"])
         config.pop("padding", None)
         return config
 
@@ -248,6 +251,7 @@ class Conv2D(_Conv2D):
         config["l1"] = self.l1
         config["l2"] = self.l2
         config["kernel_size"] = self.kernel_size[0]
+        config["filters"] = log2(config["filters"])
         config.pop("kernel_regularizer", None)
         config.pop("padding", None)
         config.pop("data_format", None)
