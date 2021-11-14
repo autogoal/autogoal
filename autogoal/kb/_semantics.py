@@ -107,12 +107,12 @@ class SemanticType(metaclass=SemanticTypeMeta):
         return best_type
 
     @classmethod
-    def from_json(x):
-        return json.loads(x)
+    def from_json(x, data):
+        return json.loads(data)
 
     @classmethod
-    def to_json(x):
-        return json.dumps(x)
+    def to_json(x, data):
+        return json.dumps(data)
 
 
 # To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.
@@ -477,8 +477,8 @@ class Tensor(SemanticType):
         return TensorImp
 
     @classmethod
-    def to_json(x):
-        return json.dumps(x, cls=NumpyArrayEncoder)
+    def to_json(x, data):
+        return json.dumps(data, cls=NumpyArrayEncoder)
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
