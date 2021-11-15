@@ -181,3 +181,4 @@ from ._resource import ResourceManager
 from ._process import RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager
 from ._storage import AlgorithmConfig, inspect_storage
+from ._dependency_resolver import get_contrib, generate_installer

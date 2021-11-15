@@ -47,4 +47,3 @@ def inspect_storage(path : Path) -> "str":
     algorithms = [AlgorithmConfig.from_yaml(algorithms_path / str(i)) for i in range(count)]
 
     return str(algorithms) + str(inputs)
-

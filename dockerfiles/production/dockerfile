@@ -1,0 +1,21 @@
+# =====================
+# Autogoal base image
+# ---------------------
+
+FROM autogoal:base
+
+EXPOSE 8000
+
+RUN mkdir -p /home/coder/.autogoal/data && chown coder:coder /home/coder/.autogoal
+
+VOLUME /home/coder/.autogoal
+
+COPY ./ /home/coder/autogoal
+
+RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
+
+USER coder
+
+CMD [ "python3", "-m", "autogoal", "ml", "serve" ]

@@ -165,7 +165,7 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
         self.model = model
     
     @classmethod
-    def load_model(self, path: Path, config: AlgorithmConfig):
+    def load_model(self, path: Path):
         instance = super().load_model(path, config)
         model = path / 'model.h5'
         if model.exists():
