@@ -1,7 +1,7 @@
 import collections
 import inspect
 import logging
-from os import stat
+from os import stat, system
 from pathlib import Path
 from typing import List
 
@@ -278,6 +278,18 @@ def automl_inspect(model: Path = Path(".")):
 @automl_app.command("serve")
 def automl_server():
     run()
+
+@automl_app.command("export")
+def export(
+    name: str = typer.Argument(
+        ..., help="Name of the exported image"
+    )
+):
+        """
+        Creates dockerfile image and save it to disk
+        """
+        system('docker build --file ./dockerfiles/production/dockerfile -t autogoal:production .')
+        system(f'docker save -o {name}.tar autogoal:production')
 
 @data_app.callback()
 def data_callback():
