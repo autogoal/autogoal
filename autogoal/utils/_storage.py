@@ -38,11 +38,9 @@ def inspect_storage(path : Path) -> "str":
     general_config = main_folder / 'algorithms.yml'
 
     with open(general_config, "r") as fd:
-        inputs = yaml.safe_load(fd)["inputs"]
-
-    with open(general_config, "r") as fd:
         pipeline = yaml.safe_load(fd)
-        count = len(pipeline)
+        inputs = pipeline["inputs"]
+        count = len(pipeline["algorithms"])
 
     algorithms = [AlgorithmConfig.from_yaml(algorithms_path / str(i)) for i in range(count)]
 
