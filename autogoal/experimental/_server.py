@@ -3,6 +3,7 @@ from fastapi import FastAPI, Response
 from pathlib import Path
 from autogoal.ml import AutoML
 from pydantic import BaseModel
+from utils import inspect_storage
 import uvicorn
 
 
@@ -27,8 +28,15 @@ async def output():
     """
     return {"message": str(model.best_pipeline_.algorithms[-1].__class__.output_type())}
 
+@app.get("/inspect")
+async def root():
+    """
+    Returns the model inspect command
+    """
+    return {"message": str(inspect_storage(Path('.')))}
+
 @app.post("/")
-async def postroot(body: Body):
+async def eval(t: Body):
     """
     Returns the model prediction over the provided values
     """
@@ -36,11 +44,12 @@ async def postroot(body: Body):
 
     output_type = model.best_pipeline_.algorithms[-1].__class__.output_type()
 
-    data = input_type.from_json(body.values)
+    data = input_type.from_json(t.values)
 
     result = model.predict(data)
 
-    return Response(content=output_type.to_json(result), media_type="application/json")
+    return Response(content=output_type
+        .to_json(result), media_type="application/json")
 
 def run():
     uvicorn.run(app, host="0.0.0.0", port=8000)

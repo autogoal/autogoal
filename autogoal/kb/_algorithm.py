@@ -324,20 +324,6 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
     def save_algorithms(self, path: Path):
-        self._save_config(path)
-    
-    def save(self, path: Path):
-        save_path = path / "storage"
-        if os.path.exists(save_path):
-            shutil.rmtree(save_path)
-        os.mkdir(save_path)
-        self._save_config(save_path)
-
-    @classmethod
-    def load(self, path: Path):
-        return Pipeline._load_config(path / "storage")
-
-    def _save_config(self, path: Path):
         save_path = path / "algorithms"
         if os.path.exists(save_path):
             shutil.rmtree(save_path)
@@ -386,28 +372,7 @@ class Pipeline:
                     algorithm_clases.append(cls)
                     answer.append(cls.load(path / "algorithms" / str(i)))
 
-        #generate_requirements(algorithm_clases)
-
         return answer
-            
-    @classmethod
-    def _load_config(self, path: Path):
-        # conf = path.glob("*.yaml")[0]
-        with open(path / "pipeline_config.yml", "r") as fd:
-            pipeLineconfig = yaml.load_all(fd, Loader=yaml.FullLoader)
-
-        autogoal_algorithms = find_classes()
-
-        pipeLineconfig.algorithms = []
-
-        for i,algorithm in pipeLineconfig.algorithm_description:
-            for declaration in autogoal_algorithms:
-                if(algorithm in object.__str__(declaration)):
-                    pipeLineconfig.algorithms.append(declaration.load(path / str(i)))
-                    break
-
-        return pipeLineconfig
-
 
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:

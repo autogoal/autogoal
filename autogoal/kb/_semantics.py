@@ -291,7 +291,7 @@ class Seq(SemanticType):
 # internal type, and a dense/sparse flag.
 
 
-from numpy import ndarray
+from numpy import ndarray, array
 from scipy.sparse.base import spmatrix
 from json import JSONEncoder
 import numpy
@@ -355,7 +355,7 @@ Discrete = TensorData("i", "Discrete")
 # For this purpose we will redefine `_conforms` to match according to how those semantic flags are defined.
 
 
-class NumpyArrayEncoder(JSONEncoder):
+class TensorEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, numpy.integer):
             return int(obj)
@@ -363,8 +363,11 @@ class NumpyArrayEncoder(JSONEncoder):
             return float(obj)
         elif isinstance(obj, ndarray):
             return obj.tolist()
+        elif isinstance(obj, spmatrix):
+            _ndarray = obj.toarray()
+            return _ndarray.tolist()
         else:
-            return super(NumpyArrayEncoder, self).default(obj)
+            return super(TensorEncoder, self).default(obj)
 
 class Tensor(SemanticType):
     """Represents an abstract tensor type. Can be specialized into more concrete types.
@@ -478,7 +481,12 @@ class Tensor(SemanticType):
 
     @classmethod
     def to_json(x, data):
-        return json.dumps(data, cls=NumpyArrayEncoder)
+        return json.dumps(data, cls=TensorEncoder)
+
+    @classmethod
+    def from_json(x, data):
+        value = super().from_json(data)
+        return array(value)
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,

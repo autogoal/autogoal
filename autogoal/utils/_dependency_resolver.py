@@ -25,7 +25,7 @@ def get_contrib(cls):
 def generate_installer(path: Path, list: List):
     with open(path / "contribs.sh", "w") as fd:
         fd.writelines("#!/bin/bash\n")
-        base = "poetry install -E"
+        base = "poetry install"
         for contrib in list:
-            base += f" {contrib}"
+            base += f" -E {contrib}"
         fd.writelines(base)
