@@ -25,11 +25,12 @@ def get_contrib(cls):
 def generate_installer(path: Path, list: List):
     with open(path / "contribs.sh", "w") as fd:
         fd.writelines("#!/bin/bash\n")
+        if 'keras' in list:
+            fd.writelines("pip install tensorflow tensorflow_addons\n")
+        if 'transformers' in list:
+            fd.writelines("pip install torch torchvision\n")
         base = "poetry install -E"
         for contrib in list:
             base += f" {contrib}"
         fd.writelines(base)
-        if 'keras' in list:
-            base += f"\npip install tensorflow tensorflow_addons"
-        if 'transformers' in list:
-            base += f"\npip install torch torchvision"
+        

@@ -1,7 +1,7 @@
 import collections
 import inspect
 import logging
-from os import stat
+from os import stat, system
 from pathlib import Path
 from typing import List
 
