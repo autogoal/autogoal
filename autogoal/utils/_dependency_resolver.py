@@ -29,3 +29,7 @@ def generate_installer(path: Path, list: List):
         for contrib in list:
             base += f" {contrib}"
         fd.writelines(base)
+        if 'keras' in list:
+            base += f"\npip install tensorflow tensorflow_addons"
+        if 'transformers' in list:
+            base += f"\npip install torch torchvision"
