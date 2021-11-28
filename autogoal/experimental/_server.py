@@ -3,7 +3,7 @@ from fastapi import FastAPI, Response
 from pathlib import Path
 from autogoal.ml import AutoML
 from pydantic import BaseModel
-from utils import inspect_storage
+from autogoal.utils import inspect_storage
 import uvicorn
 
 
