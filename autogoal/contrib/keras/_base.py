@@ -159,17 +159,20 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
     def save_model(self, path: Path):
         if self.model:
             self.model.save(path / 'model.h5')
-        model = self.model
-        self.model = None
-        super().save_model(path)
-        self.model = model
+        model = self._model
+        grammar = self._grammar
+        self._grammar = None
+        self._model = None
+        super(KerasNeuralNetwork,self).save_model(path)
+        self._grammar = grammar
+        self._model = model
     
     @classmethod
     def load_model(self, path: Path):
         instance = super().load_model(path)
         model = path / 'model.h5'
         if model.exists():
-            instance.model = load_model(model)
+            instance._model = load_model(model)
         return instance
 
 
