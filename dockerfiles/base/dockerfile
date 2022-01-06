@@ -2,7 +2,11 @@
 # Debian base image
 # ---------------------
 
-FROM bitnami/minideb:latest
+FROM tensorflow/tensorflow:latest-gpu-py3
+
+RUN pip install -U pip
+RUN pip install tensorflow_addons==0.9.1
+RUN pip install torch torchvision
 
 
 # =====================
@@ -18,8 +22,6 @@ RUN apt-get update \
     sudo \
     bash \
     python3-pip
-
-RUN pip3 install -U pip
 
 RUN rm -rf /var/lib/apt/lists/*
 
