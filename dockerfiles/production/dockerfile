@@ -10,7 +10,7 @@ RUN mkdir -p /home/coder/.autogoal/data && chown coder:coder /home/coder/.autogo
 
 VOLUME /home/coder/.autogoal
 
-COPY ./ /home/coder/autogoal
+COPY /storage/ /home/coder/autogoal/storage
 
 RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
 
