@@ -14,12 +14,12 @@ class AlgorithmConfig:
             "module": self.module,
             "params": self.args
             }
-        with open(path/ "algorithm.yml", "w") as fd:
+        with open(path+ "/algorithm.yml", "w") as fd:
             yaml.safe_dump(info, fd)
     
     @classmethod 
     def from_yaml(self, path: Path):
-        with open(path/ "algorithm.yml", "r") as fd:
+        with open(path+ "/algorithm.yml", "r") as fd:
             values = yaml.safe_load(fd)
             return AlgorithmConfig(values.get('name'), values.get('module'), values.get('params'))
 

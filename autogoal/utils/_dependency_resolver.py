@@ -5,7 +5,7 @@ from typing import List
 def get_requirements(cls):
     print(inspect.getfile(cls))
     path = Path(inspect.getfile(cls))
-    requiements = path.parent / "requirements.txt"
+    requiements = path.parent + "/requirements.txt"
     if requiements.exists():
         return requiements.read_text()
     return None
@@ -23,12 +23,12 @@ def get_contrib(cls):
     return path.parent.name
 
 def generate_installer(path: Path, list: List):
-    with open(path / "contribs.sh", "w") as fd:
+    with open(path + "/contribs.sh", "w") as fd:
         fd.writelines("#!/bin/bash\n")
-        # if 'keras' in list:
-        #     fd.writelines("pip install tensorflow tensorflow_addons\n")
-        # if 'transformers' in list:
-        #     fd.writelines("pip install torch torchvision\n")
+        if 'keras' in list:
+            fd.writelines("pip install tensorflow-gpu==2.1.0 tensorflow-addons==0.9.1\n")
+        if 'transformers' in list:
+            fd.writelines("pip install torch==1.9.0 torchvision==0.10.0\n")
         base = "poetry install"
         for contrib in list:
             base += f" -E {contrib}"

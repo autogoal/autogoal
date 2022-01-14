@@ -1,6 +1,6 @@
 # import high-level API
 from autogoal.ml import AutoML
-from autogoal.kb import MatrixContinuousDense, CategoricalVector
+from autogoal.kb import MatrixContinuousDense, VectorCategorical
 
 # load data
 from autogoal.datasets import cars
@@ -8,8 +8,8 @@ X, y = cars.load()
 
 # instantiate AutoML class
 automl = AutoML(
-    input=MatrixContinuousDense(),
-    output=CategoricalVector(),
+    input=MatrixContinuousDense,
+    output=VectorCategorical,
     # ... other parameters and constraints
 )
 

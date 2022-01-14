@@ -223,7 +223,7 @@ class AlgorithmBase(Algorithm):
 
 
     def save_model(self, path: Path) -> "None":
-        with open(path / "model.bin","wb") as fd:
+        with open(path + "/model.bin","wb") as fd:
             pickle.Pickler(fd).dump(self)
 
 
@@ -241,7 +241,7 @@ class AlgorithmBase(Algorithm):
     @classmethod
     def load_model(self, path: Path):
 
-        with open(path / "model.bin", "rb") as fd:
+        with open(path + "/model.bin", "rb") as fd:
 
             algorithm = pickle.Unpickler(fd).load()
 
@@ -324,7 +324,7 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
     def save_algorithms(self, path: Path):
-        save_path = path / "algorithms"
+        save_path = path + "/algorithms"
         if os.path.exists(save_path):
             shutil.rmtree(save_path)
         os.mkdir(save_path)
@@ -335,7 +335,7 @@ class Pipeline:
 
         for i,algorithm in enumerate(self.algorithms):
             contribs.add(get_contrib(algorithm.__class__))
-            algorithm_path = save_path / str(i)
+            algorithm_path = save_path + f"/{str(i)}"
             os.mkdir(algorithm_path)
             algorithm.save(algorithm_path)
             algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
@@ -349,7 +349,7 @@ class Pipeline:
 
         info["inputs"] = inputs
 
-        with open(path / "algorithms.yml", "w") as fd:
+        with open(path + "/algorithms.yml", "w") as fd:
             yaml.dump(info, fd)
     
     @classmethod
@@ -357,7 +357,7 @@ class Pipeline:
         """
         Load piplien algorithms list from given path
         """
-        with open(path / "algorithms.yml", "r") as fd:
+        with open(path + "/algorithms.yml", "r") as fd:
             algorithms = yaml.safe_load(fd)
 
         autogoal_algorithms = find_classes()
@@ -370,7 +370,7 @@ class Pipeline:
             for cls in autogoal_algorithms:
                 if(algorithm in object.__str__(cls)):
                     algorithm_clases.append(cls)
-                    answer.append(cls.load(path / "algorithms" / str(i)))
+                    answer.append(cls.load(path + "/algorithms" / str(i)))
 
         return answer
 

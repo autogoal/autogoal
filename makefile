@@ -38,6 +38,12 @@ docker:
 pull:
 	docker pull autogoal/autogoal:latest
 
+# pull-safe         Pull the development image using docker.uclv.cu.
+.PHONY: pull-safe
+pull-safe:
+	docker pull docker.uclv.cu/autogoal/autogoal:latest
+	docker tag docker.uclv.cu/autogoal/autogoal:latest autogoal/autogoal:latest
+
 # push         Push the development image to Docker Hub.
 .PHONY: push
 push:
