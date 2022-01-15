@@ -6,16 +6,8 @@ FROM autogoal:base
 
 EXPOSE 8000
 
-RUN mkdir -p /home/coder/.autogoal/data && chown coder:coder /home/coder/.autogoal
+COPY ./storage /home/coder/autogoal/storage
 
-VOLUME /home/coder/.autogoal
-
-COPY /storage/ /home/coder/autogoal/storage
-
-RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
-
-RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
-
-USER coder
+RUN chmod +x ./storage/contribs.sh && sudo ./storage/contribs.sh
 
 CMD [ "python3", "-m", "autogoal", "ml", "serve" ]

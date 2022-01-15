@@ -2,8 +2,7 @@
 # Debian base image
 # ---------------------
 
-FROM docker.uclv.cu/bitnami/minideb:latest
-
+FROM bitnami/minideb:latest
 
 # =====================
 # User stuff
@@ -46,22 +45,19 @@ ENV XDG_CACHE_HOME="/opt/dev/cache"
 
 WORKDIR /home/coder/autogoal
 
-COPY ./ /home/coder/autogoal/
-
-RUN rm -r /home/coder/autogoal/autogoal/contrib/gensim \
-          /home/coder/autogoal/autogoal/contrib/keras \
-          /home/coder/autogoal/autogoal/contrib/nltk \
-          /home/coder/autogoal/autogoal/contrib/sklearn \
-          /home/coder/autogoal/autogoal/contrib/spacy \
-          /home/coder/autogoal/autogoal/contrib/streamlit \
-          /home/coder/autogoal/autogoal/contrib/telegram \
-          /home/coder/autogoal/autogoal/contrib/transformers \
-          /home/coder/autogoal/autogoal/contrib/wikipedia
-
 COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
-
 RUN make env
-
 RUN poetry install
+
+USER coder
+
+RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
+VOLUME /home/coder/.autogoal
+
+COPY ./ /home/coder/autogoal
+
+RUN sudo rm -rf /home/coder/autogoal/storage
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
 
 CMD ["/bin/bash"]
