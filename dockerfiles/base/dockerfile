@@ -2,12 +2,7 @@
 # Debian base image
 # ---------------------
 
-FROM tensorflow/tensorflow:latest-gpu-py3
-
-RUN pip install -U pip
-RUN pip install tensorflow_addons==0.9.1
-RUN pip install torch torchvision
-
+FROM bitnami/minideb:latest
 
 # =====================
 # User stuff
@@ -22,6 +17,8 @@ RUN apt-get update \
     sudo \
     bash \
     python3-pip
+
+RUN pip3 install -U pip
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -49,9 +46,18 @@ ENV XDG_CACHE_HOME="/opt/dev/cache"
 WORKDIR /home/coder/autogoal
 
 COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
-
 RUN make env
-
 RUN poetry install
+
+USER coder
+
+RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
+VOLUME /home/coder/.autogoal
+
+COPY ./ /home/coder/autogoal
+
+RUN sudo rm -rf /home/coder/autogoal/storage
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
 
 CMD ["/bin/bash"]
