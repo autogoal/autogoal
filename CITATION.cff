@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Estévez-Velarde
+  given-names: Suilan
+- family-names: Gutiérrez
+  given-names: Yoan
+- family-names: Almeida-Cruz
+  given-names: Yudivián
+- family-names: Montoyo
+  given-names: Andrés
+title: "General-purpose hierarchical optimisation of machine learning pipelines with grammatical evolution"
+version: 0.6.0
+doi: 10.1016/j.ins.2020.07.035
+journal: "Information Sciences"
+publisher: Elsevier
+year: 2020
+url: https://github.com/autogoal/autogoal

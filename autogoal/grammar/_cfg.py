@@ -312,7 +312,10 @@ def _generate_cfg(
     parameters = {}
 
     if inspect.isclass(cls):
-        signature = inspect.signature(cls.__init__)
+        if getattr(cls, "get_inner_signature", None):
+            signature = cls.get_inner_signature()
+        else:
+            signature = inspect.signature(cls.__init__)
     elif inspect.isfunction(cls):
         signature = inspect.signature(cls)
     else:

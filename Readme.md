@@ -1,15 +1,18 @@
 ![AutoGOAL Logo](https://autogoal.github.io/autogoal-banner.png)
 
+---
+
 [<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="GitHub stars" src="https://img.shields.io/github/stars/autogoal/autogoal?style=social">](https://github.com/autogoal/autogoal/stargazers) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Followers&style=social">](https://twitter.com/auto_goal)
 
-[<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/autogoal/autogoal/CI/main?label=unit tests&logo=github">](https://github.com/autogoal/autogoal/actions)
 [<img src="https://codecov.io/gh/autogoal/autogoal/branch/main/graph/badge.svg" />](https://codecov.io/gh/autogoal/autogoal/)
 [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
 [<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
 
-# AutoGOAL
+[![Build and Push to Docker (main branch)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml)
+[![Test Core (main branch)](https://github.com/autogoal/autogoal/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/autogoal/autogoal/actions/workflows/test.yml)
+[![Release to PyPI](https://github.com/autogoal/autogoal/actions/workflows/release.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/release.yml)
 
-> Automatic Generation, Optimization And Artificial Learning
+---
 
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
 It has been designed mainly for _Automated Machine Learning_ (aka [AutoML](https://www.automl.org))
@@ -150,7 +153,7 @@ These are our consistency rules:
 
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
 
-- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
+- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AutoGOAL.
 - [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
 - [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
@@ -214,6 +217,11 @@ Here are all the current contributions.
     <td align="center"><a href="https://github.com/yacth"><img src="https://avatars3.githubusercontent.com/u/71322097?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yacth</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Ayacth" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=yacth" title="Code">💻</a></td>
     <td align="center"><a href="https://sourceplusplus.com"><img src="https://avatars0.githubusercontent.com/u/3278877?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Fergerson</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3ABFergerson" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://adityanikhil.github.io/main/"><img src="https://avatars2.githubusercontent.com/u/30192967?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aditya Nikhil</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3AAdityaNikhil" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/lucas-FP"><img src="https://avatars.githubusercontent.com/u/39564125?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lucas-FP</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Alucas-FP" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=lucas-FP" title="Code">💻</a></td>
+    <td align="center"><a href="http://leynier.github.io"><img src="https://avatars.githubusercontent.com/u/36774373?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leynier Gutiérrez González</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=leynier" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://dev.to/ender_minyard"><img src="https://avatars.githubusercontent.com/u/60559370?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ender Minyard</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=genderev" title="Documentation">📖</a></td>
   </tr>
 </table>
 
