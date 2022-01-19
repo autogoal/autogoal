@@ -47,7 +47,7 @@ for n_features in [2, 20, 100]:
                 
 
                 # # Instantiate AutoML, define input/output types and the score metric
-                automl = AutoML(input=MatrixContinuousDense,
+                automl = AutoML(input=(MatrixContinuousDense, Supervised[VectorCategorical]),
                                 output=VectorCategorical,
                                 score_metric=silhouette_score,
                                 search_iterations=args.iterations,

@@ -9,13 +9,13 @@ X, y = cars.load()
 
 # Instantiate AutoML, define input/output types and the score metric
 automl = AutoML(
-    input=MatrixContinuousDense,
+    input=(MatrixContinuousDense, Supervised[VectorCategorical]),
     output=VectorCategorical,
     score_metric=calinski_harabasz_score,
 )
 
 # Run the pipeline search process
-automl.fit(X)
+automl.fit(X[0:10])
 
 # Report the best pipeline
 print(automl.best_pipeline_)
