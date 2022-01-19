@@ -5,7 +5,7 @@ from ._base import (
     Logger,
     MemoryLogger,
     RichLogger,
-    JsonLogger
+    JsonLogger,
 )
 from ._random import RandomSearch
 from ._pge import ModelSampler, PESearch
