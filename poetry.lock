@@ -713,7 +713,7 @@ traitlets = "*"
 
 [[package]]
 name = "jupyterlab"
-version = "1.2.20"
+version = "1.2.21"
 description = "The JupyterLab notebook server extension."
 category = "main"
 optional = true
@@ -2579,8 +2579,8 @@ jupyter-core = [
     {file = "jupyter_core-4.7.1.tar.gz", hash = "sha256:79025cb3225efcd36847d0840f3fc672c0abd7afd0de83ba8a1d3837619122b4"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-1.2.20-py2.py3-none-any.whl", hash = "sha256:47d4ad4d2547b9d6e8d613e92b30a6450e77ac6c2882352c17b5d325c83c9bd4"},
-    {file = "jupyterlab-1.2.20.tar.gz", hash = "sha256:6d5433f5d9ceb392e95f23d047339e3e4bd436c2a0c42189087f817411941cb8"},
+    {file = "jupyterlab-1.2.21-py2.py3-none-any.whl", hash = "sha256:67d83f56f5dcdfdcbacd94a00317ee0c7a57253001bdbba273ce7cd5a6c38680"},
+    {file = "jupyterlab-1.2.21.tar.gz", hash = "sha256:b07b19b7947dbe8b1cca1112223d236823fc9e1151beeac7ac8d0b74ed2ee5ee"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
