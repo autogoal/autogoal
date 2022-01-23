@@ -4,6 +4,7 @@ from autogoal.kb import MatrixContinuousDense, VectorCategorical
 
 # load data
 from autogoal.datasets import cars
+
 X, y = cars.load()
 
 # instantiate AutoML class

@@ -69,7 +69,7 @@ class SklearnWrapper(AlgorithmBase):
 
 
 class SklearnEstimator(SklearnWrapper):
-    def _train(self, X, y):
+    def _train(self, X, y=None):
         self.fit(X, y)
 
         return y
