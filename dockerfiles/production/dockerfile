@@ -1,0 +1,13 @@
+# =====================
+# Autogoal base image
+# ---------------------
+
+FROM autogoal:base
+
+EXPOSE 8000
+
+COPY ./storage /home/coder/autogoal/storage
+
+RUN chmod +x ./storage/contribs.sh && sudo ./storage/contribs.sh
+
+CMD [ "python3", "-m", "autogoal", "ml", "serve" ]

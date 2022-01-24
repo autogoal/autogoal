@@ -33,6 +33,11 @@ toml = "^0.10.0"
 tqdm = "^4.50.2"
 typer = "^0.3.2"
 rich = "^8.0.0"
+fastapi = "^0.68.1"
+uvicorn = {extras = ["standard"], version = "^0.15.0"}
+gunicorn = "^20.1.0"
+requests = "^2.26.0"
+Cython = "^0.29.24"
 
 # Contrib dependencies
 gensim = { version = "^3.8.1", optional = true }
@@ -101,7 +106,6 @@ contrib = [
     "transformers",
     "wikipedia",
 ]
-
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]

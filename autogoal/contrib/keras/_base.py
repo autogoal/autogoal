@@ -1,10 +1,12 @@
+import pathlib
 from autogoal.kb import AlgorithmBase, Supervised
 from typing import Optional
+from pathlib import Path
 
 import numpy as np
 from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
 from tensorflow.keras.layers import Dense, Input, TimeDistributed, concatenate
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import (
     ImageDataGenerator as _ImageDataGenerator,
@@ -29,7 +31,7 @@ from autogoal.kb import (
     Tensor4,
 )
 
-from autogoal.utils import nice_repr
+from autogoal.utils import nice_repr, AlgorithmConfig
 import abc
 
 
@@ -153,6 +155,25 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
 
     def predict(self, X):
         return self.model.predict(X)
+
+    def save_model(self, path: Path):
+        if self.model:
+            self.model.save(path / 'model.h5')
+        model = self._model
+        grammar = self._grammar
+        self._grammar = None
+        self._model = None
+        super(KerasNeuralNetwork,self).save_model(path)
+        self._grammar = grammar
+        self._model = model
+    
+    @classmethod
+    def load_model(self, path: Path):
+        instance = super().load_model(path)
+        model = path / 'model.h5'
+        if model.exists():
+            instance._model = load_model(model)
+        return instance
 
 
 class KerasClassifier(KerasNeuralNetwork):

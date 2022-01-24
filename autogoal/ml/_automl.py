@@ -1,11 +1,15 @@
 import io
+import pathlib
 import pickle
 import statistics
+import os
+import shutil
 
 import numpy as np
 from autogoal.contrib import find_classes
+from pathlib import Path
 
-from autogoal.kb import build_pipeline_graph, SemanticType
+from autogoal.kb import build_pipeline_graph, SemanticType, Pipeline
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
 from autogoal.utils import nice_repr
@@ -105,6 +109,30 @@ class AutoML:
         self._check_fitted()
         pickle.Pickler(fp).dump(self)
 
+    def folder_save(self, path: Path):
+        """
+        Serializes the AutoML into a given path.
+        """
+        if (path is None):
+            path = os.getcwd()
+
+        self._check_fitted()
+        save_path = path + "/storage"
+        
+
+        try:
+            os.makedirs(save_path)
+        except: 
+            shutil.rmtree(save_path)
+            os.makedirs(save_path)
+
+        tmp = self.best_pipeline_.algorithms
+        self.best_pipeline_.save_algorithms(save_path)
+        self.best_pipeline_.algorithms = []
+        with open(save_path + "/model.bin", "wb") as fd:
+            self.save(fd)
+        self.best_pipeline_.algorithms = tmp
+
     @classmethod
     def load(self, fp: io.FileIO) -> "AutoML":
         """
@@ -117,6 +145,19 @@ class AutoML:
         if not isinstance(automl, AutoML):
             raise ValueError("The serialized file does not contain an AutoML instance.")
 
+        return automl
+
+    @classmethod 
+    def folder_load(self, path: Path) -> "AutoML":
+        """
+        Deserializes an AutoML instance from a given path.
+        
+        After deserialization, the best pipeline found is ready to predict.
+        """
+        load_path = path + "/storage"
+        with open(load_path + "/model.bin", "rb") as fd:
+            automl = self.load(fd)
+        automl.best_pipeline_.algorithms = Pipeline.load_algorithms(load_path)
         return automl
 
     def score(self, X, y):
@@ -151,3 +192,43 @@ class AutoML:
         self._check_fitted()
 
         return self.best_pipeline_.run(X, None)
+
+    def export(self, name):
+        """
+        Exports the result of the AutoML run onto a new Docker image.
+        """
+        self.save()
+        os.system('docker build --file ./dockerfiles/production/dockerfile-safe -t autogoal:production .')
+        os.system(f'docker save -o {name}.tar autogoal:production')
+
+    
+    def export_portable(self, path=None):
+        """
+        Generate a portable set of files that can be used to export the model into a new Docker image
+        """
+        if (path is None):
+            path = os.getcwd()
+        
+        datapath = path + "/autogoal-export"
+        if (Path(datapath).exists()):
+            shutil.rmtree(datapath)
+
+        self.folder_save(datapath)
+
+        open(datapath + "/dockerfile", "w").close()
+        shutil.copyfile("/home/coder/autogoal/dockerfiles/production/dockerfile", datapath + "/dockerfile")
+
+        makefile = open(datapath + "/makefile", "w")
+        makefile.write("""
+build:
+
+	docker build --file ./dockerfile -t autogoal:production .
+    docker save -o autogoal-prod.tar autogoal:production
+        """)
+        makefile.close()
+
+        print("generated assets for production deployment")
+
+
+
+        

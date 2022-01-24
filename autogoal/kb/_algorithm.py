@@ -3,13 +3,22 @@ import inspect
 import abc
 import types
 import warnings
+import yaml
+import glob
 from typing import Any, Dict, List, Set, Tuple, Type
+from pathlib import Path
 import types
+import pickle
+import os
+import shutil
 
 import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
+from autogoal.contrib import find_classes
+from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
+#from autogoal.experimental import generate_requirements
 
 
 class Supervised(SemanticType):
@@ -196,6 +205,50 @@ class AlgorithmBase(Algorithm):
 
         return inspect.signature(cls.run).return_annotation
 
+    def save(self, path: Path):
+        """
+        Serializes the Algorithm instance.
+        """
+        self._save_info(path)
+        self.save_model(path)
+
+    def _save_info(self, path: Path):
+        params = [ name for name in inspect.signature(self.__init__).parameters if name != "self"]
+        values = [getattr(self, param, None) for param in params]
+        parameters = { params[i]:values[i]  for i in range(len(params))}
+        module = f'\'{self.__module__}.{self.__class__.__name__}\''
+        name = self.__class__.__name__
+        config = AlgorithmConfig(name, module, parameters)
+        config.to_yaml(path)
+
+
+    def save_model(self, path: Path) -> "None":
+        with open(path + "/model.bin","wb") as fd:
+            pickle.Pickler(fd).dump(self)
+
+
+    @classmethod
+    def load(self, path: Path) -> "AlgorithmBase":
+        """
+        Deserializes an Algorithm instance. 
+        """
+        return self.load_model(path)
+
+    @classmethod
+    def _get_info(self, path: Path) -> "AlgorithmConfig":
+        return AlgorithmConfig.from_yaml(path)
+
+    @classmethod
+    def load_model(self, path: Path):
+
+        with open(path + "/model.bin", "rb") as fd:
+
+            algorithm = pickle.Unpickler(fd).load()
+
+            if not isinstance(algorithm, AlgorithmBase):
+                raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+
+            return algorithm
 
 def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
     """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
@@ -227,7 +280,6 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
-
 
 @nice_repr
 class Pipeline:
@@ -270,6 +322,57 @@ class Pipeline:
 
         if not found:
             warnings.warn(f"No step answered message {msg}.")
+
+    def save_algorithms(self, path: Path):
+        save_path = path + "/algorithms"
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path)
+        os.mkdir(save_path)
+        
+        algorithms = []
+        contribs = set()
+        info = {}
+
+        for i,algorithm in enumerate(self.algorithms):
+            contribs.add(get_contrib(algorithm.__class__))
+            algorithm_path = save_path + f"/{str(i)}"
+            os.mkdir(algorithm_path)
+            algorithm.save(algorithm_path)
+            algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
+            algorithms.append(algorithm_class)
+
+        generate_installer(path, list(contribs))
+
+        info["algorithms"] = algorithms
+        
+        inputs = [str(x) for x in self.input_types]
+
+        info["inputs"] = inputs
+
+        with open(path + "/algorithms.yml", "w") as fd:
+            yaml.dump(info, fd)
+    
+    @classmethod
+    def load_algorithms(self, path: Path):
+        """
+        Load piplien algorithms list from given path
+        """
+        with open(path + "/algorithms.yml", "r") as fd:
+            algorithms = yaml.safe_load(fd)
+
+        autogoal_algorithms = find_classes()
+
+        answer = []
+
+        algorithm_clases = []
+
+        for i,algorithm in enumerate(algorithms.get('algorithms')):
+            for cls in autogoal_algorithms:
+                if(algorithm in object.__str__(cls)):
+                    algorithm_clases.append(cls)
+                    answer.append(cls.load(path + "/algorithms" / str(i)))
+
+        return answer
 
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
