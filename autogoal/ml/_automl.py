@@ -117,7 +117,7 @@ class AutoML:
             path = os.getcwd()
 
         self._check_fitted()
-        save_path = path + "/storage"
+        save_path = path / "storage"
         
 
         try:
@@ -129,7 +129,7 @@ class AutoML:
         tmp = self.best_pipeline_.algorithms
         self.best_pipeline_.save_algorithms(save_path)
         self.best_pipeline_.algorithms = []
-        with open(save_path + "/model.bin", "wb") as fd:
+        with open(save_path / "model.bin", "wb") as fd:
             self.save(fd)
         self.best_pipeline_.algorithms = tmp
 
@@ -154,8 +154,8 @@ class AutoML:
         
         After deserialization, the best pipeline found is ready to predict.
         """
-        load_path = path + "/storage"
-        with open(load_path + "/model.bin", "rb") as fd:
+        load_path = path / "storage"
+        with open(load_path / "model.bin", "rb") as fd:
             automl = self.load(fd)
         automl.best_pipeline_.algorithms = Pipeline.load_algorithms(load_path)
         return automl
@@ -209,16 +209,16 @@ class AutoML:
         if (path is None):
             path = os.getcwd()
         
-        datapath = path + "/autogoal-export"
+        datapath = path / "autogoal-export"
         if (Path(datapath).exists()):
             shutil.rmtree(datapath)
 
         self.folder_save(datapath)
 
-        open(datapath + "/dockerfile", "w").close()
-        shutil.copyfile("/home/coder/autogoal/dockerfiles/production/dockerfile", datapath + "/dockerfile")
+        open(datapath / "dockerfile", "w").close()
+        shutil.copyfile("/home/coder/autogoal/dockerfiles/production/dockerfile", datapath / "dockerfile")
 
-        makefile = open(datapath + "/makefile", "w")
+        makefile = open(datapath / "makefile", "w")
         makefile.write("""
 build:
 

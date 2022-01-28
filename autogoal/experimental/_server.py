@@ -52,5 +52,5 @@ async def eval(t: Body, request: Request):
         .to_json(result), media_type="application/json")
 
 def run(model = None):
-    app.model = model or AutoML.folder_load('/home/coder/autogoal')
+    app.model = model or AutoML.folder_load(Path('.'))
     uvicorn.run(app, host="0.0.0.0", port=8000) 
