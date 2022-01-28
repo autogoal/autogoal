@@ -1,0 +1,64 @@
+# =====================
+# Debian base image
+# ---------------------
+
+FROM bitnami/minideb:latest
+
+# =====================
+# User stuff
+# ---------------------
+
+RUN apt-get update \
+ && apt-get install -y \
+    curl \
+    locales \
+    nano \
+    ssh \
+    sudo \
+    bash \
+    python3.7 \
+    python3-pip
+
+RUN pip3 install -U pip
+
+RUN rm -rf /var/lib/apt/lists/*
+
+# https://wiki.debian.org/Locale#Manually
+RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
+  && locale-gen
+ENV LANG=en_US.UTF-8
+
+RUN chsh -s /bin/bash
+ENV SHELL=/bin/bash
+
+RUN adduser --gecos '' --disabled-password coder && \
+  echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+
+# ==========================================
+# Project-specific installation instruction
+# ------------------------------------------
+
+COPY bash.bashrc /etc
+RUN chmod +x /etc/bash.bashrc
+
+ENV BUILD_ENVIRONMENT="development"
+ENV XDG_CACHE_HOME="/opt/dev/cache"
+
+WORKDIR /home/coder/autogoal
+
+COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
+RUN make env
+RUN poetry install
+
+USER coder
+
+RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
+VOLUME /home/coder/.autogoal
+
+COPY ./ /home/coder/autogoal
+
+RUN sudo rm -rf /home/coder/autogoal/storage
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/lib/python3/dist-packages/autogoal
+
+CMD ["/bin/bash"]

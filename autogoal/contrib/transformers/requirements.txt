@@ -1,0 +1,3 @@
+torch
+torchvision
+transformers>=4.5.0
