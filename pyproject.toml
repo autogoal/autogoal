@@ -17,6 +17,11 @@ classifiers = [
     "Intended Audience :: Science/Research",
 ]
 
+[[tool.poetry.source]]
+name = "localhost"
+url = "http://127.0.0.1:8080/simple"
+default = true
+
 [tool.poetry.dependencies]
 python = "^3.6.1"
 black = "^19.10b0"
