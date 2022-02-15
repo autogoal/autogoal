@@ -104,7 +104,7 @@ class StopwordRemover(SklearnTransformer):
         SklearnTransformer.__init__(self)
 
     def fit_transform(self, X, y=None):
-        return [word for word in input if word not in self.words]
+        return [word for word in X if word not in self.words]
 
     def transform(self, X, y=None):
         return self.fit_transform(X, y)
