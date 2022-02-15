@@ -1,4 +1,5 @@
 # TODO move to sampler folder when out of experimental
+import math
 from typing import Dict
 from autogoal.sampling import Sampler
 
@@ -31,12 +32,15 @@ class ExactSampler(Sampler):
         for option in options:
             if option in self._model:
                 if chosen is not None:
-                    raise ValueError(
-                        f"Ambiguous model algorithm values {chosen} and {option}"
-                    )
-                chosen = option
+                    # Gets option with less "depth"
+                    if self._model[chosen] > self._model[option]:
+                        chosen = option
+                else:
+                    chosen = option
         if chosen is None:
             raise ValueError("Incomplete exact sampler model.")
+        # Sets chosen to max "depth"
+        self._model[chosen] = math.inf
         return chosen
 
     def choice(self, options, handle=None):

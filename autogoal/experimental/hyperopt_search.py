@@ -73,19 +73,19 @@ def _cfg_to_hp_space(cfg, symbol=None, choice_ref=None):
         raise NotImplementedError('Hyperopt\'s "subset of" is not yet implemented')
 
 
-def format_hyperopt_args(args: Dict) -> Dict:
+def format_hyperopt_args(args: Dict, depth=0) -> Dict:
     """
     Transforms arguments in hyperopt's format to a model compatible with ExactSampler
     """
     new_args = {}
     for key, value in args.items():
         if type(value) == type(dict()):
-            new_args = {**new_args, **format_hyperopt_args(value)}
+            new_args = {**new_args, **format_hyperopt_args(value, depth + 1)}
         else:
             key = re.sub("^\\[.*?\\]", "", key)
             if key.startswith(ALGORITHM_CHOICE_HANDLE):
-                # anything would do, we're just interested in the key here.
-                new_args[value] = True
+                # depth param is used to make the sampler ordering unambiguous
+                new_args[value] = depth
             else:
                 new_args[key] = value
     new_args["End"] = True
