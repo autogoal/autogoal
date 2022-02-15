@@ -92,14 +92,23 @@ def format_hyperopt_args(args: Dict, depth=0) -> Dict:
     return new_args
 
 
-def pipeline_space_to_hp_space(pipeline_space, registry):
+def pipeline_space_to_hp_space(pipeline_space, registry, max_idempotent_chain=2):
     """
     Transforms a `PipelineSpace` into a hyperopt search space
     """
-    return _pipeline_space_to_hp_space(pipeline_space, registry, None, [])
+    return _pipeline_space_to_hp_space(
+        pipeline_space, registry, None, [], max_idempotent_chain=max_idempotent_chain
+    )
 
 
-def _pipeline_space_to_hp_space(pipeline_space, registry, start=None, path: List = []):
+def _pipeline_space_to_hp_space(
+    pipeline_space,
+    registry,
+    start=None,
+    path: List = [],
+    max_idempotent_chain=2,
+    idempotent_chain_count=1,
+):
 
     if start == pipeline_space.End:
         return None
@@ -108,9 +117,25 @@ def _pipeline_space_to_hp_space(pipeline_space, registry, start=None, path: List
     node_choices = []
     node_path = path.copy() + [start_node]
     for sub_node in graph[start_node].keys():
-        node_choices.append(
-            _pipeline_space_to_hp_space(pipeline_space, registry, sub_node, node_path)
-        )
+        sub_node_idempotent_chain_count = idempotent_chain_count
+        if not is_duplicate_algorithm(sub_node, node_path):
+            last_output = get_node_output(start_node)
+            output = get_node_output(sub_node)
+            if last_output == output:
+                if sub_node_idempotent_chain_count >= max_idempotent_chain:
+                    continue
+                else:
+                    sub_node_idempotent_chain_count += 1
+            node_choices.append(
+                _pipeline_space_to_hp_space(
+                    pipeline_space,
+                    registry,
+                    sub_node,
+                    node_path,
+                    max_idempotent_chain=max_idempotent_chain,
+                    idempotent_chain_count=sub_node_idempotent_chain_count,
+                )
+            )
     node_choices = list(filter(lambda choice: choice is not None, node_choices))
     if start_node != pipeline_space.Start:
         node_space = cfg_to_hp_space(
@@ -142,6 +167,24 @@ def get_path_string(path):
     return "->".join(path_strings)
 
 
+def get_node_output(node):
+    return (
+        node.algorithm.output_type()
+        if hasattr(node, "algorithm") and hasattr(node.algorithm, "output_type")
+        else None
+    )
+
+
+def get_node_repr(node):
+    return repr(node.algorithm.__name__) if hasattr(node, "algorithm") else repr(node)
+
+
+def is_duplicate_algorithm(node, path):
+    node_repr = get_node_repr(node)
+    path_reprs = [get_node_repr(node_step) for node_step in path]
+    return node_repr in path_reprs
+
+
 class HyperoptStopException(RuntimeError):
     """ Class for signaling a forced Hyperopt stop 
     """
@@ -164,6 +207,7 @@ class HyperoptSearch:
         search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
+        hp_space=None,
         random_state=None,
     ):
 
@@ -180,6 +224,7 @@ class HyperoptSearch:
         self._allow_duplicates = allow_duplicates
         self._logger = None
         self._algo = algorithm
+        self._preloaded_space = hp_space
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(
@@ -276,9 +321,11 @@ class HyperoptSearch:
         self.eval_number = 0
 
         hp_space = self._generator_fn
-        if type(self._generator_fn) == PipelineSpace:
+        if self._preloaded_space is not None:
+            hp_space = self._preloaded_space
+        elif type(self._generator_fn) == PipelineSpace:
             hp_space = pipeline_space_to_hp_space(self._generator_fn, self._registry)
-        if type(self._generator_fn) == ContextFreeGrammar:
+        elif type(self._generator_fn) == ContextFreeGrammar:
             hp_space = cfg_to_hp_space(self._generator_fn)
 
         self._logger.begin(generations, 1)
