@@ -55,7 +55,7 @@ class ExactSampler(Sampler):
     def discrete(self, min=0, max=10, handle=None):
         param = self._get_model_params(handle)
         if int(param) >= min and int(param) <= max:
-            return param
+            return int(param)
         else:
             raise ValueError(
                 f"Exact sampler model with incorrect discrete parameter {handle}={param}"

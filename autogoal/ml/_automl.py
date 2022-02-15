@@ -142,7 +142,7 @@ class AutoML:
                 mean_step_time = (time.time() - init_time) / max(step, 1)
                 if step != 0 and mean_step_time > max_step_time:
                     raise PreemptiveStopException(
-                        f"Preemptive stop: mean validation step time of {mean_step_time} is higher than expected {mean_step_time}"
+                        f"Preemptive stop: mean validation step time of {mean_step_time} is higher than expected {max_step_time}"
                     )
                 len_x = (
                     len(X)

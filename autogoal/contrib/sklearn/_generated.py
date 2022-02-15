@@ -1816,7 +1816,7 @@ class DecisionTreeClassifier(_DecisionTreeClassifier, SklearnEstimator):
         SklearnEstimator.__init__(self)
         _DecisionTreeClassifier.__init__(
             self,
-            min_samples_split=min_samples_split,
+            min_samples_split=int(min_samples_split),
             min_weight_fraction_leaf=min_weight_fraction_leaf,
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha,
