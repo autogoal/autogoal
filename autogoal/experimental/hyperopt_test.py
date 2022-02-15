@@ -112,7 +112,11 @@ large_registry = [
 ]
 
 
-registries = {"single": single_registry, "small": small_registry}
+registries = {
+    "single": single_registry,
+    "small": small_registry,
+    "large": large_registry,
+}
 
 registry = registries[args.registry]
 
@@ -173,7 +177,7 @@ if args.telegramfile is not None:
         loggers.append(telegram_logger)
 
 
-set_keras_timeout_data(30 * Min, 4, 2)
+set_keras_timeout_data(max_time, 4, 2)
 
 # Fitting the  classifier and evaluating the final score
 classifier.fit(X_train, y_train, logger=loggers)
