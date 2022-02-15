@@ -1,22 +1,30 @@
-def find_classes(include=None, exclude=None, modules=None, input=None, output=None):
+def get_search_regex(text, exact=False):
+    if type(text) == list or type(text) == tuple:
+        text = "|".join(text)
+    return f".*\.({text})'" if exact else f".*({text}).*"
+
+
+def find_classes(
+    include=None, exclude=None, modules=None, input=None, output=None, exact=False
+):
     import inspect
     import re
 
     result = []
 
     if include:
-        include = f".*({include}).*"
+        include = get_search_regex(include, exact=exact)
     else:
         include = r".*"
 
     if exclude:
-        exclude = f".*({exclude}).*"
+        exclude = get_search_regex(exclude, exact=exact)
 
     if input:
-        input = f".*({input}).*"
+        input = get_search_regex(input, exact=exact)
 
     if output:
-        output = f".*({output}).*"
+        output = get_search_regex(output, exact=exact)
 
     if modules is None:
         modules = []
