@@ -14,6 +14,7 @@ from autogoal.kb import (
     Word,
     algorithm,
     VectorContinuous,
+    MatrixContinuousDense,
 )
 from autogoal.grammar import CategoricalValue, DiscreteValue
 import numpy as np
@@ -141,6 +142,12 @@ class KerasSentenceClassifier(AlgorithmBase):
         )
 
     def build_sequences(self, docs, train):
+        if self.embedding.input_types() == tuple([Word]):
+            return self._build_single_word_embeddings(docs, train)
+        elif self.embedding.input_types() == tuple([Seq[Word]]):
+            return self._build_multi_word_embeddings(docs, train)
+
+    def _build_single_word_embeddings(self, docs, train):
         size = 2
         embeddings = []
         seqs = []
@@ -181,6 +188,24 @@ class KerasSentenceClassifier(AlgorithmBase):
             seqs, int(self.padding_length), truncating="post", padding="pre"
         )
 
+    def _build_multi_word_embeddings(self, docs, train):
+        max_size = 0
+        min_size = np.inf
+        acc_size = 0
+        docs_matrices = []
+        for doc in docs:
+            docs_matrices.append(self.embedding.run(doc))
+            if train:
+                max_size = max(max_size, len(doc))
+                min_size = min(min_size, len(doc))
+                acc_size += len(doc)
+        self.padding_length = self._find_padding_length(
+            min_size, max_size, acc_size, len(docs)
+        )
+        return pad_sequences(
+            docs_matrices, int(self.padding_length), truncating="post", padding="pre"
+        )
+
     def _find_padding_length(self, min_size, max_size, acc_size, docs_count):
         length_getters = {
             "Max": max_size,
@@ -194,6 +219,50 @@ class KerasSentenceClassifier(AlgorithmBase):
     def predict(self, X):
         seqs = self.build_sequences(X, False)
         return np.argmax(self.model.predict(seqs), axis=-1)
+
+
+@nice_repr
+class BertEmbeddingLSTMClassifier(KerasSentenceClassifier):
+    def __init__(
+        self,
+        optimizer: CategoricalValue("sgd", "adam", "rmsprop"),
+        lstm_size: DiscreteValue(32, 512),
+        dense_layers: DiscreteValue(0, 4),
+        dense_layer_size: DiscreteValue(32, 512),
+        dense_layer_activation: CategoricalValue(
+            "elu",
+            "exponential",
+            "linear",
+            "relu",
+            "selu",
+            "sigmoid",
+            "softmax",
+            "softplus",
+            "softsign",
+            "tanh",
+        ),
+        embedding: algorithm(Seq[Word], MatrixContinuousDense),
+        padding_type: CategoricalValue("Max", "Min", "Mean", "Min2Mean", "Mean2Max"),
+    ) -> None:
+        self.lstm_size = int(lstm_size)
+        self.dense_layers = int(dense_layers)
+        self.dense_layer_size = int(dense_layer_size)
+        self.dense_layer_activation = dense_layer_activation
+        super().__init__(optimizer, embedding=embedding, padding_type=padding_type)
+
+    def build_model(self, n_classes):
+        self.model = Sequential()
+        self.model.add(LSTM(self.lstm_size))
+        for _ in range(self.dense_layers):
+            self.model.add(
+                Dense(self.dense_layer_size, activation=self.dense_layer_activation)
+            )
+        self.model.add(Dense(n_classes, activation="softmax"))
+        self.model.compile(
+            loss="sparse_categorical_crossentropy",
+            optimizer="adam",
+            metrics=["accuracy"],
+        )
 
 
 @nice_repr
