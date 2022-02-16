@@ -9,6 +9,7 @@ except:
 
 
 from ._base import (
+    Word2VecSmallEmbedding,
     Word2VecEmbedding,
     Word2VecEmbeddingSpanish,
     FastTextEmbeddingSpanishSUC,
