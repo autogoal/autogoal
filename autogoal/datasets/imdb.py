@@ -84,7 +84,7 @@ def __load_folder(folder, tokenizer, padding_length, label, max_examples):
         if tokenizer and padding_length:
             words = pad(tokenizer.run(text), padding_length)
             text = " ".join(words)
-        X.append(text)
+        X.append(text.lower())
         y.append(label)
     return X, y
 

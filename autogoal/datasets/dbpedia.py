@@ -74,7 +74,7 @@ def load(max_examples=None, padding_length=None, tokenizer=None):
         if tokenizer and padding_length:
             words = pad(tokenizer.run(text), padding_length)
             text = " ".join(words)
-        X_train.append(text)
+        X_train.append(text.lower())
         y_train.append(label)
 
     print("train read")

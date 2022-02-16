@@ -3,6 +3,7 @@
 import os
 import numpy as np
 import math
+import random as rng
 
 from numpy.core.multiarray import concatenate
 from autogoal.datasets import datapath, download_and_save, unpack, pad
@@ -79,7 +80,7 @@ def load(max_examples=None, padding_length=None, tokenizer=None):
             if tokenizer and padding_length:
                 words = pad(tokenizer.run(text), padding_length)
                 text = " ".join(words)
-            X_train.append(text)
+            X_train.append(text.lower())
             y_train.append(label)
 
         folder = news_path / TEST_FOLDER / cat
@@ -92,7 +93,6 @@ def load(max_examples=None, padding_length=None, tokenizer=None):
             y_test.append(label)
 
     if max_examples is not None:
-        rng = np.random.default_rng(0)
 
         train_samples = math.ceil(max_examples * 0.6)
         train_data = list(zip(X_train, y_train))
