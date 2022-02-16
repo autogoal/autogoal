@@ -273,7 +273,7 @@ class HyperoptSearch:
 
         hp_space = self._generator_fn
         if type(self._generator_fn) == PipelineSpace:
-            hp_space = pipeline_space_to_hp_space(self._generator_fn, [])
+            hp_space = pipeline_space_to_hp_space(self._generator_fn, self._registry)
         if type(self._generator_fn) == ContextFreeGrammar:
             hp_space = cfg_to_hp_space(self._generator_fn)
 
@@ -284,8 +284,8 @@ class HyperoptSearch:
                 self._hyperopt_fitness,
                 hp_space,
                 self._algo,
-                generations,
-                self._search_timeout,
+                max_evals=generations,
+                timeout=self._search_timeout,
                 early_stop_fn=early_stop_fn,
                 show_progressbar=False,
             )
