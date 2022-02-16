@@ -9,7 +9,7 @@ from telegram.utils.helpers import escape_markdown
 
 class TelegramLogger(Logger):
     def __init__(self, token, channel: str = None, name=""):
-        self.name = name
+        self.name = escape_markdown(name)
         self.channel = int(channel) if channel and channel.isdigit() else channel
         self.last_time = time.time()
         self.updater = Updater(token, use_context=True)
@@ -65,7 +65,7 @@ class TelegramLogger(Logger):
             print(e)
 
     def start_generation(self, generations, best_fn):
-        self.progress = self.generations
+        self.progress = generations
         self.best = best_fn
         self._send_state()
 
