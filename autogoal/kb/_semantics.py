@@ -16,7 +16,7 @@
 from functools import reduce
 import inspect
 import copyreg
-from typing import Type
+from typing import Tuple, Type
 
 
 # We start by defining the base class of our hierarchy.
@@ -276,6 +276,99 @@ class Seq(SemanticType):
         return SeqImp
 
 
+class UniformSeq(SemanticType):
+    """Represents a sequence that has been through size normalization
+
+    >>> isinstance(["hello", "world"], Seq[Word])
+    True
+
+    Specialized classes are exactly the same, by identity:
+
+    >>> id(UniformSeq[Word]) == id(UniformSeq[Word])
+    True
+
+    Specialized classes are subclasses of the raw `Seq` class:
+
+    >>> issubclass(UniformSeq[Word], UniformSeq)
+    True
+    >>> issubclass(UniformSeq[Word], Seq)
+    True
+
+    And they are subclasses of other specialized classes when the internal types hold the same relationship.
+
+    >>> issubclass(UniformSeq[Word], UniformSeq[Text])
+    True
+    >>> issubclass(UniformSeq[Text], UniformSeq[Word])
+    False
+    >>> issubclass(UniformSeq[Word], Seq[Text])
+    True
+    >>> issubclass(UniformSeq[Text], Seq[Word])
+    False
+
+    They are pretty-printed as well
+
+    >>> UniformSeq
+    UniformSeq
+    >>> UniformSeq[Word]
+    UniformSeq[(Word,None)]
+
+    Subclasses are also serializable (which requires some non-trivial dark magic on the implementation side):
+
+    >>> from pickle import dumps, loads
+    >>> loads(dumps(UniformSeq[Word]))
+    UniformSeq[Word]
+   
+    """
+
+    __internal_types = {}
+
+    @classmethod
+    def _specialize(cls, internal_type: Type[SemanticType], shape: Tuple[int] = None):
+        try:
+            return UniformSeq.__internal_types[(internal_type, shape)]
+        except KeyError:
+            pass
+
+        class UniformSeqImp(UniformSeq):
+            __internal_type__ = internal_type
+            __shape__ = shape
+
+            @classmethod
+            def _name(cls):
+                return f"UniformSeq[{internal_type},{shape}]"
+
+            @classmethod
+            def _match(cls, x):
+                return isinstance(x, (list, tuple)) and internal_type._match(x[0])
+
+            @classmethod
+            def _conforms(cls, other):
+                if not issubclass(other, UniformSeq):
+                    return False
+
+                if other == UniformSeq:
+                    return True
+
+                if hasattr(other, "__shape__") and cls.__shape__ != other.__shape__:
+                    return False
+
+                return hasattr(other, "__internal_type__") and issubclass(
+                    cls.__internal_type__, other.__internal_type__
+                )
+
+            @classmethod
+            def _specialize(cls, *args, **kwargs):
+                raise TypeError("Cannot specialize more a `UniformSeq` type.")
+
+            @classmethod
+            def _reduce(cls):
+                return UniformSeq._specialize, (internal_type, shape)
+
+        UniformSeq.__internal_types[(internal_type, shape)] = UniformSeqImp
+
+        return UniformSeqImp
+
+
 # Now let's move to the algebraic types, vectors, matrices, and tensors.
 # These wrap numpy arrays of different dimensionalities
 # We'll have three different semantic labels for each tensor: dimensionality (an integer),
@@ -483,6 +576,7 @@ Tensor4 = Tensor[4, Continuous, Dense]
 __all__ = [
     "SemanticType",
     "Seq",
+    "UniformSeq",
     "Text",
     "Document",
     "Sentence",

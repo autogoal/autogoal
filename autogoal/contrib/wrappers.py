@@ -39,7 +39,83 @@ class VectorColumnAggregator(AlgorithmBase):
 
 
 @nice_repr
-class MatrixBuilder(AlgorithmBase):
+class BasePadder(AlgorithmBase):
+    def __init__(self, method):
+        self.method = method
+        self._mode = "train"
+        self._length = -1
+
+    def train(self):
+        self._mode = "train"
+
+    def eval(self):
+        self._mode = "eval"
+
+    def _run(self, input):
+        if self._mode == "train":
+            self._find_length(input)
+            return self._pad_data(input)
+
+        elif self._mode == "eval":
+            return self._pad_data(input)
+
+    def _find_length(self, X):
+        selected = np.inf if self.method == "min" else 0
+        for sample in X:
+            this_len = len(sample)
+            if self.method == "min":
+                selected = this_len if selected > this_len else selected
+            elif self.method == "max":
+                selected = this_len if selected < this_len else selected
+            elif self.method == "mean":
+                selected += this_len
+        if self.method == "mean":
+            self._length = int(selected / len(X))
+        else:
+            self._length = selected
+
+    def _pad_data(self, X):
+        new_X = []
+        for sample in X:
+            if len(sample) >= self._length:
+                new_X.append(sample[: self._length])
+            else:
+                pads_len = self._length - len(sample)
+                pads = [(0, pads_len) if i == 0 else (0, 0) for i in range(sample.ndim)]
+                new_X.append(np.pad(sample, pads, "constant", constant_values=(0, 0)))
+        return new_X
+
+
+@nice_repr
+class VectorPadder(BasePadder):
+    """
+
+    """
+
+    def __init__(self, method: CategoricalValue("min", "mean", "max")):
+        super().__init__(method)
+
+    def run(self, input: Seq[VectorContinuous]) -> UniformSeq[VectorContinuous]:
+        return self._run(input)
+
+
+@nice_repr
+class MatrixPadder(BasePadder):
+    """
+
+    """
+
+    def __init__(self, method: CategoricalValue("min", "mean", "max")):
+        super().__init__(method)
+
+    def run(
+        self, input: Seq[MatrixContinuousDense]
+    ) -> UniformSeq[MatrixContinuousDense]:
+        return self._run(input)
+
+
+@nice_repr
+class MatrixBuilder(BasePadder):
     """
     Builds a matrix from a list of vectors.
 
@@ -58,12 +134,16 @@ class MatrixBuilder(AlgorithmBase):
     ```
     """
 
+    def __init__(self, method: CategoricalValue("min", "mean", "max")):
+        super().__init__(method)
+
     def run(self, input: Seq[VectorContinuous]) -> MatrixContinuousDense:
-        return np.vstack(input)
+        padded = self._run(input)
+        return np.vstack(padded)
 
 
 @nice_repr
-class TensorBuilder(AlgorithmBase):
+class TensorBuilder(BasePadder):
     """
     Builds a 3D tensor from a list of matrices.
 
@@ -87,8 +167,12 @@ class TensorBuilder(AlgorithmBase):
     ```
     """
 
+    def __init__(self, method: CategoricalValue("min")):
+        super().__init__(method)
+
     def run(self, input: Seq[MatrixContinuousDense]) -> Tensor3:
-        return np.vstack([np.expand_dims(m, axis=0) for m in input])
+        padded = self._run(input)
+        return np.vstack([np.expand_dims(m, axis=0) for m in padded])
 
 
 @nice_repr
