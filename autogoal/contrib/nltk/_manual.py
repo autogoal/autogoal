@@ -17,7 +17,7 @@ from autogoal.kb import AlgorithmBase
 
 
 @nice_repr
-class Doc2Vec(_Doc2Vec, SklearnTransformer):
+class Doc2Vec(SklearnTransformer):
     def __init__(
         self,
         dm: DiscreteValue(min=0, max=2),
@@ -27,58 +27,50 @@ class Doc2Vec(_Doc2Vec, SklearnTransformer):
         alpha: ContinuousValue(min=0.001, max=0.075),
         epochs: DiscreteValue(min=2, max=10),
         window: DiscreteValue(min=2, max=10),
-        inner_tokenizer: algorithm(Sentence, Seq[Word]),
-        inner_stemmer: algorithm(Word, Stem),
-        inner_stopwords: algorithm(Seq[Word], Seq[Word]),
-        lowercase: BooleanValue(),
-        stopwords_remove: BooleanValue(),
     ):
-
-        self.inner_tokenizer = inner_tokenizer
-        self.inner_stemmer = inner_stemmer
-        self.inner_stopwords = inner_stopwords
-        self.lowercase = lowercase
-        self.stopwords_remove = stopwords_remove
-
-        super().__init__(
-            dm=dm,
-            dbow_words=dbow_words,
-            dm_concat=dm_concat,
-            dm_tag_count=dm_tag_count,
-            alpha=alpha,
-            epochs=epochs,
-            window=window,
-        )
-
-    def tokenize(self, sentence):
-        sentence = sentence.lower() if self.lowercase else sentence
-        tokens = self.inner_tokenizer.run(sentence)
-        tokens = self.inner_stopwords.run(sentence) if self.stopwords_remove else tokens
-        return [self.inner_stemmer.run(token) for token in tokens]
+        self.dm = int(dm)
+        self.dbow_words = int(dbow_words)
+        self.dm_concat = int(dm_concat)
+        self.dm_tag_count = int(dm_tag_count)
+        self.alpha = alpha
+        self.epochs = int(epochs)
+        self.window = int(window)
 
     def fit_transform(self, X, y=None):
         self.fit(X, y)
         return self.transform(X)
 
+    def train(self):
+        SklearnTransformer.train(self)
+
     def fit(self, X, y):
+        # Doc2Vec cannot be "refitted" so it must be initalized every time
+        self.doc2vec = _Doc2Vec(
+            dm=self.dm,
+            dbow_words=self.dbow_words,
+            dm_concat=self.dm_concat,
+            dm_tag_count=self.dm_tag_count,
+            alpha=self.alpha,
+            epochs=self.epochs,
+            window=self.window,
+        )
+
         # Data must be turned to tagged data as TaggedDocument(Seq[Token), Tag)
         # Tag use to be an unique integer
 
         from gensim.models.doc2vec import TaggedDocument as _TaggedDocument
 
-        tagged_data = [
-            _TaggedDocument(self.tokenize(X[i]), str(i)) for i in range(len(X))
-        ]
+        tagged_data = [_TaggedDocument(X[i], str(i)) for i in range(len(X))]
 
-        self.build_vocab(tagged_data)
-        return self.train(
-            tagged_data, total_examples=self.corpus_count, epochs=self.epochs
+        self.doc2vec.build_vocab(tagged_data)
+        return self.doc2vec.train(
+            tagged_data, total_examples=self.doc2vec.corpus_count, epochs=self.epochs
         )
 
     def transform(self, X, y=None):
-        return [self.infer_vector(x) for x in X]
+        return [self.doc2vec.infer_vector(x) for x in X]
 
-    def run(self, input: Seq[Sentence]) -> MatrixContinuousDense:
+    def run(self, input: Seq[Seq[Word]]) -> MatrixContinuousDense:
         """This methods receive a document list and transform this into a dense continuous matrix.
        """
         return SklearnTransformer.run(self, input)
