@@ -15,6 +15,21 @@ from gensim.models.fasttext import FastText, FastTextKeyedVectors
 
 
 @nice_repr
+class Word2VecRandom(AlgorithmBase):
+    """This class transforms a word in a random word embedding vector. It is useful to initialize a random embedding layer in keras.
+
+    """
+
+    def __init__(self, size: DiscreteValue(10, 100)):
+        self.size = int(size)
+
+    def run(self, input: Word) -> VectorContinuous:
+        """This method generates random vectors
+        """
+        return (np.random.rand(self.size) - 0.5) / 10
+
+
+@nice_repr
 class Word2VecSmallEmbedding(AlgorithmBase):
     """This class transforms a word in embedding vector using Word2Vec of `gensim` with "smallish" vetor sizes, varying from 25 to 100.
 
