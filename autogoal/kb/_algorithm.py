@@ -53,7 +53,7 @@ class Supervised(SemanticType):
         return SupervisedImp
 
 
-def algorithm(*annotations):
+def algorithm(*annotations, always_include=[], optional=False):
     from autogoal.grammar import Union, Symbol
 
     *inputs, output = annotations
@@ -92,6 +92,12 @@ def algorithm(*annotations):
         for _, other_cls in grammar.namespace.items():
             if cls.is_compatible(other_cls):
                 compatible.append(other_cls)
+
+        if optional:
+            compatible.append(NoneAlgorithm)
+
+        for alg in always_include:
+            compatible.append(alg)
 
         if not compatible:
             raise ValueError(
@@ -227,6 +233,15 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
+
+
+@nice_repr
+class NoneAlgorithm(AlgorithmBase):
+    def __init__(self):
+        pass
+
+    def run(self, input: None) -> None:
+        return None
 
 
 @nice_repr
