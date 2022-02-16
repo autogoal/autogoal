@@ -312,7 +312,6 @@ class ProgressLogger(Logger):
 
     def start_generation(self, generations, best_fn):
         self.pop_counter.count = 0
-        self.total_counter.update(force=True)
 
     def update_best(self, new_best, new_fn, *args):
         self.total_counter.desc = "Best: %.3f" % new_fn
