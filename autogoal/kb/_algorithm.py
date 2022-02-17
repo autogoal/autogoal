@@ -1,5 +1,4 @@
 from collections import defaultdict, namedtuple, OrderedDict
-from contextvars import Context
 import inspect
 import abc
 import types
@@ -405,12 +404,19 @@ def _make_list_args_and_kwargs(*args, **kwargs):
 
 class PipelineNode:
     def __init__(
-        self, algorithm: Algorithm, input_types, output_types, registry=None
+        self,
+        algorithm: Algorithm,
+        input_types,
+        output_types,
+        registry=None,
+        has_grammar: bool = True,
     ) -> None:
         self.algorithm = algorithm
         self.input_types = set(input_types)
         self.output_types = set(output_types)
-        self.grammar = generate_cfg(self.algorithm, registry=registry)
+        self.grammar = (
+            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
+        )
 
     def sample(self, sampler):
         return self.grammar.sample(sampler=sampler)
@@ -448,10 +454,29 @@ class PipelineSpace(GraphSpace):
             if isinstance(node, PipelineNode)
         )
 
+    def _generate_pipeline(self, path) -> Pipeline:
+        context = PathContext(self.input_types)
+        for algorithm in path:
+            guaranteed_types = context.nodes_types.output_types
+            p = PipelineNode(
+                algorithm=getattr(algorithm, "__class__"),
+                input_types=guaranteed_types,
+                output_types=guaranteed_types | set([algorithm.output_type()]),
+                registry=None,
+                has_grammar=False,
+            )
+            context.push(p)
+
+        if context.has_unique_connection_path:
+            return Pipeline(path, input_types=self.input_types)
+
+        # TODO: sample from all possible ways of connect the pipeline algorithm
+        return Pipeline(path, input_types=self.input_types)
+
     def sample(self, *args, **kwargs):
         kwargs["sampler"] = Sampler(random_state=0)
         path = super().sample(*args, **kwargs)
-        return Pipeline(path, input_types=self.input_types)
+        return self._generate_pipeline(path)
 
 
 def build_pipeline_graph_old(
@@ -674,12 +699,12 @@ class PathContext:
     def push(self, node: PipelineNode):
         nodes_types = self.nodes_types
 
-        if not self._has_unique_connection_path:
+        if self._has_unique_connection_path:
             # if we have two algorithm that produce the same output type then
             # there is no unique way to connect the pipeline algorithms
-            for i_type in node.input_types():
+            for i_type in node.input_types:
                 if len(nodes_types.get_nodes_with_output(i_type)) > 1:
-                    self._has_unique_connection_path = True
+                    self._has_unique_connection_path = False
 
         nodes_types.add(node)
         self._pipeline_index[node] = len(self.path)
@@ -694,8 +719,8 @@ class PathContext:
         nodes_types.remove(node)
         self._pipeline_index.pop(node)
 
-        # TODO: check if keep as unique connected when pop, now keep track of this attribute by yourself when `push` and `pop` later
-        # if self._has_unique_connection_path:
+        # TODO: check if keep as unique connected when pop, for now keep track of this attribute by yourself when `push` and `pop` later
+        # if not self._has_unique_connection_path:
         #    pass
 
         return node
@@ -720,7 +745,12 @@ class PathContext:
         my_inputs = algorithm.input_types()
         context_available_types = self.nodes_types.output_types
 
-        return all(map(lambda x: x in context_available_types, my_inputs))
+        # check if we have the exact types, fast check
+        if all(map(lambda x: x in context_available_types, my_inputs)):
+            return True
+
+        # slow check, since we can have a lot of available types in the context
+        return algorithm.is_compatible_with(context_available_types)
 
     def __repr__(self) -> str:
         return f"<PathContext(input_types={[i.__name__ for i in self._input_types]})->path={[repr(i) for i in self.path]}>"
@@ -820,20 +850,18 @@ def build_pipeline_graph(
     # We start by enlarging the registry with all Seq[...] algorithms
     pool = set(registry)
 
-    # Todo: uncomment this before commit, commented for debugging speed up
-    # for algorithm in registry:
-    #     for _ in range(max_list_depth):
-    #         algorithm = make_seq_algorithm(algorithm)
-    #         pool.add(algorithm)
+    for algorithm in registry:
+        for _ in range(max_list_depth):
+            algorithm = make_seq_algorithm(algorithm)
+            pool.add(algorithm)
 
     # We start by collecting all the possible input nodes,
     # those that can process a subset of the input_types
     initial_nodes: Set[PipelineNode] = set()
-    context = PathContext(input_types)
     input_types_set = set(input_types)
 
     for algorithm in pool:
-        if not context.is_full_compatible_with(algorithm):
+        if not algorithm.is_compatible_with(input_types):
             continue
 
         initial_nodes.add(
