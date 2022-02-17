@@ -330,7 +330,7 @@ class ReplaySampler:
         >>> fp = io.BytesIO()
         >>> sampler.replay().save(fp)
         >>> len(fp.getvalue())
-        183
+        144
 
         ```
         """

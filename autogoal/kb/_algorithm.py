@@ -1,9 +1,20 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple, OrderedDict
 import inspect
 import abc
 import types
 import warnings
-from typing import Any, Dict, List, Set, Tuple, Type
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+)
 import types
 
 import networkx as nx
@@ -107,26 +118,29 @@ def algorithm(*annotations):
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
 
-class Algorithm(abc.ABC):
+class Algorithm(Protocol):
     """Represents an abstract algorithm with a run method.
 
     Provides introspection for the expected semantic input and output types.
     Users should inherit from `AlgorithmBase` instead of this class.
     """
 
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def input_types(cls) -> Tuple[type]:
         """Returns an ordered list of the expected semantic input types of the `run` method.
         """
         pass
 
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def input_args(cls) -> Tuple[str]:
         """Returns an ordered tuple of the names of the arguments in the `run` method.
         """
         pass
 
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def output_type(cls) -> type:
         """Returns an ordered list of the expected semantic output type of the `run` method.
         """
@@ -162,7 +176,7 @@ class Algorithm(abc.ABC):
         return True
 
 
-class AlgorithmBase(Algorithm):
+class AlgorithmBase(Algorithm, abc.ABC):
     """Represents an algorithm,
 
     Automatically implements the input and output introspection methods using the `inspect` module.
@@ -435,7 +449,7 @@ class PipelineSpace(GraphSpace):
         return Pipeline(path, input_types=self.input_types)
 
 
-def build_pipeline_graph(
+def build_pipeline_graph_old(
     input_types: List[type],
     output_type: type,
     registry: List[Algorithm],
@@ -549,6 +563,265 @@ def build_pipeline_graph(
             G.add_edge(node, GraphSpace.End)
 
         closed_nodes.add(node)
+
+    # Remove all nodes that are not connected to the end node
+    try:
+        reachable_from_end = set(
+            nx.dfs_preorder_nodes(G.reverse(False), GraphSpace.End)
+        )
+        unreachable_nodes = set(G.nodes) - reachable_from_end
+        G.remove_nodes_from(unreachable_nodes)
+    except KeyError:
+        raise TypeError("No pipelines can be found!")
+
+    return PipelineSpace(G, input_types=input_types)
+
+
+class NodesTypes(Collection):
+    """Auxiliar class that keep track used PipelineNodes and all PipelineNode that have epecific output type"""
+
+    __slots__ = ("_nodes", "_types_registry")
+
+    def __init__(self, input_types: Optional[List[type]] = None) -> None:
+        self._nodes: Set[PipelineNode] = set()
+        self._types_registry: Dict[type, Dict[PipelineNode, None]] = defaultdict(
+            lambda: OrderedDict()
+        )
+
+        if input_types is not None:
+            self._nodes.add(GraphSpace.Start)
+            for i in input_types:
+                self._types_registry[i][GraphSpace.Start] = None
+
+    def __contains__(self, x: Any) -> bool:
+        return x in self._nodes
+
+    def __len__(self) -> int:
+        return len(self._nodes)
+
+    def __iter__(self):
+        return iter(self._nodes)
+
+    @property
+    def algorithms(self):
+        return [i.algorithm for i in self._nodes if hasattr(i, "algorithm")]
+
+    def add(self, node: PipelineNode):
+        if node in self._nodes:
+            return
+
+        self._nodes.add(node)
+
+        self._types_registry[node.algorithm.output_type()][node] = None
+
+    def remove(self, node: PipelineNode):
+        if node not in self._nodes:
+            return
+
+        self._nodes.remove(node)
+
+        types = self._types_registry[node.algorithm.output_type()]
+        types.pop(node)
+
+        if len(types) == 0:
+            self._types_registry.pop(node.algorithm.output_type())
+
+    @property
+    def output_types(self) -> set:
+        return self._types_registry.keys()
+
+    def get_nodes_with_output(self, output_type: type) -> Sequence[PipelineNode]:
+        if output_type not in self._types_registry:
+            return set()
+
+        return self._types_registry[output_type].keys()
+
+    def get_lattest_node_with_output(self, output_type: type) -> PipelineNode:
+        if output_type not in self._types_registry:
+            return None
+
+        last_node = next(reversed(self._types_registry[output_type]))
+        return last_node
+
+
+class PathContext:
+    """Auxiliar class used for keep track of PipelineNodes used in a Pipeline and handled it types"""
+
+    __slots__ = ("nodesTypes", "path", "_pipeline_index", "_input_types")
+
+    def __init__(self, input_types: Optional[List[type]] = None) -> None:
+        self._input_types = input_types
+        self.nodesTypes = NodesTypes(input_types)
+        self.path: List[PipelineNode] = []
+        self._pipeline_index: Dict[PipelineNode, int] = {}
+
+    def push(self, node: PipelineNode):
+        self.nodesTypes.add(node)
+        self._pipeline_index[node] = len(self.path)
+        self.path.append(node)
+
+    def pop(self) -> PipelineNode:
+        if len(self.path) == 0:
+            return None
+        node = self.path.pop()
+        self.nodesTypes.remove(node)
+        self._pipeline_index.pop(node)
+        return node
+
+    def get_pipeline_index(self, node: PipelineNode) -> int:
+        if node == GraphSpace.Start:
+            return 0
+
+        if node not in self._pipeline_index:
+            raise Exception(f"Node {node} not found in this PathContext")
+
+        return self._pipeline_index[node] + 1
+
+    def __repr__(self) -> str:
+        return f"<PathContext(input_types={[i.__name__ for i in self._input_types]})->path={[repr(i) for i in self.path]}>"
+
+
+def _dfs_exploration(
+    global_output_type: type,
+    pool: Set[Algorithm],
+    G: Graph,
+    registry: List[Algorithm],
+    context: PathContext,
+):
+    """Auxiliar method.
+    Build a graph of algorithms making DFS exploration of the pipeline space.
+
+    Every node in the graph corresponds to a <autogoal.grammar.ContextFreeGrammar> that
+    generates an instance of a class with a `run` method.
+
+    Each `run` method must declare input and output types in the form:
+
+        def run(self, a: type_1, b: type_2, ...) -> type_n:
+            # ...
+    """
+
+    nodesTypes = context.nodesTypes
+
+    # We never want to apply the same exact algorithm twice, so we exclude already used algorithm
+    valid_pool: Set[Algorithm] = pool.difference(nodesTypes.algorithms)
+
+    guaranteed_types = nodesTypes.output_types
+
+    for algorithm in valid_pool:
+        # Check if some of the previous used algorithm has the required input type
+        if not algorithm.is_compatible_with(guaranteed_types):
+            continue
+
+        # We never want an algorithm that doesn't provide a novel output type...
+        if (
+            algorithm.output_type() in guaranteed_types
+            and
+            # ... unless it is an idempotent algorithm
+            not (
+                len(algorithm.input_types()) == 1
+                and algorithm.output_type() == algorithm.input_types()[0]
+            )  # we can rewrite this using logic but in this way we do not need adicional
+            # check for indexing input_types() in 0
+        ):
+            continue
+
+        p = PipelineNode(
+            algorithm=algorithm,
+            input_types=guaranteed_types,
+            output_types=guaranteed_types | set([algorithm.output_type()]),
+            registry=registry,
+        )
+
+        # Since we have all the required input types across the path we connect only with the
+        # lattest node in the path that satisfy this type requirement
+        lattest_node_index = -1
+        lattest_node = None
+        for input_type in algorithm.input_types():
+            for output_type in nodesTypes.output_types:
+                if not issubclass(output_type, input_type):
+                    continue
+
+                node = nodesTypes.get_lattest_node_with_output(output_type)
+                index = context.get_pipeline_index(node)
+                if index > lattest_node_index:
+                    lattest_node_index = index
+                    lattest_node = node
+
+        G.add_edge(lattest_node, p)
+
+        # Now we check to see if this node is a possible output
+        if issubclass(algorithm.output_type(), global_output_type):
+            G.add_edge(p, GraphSpace.End)
+
+        context.push(p)
+        _dfs_exploration(global_output_type, pool, G, registry, context)
+        context.pop()
+
+
+def build_pipeline_graph(
+    input_types: List[type],
+    output_type: type,
+    registry: List[Algorithm],
+    max_list_depth: int = 3,
+) -> PipelineSpace:
+    """Build a graph of algorithms.
+
+    Every node in the graph corresponds to a <autogoal.grammar.ContextFreeGrammar> that
+    generates an instance of a class with a `run` method.
+
+    Each `run` method must declare input and output types in the form:
+
+        def run(self, a: type_1, b: type_2, ...) -> type_n:
+            # ...
+    """
+
+    if not isinstance(input_types, (list, tuple)):
+        input_types = [input_types]
+
+    # We start by enlarging the registry with all Seq[...] algorithms
+    pool = set(registry)
+
+    # Todo: uncomment this before commit, commented for debugging speed up
+    # for algorithm in registry:
+    #     for _ in range(max_list_depth):
+    #         algorithm = make_seq_algorithm(algorithm)
+    #         pool.add(algorithm)
+
+    # For building the graph, we'll keep at each node the guaranteed output types
+
+    # We start by collecting all the possible input nodes,
+    # those that can process a subset of the input_types
+    initial_nodes: Set[PipelineNode] = set()
+
+    for algorithm in pool:
+        if not algorithm.is_compatible_with(input_types):
+            continue
+
+        initial_nodes.add(
+            PipelineNode(
+                algorithm=algorithm,
+                input_types=input_types,
+                output_types=set(input_types) | set([algorithm.output_type()]),
+                registry=registry,
+            )
+        )
+
+    # raise no pipelines found if we can't connect any algorithm in the registry with the input
+    if len(initial_nodes) == 0:
+        raise TypeError("No pipelines can be found!")
+
+    G = Graph()
+
+    for node in initial_nodes:
+        G.add_edge(GraphSpace.Start, node)
+        context = PathContext(input_types)
+        context.push(node)
+
+        _dfs_exploration(output_type, pool, G, registry, context)
+
+        # Now we check to see if this node is a possible output
+        if issubclass(node.algorithm.output_type(), output_type):
+            G.add_edge(node, GraphSpace.End)
 
     # Remove all nodes that are not connected to the end node
     try:
