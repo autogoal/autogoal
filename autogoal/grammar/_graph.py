@@ -2,7 +2,7 @@ import networkx as nx
 import random
 import types
 
-from typing import List, Dict
+from typing import Any, List, Dict
 from autogoal.sampling import ISampler
 
 from autogoal.utils import nice_repr
@@ -343,12 +343,12 @@ class GraphSpace(Grammar):
         self.initializer = initializer or default_initializer
 
     @property
-    def _start(self):
+    def _start(self) -> List[Any]:
         return [GraphSpace.Start]
 
-    def _sample(self, symbol, max_iterations, sampler: ISampler):
+    def _sample(self, symbol: List[Any], max_iterations: int, sampler: ISampler):
         path = symbol
-        visited = set()
+        # visited = set()
 
         while max_iterations > 0:
             last_node = path[-1]
@@ -366,7 +366,8 @@ class GraphSpace(Grammar):
 
             next_node = names_values[sampler.choice(list(names_values))]
             path.append(next_node)
-            visited.add(next_node)
+            # visited.add(next_node)
+            max_iterations -= 1
         else:
             raise ValueError("Reached maximum iterations")
 
