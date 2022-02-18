@@ -137,7 +137,7 @@ class AutoML:
         if not y is None:
             y = np.asarray(y)
 
-        def fitness_fn(pipeline):
+        def fitness_fn(pipeline, timeout=None):
             return self.score_metric(
                 pipeline,
                 X,
@@ -145,6 +145,7 @@ class AutoML:
                 self.validation_split,
                 self.cross_validation_steps,
                 self.cross_validation,
+                timeout,
             )
 
         return fitness_fn

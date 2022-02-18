@@ -19,7 +19,7 @@ class A:
         return repr(self) == repr(other)
 
 
-def fn(a: A):
+def fn(a: A, **kwargs):
     return a.x ** 2 + a.y ** 2
 
 
@@ -48,7 +48,7 @@ def test_search_is_replayable_from_grammar():
     assert best == best_clone
 
 
-def fn2(sampler):
+def fn2(sampler, **kwargs):
     return sampler.discrete(0, 10)
 
 
