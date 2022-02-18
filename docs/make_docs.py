@@ -121,7 +121,7 @@ def build_api():
     lines = yaml.dump(index)
 
     base_path = Path(__file__).parent.parent
-    if 'docs' in os.path.abspath(base_path):
+    if "docs" in os.path.abspath(base_path):
         # if called from docs folder, go to project root
         base_path = Path(os.path.dirname(os.path.abspath(base_path)))
 
@@ -303,22 +303,26 @@ def make_algorithms_table():
     all_classes = find_classes()
 
     with open(Path(__file__).parent / "guide" / "algorithms.md", "w") as fp:
-        fp.write(textwrap.dedent(
-            """
+        fp.write(
+            textwrap.dedent(
+                """
             |Algorithm|Dependencies|Input|Output|
             |--|--|--|--|
             """
-        ))
+            )
+        )
 
         for clss in all_classes:
             print(clss)
             signature = inspect.signature(clss.run)
-            dependency = clss.__module__.split('.')[2]
+            dependency = clss.__module__.split(".")[2]
 
-            if dependency.startswith('_'):
+            if dependency.startswith("_"):
                 dependency = ""
 
-            fp.write(f"| {clss.__name__} | {dependency} | {signature.parameters['input'].annotation} | {signature.return_annotation} | \n")
+            fp.write(
+                f"| {clss.__name__} | {dependency} | {signature.parameters['input'].annotation} | {signature.return_annotation} | \n"
+            )
 
 
 if __name__ == "__main__":
