@@ -3,6 +3,7 @@ import random
 import types
 
 from typing import List, Dict
+from autogoal.sampling import ISampler
 
 from autogoal.utils import nice_repr
 from ._base import Grammar, Sampler
@@ -345,7 +346,7 @@ class GraphSpace(Grammar):
     def _start(self):
         return [GraphSpace.Start]
 
-    def _sample(self, symbol, max_iterations, sampler):
+    def _sample(self, symbol, max_iterations, sampler: ISampler):
         path = symbol
         visited = set()
 

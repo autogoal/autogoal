@@ -1,6 +1,5 @@
 from autogoal.kb import *
-from autogoal.kb._algorithm import build_pipeline_graph_old, PipelineSpace
-from autogoal.sampling import Sampler
+from autogoal.kb._algorithm import PipelineSpace
 from autogoal.utils import nice_repr
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -37,71 +36,66 @@ class T6:
 @nice_repr
 class T1_T2(AlgorithmBase):
     def run(self, t1: T1) -> T2:
-        pass
+        return T2()
 
 
 @nice_repr
 class T2_T3(AlgorithmBase):
     def run(self, t2: T2) -> T3:
-        pass
+        return T3()
 
 
 @nice_repr
 class T3_T4(AlgorithmBase):
     def run(self, t3: T3) -> T4:
-        pass
+        return T4()
 
 
 @nice_repr
 class T2T3_T4(AlgorithmBase):
     def run(self, t2: T2, t3: T3) -> T4:
-        pass
+        return T4()
 
 
 @nice_repr
 class T4_T5(AlgorithmBase):
     def run(self, t4: T4) -> T5:
-        pass
+        return T5()
 
 
 @nice_repr
 class T4_T5(AlgorithmBase):
     def run(self, t4: T4) -> T5:
-        pass
+        return T5()
 
 
 @nice_repr
 class T3T4_T5(AlgorithmBase):
     def run(self, t3: T3, t4: T4) -> T5:
-        pass
+        return T5()
 
 
 @nice_repr
 class T2_T2(AlgorithmBase):
     def run(self, x: T2) -> T2:
-        pass
+        return T2()
 
 
 @nice_repr
 class T2_T2_V2(AlgorithmBase):
     def run(self, x: T2) -> T2:
-        pass
+        return T2()
 
 
 @nice_repr
 class T2_T3_Supervised(AlgorithmBase):
     def run(self, x: T2, y: Supervised[T3]) -> T3:
-        pass
+        return T3()
 
 
 input_types = (T1,)
 output_type = T5
 registry = [T1_T2, T2_T2, T2_T3, T2T3_T4, T3T4_T5]
-
-
-pipelines_old = build_pipeline_graph_old(
-    input_types=input_types, output_type=output_type, registry=registry,
-)
 
 pipelines = build_pipeline_graph(
     input_types=input_types, output_type=output_type, registry=registry,
@@ -143,14 +137,6 @@ def plot_graph(space: PipelineSpace):
 
 st.write(
     """
-    ### Old build_pipeline_graph
-    """
-)
-
-plot_graph(pipelines_old)
-
-st.write(
-    """
     ### New build_pipeline_graph
     """
 )
@@ -166,9 +152,11 @@ st.write(
 
 def sample():
     r = pipelines.sample()
+    r.run(T1())
     return r
 
 
 st.code(sample())
 
 st.button("Sample another pipeline")
+

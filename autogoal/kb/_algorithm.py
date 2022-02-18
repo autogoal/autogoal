@@ -1,3 +1,6 @@
+from __future__ import (
+    annotations,
+)  # all types are available in all code,even if is defined latter
 from collections import defaultdict, namedtuple, OrderedDict
 import inspect
 import abc
@@ -18,7 +21,7 @@ from typing import (
 import types
 
 import networkx as nx
-from autogoal.sampling import Sampler
+from autogoal.sampling import ISampler, Sampler
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
@@ -212,81 +215,6 @@ class AlgorithmBase(Algorithm, abc.ABC):
         return inspect.signature(cls.run).return_annotation
 
 
-def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
-    """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
-
-    The input can be a class that inherits from `Algorithm` or an instance of such a class.
-
-    >>> class A(AlgorithmBase):
-    ...    def run(self, a:int, b:str):
-    ...        pass
-    >>> values = { str:"hello", float:3.0, int:42 }
-    >>> build_input_args(A, values)
-    {'a': 42, 'b': 'hello'}
-    >>> build_input_args(A(), values)
-    {'a': 42, 'b': 'hello'}
-
-    """
-
-    result = {}
-
-    for name, type in zip(algorithm.input_args(), algorithm.input_types()):
-        try:
-            result[name] = values[type]
-        except KeyError:
-            for key in values:
-                if issubclass(key, type):
-                    result[name] = values[key]
-                    break
-            else:
-                raise TypeError(f"Cannot find compatible input value for {type}")
-
-    return result
-
-
-@nice_repr
-class Pipeline:
-    """Represents a sequence of algorithms.
-
-    Each algorithm must have a `run` method declaring it's input and output type.
-    The pipeline instance also receives the input and output types.
-    """
-
-    def __init__(
-        self, algorithms: List[Algorithm], input_types: List[Type[SemanticType]]
-    ) -> None:
-        self.algorithms = algorithms
-        self.input_types = input_types
-
-    def run(self, *inputs):
-        data = {}
-
-        for i, t in zip(inputs, self.input_types):
-            data[t] = i
-
-        for algorithm in self.algorithms:
-            args = build_input_args(algorithm, data)
-            output = algorithm.run(**args)
-            output_type = algorithm.output_type()
-            data[output_type] = output
-
-        return data[self.algorithms[-1].output_type()]
-
-    def send(self, msg: str, *args, **kwargs):
-        found = False
-
-        for step in self.algorithms:
-            if hasattr(step, msg):
-                getattr(step, msg)(*args, **kwargs)
-                found = True
-            elif hasattr(step, "send"):
-                step.send(msg, *args, **kwargs)
-                found = True
-
-        if not found:
-            warnings.warn(f"No step answered message {msg}.")
-
-
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
 
@@ -402,6 +330,121 @@ def _make_list_args_and_kwargs(*args, **kwargs):
     return [Akw(xs, ks) for xs, ks in zip(inner_args, inner_kwargs)]
 
 
+def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
+    """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
+
+    The input can be a class that inherits from `Algorithm` or an instance of such a class.
+
+    >>> class A(AlgorithmBase):
+    ...    def run(self, a:int, b:str):
+    ...        pass
+    >>> values = { str:"hello", float:3.0, int:42 }
+    >>> build_input_args(A, values)
+    {'a': 42, 'b': 'hello'}
+    >>> build_input_args(A(), values)
+    {'a': 42, 'b': 'hello'}
+
+    """
+
+    result = {}
+
+    for name, type in zip(algorithm.input_args(), algorithm.input_types()):
+        try:
+            result[name] = values[type]
+        except KeyError:
+            for key in values.keys():
+                if issubclass(key, type):
+                    result[name] = values[key]
+                    break
+            else:
+                raise TypeError(f"Cannot find compatible input value for {type}")
+
+    return result
+
+
+@nice_repr
+class Pipeline:
+    """Represents a sequence of algorithms.
+
+    Each algorithm must have a `run` method declaring it's input and output type.
+    The pipeline instance also receives the input and output types.
+    """
+
+    def __init__(
+        self,
+        algorithms: List[Algorithm],
+        input_types: List[Type[SemanticType]],
+        connection_mapping: Optional[Dict[Algorithm, List[Algorithm]]] = None,
+    ) -> None:
+        self.algorithms = algorithms
+        self.input_types = input_types
+        self.connection_mapping = connection_mapping
+
+    def _run(self, *inputs):
+        data: Dict[type, Any] = {}
+
+        for i, t in zip(inputs, self.input_types):
+            data[t] = i
+
+        for algorithm in self.algorithms:
+            args = build_input_args(algorithm, data)
+            output = algorithm.run(**args)
+            output_type = algorithm.output_type()
+            data[output_type] = output
+
+        return data[self.algorithms[-1].output_type()]
+
+    def _run_with_connection(self, *inputs):
+        input_data: Dict[type, Any] = {}
+        algorithm_outputs: Dict[Algorithm, Any] = {}
+
+        for i, t in zip(inputs, self.input_types):
+            input_data[t] = i
+
+        for algorithm in self.algorithms:
+            connections: List[Algorithm] = self.connection_mapping[algorithm]
+            # update data with the correct algorithm outputs
+            data: Dict[type, Any] = {}
+            for connected_algorithm in connections:
+                if connected_algorithm == GraphSpace.Start:
+                    data.update(input_data)
+                    continue
+                algorithm_output = algorithm_outputs[connected_algorithm]
+                data[connected_algorithm.output_type()] = algorithm_output
+
+            args = build_input_args(algorithm, data)
+            output = algorithm.run(**args)
+            algorithm_outputs[algorithm] = output
+
+        return algorithm_outputs[self.algorithms[-1]]
+
+    def run(self, *inputs):
+        if self.connection_mapping is None:
+            return self._run(*inputs)
+
+        return self._run_with_connection(*inputs)
+
+    def send(self, msg: str, *args, **kwargs):
+        found = False
+
+        for step in self.algorithms:
+            if hasattr(step, msg):
+                getattr(step, msg)(*args, **kwargs)
+                found = True
+            elif hasattr(step, "send"):
+                step.send(msg, *args, **kwargs)
+                found = True
+
+        if not found:
+            warnings.warn(f"No step answered message {msg}.")
+
+
+def _get_name(obj) -> str:
+    return (
+        obj.__name__ if hasattr(obj, "__name__") else getattr(obj, "__class__").__name__
+    )
+
+
 class PipelineNode:
     def __init__(
         self,
@@ -418,7 +461,7 @@ class PipelineNode:
             generate_cfg(self.algorithm, registry=registry) if has_grammar else None
         )
 
-    def sample(self, sampler):
+    def sample(self, sampler: ISampler):
         return self.grammar.sample(sampler=sampler)
 
     @property
@@ -431,7 +474,9 @@ class PipelineNode:
         )
 
     def __repr__(self) -> str:
-        return f"<PipelineNode(algorithm={self.algorithm.__name__},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
+        algorithm_name = _get_name(self.algorithm)
+
+        return f"<PipelineNode(algorithm={algorithm_name},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -454,12 +499,44 @@ class PipelineSpace(GraphSpace):
             if isinstance(node, PipelineNode)
         )
 
-    def _generate_pipeline(self, path) -> Pipeline:
+    def _generate_pipeline(
+        self, path: Sequence[Algorithm], *, sampler: ISampler = None
+    ) -> Pipeline:
+        if sampler is None:
+            sampler = Sampler()
+
+        # create a context to know if this path has unique connections way
         context = PathContext(self.input_types)
+
+        mapper: Dict[Algorithm, List[Algorithm]] = defaultdict(list)
+        # keep track of algorithm whose outputs are used
+        connected_algorithm: Set[Algorithm] = set()
+
         for algorithm in path:
+
+            algorithm_input_types = algorithm.input_types()
+
+            for i_type in algorithm_input_types:
+                available_algorithm = list(
+                    context.nodes_types.get_nodes_with_output(i_type)
+                )
+
+                if len(available_algorithm) > 1:
+                    # wa sample over all available algorithms (current context) whose outputs are compatible with the current input
+                    selected_algorithm = sampler.choice(available_algorithm)
+                else:
+                    selected_algorithm = available_algorithm[0]
+
+                if selected_algorithm != GraphSpace.Start:
+                    selected_algorithm = selected_algorithm.algorithm
+
+                mapper[algorithm].append(selected_algorithm)
+                connected_algorithm.add(selected_algorithm)
+
+            # update context
             guaranteed_types = context.nodes_types.output_types
             p = PipelineNode(
-                algorithm=getattr(algorithm, "__class__"),
+                algorithm=algorithm,
                 input_types=guaranteed_types,
                 output_types=guaranteed_types | set([algorithm.output_type()]),
                 registry=None,
@@ -467,16 +544,34 @@ class PipelineSpace(GraphSpace):
             )
             context.push(p)
 
+        # we always use the output of the last algorithm
+        connected_algorithm.add(path[-1])
+
+        unused_algorithm = set(path).difference(connected_algorithm)
+
+        # prune all algorithm whose output isn't used
+        if len(unused_algorithm) > 0:
+            updated_path = []
+
+            for algorithm in path:
+                if algorithm in unused_algorithm:
+                    mapper.pop(algorithm)
+                    continue
+
+                updated_path.append(algorithm)
+
+            path = updated_path
+
+        # if has unique connection way return the Pipeline
         if context.has_unique_connection_path:
             return Pipeline(path, input_types=self.input_types)
 
-        # TODO: sample from all possible ways of connect the pipeline algorithm
-        return Pipeline(path, input_types=self.input_types)
+        # if don't have unique connection we pass the mapper dict
+        return Pipeline(path, input_types=self.input_types, connection_mapping=mapper)
 
     def sample(self, *args, **kwargs):
-        kwargs["sampler"] = Sampler(random_state=0)
         path = super().sample(*args, **kwargs)
-        return self._generate_pipeline(path)
+        return self._generate_pipeline(path, *args, **kwargs)
 
 
 def build_pipeline_graph_old(

@@ -4,10 +4,34 @@ import statistics
 import pickle
 import numpy as np
 
-from typing import Dict, List, Sequence
+from typing import Dict, List, Protocol, Sequence, TypeVar
 import abc
 
 from autogoal.utils import nice_repr
+
+_T = TypeVar("_T")
+
+
+class ISampler(Protocol):
+    rand: random.Random
+
+    def choice(self, options: Sequence[_T], handle=None) -> _T:
+        raise NotImplementedError
+
+    def distribution(self, name: str, handle=None, **kwargs):
+        raise NotImplementedError
+
+    def discrete(self, min=0, max=10, handle=None) -> int:
+        raise NotImplementedError
+
+    def continuous(self, min=0, max=1, handle=None) -> float:
+        raise NotImplementedError
+
+    def boolean(self, handle=None) -> bool:
+        raise NotImplementedError
+
+    def categorica(self, options: Sequence[_T], handle=None) -> _T:
+        raise NotImplementedError
 
 
 class Sampler:
