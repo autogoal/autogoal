@@ -153,7 +153,7 @@ These are our consistency rules:
 
 This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
 
-- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
+- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AutoGOAL.
 - [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
 - [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
 
@@ -218,6 +218,10 @@ Here are all the current contributions.
     <td align="center"><a href="https://sourceplusplus.com"><img src="https://avatars0.githubusercontent.com/u/3278877?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brandon Fergerson</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3ABFergerson" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://adityanikhil.github.io/main/"><img src="https://avatars2.githubusercontent.com/u/30192967?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aditya Nikhil</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3AAdityaNikhil" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/lucas-FP"><img src="https://avatars.githubusercontent.com/u/39564125?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lucas-FP</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/issues?q=author%3Alucas-FP" title="Bug reports">🐛</a> <a href="https://github.com/autogoal/autogoal/commits?author=lucas-FP" title="Code">💻</a></td>
+    <td align="center"><a href="http://leynier.github.io"><img src="https://avatars.githubusercontent.com/u/36774373?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leynier Gutiérrez González</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=leynier" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://dev.to/ender_minyard"><img src="https://avatars.githubusercontent.com/u/60559370?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ender Minyard</b></sub></a><br /><a href="https://github.com/autogoal/autogoal/commits?author=genderev" title="Documentation">📖</a></td>
   </tr>
 </table>
 

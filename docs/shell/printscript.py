@@ -11,7 +11,9 @@ console.print("")
 
 with open(sys.argv[1]) as fp:
     text = fp.read()
-    styled_text = Syntax("", lexer_name="Python", theme="monokai", line_numbers=True).highlight(text)
+    styled_text = Syntax(
+        "", lexer_name="Python", theme="monokai", line_numbers=True
+    ).highlight(text)
 
 time.sleep(0.5)
 

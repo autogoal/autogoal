@@ -138,6 +138,24 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "leynier",
+      "name": "Leynier Gutiérrez González",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36774373?v=4",
+      "profile": "http://leynier.github.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "genderev",
+      "name": "Ender Minyard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60559370?v=4",
+      "profile": "http://dev.to/ender_minyard",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7

@@ -103,10 +103,8 @@ class KMeans(_KMeans, SklearnEstimator):
             precompute_distances=precompute_distances,
         )
 
-    def run(
-        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
-    ) -> VectorCategorical:
-        return SklearnEstimator.run(self, X, y)
+    def run(self, X: MatrixContinuous) -> VectorCategorical:
+        return SklearnEstimator.run(self, X)
 
 
 from sklearn.cluster._kmeans import MiniBatchKMeans as _MiniBatchKMeans
@@ -134,10 +132,8 @@ class MiniBatchKMeans(_MiniBatchKMeans, SklearnEstimator):
             reassignment_ratio=reassignment_ratio,
         )
 
-    def run(
-        self, X: MatrixContinuous, y: Supervised[VectorCategorical]
-    ) -> VectorCategorical:
-        return SklearnEstimator.run(self, X, y)
+    def run(self, X: MatrixContinuous) -> VectorCategorical:
+        return SklearnEstimator.run(self, X)
 
 
 from sklearn.cluster._mean_shift import MeanShift as _MeanShift
@@ -151,10 +147,8 @@ class MeanShift(_MeanShift, SklearnEstimator):
         SklearnEstimator.__init__(self)
         _MeanShift.__init__(self, bin_seeding=bin_seeding, cluster_all=cluster_all)
 
-    def run(
-        self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
-    ) -> VectorCategorical:
-        return SklearnEstimator.run(self, X, y)
+    def run(self, X: MatrixContinuousDense) -> VectorCategorical:
+        return SklearnEstimator.run(self, X)
 
 
 from sklearn.decomposition._factor_analysis import FactorAnalysis as _FactorAnalysis

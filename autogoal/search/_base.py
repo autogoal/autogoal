@@ -5,6 +5,7 @@ import datetime
 import statistics
 import math
 import termcolor
+import json
 
 import autogoal.logging
 
@@ -33,7 +34,7 @@ class SearchAlgorithm:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
 
         self._generator_fn = generator_fn
-        self._fitness_fn = fitness_fn or (lambda x: x)
+        self._fitness_fn = fitness_fn or (lambda x, **kwargs: x)
         self._pop_size = pop_size
         self._maximize = maximize
         self._errors = errors
@@ -371,6 +372,58 @@ class RichLogger(Logger):
         self.console.print(Panel(f"🌟 Best=[green bold]{best_fn or 0:.3f}"))
         self.progress.stop()
         self.console.rule("Search finished", style="red")
+
+
+class JsonLogger(Logger):
+    def __init__(self, log_file_name: str) -> None:
+        self.log_file_name = log_file_name
+        with open(self.log_file_name, "w") as log_file:
+            print("creating log file ", self.log_file_name)
+            json.dump([], log_file)
+
+    def begin(self, generations, pop_size):
+        pass
+
+    def start_generation(self, generations, best_fn):
+        eval_log = {"generations left": generations, "best_fn": best_fn}
+        self.update_log(eval_log)
+
+    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+        eval_log = {"new-best-fn": new_fn, "previous-best-fn": previous_fn}
+        self.update_log(eval_log)
+
+    def eval_solution(self, solution, fitness):
+        eval_log = {
+            "pipeline": repr(solution)
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace(",", ", "),
+            "multiline-pipeline": repr(solution),
+            "fitness": fitness,
+        }
+        self.update_log(eval_log)
+
+    def end(self, best, best_fn):
+        eval_log = {
+            "Finished run": True,
+            "best-pipeline": repr(best)
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace(",", ", "),
+            "best-multiline-pipeline": repr(best),
+            "best-fitness": best_fn,
+        }
+        self.update_log(eval_log)
+
+    def update_log(self, json_load):
+        new_data = ""
+        with open(self.log_file_name, "r") as log_file:
+            data = json.load(log_file)
+            new_data = data
+            new_data.append(json_load)
+
+        with open(self.log_file_name, "w") as log_file:
+            json.dump(new_data, log_file)
 
 
 class MemoryLogger(Logger):

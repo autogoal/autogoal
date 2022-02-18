@@ -72,9 +72,11 @@ class AutoML:
             input_types=self.input, output_type=self.output, registry=registry,
         )
 
-    def fit(self, X, y, **kwargs):
+    def fit(self, X, y=None, **kwargs):
         self.input = self._input_type(X)
-        self.output = self._output_type(y)
+
+        if not y is None:
+            self.output = self._output_type(y)
 
         search = self.search_algorithm(
             self.make_pipeline_builder(),
@@ -131,52 +133,19 @@ class AutoML:
     def _output_type(self, y):
         return self.output or SemanticType.infer(y)
 
-    def make_fitness_fn(self, X, y):
-        y = np.asarray(y)
+    def make_fitness_fn(self, X, y=None):
+        if not y is None:
+            y = np.asarray(y)
 
-        def fitness_fn(pipeline, timeout=None):
-            scores = []
-            init_time = time.time()
-            max_step_time = timeout / self.cross_validation_steps
-            for step in range(self.cross_validation_steps):
-                mean_step_time = (time.time() - init_time) / max(step, 1)
-                if step != 0 and mean_step_time > max_step_time:
-                    raise PreemptiveStopException(
-                        f"Preemptive stop: mean validation step time of {mean_step_time} is higher than expected {max_step_time}"
-                    )
-                len_x = (
-                    len(X)
-                    if isinstance(X, list) or isinstance(X, tuple)
-                    else X.shape[0]
-                )
-                indices = np.arange(0, len_x)
-                np.random.shuffle(indices)
-                split_index = int(self.validation_split * len(indices))
-                train_indices = indices[:-split_index]
-                test_indices = indices[-split_index:]
-
-                if isinstance(X, list) or isinstance(X, tuple):
-                    X_train, y_train, X_test, y_test = (
-                        [X[i] for i in train_indices],
-                        y[train_indices],
-                        [X[i] for i in test_indices],
-                        y[test_indices],
-                    )
-                else:
-                    X_train, y_train, X_test, y_test = (
-                        X[train_indices],
-                        y[train_indices],
-                        X[test_indices],
-                        y[test_indices],
-                    )
-
-                pipeline.send("train")
-                pipeline.run(X_train, y_train)
-                pipeline.send("eval")
-                y_pred = pipeline.run(X_test, None)
-                scores.append(self.score_metric(y_test, y_pred))
-
-            return getattr(statistics, self.cross_validation)(scores)
+        def fitness_fn(pipeline):
+            return self.score_metric(
+                pipeline,
+                X,
+                y,
+                self.validation_split,
+                self.cross_validation_steps,
+                self.cross_validation,
+            )
 
         return fitness_fn
 
