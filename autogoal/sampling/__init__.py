@@ -4,10 +4,15 @@ import statistics
 import pickle
 import numpy as np
 
-from typing import Dict, List, Protocol, Sequence, TypeVar
+from typing import Dict, List, Sequence, TypeVar
 import abc
 
 from autogoal.utils import nice_repr
+
+try:
+    from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
 
 _T = TypeVar("_T")
 
@@ -354,7 +359,7 @@ class ReplaySampler:
         >>> fp = io.BytesIO()
         >>> sampler.replay().save(fp)
         >>> len(fp.getvalue())
-        144
+        183
 
         ```
         """

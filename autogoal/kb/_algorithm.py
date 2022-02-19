@@ -1,6 +1,3 @@
-from __future__ import (
-    annotations,
-)  # all types are available in all code,even if is defined latter
 from collections import defaultdict, namedtuple, OrderedDict
 import inspect
 import abc
@@ -12,13 +9,11 @@ from typing import (
     Dict,
     List,
     Optional,
-    Protocol,
     Sequence,
     Set,
     Tuple,
     Type,
 )
-import types
 
 import networkx as nx
 from autogoal.sampling import ISampler, Sampler
@@ -26,6 +21,11 @@ from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.grammar._graph import End as GraphSpaceEnd
 from autogoal.kb._semantics import SemanticType, Seq
+
+try:
+    from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
 
 
 class Supervised(SemanticType):
@@ -363,6 +363,112 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
     return result
 
 
+class PipelineNode:
+    __slots__ = ("algorithm", "input_types", "output_types", "grammar")
+
+    def __init__(
+        self,
+        algorithm: Algorithm,
+        input_types,
+        output_types,
+        registry=None,
+        has_grammar: bool = True,
+    ) -> None:
+        self.algorithm = algorithm
+        self.input_types = set(input_types)
+        self.output_types = set(output_types)
+        self.grammar = (
+            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
+        )
+
+    def sample(self, sampler: ISampler):
+        return self.grammar.sample(sampler=sampler)
+
+    @property
+    def __name__(self):
+        return self.algorithm.__name__
+
+    def __eq__(self, o: object) -> bool:
+        return isinstance(o, PipelineNode) and all(
+            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
+        )
+
+    def __repr__(self) -> str:
+        algorithm_name = _get_name(self.algorithm)
+
+        return f"<PipelineNode(algorithm={algorithm_name},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
+
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
+
+class NodesTypes(Collection):
+    """Auxiliar class that keep track used PipelineNodes and all PipelineNode that have specific output type"""
+
+    __slots__ = ("_nodes", "_types_registry")
+
+    def __init__(self, input_types: Optional[List[type]] = None) -> None:
+        self._nodes: Set[PipelineNode] = set()
+        self._types_registry: Dict[type, Dict[PipelineNode, None]] = defaultdict(
+            OrderedDict
+        )
+
+        if input_types is not None:
+            self._nodes.add(GraphSpace.Start)
+            for i in input_types:
+                self._types_registry[i][GraphSpace.Start] = None
+
+    def __contains__(self, x: Any) -> bool:
+        return x in self._nodes
+
+    def __len__(self) -> int:
+        return len(self._nodes)
+
+    def __iter__(self):
+        return iter(self._nodes)
+
+    @property
+    def algorithms(self):
+        return [i.algorithm for i in self._nodes if hasattr(i, "algorithm")]
+
+    def add(self, node: PipelineNode):
+        if node in self._nodes:
+            return
+
+        self._nodes.add(node)
+
+        self._types_registry[node.algorithm.output_type()][node] = None
+
+    def remove(self, node: PipelineNode):
+        if node not in self._nodes:
+            return
+
+        self._nodes.remove(node)
+
+        types = self._types_registry[node.algorithm.output_type()]
+        types.pop(node)
+
+        if len(types) == 0:
+            self._types_registry.pop(node.algorithm.output_type())
+
+    @property
+    def output_types(self) -> Set[type]:
+        return self._types_registry.keys()
+
+    def get_nodes_with_output(self, output_type: type) -> Sequence[PipelineNode]:
+        if output_type not in self._types_registry:
+            return set()
+
+        return self._types_registry[output_type].keys()
+
+    def get_lattest_node_with_output(self, output_type: type) -> PipelineNode:
+        if output_type not in self._types_registry:
+            return None
+
+        last_node = next(reversed(self._types_registry[output_type]))
+        return last_node
+
+
 @nice_repr
 class Pipeline:
     """Represents a sequence of algorithms.
@@ -446,43 +552,102 @@ def _get_name(obj):
     )
 
 
-class PipelineNode:
-    __slots__ = ("algorithm", "input_types", "output_types", "grammar")
+class PathContext:
+    """Auxiliar class used for keep track of PipelineNodes used in a Pipeline and handled it types"""
+
+    __slots__ = (
+        "nodes_types",
+        "path",
+        "_pipeline_index",
+        "_input_types",
+        "_has_unique_connection_path",
+    )
 
     def __init__(
         self,
-        algorithm: Algorithm,
-        input_types,
-        output_types,
-        registry=None,
-        has_grammar: bool = True,
+        input_types: Optional[List[type]] = None,
+        initial_path: Optional[Sequence[PipelineNode]] = None,
     ) -> None:
-        self.algorithm = algorithm
-        self.input_types = set(input_types)
-        self.output_types = set(output_types)
-        self.grammar = (
-            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
-        )
+        self._input_types = input_types
+        self.nodes_types = NodesTypes(input_types)
+        self.path: List[PipelineNode] = []
+        self._pipeline_index: Dict[PipelineNode, int] = {}
+        self._has_unique_connection_path: bool = True
 
-    def sample(self, sampler: ISampler):
-        return self.grammar.sample(sampler=sampler)
+        if initial_path is not None:
+            for symbol in initial_path:
+                if symbol == GraphSpace.Start:
+                    self.path.insert(0, symbol)
+                    continue
+
+                self.push(symbol)
 
     @property
-    def __name__(self):
-        return self.algorithm.__name__
+    def has_unique_connection_path(self) -> bool:
+        return self._has_unique_connection_path
 
-    def __eq__(self, o: object) -> bool:
-        return isinstance(o, PipelineNode) and all(
-            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
-        )
+    def push(self, node: PipelineNode):
+        if node == GraphSpace.End:
+            self.path.append(node)
+            return
+
+        nodes_types = self.nodes_types
+
+        if self._has_unique_connection_path:
+            # if we have two algorithm that produce the same output type then
+            # there is no unique way to connect the pipeline algorithms
+            for i_type in node.input_types:
+                if len(nodes_types.get_nodes_with_output(i_type)) > 1:
+                    self._has_unique_connection_path = False
+
+        nodes_types.add(node)
+        self._pipeline_index[node] = len(self.path)
+        self.path.append(node)
+
+    def pop(self) -> PipelineNode:
+        if len(self.path) == 0:
+            return None
+
+        nodes_types = self.nodes_types
+        node = self.path.pop()
+        nodes_types.remove(node)
+        self._pipeline_index.pop(node)
+
+        # TODO: check if keep as unique connected when pop, for now keep track of this attribute by yourself when `push` and `pop` later
+        # if not self._has_unique_connection_path:
+        #    pass
+
+        return node
+
+    def top(self) -> PipelineNode:
+        if len(self.path) == 0:
+            return None
+
+        return self.path[-1]
+
+    def get_pipeline_index(self, node: PipelineNode) -> int:
+        if node not in self._pipeline_index:
+            raise Exception(f"Node {node} not found in this PathContext")
+
+        return self._pipeline_index[node]
+
+    def is_full_compatible_with(self, algorithm: Algorithm) -> bool:
+        """
+        Determines if the algorithm is compatible with a set of available input types in this context,
+        i.e., if among those types we can find all the necessary inputs for this algorithm.
+        """
+        my_inputs = algorithm.input_types()
+        context_available_types = self.nodes_types.output_types
+
+        # check if we have the exact types, fast check
+        if all(map(lambda x: x in context_available_types, my_inputs)):
+            return True
+
+        # slow check, since we can have a lot of available types in the context
+        return algorithm.is_compatible_with(context_available_types)
 
     def __repr__(self) -> str:
-        algorithm_name = _get_name(self.algorithm)
-
-        return f"<PipelineNode(algorithm={algorithm_name},input_types={[i.__name__ for i in self.input_types]},output_types={[o.__name__ for o in self.output_types]})>"
-
-    def __hash__(self) -> int:
-        return hash(repr(self))
+        return f"<PathContext(input_types={[i.__name__ for i in self._input_types]})->path={[repr(i) for i in self.path]}>"
 
 
 class PipelineSpace(GraphSpace):
@@ -739,171 +904,6 @@ class LazyPipelineSpace(PipelineSpace):
             raise ValueError("Cannot continue sampling. Graph is disconnected.")
 
         return [self.initializer(node, sampler=sampler) for node in context.path[1:-1]]
-
-
-class NodesTypes(Collection):
-    """Auxiliar class that keep track used PipelineNodes and all PipelineNode that have specific output type"""
-
-    __slots__ = ("_nodes", "_types_registry")
-
-    def __init__(self, input_types: Optional[List[type]] = None) -> None:
-        self._nodes: Set[PipelineNode] = set()
-        self._types_registry: Dict[type, Dict[PipelineNode, None]] = defaultdict(
-            OrderedDict
-        )
-
-        if input_types is not None:
-            self._nodes.add(GraphSpace.Start)
-            for i in input_types:
-                self._types_registry[i][GraphSpace.Start] = None
-
-    def __contains__(self, x: Any) -> bool:
-        return x in self._nodes
-
-    def __len__(self) -> int:
-        return len(self._nodes)
-
-    def __iter__(self):
-        return iter(self._nodes)
-
-    @property
-    def algorithms(self):
-        return [i.algorithm for i in self._nodes if hasattr(i, "algorithm")]
-
-    def add(self, node: PipelineNode):
-        if node in self._nodes:
-            return
-
-        self._nodes.add(node)
-
-        self._types_registry[node.algorithm.output_type()][node] = None
-
-    def remove(self, node: PipelineNode):
-        if node not in self._nodes:
-            return
-
-        self._nodes.remove(node)
-
-        types = self._types_registry[node.algorithm.output_type()]
-        types.pop(node)
-
-        if len(types) == 0:
-            self._types_registry.pop(node.algorithm.output_type())
-
-    @property
-    def output_types(self) -> Set[type]:
-        return self._types_registry.keys()
-
-    def get_nodes_with_output(self, output_type: type) -> Sequence[PipelineNode]:
-        if output_type not in self._types_registry:
-            return set()
-
-        return self._types_registry[output_type].keys()
-
-    def get_lattest_node_with_output(self, output_type: type) -> PipelineNode:
-        if output_type not in self._types_registry:
-            return None
-
-        last_node = next(reversed(self._types_registry[output_type]))
-        return last_node
-
-
-class PathContext:
-    """Auxiliar class used for keep track of PipelineNodes used in a Pipeline and handled it types"""
-
-    __slots__ = (
-        "nodes_types",
-        "path",
-        "_pipeline_index",
-        "_input_types",
-        "_has_unique_connection_path",
-    )
-
-    def __init__(
-        self,
-        input_types: Optional[List[type]] = None,
-        initial_path: Optional[Sequence[PipelineNode]] = None,
-    ) -> None:
-        self._input_types = input_types
-        self.nodes_types = NodesTypes(input_types)
-        self.path: List[PipelineNode] = []
-        self._pipeline_index: Dict[PipelineNode, int] = {}
-        self._has_unique_connection_path: bool = True
-
-        if initial_path is not None:
-            for symbol in initial_path:
-                if symbol == GraphSpace.Start:
-                    self.path.insert(0, symbol)
-                    continue
-
-                self.push(symbol)
-
-    @property
-    def has_unique_connection_path(self) -> bool:
-        return self._has_unique_connection_path
-
-    def push(self, node: PipelineNode):
-        if node == GraphSpace.End:
-            self.path.append(node)
-            return
-
-        nodes_types = self.nodes_types
-
-        if self._has_unique_connection_path:
-            # if we have two algorithm that produce the same output type then
-            # there is no unique way to connect the pipeline algorithms
-            for i_type in node.input_types:
-                if len(nodes_types.get_nodes_with_output(i_type)) > 1:
-                    self._has_unique_connection_path = False
-
-        nodes_types.add(node)
-        self._pipeline_index[node] = len(self.path)
-        self.path.append(node)
-
-    def pop(self) -> PipelineNode:
-        if len(self.path) == 0:
-            return None
-
-        nodes_types = self.nodes_types
-        node = self.path.pop()
-        nodes_types.remove(node)
-        self._pipeline_index.pop(node)
-
-        # TODO: check if keep as unique connected when pop, for now keep track of this attribute by yourself when `push` and `pop` later
-        # if not self._has_unique_connection_path:
-        #    pass
-
-        return node
-
-    def top(self) -> PipelineNode:
-        if len(self.path) == 0:
-            return None
-
-        return self.path[-1]
-
-    def get_pipeline_index(self, node: PipelineNode) -> int:
-        if node not in self._pipeline_index:
-            raise Exception(f"Node {node} not found in this PathContext")
-
-        return self._pipeline_index[node]
-
-    def is_full_compatible_with(self, algorithm: Algorithm) -> bool:
-        """
-        Determines if the algorithm is compatible with a set of available input types in this context,
-        i.e., if among those types we can find all the necessary inputs for this algorithm.
-        """
-        my_inputs = algorithm.input_types()
-        context_available_types = self.nodes_types.output_types
-
-        # check if we have the exact types, fast check
-        if all(map(lambda x: x in context_available_types, my_inputs)):
-            return True
-
-        # slow check, since we can have a lot of available types in the context
-        return algorithm.is_compatible_with(context_available_types)
-
-    def __repr__(self) -> str:
-        return f"<PathContext(input_types={[i.__name__ for i in self._input_types]})->path={[repr(i) for i in self.path]}>"
 
 
 def _dfs_exploration(
