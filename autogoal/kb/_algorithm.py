@@ -878,6 +878,9 @@ class LazyPipelineSpace(PipelineSpace):
             context._has_unique_connection_path = context_unique_connected
 
             self.graph.remove_edge(context.top(), node)
+            # prune node if isn't connected to a path that reach End
+            if self.graph.out_degree(node) == 0:
+                self.graph.remove_node(node)
         else:
             return None
 
