@@ -304,8 +304,7 @@ def _make_list_args_and_kwargs(*args, **kwargs):
     lengths = set(len(v) for v in kwargs.values()) | set(len(v) for v in args)
 
     if len(lengths) != 1:
-        raise ValueError(
-            "All args and kwargs must be sequences of the same length.")
+        raise ValueError("All args and kwargs must be sequences of the same length.")
 
     length = lengths.pop()
 
@@ -349,8 +348,7 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                     result[name] = values[key]
                     break
             else:
-                raise TypeError(
-                    f"Cannot find compatible input value for {type}")
+                raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
 
@@ -370,8 +368,7 @@ class PipelineNode:
         self.input_types = set(input_types)
         self.output_types = set(output_types)
         self.grammar = (
-            generate_cfg(self.algorithm,
-                         registry=registry) if has_grammar else None
+            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
         )
 
     def sample(self, sampler: ISampler):
@@ -383,7 +380,7 @@ class PipelineNode:
 
     def __eq__(self, o: object) -> bool:
         return isinstance(o, PipelineNode) and all(
-            [o.algorithm == self.algorithm, o.input_types == self.input_types, ]
+            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
         )
 
     def __repr__(self) -> str:
@@ -541,8 +538,7 @@ class Pipeline:
 
 def _get_name(obj):
     return (
-        obj.__name__ if hasattr(obj, "__name__") else getattr(
-            obj, "__class__").__name__
+        obj.__name__ if hasattr(obj, "__name__") else getattr(obj, "__class__").__name__
     )
 
 
@@ -778,8 +774,7 @@ class LazyPipelineSpace(PipelineSpace):
                 PipelineNode(
                     algorithm=algorithm,
                     input_types=input_types,
-                    output_types=input_types_set | set(
-                        [algorithm.output_type()]),
+                    output_types=input_types_set | set([algorithm.output_type()]),
                     registry=registry,
                 )
             )
@@ -860,16 +855,14 @@ class LazyPipelineSpace(PipelineSpace):
             if node == GraphSpace.End:
                 return GraphSpace.End
 
-            path_result = self._dfs_sampling(
-                max_iterations - 1, sampler, context)
+            path_result = self._dfs_sampling(max_iterations - 1, sampler, context)
 
             if path_result == GraphSpace.End:
                 return path_result
 
             # if we are here then the dfs take a wrong path that never connect with the End
             # we filter the used algorithm and try to sample again
-            available_algorithm = list(
-                filter(lambda x: x != node, available_algorithm))
+            available_algorithm = list(filter(lambda x: x != node, available_algorithm))
 
             context.pop()
             context._has_unique_connection_path = context_unique_connected
@@ -901,8 +894,7 @@ class LazyPipelineSpace(PipelineSpace):
             if len(context.path) >= max_iterations:
                 raise ValueError("Reached maximum iterations")
 
-            raise ValueError(
-                "Cannot continue sampling. Graph is disconnected.")
+            raise ValueError("Cannot continue sampling. Graph is disconnected.")
 
         return [self.initializer(node, sampler=sampler) for node in context.path[1:-1]]
 
