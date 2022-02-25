@@ -1,26 +1,16 @@
-from collections import defaultdict, namedtuple, OrderedDict
-import inspect
 import abc
+import inspect
 import types
 import warnings
-from typing import (
-    Any,
-    Collection,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
-)
+from collections import OrderedDict, defaultdict, namedtuple
+from typing import Any, Collection, Dict, List, Optional, Sequence, Set, Tuple, Type
 
 import networkx as nx
-from autogoal.sampling import ISampler, Sampler
-from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.grammar._graph import End as GraphSpaceEnd
 from autogoal.kb._semantics import SemanticType, Seq
+from autogoal.sampling import ISampler, Sampler
+from autogoal.utils import nice_repr
 
 try:
     from typing import Protocol
@@ -30,7 +20,7 @@ except ImportError:
 
 class Supervised(SemanticType):
     """Represents a supervised version of some type X.
-    
+
     It is considered a subclass of X for semantic purposes, but not the other way around:
 
     # >>> issubclass(Supervised[Vector], Vector)
@@ -41,7 +31,7 @@ class Supervised(SemanticType):
     # True
     # >>> issubclass(Seq[Vector], Supervised[Seq[Vector]])
     # False
-    
+
     """
 
     __internal_types = {}
@@ -70,7 +60,7 @@ class Supervised(SemanticType):
 
 
 def algorithm(*annotations):
-    from autogoal.grammar import Union, Symbol
+    from autogoal.grammar import Symbol, Union
 
     *inputs, output = annotations
 
@@ -300,7 +290,7 @@ Akw = namedtuple("Akw", ["args", "kwargs"])
 
 def _make_list_args_and_kwargs(*args, **kwargs):
     """Transforms a list of args into individual args and kwargs for an internal algorithm. 
-    
+
     To be used by `make_seq_algorithm"
 
     >>> _make_list_args_and_kwargs([1,2], [4,5])
@@ -314,7 +304,8 @@ def _make_list_args_and_kwargs(*args, **kwargs):
     lengths = set(len(v) for v in kwargs.values()) | set(len(v) for v in args)
 
     if len(lengths) != 1:
-        raise ValueError("All args and kwargs must be sequences of the same length.")
+        raise ValueError(
+            "All args and kwargs must be sequences of the same length.")
 
     length = lengths.pop()
 
@@ -358,7 +349,8 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                     result[name] = values[key]
                     break
             else:
-                raise TypeError(f"Cannot find compatible input value for {type}")
+                raise TypeError(
+                    f"Cannot find compatible input value for {type}")
 
     return result
 
@@ -378,7 +370,8 @@ class PipelineNode:
         self.input_types = set(input_types)
         self.output_types = set(output_types)
         self.grammar = (
-            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
+            generate_cfg(self.algorithm,
+                         registry=registry) if has_grammar else None
         )
 
     def sample(self, sampler: ISampler):
@@ -390,7 +383,7 @@ class PipelineNode:
 
     def __eq__(self, o: object) -> bool:
         return isinstance(o, PipelineNode) and all(
-            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
+            [o.algorithm == self.algorithm, o.input_types == self.input_types, ]
         )
 
     def __repr__(self) -> str:
@@ -548,7 +541,8 @@ class Pipeline:
 
 def _get_name(obj):
     return (
-        obj.__name__ if hasattr(obj, "__name__") else getattr(obj, "__class__").__name__
+        obj.__name__ if hasattr(obj, "__name__") else getattr(
+            obj, "__class__").__name__
     )
 
 
@@ -784,7 +778,8 @@ class LazyPipelineSpace(PipelineSpace):
                 PipelineNode(
                     algorithm=algorithm,
                     input_types=input_types,
-                    output_types=input_types_set | set([algorithm.output_type()]),
+                    output_types=input_types_set | set(
+                        [algorithm.output_type()]),
                     registry=registry,
                 )
             )
@@ -865,14 +860,16 @@ class LazyPipelineSpace(PipelineSpace):
             if node == GraphSpace.End:
                 return GraphSpace.End
 
-            path_result = self._dfs_sampling(max_iterations - 1, sampler, context)
+            path_result = self._dfs_sampling(
+                max_iterations - 1, sampler, context)
 
             if path_result == GraphSpace.End:
                 return path_result
 
             # if we are here then the dfs take a wrong path that never connect with the End
             # we filter the used algorithm and try to sample again
-            available_algorithm = list(filter(lambda x: x != node, available_algorithm))
+            available_algorithm = list(
+                filter(lambda x: x != node, available_algorithm))
 
             context.pop()
             context._has_unique_connection_path = context_unique_connected
@@ -904,7 +901,8 @@ class LazyPipelineSpace(PipelineSpace):
             if len(context.path) >= max_iterations:
                 raise ValueError("Reached maximum iterations")
 
-            raise ValueError("Cannot continue sampling. Graph is disconnected.")
+            raise ValueError(
+                "Cannot continue sampling. Graph is disconnected.")
 
         return [self.initializer(node, sampler=sampler) for node in context.path[1:-1]]
 
