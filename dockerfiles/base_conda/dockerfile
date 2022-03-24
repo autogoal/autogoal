@@ -1,0 +1,71 @@
+# =====================
+# Debian base image
+# ---------------------
+
+FROM conda/miniconda3:latest
+
+# =====================
+# User stuff
+# ---------------------
+
+RUN apt update \
+ && apt install -y \
+    curl \
+    locales \
+    nano \
+    ssh \
+    sudo \
+    bash \
+    make
+
+RUN rm -rf /var/lib/apt/lists/*
+
+# https://wiki.debian.org/Locale#Manually
+RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
+  && locale-gen
+ENV LANG=en_US.UTF-8
+
+RUN chsh -s /bin/bash
+ENV SHELL=/bin/bash
+
+RUN adduser --gecos '' --disabled-password coder && \
+  echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+
+# ==========================================
+# Project-specific installation instruction
+# ------------------------------------------
+
+COPY bash.bashrc /etc
+RUN chmod +x /etc/bash.bashrc
+
+ENV BUILD_ENVIRONMENT="development"
+ENV XDG_CACHE_HOME="/opt/dev/cache"
+
+WORKDIR /home/coder/autogoal
+
+RUN conda create -y --name autogoal python=3.7
+
+# Make RUN commands use the autogoal environment
+
+SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
+
+COPY pyproject.toml makefile /home/coder/autogoal/
+
+# RUN poetry install
+
+RUN make env && poetry install
+
+SHELL [ "/bin/bash", "-c" ]
+
+USER coder
+
+RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
+VOLUME /home/coder/.autogoal
+
+COPY ./ /home/coder/autogoal
+
+RUN sudo rm -rf /home/coder/autogoal/storage
+
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/local/envs/autogoal/lib/python3.7/site-packages/autogoal
+
+CMD ["/bin/bash"]
