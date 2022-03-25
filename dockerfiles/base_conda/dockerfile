@@ -16,7 +16,10 @@ RUN apt update \
     ssh \
     sudo \
     bash \
-    make
+    make \
+    gcc \
+    build-essential \ 
+    python3-dev
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -67,5 +70,7 @@ COPY ./ /home/coder/autogoal
 RUN sudo rm -rf /home/coder/autogoal/storage
 
 RUN sudo ln -s /home/coder/autogoal/autogoal /usr/local/envs/autogoal/lib/python3.7/site-packages/autogoal
+
+RUN sudo chown -R coder /home/coder
 
 CMD ["/bin/bash"]
