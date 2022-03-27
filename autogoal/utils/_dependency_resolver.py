@@ -26,9 +26,9 @@ def generate_installer(path: Path, list: List):
     with open(path + "/contribs.sh", "w") as fd:
         fd.writelines("#!/bin/bash\n")
         if 'keras' in list:
-            fd.writelines("pip install tensorflow-gpu==2.1.0 tensorflow-addons==0.9.1\n")
+            fd.writelines("conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1\n")
         if 'transformers' in list:
-            fd.writelines("pip install torch==1.9.0 torchvision==0.10.0\n")
+            fd.writelines("pip install torch==1.10.1 torchvision==0.11.2\n")
         base = "poetry install"
         for contrib in list:
             base += f" -E {contrib}"
