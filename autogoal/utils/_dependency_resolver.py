@@ -5,7 +5,7 @@ from typing import List
 def get_requirements(cls):
     print(inspect.getfile(cls))
     path = Path(inspect.getfile(cls))
-    requiements = path.parent + "/requirements.txt"
+    requiements = path.parent / "requirements.txt"
     if requiements.exists():
         return requiements.read_text()
     return None
@@ -23,7 +23,7 @@ def get_contrib(cls):
     return path.parent.name
 
 def generate_installer(path: Path, list: List):
-    with open(path + "/contribs.sh", "w") as fd:
+    with open(path / "contribs.sh", "w") as fd:
         fd.writelines("#!/bin/bash\n")
         if 'keras' in list:
             fd.writelines("conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1\n")
