@@ -71,7 +71,3 @@ fi
 echo -e "\e[m"
 
 conda activate autogoal
-
-export XDG_RUNTIME_DIR=/home/coder/.docker/run
-export PATH=/home/coder/bin:$PATH
-export DOCKER_HOST=unix:///home/coder/.docker/run/docker.sock
