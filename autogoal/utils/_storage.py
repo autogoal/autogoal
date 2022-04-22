@@ -1,6 +1,25 @@
 import yaml
 from pathlib import Path
 
+dockerfile = '''
+# =====================
+# Autogoal base image
+# ---------------------
+
+FROM autogoal:base
+
+EXPOSE 8000
+
+COPY ./ /home/coder/autogoal/storage
+
+SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
+
+RUN sudo chmod +x ./storage/contribs.sh && sudo ./storage/contribs.sh
+
+CMD [ "python3", "-m", "autogoal", "ml", "serve" ]
+
+'''
+
 class AlgorithmConfig:
     
     def __init__(self, name, module, args):
@@ -45,3 +64,7 @@ def inspect_storage(path : Path) -> "str":
     algorithms = [AlgorithmConfig.from_yaml(algorithms_path / str(i)) for i in range(count)]
 
     return str(algorithms) + str(inputs)
+
+def generate_production_dockerfile(path : Path):
+    with open(path / 'Dockerfile', 'w') as fd:
+        fd.write(dockerfile)

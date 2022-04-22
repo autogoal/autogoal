@@ -12,7 +12,7 @@ from pathlib import Path
 from autogoal.kb import build_pipeline_graph, SemanticType, Pipeline
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
-from autogoal.utils import nice_repr
+from autogoal.utils import nice_repr, generate_production_dockerfile
 
 
 @nice_repr
@@ -133,6 +133,8 @@ class AutoML:
             self.save(fd)
         self.best_pipeline_.algorithms = tmp
 
+        generate_production_dockerfile(path)
+
     @classmethod
     def load(self, fp: io.FileIO) -> "AutoML":
         """
@@ -214,9 +216,6 @@ class AutoML:
             shutil.rmtree(datapath)
 
         self.folder_save(datapath)
-
-        open(datapath / "dockerfile", "w").close()
-        shutil.copyfile("/home/coder/autogoal/dockerfiles/production/dockerfile", datapath / "dockerfile")
 
         makefile = open(datapath / "makefile", "w")
         makefile.write("""
