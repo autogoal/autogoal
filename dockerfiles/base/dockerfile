@@ -19,8 +19,7 @@ RUN apt update \
     make \
     gcc \
     build-essential \ 
-    python3-dev \
-    uidmap
+    python3-dev
 
 RUN rm -rf /var/lib/apt/lists/*
 # https://wiki.debian.org/Locale#Manually
