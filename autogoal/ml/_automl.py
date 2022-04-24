@@ -211,13 +211,14 @@ class AutoML:
         if (path is None):
             path = os.getcwd()
         
-        datapath = path / "autogoal-export"
-        if (Path(datapath).exists()):
+        datapath = f'{path}/autogoal-export'
+        final_path = Path(datapath)
+        if (final_path.exists()):
             shutil.rmtree(datapath)
 
-        self.folder_save(datapath)
+        self.folder_save(final_path)
 
-        makefile = open(datapath / "makefile", "w")
+        makefile = open(final_path / "makefile", "w")
         makefile.write("""
 build:
 

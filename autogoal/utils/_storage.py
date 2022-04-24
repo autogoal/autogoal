@@ -10,13 +10,15 @@ FROM autogoal:base
 
 EXPOSE 8000
 
-COPY ./ /home/coder/autogoal/storage
+USER root
+
+COPY ./storage /home/coder/autogoal/storage
 
 SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
 
-RUN sudo chmod +x ./storage/contribs.sh && sudo ./storage/contribs.sh
+RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
 
-CMD [ "python3", "-m", "autogoal", "ml", "serve" ]
+CMD [ "conda", "run", "-n", "autogoal", "python3", "-m", "autogoal", "ml", "serve" ]
 
 '''
 
@@ -66,5 +68,5 @@ def inspect_storage(path : Path) -> "str":
     return str(algorithms) + str(inputs)
 
 def generate_production_dockerfile(path : Path):
-    with open(path / 'Dockerfile', 'w') as fd:
+    with open(path / 'dockerfile', 'w') as fd:
         fd.write(dockerfile)

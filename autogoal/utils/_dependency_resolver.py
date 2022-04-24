@@ -29,7 +29,7 @@ def generate_installer(path: Path, list: List):
             fd.writelines("conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1\n")
         if 'transformers' in list:
             fd.writelines("pip install torch==1.10.1 torchvision==0.11.2\n")
-        base = "poetry install"
+        base = "poetry install\npoetry install"
         for contrib in list:
             base += f" -E {contrib}"
         fd.writelines(base)
