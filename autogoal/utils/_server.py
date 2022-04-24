@@ -1,9 +1,8 @@
 from typing import Any
 from fastapi import FastAPI, Response, Request
 from pathlib import Path
-from autogoal.ml import AutoML
 from pydantic import BaseModel
-from autogoal.utils import inspect_storage
+from ._storage import inspect_storage
 import uvicorn
 
 
@@ -51,6 +50,16 @@ async def eval(t: Body, request: Request):
     return Response(content=output_type
         .to_json(result), media_type="application/json")
 
-def run(model = None):
-    app.model = model or AutoML.folder_load(Path('.'))
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+def run(model, ip = None, port = None):
+    '''
+    Starts HTTP API with specified model. 
+    '''
+    app.model = model
+    uvicorn.run(app, host = ip or "0.0.0.0", port = port or 8000) 
+
+    # def run(model = None, model_path = None, ip = None, port = None):
+    # '''
+    # Starts HTTP API with specified model and path.
+    # '''
+    # app.model = model or AutoML.folder_load(Path(model_path or '.'))
+    # uvicorn.run(app, host= ip or "0.0.0.0", port= port or 8000) 

@@ -182,3 +182,4 @@ from ._process import RestrictedWorker, RestrictedWorkerByJoin
 from ._cache import CacheManager
 from ._storage import AlgorithmConfig, inspect_storage, generate_production_dockerfile
 from ._dependency_resolver import get_contrib, generate_installer
+from ._server import run

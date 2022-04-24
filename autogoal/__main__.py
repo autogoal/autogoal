@@ -4,6 +4,7 @@ import logging
 from os import stat, system
 from pathlib import Path
 from typing import List
+import typing
 
 import pandas as pd
 import typer
@@ -20,10 +21,9 @@ from autogoal.contrib import (
 from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
-from autogoal.utils import Gb, Min, inspect_storage
+from autogoal.utils import Gb, Min, inspect_storage, run
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
 import autogoal.logging
-from autogoal.experimental import run
 
 autogoal.logging.setup("WARNING")
 
@@ -172,7 +172,7 @@ def _load_dataset(format, input, ignore):
 @automl_app.command("fit")
 def automl_fit(
     input: Path,
-    output: Path = Path("automl.bin"),
+    output: Path = Path("."),
     target: str = None,
     ignore_cols: List[int] = typer.Option([]),
     evaluation_timeout: int = 5 * Min,
@@ -216,17 +216,16 @@ def automl_fit(
     console.print(f"🏃 Training on {len(dataset)} items.")
     automl.fit(X, y, logger=RichLogger())
 
-    with output.open("wb") as fp:
-        automl.save(fp)
+    automl.folder_save(output)
 
-    console.print(f"💾 Saving model to [green]{output.absolute()}[/].")
+    console.print(f"💾 Saving model to [green]{output.absolute()}/storage [/].")
 
 
 @automl_app.command("predict")
 def automl_predict(
     input: Path,
     output: Path = Path("output.csv"),
-    model: Path = Path("automl.bin"),
+    model: Path = Path("."),
     ignore_cols: List[int] = typer.Option([]),
     format: str = None,
 ):
@@ -241,8 +240,7 @@ def automl_predict(
         return
 
     try:
-        with model.open("rb") as fp:
-            automl = AutoML.load(fp)
+        automl = AutoML.folder_load(model)
     except TypeError as e:
         logger.error(f"⚠️  Error: {str(e)}")
         return
@@ -261,35 +259,45 @@ def automl_predict(
 
 
 @automl_app.command("inspect")
-def automl_inspect(model: Path = Path(".")):
+def automl_inspect(model: str = typer.Argument(
+        '.', help="Autogoal serialized model"
+    )):
     """
     🔍 Inspect a trained AutoML model.
     """
-
-    # with model.open("rb") as fp:
-    #     automl = AutoML.load(fp)
-
-    # console.print(f"🔍 Inspecting AutoML model: [green]{model.absolute()}[/]")
+    console.print(f"🔍 Inspecting AutoML model: [green]{inspect_storage(model)}[/]")
 
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
-    console.print(inspect_storage(model))
 
 
 @automl_app.command("serve")
-def automl_server():
-    run()
+def automl_server(
+    path: str = typer.Argument(
+        '.', help="Autogoal serialized model"
+    ),
+    ip: str = typer.Argument(
+        "0.0.0.0", help="Interface ip to be used by the HTTP API"
+    ),
+    port: int = typer.Argument(
+        8000, help="Port to be bind by the server"
+    )
+):
+    console.print(f"Loading model from folder: {path}")
+    model = AutoML.folder_load(Path(path))
+    run(model, ip, port)
 
 @automl_app.command("export")
 def export(
-    name: str = typer.Argument(
-        ..., help="Name of the exported image"
+    output: str = typer.Argument(
+        '.', help="Location to export"
     )
 ):
         """
-        Creates dockerfile image and save it to disk
+        Exports previosly trained model to given location
         """
-        system('docker build --file ./dockerfiles/production/dockerfile -t autogoal:production .')
-        system(f'docker save -o {name}.tar autogoal:production')
+        
+        model = AutoML.folder_load(Path('.'))
+        model.export_portable(output)
 
 @data_app.callback()
 def data_callback():
