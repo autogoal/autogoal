@@ -4,12 +4,14 @@
 
 FROM autogoal:base
 
+USER root
+
 EXPOSE 8000
 
 COPY ./storage /home/coder/autogoal/storage
 
 SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
 
-RUN sudo chmod +x ./storage/contribs.sh && sudo ./storage/contribs.sh
+RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
 
-CMD [ "python3", "-m", "autogoal", "ml", "serve" ]
+CMD [ "conda", "run", "-n", "python3", "-m", "autogoal", "ml", "serve" ]
