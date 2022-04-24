@@ -265,7 +265,7 @@ def automl_inspect(model: str = typer.Argument(
     """
     🔍 Inspect a trained AutoML model.
     """
-    console.print(f"🔍 Inspecting AutoML model: [green]{inspect_storage(model)}[/]")
+    console.print(f"🔍 Inspecting AutoML model: [green]{inspect_storage(Path(model))}[/]")
 
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
 
@@ -293,7 +293,7 @@ def export(
     )
 ):
         """
-        Exports previosly trained model to given location
+        Export previosly trained AutoML instance.
         """
         
         model = AutoML.folder_load(Path('.'))
