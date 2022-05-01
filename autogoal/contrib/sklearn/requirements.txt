@@ -1,3 +1,0 @@
-scikit-learn>=0.22
-seqlearn>=0.2
-sklearn_crfsuite>=0.3.6
