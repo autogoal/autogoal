@@ -9,7 +9,9 @@ import uvicorn
 class Body(BaseModel):
     values: Any
 
+
 app = FastAPI()
+
 
 @app.get("/input")
 async def input(request: Request):
@@ -18,19 +20,26 @@ async def input(request: Request):
     """
     return {"message": str(request.app.model.best_pipeline_.input_types[0])}
 
+
 @app.get("/output")
 async def output(request: Request):
     """
     Returns the model output type
     """
-    return {"message": str(request.app.model.best_pipeline_.algorithms[-1].__class__.output_type())}
+    return {
+        "message": str(
+            request.app.model.best_pipeline_.algorithms[-1].__class__.output_type()
+        )
+    }
+
 
 @app.get("/inspect")
 async def inspect():
     """
     Returns the model inspect command
     """
-    return {"message": str(inspect_storage(Path('.')))}
+    return {"message": str(inspect_storage(Path(".")))}
+
 
 @app.post("/")
 async def eval(t: Body, request: Request):
@@ -47,19 +56,19 @@ async def eval(t: Body, request: Request):
 
     result = model.predict(data)
 
-    return Response(content=output_type
-        .to_json(result), media_type="application/json")
+    return Response(content=output_type.to_json(result), media_type="application/json")
 
-def run(model, ip = None, port = None):
-    '''
+
+def run(model, ip=None, port=None):
+    """
     Starts HTTP API with specified model. 
-    '''
+    """
     app.model = model
-    uvicorn.run(app, host = ip or "0.0.0.0", port = port or 8000) 
+    uvicorn.run(app, host=ip or "0.0.0.0", port=port or 8000)
 
     # def run(model = None, model_path = None, ip = None, port = None):
     # '''
     # Starts HTTP API with specified model and path.
     # '''
     # app.model = model or AutoML.folder_load(Path(model_path or '.'))
-    # uvicorn.run(app, host= ip or "0.0.0.0", port= port or 8000) 
+    # uvicorn.run(app, host= ip or "0.0.0.0", port= port or 8000)

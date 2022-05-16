@@ -259,45 +259,37 @@ def automl_predict(
 
 
 @automl_app.command("inspect")
-def automl_inspect(model: str = typer.Argument(
-        '.', help="Autogoal serialized model"
-    )):
+def automl_inspect(model: str = typer.Argument(".", help="Autogoal serialized model")):
     """
     🔍 Inspect a trained AutoML model.
     """
-    console.print(f"🔍 Inspecting AutoML model: [green]{inspect_storage(Path(model))}[/]")
+    console.print(
+        f"🔍 Inspecting AutoML model: [green]{inspect_storage(Path(model))}[/]"
+    )
 
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
 
 
 @automl_app.command("serve")
 def automl_server(
-    path: str = typer.Argument(
-        '.', help="Autogoal serialized model"
-    ),
-    ip: str = typer.Argument(
-        "0.0.0.0", help="Interface ip to be used by the HTTP API"
-    ),
-    port: int = typer.Argument(
-        8000, help="Port to be bind by the server"
-    )
+    path: str = typer.Argument(".", help="Autogoal serialized model"),
+    ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
+    port: int = typer.Argument(8000, help="Port to be bind by the server"),
 ):
     console.print(f"Loading model from folder: {path}")
     model = AutoML.folder_load(Path(path))
     run(model, ip, port)
 
+
 @automl_app.command("export")
-def export(
-    output: str = typer.Argument(
-        '.', help="Location to export"
-    )
-):
-        """
+def export(output: str = typer.Argument(".", help="Location to export")):
+    """
         Export previosly trained AutoML instance.
         """
-        
-        model = AutoML.folder_load(Path('.'))
-        model.export_portable(output)
+
+    model = AutoML.folder_load(Path("."))
+    model.export_portable(output)
+
 
 @data_app.callback()
 def data_callback():

@@ -158,22 +158,22 @@ class KerasNeuralNetwork(AlgorithmBase, metaclass=abc.ABCMeta):
 
     def save_model(self, path: Path):
         if self.model:
-            self.model.save(str(path / 'keras_model'))
+            self.model.save(str(path / "keras_model"))
         model = self._model
         grammar = self._grammar
         graph = self._graph
         self._grammar = None
         self._model = None
         self._graph = None
-        super(KerasNeuralNetwork,self).save_model(path)
+        super(KerasNeuralNetwork, self).save_model(path)
         self._grammar = grammar
         self._model = model
         self._graph = graph
-    
+
     @classmethod
     def load_model(self, path: Path):
         instance = super().load_model(path)
-        model = path / 'keras_model'
+        model = path / "keras_model"
         if model.exists():
             instance._model = load_model(str(model))
         return instance

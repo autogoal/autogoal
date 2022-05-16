@@ -369,6 +369,7 @@ class TensorEncoder(JSONEncoder):
         else:
             return super(TensorEncoder, self).default(obj)
 
+
 class Tensor(SemanticType):
     """Represents an abstract tensor type. Can be specialized into more concrete types.
 
@@ -487,6 +488,7 @@ class Tensor(SemanticType):
     def from_json(x, data):
         value = super().from_json(data)
         return array(value)
+
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,

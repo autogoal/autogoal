@@ -39,7 +39,7 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
-        **search_kwargs
+        **search_kwargs,
     ):
         self.input = input
         self.output = output
@@ -113,16 +113,15 @@ class AutoML:
         """
         Serializes the AutoML into a given path.
         """
-        if (path is None):
+        if path is None:
             path = os.getcwd()
 
         self._check_fitted()
         save_path = path / "storage"
-        
 
         try:
             os.makedirs(save_path)
-        except: 
+        except:
             shutil.rmtree(save_path)
             os.makedirs(save_path)
 
@@ -149,7 +148,7 @@ class AutoML:
 
         return automl
 
-    @classmethod 
+    @classmethod
     def folder_load(self, path: Path) -> "AutoML":
         """
         Deserializes an AutoML instance from a given path.
@@ -200,35 +199,34 @@ class AutoML:
         Exports the result of the AutoML run onto a new Docker image.
         """
         self.save()
-        os.system('docker build --file ./dockerfiles/production/dockerfile-safe -t autogoal:production .')
-        os.system(f'docker save -o {name}.tar autogoal:production')
+        os.system(
+            "docker build --file ./dockerfiles/production/dockerfile-safe -t autogoal:production ."
+        )
+        os.system(f"docker save -o {name}.tar autogoal:production")
 
-    
     def export_portable(self, path=None):
         """
         Generate a portable set of files that can be used to export the model into a new Docker image
         """
-        if (path is None):
+        if path is None:
             path = os.getcwd()
-        
-        datapath = f'{path}/autogoal-export'
+
+        datapath = f"{path}/autogoal-export"
         final_path = Path(datapath)
-        if (final_path.exists()):
+        if final_path.exists():
             shutil.rmtree(datapath)
 
         self.folder_save(final_path)
 
         makefile = open(final_path / "makefile", "w")
-        makefile.write("""
+        makefile.write(
+            """
 build:
 
 	docker build --file ./dockerfile -t autogoal:production .
     docker save -o autogoal-prod.tar autogoal:production
-        """)
+        """
+        )
         makefile.close()
 
         print("generated assets for production deployment")
-
-
-
-        
