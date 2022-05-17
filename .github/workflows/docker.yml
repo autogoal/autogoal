@@ -38,7 +38,7 @@ jobs:
           push: true
           tags: autogoal/autogoal:base
           context: "."
-          file: "dockerfiles/development/dockerfile"
+          file: "dockerfiles/base/dockerfile"
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
