@@ -1,7 +1,9 @@
 import inspect
+from textwrap import wrap
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels
+from functools import wraps
 
 METRICS = []
 
@@ -28,6 +30,7 @@ def find_metric(*types):
 
 
 def supervised_fitness_fn(score_metric_fn):
+    @wraps(score_metric_fn)
     def fitness_fn(
         pipeline,
         X,
@@ -73,6 +76,7 @@ def supervised_fitness_fn(score_metric_fn):
 
 
 def unsupervised_fitness_fn(score_metric_fn):
+    @wraps(score_metric_fn)
     def fitness_fn(pipeline, X, *args, **kwargs):
         scores = []
         pipeline.send("train")

@@ -144,7 +144,7 @@ def _get_annotations(clss, ignore=[]):
     ...     def f(self, input: int) -> float:
     ...         pass
     >>> _get_annotations(A)
-    {'f': <Signature (self, input:int) -> float>}
+    {'f': <Signature (self, input: int) -> float>}
 
     ```
     """

@@ -1,0 +1,17 @@
+# =====================
+# Autogoal base image
+# ---------------------
+
+FROM autogoal:base
+
+USER root
+
+EXPOSE 8000
+
+COPY ./storage /home/coder/autogoal/storage
+
+SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
+
+RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
+
+CMD [ "conda", "run", "-n", "python3", "-m", "autogoal", "ml", "serve" ]
