@@ -30,15 +30,15 @@ jobs:
           push: true
           tags: autogoal/autogoal:latest
           context: "."
-          file: "dockerfile"
+          file: "dockerfiles/development/dockerfile"
 
-      - name: Build basic image
+      - name: Build base image
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: autogoal/autogoal:basic
+          tags: autogoal/autogoal:base
           context: "."
-          file: "tests/basic.dockerfile"
+          file: "dockerfiles/development/dockerfile"
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
