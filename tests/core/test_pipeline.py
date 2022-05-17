@@ -31,6 +31,12 @@ class T1_T2(AlgorithmBase):
 
 
 @nice_repr
+class T2_T2(AlgorithmBase):
+    def run(self, t1: T2) -> T2:
+        pass
+
+
+@nice_repr
 class T2_T3(AlgorithmBase):
     def run(self, t2: T2) -> T3:
         pass
@@ -76,6 +82,18 @@ def test_build_pipeline_has_no_extra_nodes():
     print(pipeline_builder.graph.nodes)
 
     assert "T3_T4" not in [
+        node.algorithm.__name__
+        for node in pipeline_builder.graph
+        if hasattr(node, "algorithm")
+    ]
+
+
+def test_idempotent_step_included_in_graph():
+    pipeline_builder = build_pipeline_graph(
+        input_types=(T1,), output_type=T3, registry=[T1_T2, T2_T3, T2_T2]
+    )
+
+    assert "T2_T2" in [
         node.algorithm.__name__
         for node in pipeline_builder.graph
         if hasattr(node, "algorithm")

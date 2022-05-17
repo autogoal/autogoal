@@ -18,7 +18,8 @@ from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
 from autogoal.contrib import find_classes
 from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
-#from autogoal.experimental import generate_requirements
+
+# from autogoal.experimental import generate_requirements
 
 
 class Supervised(SemanticType):
@@ -213,19 +214,21 @@ class AlgorithmBase(Algorithm):
         self.save_model(path)
 
     def _save_info(self, path: Path):
-        params = [ name for name in inspect.signature(self.__init__).parameters if name != "self"]
+        params = [
+            name
+            for name in inspect.signature(self.__init__).parameters
+            if name != "self"
+        ]
         values = [getattr(self, param, None) for param in params]
-        parameters = { params[i]:values[i]  for i in range(len(params))}
-        module = f'\'{self.__module__}.{self.__class__.__name__}\''
+        parameters = {params[i]: values[i] for i in range(len(params))}
+        module = f"'{self.__module__}.{self.__class__.__name__}'"
         name = self.__class__.__name__
         config = AlgorithmConfig(name, module, parameters)
         config.to_yaml(path)
 
-
     def save_model(self, path: Path) -> "None":
-        with open(path / "model.bin","wb") as fd:
+        with open(path / "model.bin", "wb") as fd:
             pickle.Pickler(fd).dump(self)
-
 
     @classmethod
     def load(self, path: Path) -> "AlgorithmBase":
@@ -246,9 +249,12 @@ class AlgorithmBase(Algorithm):
             algorithm = pickle.Unpickler(fd).load()
 
             if not isinstance(algorithm, AlgorithmBase):
-                raise ValueError("The serialized file does not contain an AlgorithmBase instance.")
+                raise ValueError(
+                    "The serialized file does not contain an AlgorithmBase instance."
+                )
 
             return algorithm
+
 
 def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
     """Buils the correct input mapping for `algorithm` using the provided `values` mapping types to objects.
@@ -280,6 +286,7 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
+
 
 @nice_repr
 class Pipeline:
@@ -324,34 +331,34 @@ class Pipeline:
             warnings.warn(f"No step answered message {msg}.")
 
     def save_algorithms(self, path: Path):
-        save_path = path /  "algorithms"
+        save_path = path / "algorithms"
         if os.path.exists(save_path):
             shutil.rmtree(save_path)
         os.mkdir(save_path)
-        
+
         algorithms = []
         contribs = set()
         info = {}
 
-        for i,algorithm in enumerate(self.algorithms):
+        for i, algorithm in enumerate(self.algorithms):
             contribs.add(get_contrib(algorithm.__class__))
             algorithm_path = save_path / str(i)
             os.mkdir(algorithm_path)
             algorithm.save(algorithm_path)
-            algorithm_class = f'\'{algorithm.__module__}.{algorithm.__class__.__name__}\''
+            algorithm_class = f"'{algorithm.__module__}.{algorithm.__class__.__name__}'"
             algorithms.append(algorithm_class)
 
         generate_installer(path, list(contribs))
 
         info["algorithms"] = algorithms
-        
+
         inputs = [str(x) for x in self.input_types]
 
         info["inputs"] = inputs
 
         with open(path / "algorithms.yml", "w") as fd:
             yaml.dump(info, fd)
-    
+
     @classmethod
     def load_algorithms(self, path: Path):
         """
@@ -366,9 +373,9 @@ class Pipeline:
 
         algorithm_clases = []
 
-        for i,algorithm in enumerate(algorithms.get('algorithms')):
+        for i, algorithm in enumerate(algorithms.get("algorithms")):
             for cls in autogoal_algorithms:
-                if(algorithm in object.__str__(cls)):
+                if algorithm in object.__str__(cls):
                     algorithm_clases.append(cls)
                     answer.append(cls.load(path / "algorithms" / str(i)))
 
@@ -618,7 +625,7 @@ def build_pipeline_graph(
                 algorithm.output_type() in guaranteed_types
                 and
                 # ... unless it is an idempotent algorithm
-                [algorithm.output_type()] != algorithm.input_types()
+                tuple([algorithm.output_type()]) != algorithm.input_types()
             ):
                 continue
 

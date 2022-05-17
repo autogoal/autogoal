@@ -11,7 +11,7 @@ X, y = cars.load()
 automl = AutoML(
     input=(MatrixContinuousDense, Supervised[VectorCategorical]),
     output=VectorCategorical,
-    search_iterations=1
+    search_iterations=1,
 )
 
 # Run the pipeline search process
