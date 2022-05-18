@@ -16,6 +16,7 @@ RUN apt update \
     ssh \
     sudo \
     bash \
+    git \
     make \
     gcc \
     build-essential \ 
