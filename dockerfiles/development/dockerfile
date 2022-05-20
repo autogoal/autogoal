@@ -6,7 +6,7 @@ FROM autogoal/autogoal:base
 
 USER root
 
-SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
+SHELL ["conda", "run", "--live-stream", "-n", "autogoal", "/bin/bash", "-c"]
 
 RUN conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1 torch==1.10.1 torchvision==0.11.2
 RUN poetry install -E contrib -E dev
