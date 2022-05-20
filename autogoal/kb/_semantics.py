@@ -17,6 +17,7 @@ from functools import reduce
 import inspect
 import copyreg
 from typing import Type
+import json
 
 
 # We start by defining the base class of our hierarchy.
@@ -104,6 +105,14 @@ class SemanticType(metaclass=SemanticTypeMeta):
             raise ValueError(f"Cannot infer semantic type for {x}")
 
         return best_type
+
+    @classmethod
+    def from_json(x, data):
+        return json.loads(data)
+
+    @classmethod
+    def to_json(x, data):
+        return json.dumps(data)
 
 
 # To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.
@@ -282,9 +291,10 @@ class Seq(SemanticType):
 # internal type, and a dense/sparse flag.
 
 
-from numpy import ndarray
+from numpy import ndarray, array
 from scipy.sparse.base import spmatrix
-
+from json import JSONEncoder
+import numpy
 
 # These instances represent the two types of tensorial structure.
 
@@ -343,6 +353,21 @@ Discrete = TensorData("i", "Discrete")
 # such that `Tensor[2, None, Dense]` represents any structure that can have two dimensions no matter the internal type.
 # And we want `issubclass(...)` to work in a way that `Tensor[2, Categorical, Dense]` is a subclass to `Tensor[2, None, Dense]`.
 # For this purpose we will redefine `_conforms` to match according to how those semantic flags are defined.
+
+
+class TensorEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, ndarray):
+            return obj.tolist()
+        elif isinstance(obj, spmatrix):
+            _ndarray = obj.toarray()
+            return _ndarray.tolist()
+        else:
+            return super(TensorEncoder, self).default(obj)
 
 
 class Tensor(SemanticType):
@@ -454,6 +479,15 @@ class Tensor(SemanticType):
         Tensor.__internal_types[(dimension, internal_type, structure)] = TensorImp
 
         return TensorImp
+
+    @classmethod
+    def to_json(x, data):
+        return json.dumps(data, cls=TensorEncoder)
+
+    @classmethod
+    def from_json(x, data):
+        value = super().from_json(data)
+        return array(value)
 
 
 # Now that we have the basic tensorial type implemented, we can add some aliases here.

@@ -1,11 +1,16 @@
 import abc
 import inspect
+import os
+import pickle
+import shutil
 import types
 import warnings
 from collections import OrderedDict, defaultdict, namedtuple
+from pathlib import Path
 from typing import Any, Collection, Dict, List, Optional, Sequence, Set, Tuple, Type
 
 import networkx as nx
+import yaml
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.grammar._graph import End as GraphSpaceEnd
 from autogoal.kb._semantics import SemanticType, Seq
@@ -16,6 +21,11 @@ try:
     from typing import Protocol
 except ImportError:
     from typing_extensions import Protocol
+
+from autogoal.contrib import find_classes
+from autogoal.utils import AlgorithmConfig, generate_installer, get_contrib
+
+# from autogoal.experimental import generate_requirements
 
 
 class Supervised(SemanticType):
@@ -205,6 +215,55 @@ class AlgorithmBase(Algorithm, abc.ABC):
 
         return inspect.signature(cls.run).return_annotation
 
+    def save(self, path: Path):
+        """
+        Serializes the Algorithm instance.
+        """
+        self._save_info(path)
+        self.save_model(path)
+
+    def _save_info(self, path: Path):
+        params = [
+            name
+            for name in inspect.signature(self.__init__).parameters
+            if name != "self"
+        ]
+        values = [getattr(self, param, None) for param in params]
+        parameters = {params[i]: values[i] for i in range(len(params))}
+        module = f"'{self.__module__}.{self.__class__.__name__}'"
+        name = self.__class__.__name__
+        config = AlgorithmConfig(name, module, parameters)
+        config.to_yaml(path)
+
+    def save_model(self, path: Path) -> "None":
+        with open(path / "model.bin", "wb") as fd:
+            pickle.Pickler(fd).dump(self)
+
+    @classmethod
+    def load(self, path: Path) -> "AlgorithmBase":
+        """
+        Deserializes an Algorithm instance. 
+        """
+        return self.load_model(path)
+
+    @classmethod
+    def _get_info(self, path: Path) -> "AlgorithmConfig":
+        return AlgorithmConfig.from_yaml(path)
+
+    @classmethod
+    def load_model(self, path: Path):
+
+        with open(path / "model.bin", "rb") as fd:
+
+            algorithm = pickle.Unpickler(fd).load()
+
+            if not isinstance(algorithm, AlgorithmBase):
+                raise ValueError(
+                    "The serialized file does not contain an AlgorithmBase instance."
+                )
+
+            return algorithm
+
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
@@ -304,7 +363,8 @@ def _make_list_args_and_kwargs(*args, **kwargs):
     lengths = set(len(v) for v in kwargs.values()) | set(len(v) for v in args)
 
     if len(lengths) != 1:
-        raise ValueError("All args and kwargs must be sequences of the same length.")
+        raise ValueError(
+            "All args and kwargs must be sequences of the same length.")
 
     length = lengths.pop()
 
@@ -348,7 +408,8 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
                     result[name] = values[key]
                     break
             else:
-                raise TypeError(f"Cannot find compatible input value for {type}")
+                raise TypeError(
+                    f"Cannot find compatible input value for {type}")
 
     return result
 
@@ -368,7 +429,8 @@ class PipelineNode:
         self.input_types = set(input_types)
         self.output_types = set(output_types)
         self.grammar = (
-            generate_cfg(self.algorithm, registry=registry) if has_grammar else None
+            generate_cfg(self.algorithm,
+                         registry=registry) if has_grammar else None
         )
 
     def sample(self, sampler: ISampler):
@@ -380,7 +442,7 @@ class PipelineNode:
 
     def __eq__(self, o: object) -> bool:
         return isinstance(o, PipelineNode) and all(
-            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
+            [o.algorithm == self.algorithm, o.input_types == self.input_types, ]
         )
 
     def __repr__(self) -> str:
@@ -468,17 +530,13 @@ class Pipeline:
     """
 
     def __init__(
-        self,
-        algorithms: List[Algorithm],
-        input_types: List[Type[SemanticType]],
-        connection_mapping: Optional[Dict[Algorithm, List[Algorithm]]] = None,
+        self, algorithms: List[Algorithm], input_types: List[Type[SemanticType]]
     ) -> None:
         self.algorithms = algorithms
         self.input_types = input_types
-        self.connection_mapping = connection_mapping
 
-    def _run(self, *inputs):
-        data: Dict[type, Any] = {}
+    def run(self, *inputs):
+        data = {}
 
         for i, t in zip(inputs, self.input_types):
             data[t] = i
@@ -490,36 +548,6 @@ class Pipeline:
             data[output_type] = output
 
         return data[self.algorithms[-1].output_type()]
-
-    def _run_with_connection(self, *inputs):
-        input_data: Dict[type, Any] = {}
-        algorithm_outputs: Dict[Algorithm, Any] = {}
-
-        for i, t in zip(inputs, self.input_types):
-            input_data[t] = i
-
-        for algorithm in self.algorithms:
-            connections: List[Algorithm] = self.connection_mapping[algorithm]
-            # update data with the correct algorithm outputs
-            data: Dict[type, Any] = OrderedDict()
-            for connected_algorithm in connections:
-                if connected_algorithm == GraphSpace.Start:
-                    data.update(input_data)
-                    continue
-                algorithm_output = algorithm_outputs[connected_algorithm]
-                data[connected_algorithm.output_type()] = algorithm_output
-
-            args = build_input_args(algorithm, data)
-            output = algorithm.run(**args)
-            algorithm_outputs[algorithm] = output
-
-        return algorithm_outputs[self.algorithms[-1]]
-
-    def run(self, *inputs):
-        if self.connection_mapping is None:
-            return self._run(*inputs)
-
-        return self._run_with_connection(*inputs)
 
     def send(self, msg: str, *args, **kwargs):
         found = False
@@ -535,10 +563,62 @@ class Pipeline:
         if not found:
             warnings.warn(f"No step answered message {msg}.")
 
+    def save_algorithms(self, path: Path):
+        save_path = path / "algorithms"
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path)
+        os.mkdir(save_path)
+
+        algorithms = []
+        contribs = set()
+        info = {}
+
+        for i, algorithm in enumerate(self.algorithms):
+            contribs.add(get_contrib(algorithm.__class__))
+            algorithm_path = save_path / str(i)
+            os.mkdir(algorithm_path)
+            algorithm.save(algorithm_path)
+            algorithm_class = f"'{algorithm.__module__}.{algorithm.__class__.__name__}'"
+            algorithms.append(algorithm_class)
+
+        generate_installer(path, list(contribs))
+
+        info["algorithms"] = algorithms
+
+        inputs = [str(x) for x in self.input_types]
+
+        info["inputs"] = inputs
+
+        with open(path / "algorithms.yml", "w") as fd:
+            yaml.dump(info, fd)
+
+    @classmethod
+    def load_algorithms(self, path: Path):
+        """
+        Load piplien algorithms list from given path
+        """
+        with open(path / "algorithms.yml", "r") as fd:
+            algorithms = yaml.safe_load(fd)
+
+        autogoal_algorithms = find_classes()
+
+        answer = []
+
+        algorithm_clases = []
+
+        for i, algorithm in enumerate(algorithms.get("algorithms")):
+            for cls in autogoal_algorithms:
+                if algorithm in object.__str__(cls):
+                    algorithm_clases.append(cls)
+                    answer.append(cls.load(path / "algorithms" / str(i)))
+
+        return answer
+
 
 def _get_name(obj):
     return (
-        obj.__name__ if hasattr(obj, "__name__") else getattr(obj, "__class__").__name__
+        obj.__name__ if hasattr(obj, "__name__") else getattr(
+            obj, "__class__").__name__
     )
 
 
@@ -774,7 +854,8 @@ class LazyPipelineSpace(PipelineSpace):
                 PipelineNode(
                     algorithm=algorithm,
                     input_types=input_types,
-                    output_types=input_types_set | set([algorithm.output_type()]),
+                    output_types=input_types_set | set(
+                        [algorithm.output_type()]),
                     registry=registry,
                 )
             )
@@ -855,14 +936,16 @@ class LazyPipelineSpace(PipelineSpace):
             if node == GraphSpace.End:
                 return GraphSpace.End
 
-            path_result = self._dfs_sampling(max_iterations - 1, sampler, context)
+            path_result = self._dfs_sampling(
+                max_iterations - 1, sampler, context)
 
             if path_result == GraphSpace.End:
                 return path_result
 
             # if we are here then the dfs take a wrong path that never connect with the End
             # we filter the used algorithm and try to sample again
-            available_algorithm = list(filter(lambda x: x != node, available_algorithm))
+            available_algorithm = list(
+                filter(lambda x: x != node, available_algorithm))
 
             context.pop()
             context._has_unique_connection_path = context_unique_connected
@@ -894,7 +977,8 @@ class LazyPipelineSpace(PipelineSpace):
             if len(context.path) >= max_iterations:
                 raise ValueError("Reached maximum iterations")
 
-            raise ValueError("Cannot continue sampling. Graph is disconnected.")
+            raise ValueError(
+                "Cannot continue sampling. Graph is disconnected.")
 
         return [self.initializer(node, sampler=sampler) for node in context.path[1:-1]]
 
