@@ -2,7 +2,7 @@
 # Autogoal base image
 # ---------------------
 
-FROM autogoal:base
+FROM autogoal/autogoal:base
 
 USER root
 
