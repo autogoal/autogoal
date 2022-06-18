@@ -245,4 +245,4 @@ def test_run_unsupervised():
         score_metric=calinski_harabasz_score,
         search_timeout=120,
     )
-    automl.fit(X, logger=loggers)
+    automl.fit(X)

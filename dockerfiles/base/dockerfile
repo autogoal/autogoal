@@ -42,12 +42,13 @@ ENV XDG_CACHE_HOME="/opt/dev/cache"
 WORKDIR /home/coder/autogoal
 RUN conda create -y --name autogoal python=3.7
 # Make RUN commands use the autogoal environment
-SHELL ["conda", "run", "--live-stream", "-n", "autogoal", "/bin/bash", "-c"]
-COPY pyproject.toml makefile /home/coder/autogoal/
+# ENV PATH="$/usr/local/envs/autogoal/bin:$PATH"
+COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
 # RUN poetry install
+SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
 RUN make env && poetry install
 
-SHELL [ "/bin/bash", "-c" ]
+SHELL ["/bin/bash", "-c"]
 USER coder
 RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
 VOLUME /home/coder/.autogoal
