@@ -130,7 +130,10 @@ class SearchAlgorithm:
                         best_fn = fn
                         improvement = True
 
-                        if self._target_fn and best_fn >= self._target_fn:
+                        if self._target_fn is not None and (
+                            (best_fn >= self._target_fn and self._maximize)
+                            or (best_fn <= self._target_fn and not self._maximize)
+                        ):
                             stop = True
                             break
 
