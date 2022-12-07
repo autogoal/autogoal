@@ -61,7 +61,7 @@ class AutoML:
             np.random.seed(random_state)
 
     def _check_fitted(self):
-        if not hasattr(self, "best_pipeline_"):
+        if not hasattr(self, "best_pipelines_"):
             raise TypeError(
                 "This operation cannot be performed on an unfitted AutoML instance. Call `fit` first."
             )
@@ -91,7 +91,7 @@ class AutoML:
             **self.search_kwargs,
         )
 
-        self.best_pipeline_, self.best_score_ = search.run(
+        self.best_pipelines_, self.best_scores_ = search.run(
             self.search_iterations, **kwargs
         )
 
@@ -100,7 +100,7 @@ class AutoML:
     def fit_pipeline(self, X, y):
         self._check_fitted()
 
-        for pipeline in self.best_pipeline_:
+        for pipeline in self.best_pipelines_:
             pipeline.send("train")
             pipeline.run(X, y)
             pipeline.send("eval")
@@ -128,7 +128,7 @@ class AutoML:
             shutil.rmtree(save_path)
             os.makedirs(save_path)
 
-        for i, pipeline in enumerate(self.best_pipeline_):
+        for i, pipeline in enumerate(self.best_pipelines_):
             solution_path = save_path / f"solution_{i}"
             tmp = pipeline.algorithms
             pipeline.save_algorithms(solution_path)
@@ -169,14 +169,14 @@ class AutoML:
             solution_path = load_path / f"solution_{i}"
             pipelines.append(Pipeline.load_algorithms(solution_path))
 
-        automl.best_pipeline_ = pipelines
+        automl.best_pipelines_ = pipelines
         return automl
 
     def score(self, X, y):
         self._check_fitted()
 
         scores = []
-        for pipeline in self.best_pipeline_:
+        for pipeline in self.best_pipelines_:
             y_pred = pipeline.run(X, np.zeros_like(y))
             scores.append(self.score_metric(y, y_pred))
         return scores
@@ -206,12 +206,12 @@ class AutoML:
     def predict_all(self, X):
         self._check_fitted()
 
-        return [pipeline.run(X, None) for pipeline in self.best_pipeline_]
+        return [pipeline.run(X, None) for pipeline in self.best_pipelines_]
 
     def predict(self, solution_index, X):
         self._check_fitted()
 
-        return self.best_pipeline_[solution_index].run(X, None)
+        return self.best_pipelines_[solution_index].run(X, None)
 
     def export(self, name):
         """
