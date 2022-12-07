@@ -308,7 +308,7 @@ class ConsoleLogger(Logger):
     def err(text):
         return termcolor.colored(text, color="red")
 
-    def start_generation(self, generations, best_fn):
+    def start_generation(self, generations, best_fns):
         current_time = time.time()
         elapsed = int(current_time - self.start_time)
         avg_time = elapsed / (self.start_generations - generations + 1)
@@ -318,7 +318,10 @@ class ConsoleLogger(Logger):
 
         print(
             self.emph("New generation started"),
-            self.success(f"best_fn={float(best_fn or 0.0):0.3}"),
+            *[
+                self.success(f"best_fn_{i}={float(best_fn or 0.0):0.3}")
+                for i, best_fn in enumerate(best_fns)
+            ],
             self.primary(f"generations={generations}"),
             self.primary(f"elapsed={elapsed}"),
             self.primary(f"remaining={remaining}"),
@@ -327,8 +330,16 @@ class ConsoleLogger(Logger):
     def error(self, e: Exception, solution):
         print(self.err("(!) Error evaluating pipeline: %s" % e))
 
-    def end(self, best, best_fn):
-        print(self.emph("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best)))
+    def end(self, best_solutions, best_fns):
+        print(
+            self.emph("Search completed:"),
+            *[
+                self.emph(f"best_fn_{i}={best_fn}, best_{i}=\n{best_solution}")
+                for i, (best_solution, best_fn) in enumerate(
+                    zip(best_solutions, best_fns)
+                )
+            ],
+        )
 
     def sample_solution(self, solution):
         print(self.emph("Evaluating pipeline:"))
@@ -398,10 +409,9 @@ class RichLogger(Logger):
     def error(self, e: Exception, solution):
         self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
-    def start_generation(self, generations, best_fn):
-        self.console.rule(
-            f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}"
-        )
+    def start_generation(self, generations, best_fns):
+        bests = "\n".join(f"Best_{i}: {fn}" for i, fn in enumerate(best_fns))
+        self.console.rule(f"New generation - Remaining={generations}\n{bests}")
 
     def start_generation(self, generations, best_fn):
         self.progress.update(self.pop_counter, completed=0)
