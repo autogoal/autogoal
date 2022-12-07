@@ -128,12 +128,14 @@ class AutoML:
             shutil.rmtree(save_path)
             os.makedirs(save_path)
 
-        tmp = self.best_pipeline_.algorithms
-        self.best_pipeline_.save_algorithms(save_path)
-        self.best_pipeline_.algorithms = []
-        with open(save_path / "model.bin", "wb") as fd:
-            self.save(fd)
-        self.best_pipeline_.algorithms = tmp
+        for i, pipeline in enumerate(self.best_pipeline_):
+            solution_path = save_path / f"solution_{i}"
+            tmp = pipeline.algorithms
+            pipeline.save_algorithms(solution_path)
+            pipeline.algorithms = []
+            with open(solution_path / "model.bin", "wb") as fd:
+                self.save(fd)
+            pipeline.algorithms = tmp
 
         generate_production_dockerfile(path)
 
@@ -161,7 +163,13 @@ class AutoML:
         load_path = path / "storage"
         with open(load_path / "model.bin", "rb") as fd:
             automl = self.load(fd)
-        automl.best_pipeline_.algorithms = Pipeline.load_algorithms(load_path)
+
+        pipelines = []
+        for i in [1, 2, 3]:
+            solution_path = load_path / f"solution_{i}"
+            pipelines.append(Pipeline.load_algorithms(solution_path))
+
+        automl.best_pipeline_ = pipelines
         return automl
 
     def score(self, X, y):
@@ -195,10 +203,15 @@ class AutoML:
 
         return fitness_fn
 
-    def predict(self, X):
+    def predict_all(self, X):
         self._check_fitted()
 
-        return self.best_pipeline_.run(X, None)
+        return [pipeline.run(X, None) for pipeline in self.best_pipeline_]
+
+    def predict(self, solution_index, X):
+        self._check_fitted()
+
+        return self.best_pipeline_[solution_index].run(X, None)
 
     def export(self, name):
         """
