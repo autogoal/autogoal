@@ -10,3 +10,4 @@ from ._base import (
 from ._random import RandomSearch
 from ._pge import ModelSampler, PESearch
 from ._learning import SurrogateSearch
+from ._nspge import NSPESearch
