@@ -165,8 +165,11 @@ class AutoML:
             automl = self.load(fd)
 
         pipelines = []
-        for i in [1, 2, 3]:
-            solution_path = load_path / f"solution_{i}"
+        solutions_folders = [
+            p for p in os.listdir(load_path) if p.startswith("solution_")
+        ]
+        for solution_dir in solutions_folders:
+            solution_path = load_path / solution_dir
             pipelines.append(Pipeline.load_algorithms(solution_path))
 
         automl.best_pipelines_ = pipelines
