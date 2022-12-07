@@ -32,7 +32,6 @@ class SearchAlgorithm:
         search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
-        number_of_solutions=20,
         ranking_fn=None,
     ):
         if generator_fn is None and fitness_fn is None:
@@ -61,7 +60,6 @@ class SearchAlgorithm:
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 
-        self._number_of_solutions = number_of_solutions
         self._ranking_fn = ranking_fn or (
             lambda _, fns: tuple(
                 map(
@@ -198,14 +196,9 @@ class SearchAlgorithm:
         except KeyboardInterrupt:
             pass
 
-        optimal_front_indices = non_dominated_sort(best_fns, self._maximize)[0]
-        optimal_solutions = [best_solutions[i] for i in optimal_front_indices]
-        optimal_fns = [best_fns[i] for i in optimal_front_indices]
-
         # TODO: Generalize for top solutions
         # logger.end(best_solution, best_fn)
-        print(optimal_fns)
-        return optimal_solutions, optimal_fns
+        return best_solutions, best_fns
 
     def _rank_solutions(self, best_solutions, best_fns, gen_solutions, gen_fns):
         new_best_solutions = list(best_solutions)
@@ -227,10 +220,11 @@ class SearchAlgorithm:
                 reverse=True,
             )
         )
-        return (
-            ranked_solutions[: self._number_of_solutions],
-            ranked_fns[: self._number_of_solutions],
-        )
+
+        optimal_front_indices = non_dominated_sort(ranked_fns, self._maximize)[0]
+        optimal_solutions = [ranked_solutions[i] for i in optimal_front_indices]
+        optimal_fns = [ranked_fns[i] for i in optimal_front_indices]
+        return (optimal_solutions, optimal_fns)
 
     def _generate(self):
         # BUG: When multiprocessing is used for evaluation and no generation
