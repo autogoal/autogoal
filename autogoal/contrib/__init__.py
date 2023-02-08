@@ -103,6 +103,7 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
             if output and not re.match(output, str(sig.return_annotation)):
                 continue
 
+
             result.append(cls)
 
     return result

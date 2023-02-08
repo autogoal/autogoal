@@ -4,13 +4,14 @@ from autogoal.contrib import find_classes
 from autogoal.kb import *
 from autogoal.kb import Supervised
 from autogoal.sampling import Sampler
+from autogoal.contrib import sklearn
 
 
 def _build_pipeline():
     builder = build_pipeline_graph(
         input_types=(Seq[Seq[FeatureSet]], Supervised[Seq[Seq[Label]]]),
         output_type=Seq[Seq[Label]],
-        registry=find_classes(include="CRF"),
+        registry=find_classes(include="CRF", modules=[sklearn]),
     )
 
     return builder.sample(sampler=Sampler(random_state=0))

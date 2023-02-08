@@ -63,8 +63,7 @@ class PESearch(SearchAlgorithm):
                 pickle.dump(self._model, f)
 
     def load(self, name_pickle_file):
-        """Rewrites the probabilistic distribution of metaheuristic with the value of the name model.
-        """
+        """Rewrites the probabilistic distribution of metaheuristic with the value of the name model."""
 
         with open(name_pickle_file) as f:
             loaded_obj = pickle.load(f)

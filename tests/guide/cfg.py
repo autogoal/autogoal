@@ -354,7 +354,11 @@ class Pipeline(_Pipeline):
         self.classifier = classifier
 
         super().__init__(
-            [("vec", vectorizer), ("dec", decomposer), ("cls", classifier),]
+            [
+                ("vec", vectorizer),
+                ("dec", decomposer),
+                ("cls", classifier),
+            ]
         )
 
 

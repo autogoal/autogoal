@@ -20,7 +20,7 @@ class A:
 
 
 def fn(a: A):
-    return a.x ** 2 + a.y ** 2
+    return a.x**2 + a.y**2
 
 
 def test_save_seq():

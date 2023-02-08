@@ -65,7 +65,10 @@ def test_build_pipeline_with_two_algorithms():
 
 def test_build_pipeline_with_supervised():
     pipeline_builder = build_pipeline_graph(
-        input_types=(T1, Supervised[T3],),
+        input_types=(
+            T1,
+            Supervised[T3],
+        ),
         output_type=T3,
         registry=[T1_T2, T2_T3_Supervised],
     )

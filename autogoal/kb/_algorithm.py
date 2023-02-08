@@ -24,7 +24,7 @@ from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
 
 class Supervised(SemanticType):
     """Represents a supervised version of some type X.
-    
+
     It is considered a subclass of X for semantic purposes, but not the other way around:
 
     # >>> issubclass(Supervised[Vector], Vector)
@@ -35,7 +35,7 @@ class Supervised(SemanticType):
     # True
     # >>> issubclass(Seq[Vector], Supervised[Seq[Vector]])
     # False
-    
+
     """
 
     __internal_types = {}
@@ -117,6 +117,19 @@ def algorithm(*annotations):
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
 
+class AlgorithmMetadata():
+    """Represents an abstract algorithm metadata properties.
+    """
+
+    @property
+    def contrib(self):
+        return self._contrib
+
+    @contrib.setter
+    def contrib(self, val):
+        self._contrib = val
+
+
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
 
@@ -124,28 +137,38 @@ class Algorithm(abc.ABC):
     Users should inherit from `AlgorithmBase` instead of this class.
     """
 
+    @property
+    def metadata(self):
+        return self._metadata
+
+    @metadata.setter
+    @abc.abstractclassmethod
+    def metadata(self, val):
+        self._metadata = val
+
     @abc.abstractclassmethod
     def input_types(cls) -> Tuple[type]:
-        """Returns an ordered list of the expected semantic input types of the `run` method.
-        """
+        """Returns an ordered list of the expected semantic input types of the `run` method."""
         pass
 
     @abc.abstractclassmethod
     def input_args(cls) -> Tuple[str]:
-        """Returns an ordered tuple of the names of the arguments in the `run` method.
-        """
+        """Returns an ordered tuple of the names of the arguments in the `run` method."""
         pass
 
     @abc.abstractclassmethod
     def output_type(cls) -> type:
-        """Returns an ordered list of the expected semantic output type of the `run` method.
-        """
+        """Returns an ordered list of the expected semantic output type of the `run` method."""
+        pass
+    
+    @abc.abstractmethod
+    def instanciate(self, *args):
+        """Instanciate algorithm dependencies."""
         pass
 
     @abc.abstractmethod
     def run(self, *args):
-        """Executes the algorithm.
-        """
+        """Executes the algorithm."""
         pass
 
     @classmethod
@@ -233,7 +256,7 @@ class AlgorithmBase(Algorithm):
     @classmethod
     def load(self, path: Path) -> "AlgorithmBase":
         """
-        Deserializes an Algorithm instance. 
+        Deserializes an Algorithm instance.
         """
         return self.load_model(path)
 
@@ -243,7 +266,6 @@ class AlgorithmBase(Algorithm):
 
     @classmethod
     def load_model(self, path: Path):
-
         with open(path / "model.bin", "rb") as fd:
 
             algorithm = pickle.Unpickler(fd).load()
@@ -465,8 +487,8 @@ Akw = namedtuple("Akw", ["args", "kwargs"])
 
 
 def _make_list_args_and_kwargs(*args, **kwargs):
-    """Transforms a list of args into individual args and kwargs for an internal algorithm. 
-    
+    """Transforms a list of args into individual args and kwargs for an internal algorithm.
+
     To be used by `make_seq_algorithm"
 
     >>> _make_list_args_and_kwargs([1,2], [4,5])
@@ -513,7 +535,10 @@ class PipelineNode:
 
     def __eq__(self, o: object) -> bool:
         return isinstance(o, PipelineNode) and all(
-            [o.algorithm == self.algorithm, o.input_types == self.input_types,]
+            [
+                o.algorithm == self.algorithm,
+                o.input_types == self.input_types,
+            ]
         )
 
     def __repr__(self) -> str:
@@ -532,8 +557,7 @@ class PipelineSpace(GraphSpace):
         return item.sample(sampler)
 
     def nodes(self) -> Set[Type[Algorithm]]:
-        """Returns a list of all algorithms (types) that exist in the graph.
-        """
+        """Returns a list of all algorithms (types) that exist in the graph."""
         return set(
             node.algorithm
             for node in self.graph.nodes

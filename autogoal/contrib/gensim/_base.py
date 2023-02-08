@@ -35,8 +35,7 @@ class Word2VecEmbedding(AlgorithmBase):
         return self._model
 
     def run(self, input: Word) -> VectorContinuous:
-        """This method use Word2Vec of gensim for tranform a word in embedding vector.
-        """
+        """This method use Word2Vec of gensim for tranform a word in embedding vector."""
         try:
             return self.model.get_vector(input)
         except:
@@ -75,8 +74,7 @@ class Word2VecEmbeddingSpanish(AlgorithmBase):
         return self._model
 
     def run(self, input: Word) -> VectorContinuous:
-        """This method use Word2Vec of gensim for tranform a word in embedding vector.
-        """
+        """This method use Word2Vec of gensim for tranform a word in embedding vector."""
         try:
             return self.model.get_vector(input.lower())
         except KeyError:
@@ -119,8 +117,7 @@ class FastTextEmbeddingSpanishSUC(AlgorithmBase):
         return self._model
 
     def run(self, input: Word) -> VectorContinuous:
-        """This method use FastText of gensim for tranform a word in embedding vector.
-        """
+        """This method use FastText of gensim for tranform a word in embedding vector."""
         try:
             return self.model.get_vector(input.lower())
         except KeyError:
@@ -161,8 +158,7 @@ class FastTextEmbeddingSpanishSWBC(AlgorithmBase):
         return self._model
 
     def run(self, input: Word) -> VectorContinuous:
-        """This method use FastText of gensim for tranform a word in embedding vector.
-        """
+        """This method use FastText of gensim for tranform a word in embedding vector."""
         try:
             return self.model.get_vector(input.lower())
         except KeyError:
@@ -203,8 +199,7 @@ class GloveEmbeddingSpanishSWBC(AlgorithmBase):
         return self._model
 
     def run(self, input: Word) -> VectorContinuous:
-        """This method use FastText of gensim for tranform a word in embedding vector.
-        """
+        """This method use FastText of gensim for tranform a word in embedding vector."""
         try:
             return self.model.get_vector(input.lower())
         except KeyError:

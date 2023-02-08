@@ -299,7 +299,7 @@ def F1_beta(y, predicted, beta=1):
     p = precision(predicted, y)
     r = recall(predicted, y)
     try:
-        return (1 + beta ** 2) * ((p * r) / (p + r))
+        return (1 + beta**2) * ((p * r) / (p + r))
     except ZeroDivisionError:
         return 0.0
         pass

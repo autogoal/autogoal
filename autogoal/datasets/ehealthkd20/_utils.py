@@ -359,7 +359,12 @@ class Collection:
         for s in self.sentences:
             next_id = s.fix_ids(next_id)
 
-    def filter(self, keyphrase=None, relation=None, attribute=None,) -> "Collection":
+    def filter(
+        self,
+        keyphrase=None,
+        relation=None,
+        attribute=None,
+    ) -> "Collection":
         sentences = []
         for sentence in self.sentences:
             s = Sentence(sentence.text)

@@ -35,7 +35,7 @@ class BertEmbedding(AlgorithmBase):
 
     ##### Notes
 
-    On the first use the model `bert-base-multilingual-cased` 
+    On the first use the model `bert-base-multilingual-cased`
     from [huggingface/transformers](https://github.com/huggingface/transformers)
     will be downloaded. This may take a few minutes.
 
@@ -128,7 +128,7 @@ class BertTokenizeEmbedding(AlgorithmBase):
 
     ##### Notes
 
-    On the first use the model `bert-base-multilingual-cased` from 
+    On the first use the model `bert-base-multilingual-cased` from
     [huggingface/transformers](https://github.com/huggingface/transformers)
     will be downloaded. This may take a few minutes.
 

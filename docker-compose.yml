@@ -1,9 +1,9 @@
 version: "2.3"
 
 services:
-  autogoal:
-    container_name: autogoal
-    hostname: autogoal
+  autogoal-base:
+    container_name: autogoal-base
+    hostname: autogoal-base
     image: autogoal/autogoal:base
     ports:
       - 8501:8501
@@ -11,9 +11,38 @@ services:
     volumes: 
       - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
       - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
-      - "~/.autogoal:/home/coder/.autogoal"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
-    # entrypoint: ["/bin/sh", "/home/coder/autogoal/entrypoint.sh"]
+
+  autogoal-sklearn:
+    container_name: autogoal-sklearn
+    hostname: autogoal-sklearn
+    image: autogoal/autogoal:sklearn
+    ports:
+      - 8502:8501
+      - 8002:8000
+    volumes: 
+      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  
+  autogoal-nltk:
+    container_name: autogoal-nltk
+    hostname: autogoal-nltk
+    image: autogoal/autogoal:nltk
+    ports:
+      - 8503:8501
+      - 8003:8000
+    volumes: 
+      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"

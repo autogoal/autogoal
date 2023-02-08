@@ -71,8 +71,7 @@ class Doc2Vec(SklearnTransformer):
         return [self.doc2vec.infer_vector(x) for x in X]
 
     def run(self, input: Seq[Seq[Word]]) -> MatrixContinuousDense:
-        """This methods receive a document list and transform this into a dense continuous matrix.
-       """
+        """This methods receive a document list and transform this into a dense continuous matrix."""
         return SklearnTransformer.run(self, input)
 
 
@@ -110,8 +109,7 @@ class StopwordRemover(SklearnTransformer):
         return self.fit_transform(X, y)
 
     def run(self, input: Seq[Word]) -> Seq[Word]:
-        """This methods receive a word list list and transform this into a word list list without stopwords.
-       """
+        """This methods receive a word list list and transform this into a word list list without stopwords."""
         return SklearnTransformer.run(self, input)
 
 
@@ -128,8 +126,7 @@ class TextLowerer(SklearnTransformer):
 
 @nice_repr
 class WordnetConcept(AlgorithmBase):
-    """Find a word in Wordnet and return a List of Synset de Wordnet
-    """
+    """Find a word in Wordnet and return a List of Synset de Wordnet"""
 
     def __init__(self):
         from nltk.corpus import wordnet
@@ -137,8 +134,7 @@ class WordnetConcept(AlgorithmBase):
         self.wordnet = wordnet
 
     def run(self, input: Word) -> Seq[Synset]:
-        """Find a word in Wordnet and return a List of Synset de Wordnet
-        """
+        """Find a word in Wordnet and return a List of Synset de Wordnet"""
         synsets = self.wordnet.synsets(input)
         names_synsets = []
         for i in synsets:
@@ -163,8 +159,7 @@ class WordnetConcept(AlgorithmBase):
 
 @nice_repr
 class SentimentWord(AlgorithmBase):
-    """Find a word in SentiWordnet and return a List of sentiment of the word.
-    """
+    """Find a word in SentiWordnet and return a List of sentiment of the word."""
 
     def __init__(self):
         from nltk.corpus import sentiwordnet
@@ -172,8 +167,7 @@ class SentimentWord(AlgorithmBase):
         self.swn = sentiwordnet
 
     def run(self, input: Synset) -> Sentiment:
-        """Find a word in SentiWordnet and return a List of sentiment of the word.
-        """
+        """Find a word in SentiWordnet and return a List of sentiment of the word."""
         swn_synset = self.swn.senti_synset(input)
 
         sentiment = {}
@@ -188,7 +182,9 @@ from nltk.chunk.named_entity import NEChunkParserTagger as _NEChunkParserTagger
 
 @nice_repr
 class NEChunkParserTagger(NltkTagger):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self.tagger = _NEChunkParserTagger
         self.values = dict()
 
@@ -275,7 +271,7 @@ class FeatureSeqExtractor(AlgorithmBase):
     """
     A simple feature extractor for tokenized sentences based on NLTK.
 
-    It receives a tokenized sentence (i.e., a list of str) and outputs a 
+    It receives a tokenized sentence (i.e., a list of str) and outputs a
     list of syntactic features. For each word in the sentence, it builds a
     dictionary of features of that word, plus features of surrounding words
     in a pre-defined window (of size 1 to 5).
@@ -294,7 +290,9 @@ class FeatureSeqExtractor(AlgorithmBase):
     """
 
     def __init__(
-        self, extract_word: BooleanValue() = True, window_size: DiscreteValue(0, 5) = 0,
+        self,
+        extract_word: BooleanValue() = True,
+        window_size: DiscreteValue(0, 5) = 0,
     ):
         self.extract_word = extract_word
         self.window_size = window_size

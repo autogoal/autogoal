@@ -57,7 +57,8 @@ class TelegramLogger(Logger):
         )
         try:
             self.message.edit_text(
-                text=text, parse_mode=ParseMode.MARKDOWN,
+                text=text,
+                parse_mode=ParseMode.MARKDOWN,
             )
         except:
             pass

@@ -22,6 +22,7 @@ from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
 from autogoal.utils import Gb, Min, inspect_storage, run
+from autogoal.utils.remote import _server as rm_server
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
 import autogoal.logging
 
@@ -270,12 +271,37 @@ def automl_inspect(model: str = typer.Argument(".", help="Autogoal serialized mo
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
 
 
+@automl_app.command("share-contribs")
+def automl_server(
+    ip: str = typer.Argument("0.0.0.0", help="Interface ip of listening AutoGOAL service"),
+    port: int = typer.Argument(8000, help="Port of listening AutoGOAL service"),
+):
+    """
+    Expose algorithms from installed contribs to a listening AutoGOAL instance in the network.
+    """
+    rm_server.run(ip, port)
+
+
+
+@automl_app.command("listen")
+def automl_server(
+    ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
+    port: int = typer.Argument(8000, help="Port to be bind by the server"),
+):
+    """
+    Setup up a listening server for other AutoGOAL instances in network.
+    """
+    rm_server.run(ip, port)
+
 @automl_app.command("serve")
 def automl_server(
     path: str = typer.Argument(".", help="Autogoal serialized model"),
     ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
     port: int = typer.Argument(8000, help="Port to be bind by the server"),
 ):
+    """
+    Load and serve a previously trained AutoML instance as a service.
+    """
     console.print(f"Loading model from folder: {path}")
     model = AutoML.folder_load(Path(path))
     run(model, ip, port)
@@ -284,8 +310,8 @@ def automl_server(
 @automl_app.command("export")
 def export(output: str = typer.Argument(".", help="Location to export")):
     """
-        Export previosly trained AutoML instance.
-        """
+    Export previosly trained AutoML instance.
+    """
 
     model = AutoML.folder_load(Path("."))
     model.export_portable(output)

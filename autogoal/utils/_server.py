@@ -61,7 +61,7 @@ async def eval(t: Body, request: Request):
 
 def run(model, ip=None, port=None):
     """
-    Starts HTTP API with specified model. 
+    Starts HTTP API with specified model.
     """
     app.model = model
     uvicorn.run(app, host=ip or "0.0.0.0", port=port or 8000)

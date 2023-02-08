@@ -79,7 +79,7 @@ class SemanticType(metaclass=SemanticTypeMeta):
     @staticmethod
     def infer(x):
         """Automatically determines the semantic type of a given value.
-        
+
         >>> SemanticType.infer("word")
         Word
         >>> SemanticType.infer("hello world")
@@ -239,7 +239,7 @@ class Seq(SemanticType):
     >>> from pickle import dumps, loads
     >>> loads(dumps(Seq[Word]))
     Seq[Word]
-   
+
     """
 
     __internal_types = {}
@@ -401,7 +401,7 @@ class Tensor(SemanticType):
     False
 
     Each specific specialization is a singleton class:
-    
+
     >>> id(Tensor[2, Continuous, Dense]) == id(Tensor[2, Continuous, Dense])
     True
 

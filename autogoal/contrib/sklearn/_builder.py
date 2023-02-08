@@ -104,7 +104,9 @@ class SklearnTransformer(SklearnWrapper):
 
 GENERATION_RULES = dict(
     LatentDirichletAllocation=dict(ignore_params=set(["evaluate_every"])),
-    RadiusNeighborsClassifier=dict(ignore=True,),
+    RadiusNeighborsClassifier=dict(
+        ignore=True,
+    ),
     KNeighborsTransformer=dict(ignore_params=set(["metric"])),
     RadiusNeighborsTransformer=dict(ignore_params=set(["metric"])),
     LocalOutlierFactor=dict(ignore_params=set(["metric"])),

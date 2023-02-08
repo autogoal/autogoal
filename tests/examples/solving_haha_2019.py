@@ -98,7 +98,7 @@ classifier = AutoML(
     pop_size=args.popsize,
     search_timeout=args.global_timeout,
     evaluation_timeout=args.timeout,
-    memory_limit=args.memory * 1024 ** 3,
+    memory_limit=args.memory * 1024**3,
 )
 
 loggers = [RichLogger()]
@@ -106,7 +106,11 @@ loggers = [RichLogger()]
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger
 
-    telegram = TelegramLogger(token=args.token, name=f"HAHA", channel=args.channel,)
+    telegram = TelegramLogger(
+        token=args.token,
+        name=f"HAHA",
+        channel=args.channel,
+    )
     loggers.append(telegram)
 
 # Finally, loading the HAHA dataset, running the `AutoML` instance,

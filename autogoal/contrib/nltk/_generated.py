@@ -38,10 +38,14 @@ from nltk.stem.isri import ISRIStemmer as _ISRIStemmer
 
 @nice_repr
 class ISRIStemmer(_ISRIStemmer, NltkStemmer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkStemmer.__init__(self)
-        _ISRIStemmer.__init__(self,)
+        _ISRIStemmer.__init__(
+            self,
+        )
 
     def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
@@ -66,10 +70,14 @@ from nltk.stem.porter import PorterStemmer as _PorterStemmer
 
 @nice_repr
 class PorterStemmer(_PorterStemmer, NltkStemmer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkStemmer.__init__(self)
-        _PorterStemmer.__init__(self,)
+        _PorterStemmer.__init__(
+            self,
+        )
 
     def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
@@ -80,10 +88,14 @@ from nltk.stem.rslp import RSLPStemmer as _RSLPStemmer
 
 @nice_repr
 class RSLPStemmer(_RSLPStemmer, NltkStemmer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkStemmer.__init__(self)
-        _RSLPStemmer.__init__(self,)
+        _RSLPStemmer.__init__(
+            self,
+        )
 
     def run(self, input: Word) -> Stem:
         return NltkStemmer.run(self, input)
@@ -127,10 +139,14 @@ from nltk.stem.wordnet import WordNetLemmatizer as _WordNetLemmatizer
 
 @nice_repr
 class WordNetLemmatizer(_WordNetLemmatizer, NltkLemmatizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkLemmatizer.__init__(self)
-        _WordNetLemmatizer.__init__(self,)
+        _WordNetLemmatizer.__init__(
+            self,
+        )
 
     def run(self, input: Word) -> Stem:
         return NltkLemmatizer.run(self, input)
@@ -141,10 +157,14 @@ from nltk.tag.perceptron import PerceptronTagger as _PerceptronTagger
 
 @nice_repr
 class PerceptronTagger(_PerceptronTagger, NltkTrainedTagger):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTrainedTagger.__init__(self)
-        _PerceptronTagger.__init__(self,)
+        _PerceptronTagger.__init__(
+            self,
+        )
 
     def run(self, input: Seq[Word]) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
@@ -191,7 +211,8 @@ from nltk.tag.sequential import BigramTagger as _BigramTagger
 @nice_repr
 class BigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _BigramTagger
@@ -210,7 +231,9 @@ from nltk.tag.sequential import ClassifierBasedPOSTagger as _ClassifierBasedPOST
 
 @nice_repr
 class ClassifierBasedPOSTagger(NltkTagger):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         self.tagger = _ClassifierBasedPOSTagger
         self.values = dict()
@@ -229,7 +252,8 @@ from nltk.tag.sequential import TrigramTagger as _TrigramTagger
 @nice_repr
 class TrigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _TrigramTagger
@@ -249,7 +273,8 @@ from nltk.tag.sequential import UnigramTagger as _UnigramTagger
 @nice_repr
 class UnigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _UnigramTagger
@@ -315,10 +340,14 @@ from nltk.tokenize.mwe import MWETokenizer as _MWETokenizer
 
 @nice_repr
 class MWETokenizer(_MWETokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _MWETokenizer.__init__(self,)
+        _MWETokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -329,10 +358,14 @@ from nltk.tokenize.punkt import PunktSentenceTokenizer as _PunktSentenceTokenize
 
 @nice_repr
 class PunktSentenceTokenizer(_PunktSentenceTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _PunktSentenceTokenizer.__init__(self,)
+        _PunktSentenceTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
@@ -343,10 +376,14 @@ from nltk.tokenize.regexp import BlanklineTokenizer as _BlanklineTokenizer
 
 @nice_repr
 class BlanklineTokenizer(_BlanklineTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _BlanklineTokenizer.__init__(self,)
+        _BlanklineTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
@@ -357,10 +394,14 @@ from nltk.tokenize.regexp import WhitespaceTokenizer as _WhitespaceTokenizer
 
 @nice_repr
 class WhitespaceTokenizer(_WhitespaceTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _WhitespaceTokenizer.__init__(self,)
+        _WhitespaceTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -371,10 +412,14 @@ from nltk.tokenize.regexp import WordPunctTokenizer as _WordPunctTokenizer
 
 @nice_repr
 class WordPunctTokenizer(_WordPunctTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _WordPunctTokenizer.__init__(self,)
+        _WordPunctTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -399,10 +444,14 @@ from nltk.tokenize.simple import LineTokenizer as _LineTokenizer
 
 @nice_repr
 class LineTokenizer(_LineTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _LineTokenizer.__init__(self,)
+        _LineTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
@@ -413,10 +462,14 @@ from nltk.tokenize.simple import SpaceTokenizer as _SpaceTokenizer
 
 @nice_repr
 class SpaceTokenizer(_SpaceTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _SpaceTokenizer.__init__(self,)
+        _SpaceTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -427,10 +480,14 @@ from nltk.tokenize.simple import TabTokenizer as _TabTokenizer
 
 @nice_repr
 class TabTokenizer(_TabTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _TabTokenizer.__init__(self,)
+        _TabTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Document) -> Seq[Sentence]:
         return NltkTokenizer.run(self, input)
@@ -441,10 +498,14 @@ from nltk.tokenize.toktok import ToktokTokenizer as _ToktokTokenizer
 
 @nice_repr
 class ToktokTokenizer(_ToktokTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _ToktokTokenizer.__init__(self,)
+        _ToktokTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -455,10 +516,14 @@ from nltk.tokenize.treebank import TreebankWordTokenizer as _TreebankWordTokeniz
 
 @nice_repr
 class TreebankWordTokenizer(_TreebankWordTokenizer, NltkTokenizer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTokenizer.__init__(self)
-        _TreebankWordTokenizer.__init__(self,)
+        _TreebankWordTokenizer.__init__(
+            self,
+        )
 
     def run(self, input: Sentence) -> Seq[Word]:
         return NltkTokenizer.run(self, input)
@@ -469,10 +534,14 @@ from nltk.tag.perceptron import PerceptronTagger as _PerceptronTagger
 
 @nice_repr
 class PerceptronTagger(_PerceptronTagger, NltkTrainedTagger):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         NltkTrainedTagger.__init__(self)
-        _PerceptronTagger.__init__(self,)
+        _PerceptronTagger.__init__(
+            self,
+        )
 
     def run(self, input: Seq[Word]) -> Seq[Postag]:
         return NltkTrainedTagger.run(self, input)
@@ -484,7 +553,8 @@ from nltk.tag.sequential import BigramTagger as _BigramTagger
 @nice_repr
 class BigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _BigramTagger
@@ -503,7 +573,9 @@ from nltk.tag.sequential import ClassifierBasedPOSTagger as _ClassifierBasedPOST
 
 @nice_repr
 class ClassifierBasedPOSTagger(NltkTagger):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
 
         self.tagger = _ClassifierBasedPOSTagger
         self.values = dict()
@@ -522,7 +594,8 @@ from nltk.tag.sequential import TrigramTagger as _TrigramTagger
 @nice_repr
 class TrigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _TrigramTagger
@@ -542,7 +615,8 @@ from nltk.tag.sequential import UnigramTagger as _UnigramTagger
 @nice_repr
 class UnigramTagger(NltkTagger):
     def __init__(
-        self, cutoff: DiscreteValue(min=0, max=10),
+        self,
+        cutoff: DiscreteValue(min=0, max=10),
     ):
         self.cutoff = cutoff
         self.tagger = _UnigramTagger

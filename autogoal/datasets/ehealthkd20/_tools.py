@@ -299,8 +299,7 @@ class AnnFile:
 
 
 def merge(ann1: str, ann2: str, text: str):
-    """Merge annotations of two different versions of the same file.
-    """
+    """Merge annotations of two different versions of the same file."""
     file1 = AnnFile().load(ann1)
     file2 = AnnFile().load(ann2)
     sents = open(text).read().split("\n")
@@ -317,8 +316,7 @@ def merge(ann1: str, ann2: str, text: str):
 
 
 def review(ann: str, text: str, order: str):
-    """Process a merged annotation file and outputs the selected annotations.
-    """
+    """Process a merged annotation file and outputs the selected annotations."""
     file1 = AnnFile().load(ann)
     sents = open(text).read().split("\n")
     order = open(order).read().split("\n")
@@ -330,8 +328,7 @@ def review(ann: str, text: str, order: str):
 
 
 def review_text(text: str, order: str):
-    """Process a merged annotation file and outputs the selected sentences.
-    """
+    """Process a merged annotation file and outputs the selected sentences."""
     sents = open(text).read().split("\n")
     order = open(order).read().split("\n")
     order = [int(line.strip("*")) for line in order if line]

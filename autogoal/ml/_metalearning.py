@@ -193,7 +193,7 @@ class LearnerMedia:
 
     def compute_feature(self, feature):
         """Select for training all solutions where is used the especific feature.
-    
+
         Predict the media of the parameter value.
         """
         # find the relevant solutions, that contain the production to predict
@@ -217,7 +217,7 @@ class LearnerMedia:
 
     def calculate_weight_examples(self, solutions: List[SolutionInfo]):
         """Calcule a weight of each example considering the fitness and the similariti with the
-        actual problem 
+        actual problem
         """
         # met = fitness * (similarity)^beta
         # métrica utilizada en active learning para combinar informativeness with representativeness
@@ -239,12 +239,11 @@ class LearnerMedia:
         return weights
 
     def normalize_fitness(self, info: SolutionInfo):
-        """Normalize the fitness with respect to the best solution in the problem where that solution is evaluated
-        """
+        """Normalize the fitness with respect to the best solution in the problem where that solution is evaluated"""
         return info.fitness / self.best_fitness[info.uuid]
 
     def similarity_cosine(self, other_problem):
-        """Caculate the cosine similarity for a particular solution problem(other problem) 
+        """Caculate the cosine similarity for a particular solution problem(other problem)
         and the problem analizing
         """
         x = self.vect.transform(other_problem)[0]
@@ -253,6 +252,5 @@ class LearnerMedia:
         return np.dot(x, y) / (np.dot(x, x) ** 0.5 * np.dot(y, y) ** 0.5)
 
     def similarity_learning(self, other_problem):
-        """ Implementar una espicie de encoding para los feature de los problemas
-        """
+        """Implementar una espicie de encoding para los feature de los problemas"""
         raise NotImplementedError()

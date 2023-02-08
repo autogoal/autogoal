@@ -16,7 +16,7 @@ def silhouette_score(X, labels):
 
 
 def get_cmap(n, name="hsv"):
-    """Returns a function that maps each index in 0, 1, ..., n-1 to a distinct 
+    """Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
     RGB color; the keyword argument name must be a standard mpl colormap name."""
     return plt.cm.get_cmap(name, n)
 
@@ -59,7 +59,7 @@ for n_features in [2, 20, 100]:
                     pop_size=args.popsize,
                     selection=args.selection,
                     evaluation_timeout=args.timeout,
-                    memory_limit=args.memory * 1024 ** 3,
+                    memory_limit=args.memory * 1024**3,
                     early_stop=args.early_stop,
                     search_timeout=args.global_timeout,
                     target_fn=args.target,

@@ -215,7 +215,7 @@ class Conv1D(_Conv1D):
         **kwargs
     ):
         super().__init__(
-            filters=2 ** filters, kernel_size=kernel_size, padding="causal", **kwargs
+            filters=2**filters, kernel_size=kernel_size, padding="causal", **kwargs
         )
 
     def get_config(self):
@@ -238,7 +238,7 @@ class Conv2D(_Conv2D):
         self.l1 = l1
         self.l2 = l2
         super().__init__(
-            filters=2 ** filters,
+            filters=2**filters,
             kernel_size=(kernel_size, kernel_size),
             kernel_regularizer=regularizers.l1_l2(l1=l1, l2=l2),
             padding="same",

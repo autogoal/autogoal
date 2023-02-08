@@ -90,7 +90,7 @@ classifier = AutoML(
     pop_size=args.popsize,
     search_timeout=args.global_timeout,
     evaluation_timeout=args.timeout,
-    memory_limit=args.memory * 1024 ** 3,
+    memory_limit=args.memory * 1024**3,
 )
 
 # Basic logging configuration.
@@ -100,7 +100,11 @@ loggers = [RichLogger()]
 if args.token:
     from autogoal.contrib.telegram import TelegramLogger
 
-    telegram = TelegramLogger(token=args.token, name=f"MEDDOCAN", channel=args.channel,)
+    telegram = TelegramLogger(
+        token=args.token,
+        name=f"MEDDOCAN",
+        channel=args.channel,
+    )
     loggers.append(telegram)
 
 # Finally, loading the MEDDOCAN dataset, running the `AutoML` instance,

@@ -42,10 +42,10 @@ def test_restrict_memory():
 
     if platform.system() == "Linux":
         with pytest.raises(MemoryError):
-            fn(0, 10 ** 8)
+            fn(0, 10**8)
 
     if platform.system() == "Windows":
-        fn(0, 10 ** 8)
+        fn(0, 10**8)
 
 
 def test_restrict_memory_fails():
@@ -53,7 +53,7 @@ def test_restrict_memory_fails():
 
     if platform.system() == "Linux":
         with pytest.raises(ValueError) as e:
-            fn(0, 10 ** 8)
+            fn(0, 10**8)
 
     if platform.system() == "Windows":
         # TODO: implement memory restriction for Windows systems

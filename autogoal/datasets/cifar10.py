@@ -9,7 +9,7 @@ def load(training_batches=5):
 
     ##### Parameters
 
-    * 'training_batches': maximum number of batches to load for training, 
+    * 'training_batches': maximum number of batches to load for training,
       each batch has 10,000 examples (min=`1`, max=`5`, default=`5`).
 
     ##### Examples

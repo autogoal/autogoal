@@ -39,7 +39,7 @@ automl = AutoML(
         evaluation_timeout=args.timeout,
         # cantidad máxima de RAM por pipeline. Este número debe ser inferior a la RAM del dispositivo donde se ejecute la experimentación
         # para evitar que el despositivo de bloquee.
-        memory_limit=args.memory * 1024 ** 3,
+        memory_limit=args.memory * 1024**3,
     ),
     # cross_validation_steps cantidad de veces que se evalúa cada pipeline
     cross_validation_steps=3,

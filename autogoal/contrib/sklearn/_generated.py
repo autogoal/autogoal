@@ -238,9 +238,13 @@ from sklearn.decomposition._lda import (
 
 @nice_repr
 class LatentDirichletAllocation(_LatentDirichletAllocation, SklearnTransformer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         SklearnTransformer.__init__(self)
-        _LatentDirichletAllocation.__init__(self,)
+        _LatentDirichletAllocation.__init__(
+            self,
+        )
 
     def run(self, input: MatrixContinuous) -> MatrixContinuousDense:
         return SklearnTransformer.run(self, input)
@@ -1199,9 +1203,13 @@ from sklearn.naive_bayes import GaussianNB as _GaussianNB
 
 @nice_repr
 class GaussianNB(_GaussianNB, SklearnEstimator):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         SklearnEstimator.__init__(self)
-        _GaussianNB.__init__(self,)
+        _GaussianNB.__init__(
+            self,
+        )
 
     def run(
         self, X: MatrixContinuousDense, y: Supervised[VectorCategorical]
@@ -1347,9 +1355,13 @@ from sklearn.neighbors._nearest_centroid import NearestCentroid as _NearestCentr
 
 @nice_repr
 class NearestCentroid(_NearestCentroid, SklearnEstimator):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         SklearnEstimator.__init__(self)
-        _NearestCentroid.__init__(self,)
+        _NearestCentroid.__init__(
+            self,
+        )
 
     def run(
         self, X: MatrixContinuous, y: Supervised[VectorCategorical]
@@ -1424,9 +1436,13 @@ from sklearn.preprocessing._data import KernelCenterer as _KernelCenterer
 
 @nice_repr
 class KernelCenterer(_KernelCenterer, SklearnTransformer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         SklearnTransformer.__init__(self)
-        _KernelCenterer.__init__(self,)
+        _KernelCenterer.__init__(
+            self,
+        )
 
     def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         return SklearnTransformer.run(self, input)
@@ -1437,9 +1453,13 @@ from sklearn.preprocessing._data import MinMaxScaler as _MinMaxScaler
 
 @nice_repr
 class MinMaxScaler(_MinMaxScaler, SklearnTransformer):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         SklearnTransformer.__init__(self)
-        _MinMaxScaler.__init__(self,)
+        _MinMaxScaler.__init__(
+            self,
+        )
 
     def run(self, input: MatrixContinuousDense) -> MatrixContinuousDense:
         return SklearnTransformer.run(self, input)

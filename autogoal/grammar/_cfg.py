@@ -24,7 +24,10 @@ class Production:
         self.grammar = grammar
 
     def to_string(
-        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+        self,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
     ):
         raise NotImplementedError()
 
@@ -37,7 +40,10 @@ class Empty(Production):
         return "Empty()"
 
     def to_string(
-        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+        self,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
     ):
         code.append(
             "%s := %s" % (("<%s>" % self.head.name).ljust(max_symbol_length), "<empty>")
@@ -61,7 +67,10 @@ class OneOf(Production):
         return "OneOf(options=%r)" % self._options
 
     def to_string(
-        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+        self,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
         rhs = ["<%s>" % option.name for option in self._options]
@@ -97,7 +106,10 @@ class SubsetOf(Production):
         return "SubsetOf(options=%r)" % self._options
 
     def to_string(
-        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+        self,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
         rhs = [
@@ -153,7 +165,10 @@ class Callable(Production):
         return "Callable(name=%r, parameters=%r)" % (self._name, self._parameters)
 
     def to_string(
-        self, code: List[str], visited: Set[Symbol], max_symbol_length: int,
+        self,
+        code: List[str],
+        visited: Set[Symbol],
+        max_symbol_length: int,
     ):
         lhs = ("<%s>" % self.head.name).ljust(max_symbol_length)
         rhs = [
@@ -245,7 +260,10 @@ class ContextFreeGrammar(Grammar):
         return self._productions[symbol]
 
     def __repr__(self):
-        return "Grammar(start=%r, productions=%r)" % (self._start, self._productions,)
+        return "Grammar(start=%r, productions=%r)" % (
+            self._start,
+            self._productions,
+        )
 
     def __str__(self):
         code = []

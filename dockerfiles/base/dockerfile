@@ -1,11 +1,11 @@
 # =====================
-# Conda base image
+# Python 3.7 base image
 # ---------------------
 
-FROM conda/miniconda3:latest
+FROM python:3.7
 
 # =====================
-# User stuff
+# Basic enviroment setup
 # ---------------------
 
 RUN apt update \
@@ -21,6 +21,11 @@ RUN apt update \
     gcc \
     build-essential \ 
     python3-dev
+
+
+# =====================
+# User stuff
+# ---------------------
 
 # https://wiki.debian.org/Locale#Manually
 RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
@@ -40,21 +45,26 @@ RUN chmod +x /etc/bash.bashrc
 ENV BUILD_ENVIRONMENT="development"
 ENV XDG_CACHE_HOME="/opt/dev/cache"
 WORKDIR /home/coder/autogoal
-RUN conda create -y --name autogoal python=3.7
+
 # Make RUN commands use the autogoal environment
-# ENV PATH="$/usr/local/envs/autogoal/bin:$PATH"
-COPY pyproject.toml poetry.lock makefile /home/coder/autogoal/
+COPY pyproject.toml makefile /home/coder/autogoal/
+
 # RUN poetry install
-SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
-RUN make env && poetry install
+RUN pip install -U pip setuptools
+RUN pip install poetry==1.2
+RUN poetry config virtualenvs.create false
+RUN poetry install
 
 SHELL ["/bin/bash", "-c"]
 USER coder
-RUN mkdir -p /home/coder/.autogoal/data && sudo chown coder:coder /home/coder/.autogoal
-VOLUME /home/coder/.autogoal
-COPY ./ /home/coder/autogoal
+RUN sudo mkdir -p /home/coder/autogoal/data && sudo chown coder:coder /home/coder/autogoal
+VOLUME /home/coder/autogoal
+COPY ../autogoal /home/coder/autogoal
 RUN sudo rm -rf /home/coder/autogoal/storage
-RUN sudo ln -s /home/coder/autogoal/autogoal /usr/local/envs/autogoal/lib/python3.7/site-packages/autogoal
+RUN sudo ln -s /home/coder/autogoal/autogoal /usr/local/lib/python3.7/site-packages/autogoal
 RUN sudo chown -R coder /home/coder
 
 CMD ["/bin/bash"]
+
+EXPOSE 8000-8010
+EXPOSE 8501-8510

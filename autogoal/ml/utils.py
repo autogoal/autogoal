@@ -205,7 +205,7 @@ def check_number_of_labels(n_labels, n_samples):
 
 
 def column_or_1d(y, *, warn=False):
-    """ Ravel column or 1d numpy array, else raises an error.
+    """Ravel column or 1d numpy array, else raises an error.
 
     Parameters
     ----------

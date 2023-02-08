@@ -44,7 +44,7 @@ class ResourceManager:
         self.memory_limit = None
         used_memory = self.get_used_memory()
 
-        if limit <= (used_memory + 500 * 1024 ** 2):
+        if limit <= (used_memory + 500 * 1024**2):
             warnings.warn(
                 "Especified memory limit is too close to the used amount. Will not be taken into account."
             )

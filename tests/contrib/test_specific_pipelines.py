@@ -48,7 +48,9 @@ def test_count_vectorizer_sgd():
 
 def test_classifier_tagger():
     p = Pipeline(
-        algorithms=[ClassifierBasedPOSTagger(),],
+        algorithms=[
+            ClassifierBasedPOSTagger(),
+        ],
         input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Postag]]]),
     )
 

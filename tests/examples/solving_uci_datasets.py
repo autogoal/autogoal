@@ -159,7 +159,7 @@ for epoch in range(args.epochs):
             pop_size=args.popsize,
             selection=args.selection,
             evaluation_timeout=args.timeout,
-            memory_limit=args.memory * 1024 ** 3,
+            memory_limit=args.memory * 1024**3,
             early_stop=args.early_stop,
             search_timeout=args.global_timeout,
             target_fn=args.target,
@@ -204,7 +204,7 @@ for epoch in range(args.epochs):
                         pop_size=args.popsize,
                         selection=args.selection,
                         evaluation_timeout=args.timeout,
-                        memory_limit=args.memory * 1024 ** 3,
+                        memory_limit=args.memory * 1024**3,
                         early_stop=args.early_stop,
                         search_timeout=args.global_timeout,
                     )
