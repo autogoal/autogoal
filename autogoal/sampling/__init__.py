@@ -1,7 +1,7 @@
 import math
 import random
 import statistics
-import pickle
+import dill as pickle
 import numpy as np
 
 from typing import Dict, List, Sequence

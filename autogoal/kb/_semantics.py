@@ -48,7 +48,10 @@ class SemanticTypeMeta(type):
 
     def __repr__(cls) -> str:
         return cls._name()
-
+    
+    @property
+    def __dict__(cls):
+        return {"name" : cls._name()}
 
 # `SemanticType` defines a `match` method that implements our `isinstance` method.
 
@@ -112,7 +115,7 @@ class SemanticType(metaclass=SemanticTypeMeta):
 
     @classmethod
     def to_json(x, data):
-        return json.dumps(data)
+        return json.dumps(data) 
 
 
 # To be able to serialize these types, we have to register a reduce function for `SemanticTypeMeta`.

@@ -8,7 +8,6 @@ import glob
 from typing import Any, Dict, List, Set, Tuple, Type
 from pathlib import Path
 import types
-import pickle
 import os
 import shutil
 
@@ -18,7 +17,7 @@ from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
 from autogoal.contrib import find_classes
 from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
-
+import dill as pickle
 # from autogoal.experimental import generate_requirements
 
 
@@ -116,35 +115,12 @@ def algorithm(*annotations):
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
-
-class AlgorithmMetadata():
-    """Represents an abstract algorithm metadata properties.
-    """
-
-    @property
-    def contrib(self):
-        return self._contrib
-
-    @contrib.setter
-    def contrib(self, val):
-        self._contrib = val
-
-
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
 
     Provides introspection for the expected semantic input and output types.
     Users should inherit from `AlgorithmBase` instead of this class.
     """
-
-    @property
-    def metadata(self):
-        return self._metadata
-
-    @metadata.setter
-    @abc.abstractclassmethod
-    def metadata(self, val):
-        self._metadata = val
 
     @abc.abstractclassmethod
     def input_types(cls) -> Tuple[type]:
@@ -161,11 +137,6 @@ class Algorithm(abc.ABC):
         """Returns an ordered list of the expected semantic output type of the `run` method."""
         pass
     
-    @abc.abstractmethod
-    def instanciate(self, *args):
-        """Instanciate algorithm dependencies."""
-        pass
-
     @abc.abstractmethod
     def run(self, *args):
         """Executes the algorithm."""
@@ -195,12 +166,21 @@ class Algorithm(abc.ABC):
         return True
 
 
-class AlgorithmBase(Algorithm):
+class AlgorithmBase(Algorithm, AlgorithmMetadata):
     """Represents an algorithm,
 
     Automatically implements the input and output introspection methods using the `inspect` module.
     Users inheriting from this class must provide type annotations in the `run` method.
     """
+
+
+    @classmethod
+    def init_input_types(cls) -> Tuple[type]:
+        return tuple(
+            param.annotation
+            for name, param in inspect.signature(cls.__init__).parameters.items()
+            if name != "self"
+        )
 
     @classmethod
     def input_types(cls) -> Tuple[type]:
@@ -698,6 +678,7 @@ def build_pipeline_graph(
 
 
 __all__ = [
+    "AlgorithmMetadata",
     "AlgorithmBase",
     "Supervised",
     "Pipeline",

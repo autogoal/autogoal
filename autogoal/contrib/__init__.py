@@ -103,10 +103,58 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
             if output and not re.match(output, str(sig.return_annotation)):
                 continue
 
-
             result.append(cls)
 
     return result
+
+
+def find_remote_classes(
+    ip: str = None,
+    port: int = None,
+    include=None,
+    exclude=None,
+    input=None,
+    output=None,
+):
+    import re
+
+    from autogoal.utils.remote._client import get_algotihms
+
+    if include:
+        include = f".*({include}).*"
+    else:
+        include = r".*"
+
+    if exclude:
+        exclude = f".*({exclude}).*"
+
+    if input:
+        input = f".*({input}).*"
+
+    if output:
+        output = f".*({output}).*"
+
+    result = []
+    classes = get_algotihms(ip, port)
+    for cls in classes:
+
+        if not re.match(include, repr(cls)):
+            continue
+
+        if exclude is not None and re.match(exclude, repr(cls)):
+            continue
+
+        inp = cls.input_types()
+        outp = cls.output_type()
+
+        if input and not re.match(input, str(inp)):
+            continue
+
+        if output and not re.match(output, str(outp)):
+            continue
+
+        result.append(cls)
+    return classes
 
 
 import enum

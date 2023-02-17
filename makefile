@@ -36,7 +36,7 @@ clean:
 
 # docker-base  Builds the development base image from scratch.
 .PHONY: docker
-docker-base:
+docker:
 	docker build . -t autogoal/autogoal:base -f dockerfiles/base/dockerfile
 
 # docker-contrib Builds the development image with target contrib from scratch.
@@ -82,7 +82,6 @@ demo:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
 	# bash run-nameserver.sh $(SERVICE)
 
-	
 # demo         Run the demo in the base development image.
 .PHONY: demo-sklearn
 demo-sklearn:

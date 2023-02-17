@@ -46,7 +46,6 @@ class AlgorithmConfig:
         return self.__str__()
 
     def __str__(self) -> str:
-        print(self.args)
         args = ", ".join([f"{a}={b}" for a, b in self.args.items()])
         return f"{self.name} ({args})"
 
