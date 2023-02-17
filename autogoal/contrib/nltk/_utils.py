@@ -5,13 +5,14 @@ import numpy as np
 import scipy.sparse as sp
 
 from autogoal import kb
-from autogoal.contrib.sklearn._utils import (
+from autogoal.contrib._utils import (
     is_matrix_continuous_dense,
     is_matrix_continuous_sparse,
     is_categorical,
     is_continuous,
     is_string_list,
 )
+
 
 DATA_TYPE_EXAMPLES = {
     kb.Postag: ("lorem", "ipsum"),  # (str, str) Tagged token

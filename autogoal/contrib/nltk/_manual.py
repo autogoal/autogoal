@@ -3,8 +3,7 @@ from gensim.models.doc2vec import Doc2Vec as _Doc2Vec
 
 from numpy import inf, nan
 
-from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger
-from autogoal.contrib.sklearn._builder import SklearnTransformer, SklearnWrapper
+from autogoal.contrib.nltk._builder import NltkTokenizer, NltkTagger, SklearnLikeTransformer, SklearnLikeWrapper
 from autogoal.grammar import (
     BooleanValue,
     CategoricalValue,
@@ -17,7 +16,7 @@ from autogoal.kb import AlgorithmBase
 
 
 @nice_repr
-class Doc2Vec(SklearnTransformer):
+class Doc2Vec(SklearnLikeTransformer):
     def __init__(
         self,
         dm: DiscreteValue(min=0, max=2),
@@ -41,7 +40,7 @@ class Doc2Vec(SklearnTransformer):
         return self.transform(X)
 
     def train(self):
-        SklearnTransformer.train(self)
+        SklearnLikeTransformer.train(self)
 
     def fit(self, X, y):
         # Doc2Vec cannot be "refitted" so it must be initalized every time
@@ -72,11 +71,11 @@ class Doc2Vec(SklearnTransformer):
 
     def run(self, input: Seq[Seq[Word]]) -> MatrixContinuousDense:
         """This methods receive a document list and transform this into a dense continuous matrix."""
-        return SklearnTransformer.run(self, input)
+        return SklearnLikeTransformer.run(self, input)
 
 
 @nice_repr
-class StopwordRemover(SklearnTransformer):
+class StopwordRemover(SklearnLikeTransformer):
     def __init__(
         self,
         language: CategoricalValue(
@@ -100,7 +99,7 @@ class StopwordRemover(SklearnTransformer):
         from nltk.corpus import stopwords
 
         self.words = stopwords.words(language)
-        SklearnTransformer.__init__(self)
+        SklearnLikeTransformer.__init__(self)
 
     def fit_transform(self, X, y=None):
         return [word for word in X if word not in self.words]
@@ -110,11 +109,11 @@ class StopwordRemover(SklearnTransformer):
 
     def run(self, input: Seq[Word]) -> Seq[Word]:
         """This methods receive a word list list and transform this into a word list list without stopwords."""
-        return SklearnTransformer.run(self, input)
+        return SklearnLikeTransformer.run(self, input)
 
 
 @nice_repr
-class TextLowerer(SklearnTransformer):
+class TextLowerer(SklearnLikeTransformer):
     def fit_transform(self, X, y=None):
         self.fit(X, y=None)
         return self.transform(X)
@@ -195,7 +194,7 @@ class NEChunkParserTagger(NltkTagger):
 
 
 @nice_repr
-class GlobalChunker(SklearnWrapper):
+class GlobalChunker(SklearnLikeWrapper):
     def __init__(
         self,
         inner_trained_pos_tagger: algorithm(Seq[Word], Seq[Postag]),
@@ -204,7 +203,7 @@ class GlobalChunker(SklearnWrapper):
         self.inner_trained_pos_tagger = inner_trained_pos_tagger
         self.inner_chunker = inner_chunker
 
-        SklearnWrapper.__init__(self)
+        SklearnLikeWrapper.__init__(self)
 
     def _train(self, X, y):
         postagged_sentences = []
@@ -263,7 +262,7 @@ class GlobalChunker(SklearnWrapper):
     def run(
         self, X: Seq[Seq[Word]], y: Supervised[Seq[Seq[Chunktag]]]
     ) -> Seq[Chunktag]:
-        return SklearnWrapper.run(self, input)
+        return SklearnLikeWrapper.run(self, input)
 
 
 @nice_repr

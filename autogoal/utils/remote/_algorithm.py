@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Dict
 
 import dill as pickle
@@ -8,6 +9,7 @@ from requests.api import post
 from autogoal.kb import AlgorithmBase
 from autogoal.utils._dynamic import dynamic_imp
 
+contrib_pattern = r'autogoal\.contrib\.(?P<contrib>\w+)\.?.*'
 
 def decode_type(type):
     return pickle.dumps(type).decode("latin1")
@@ -30,7 +32,7 @@ class RemoteAlgorithmDTO(BaseModel):
     def from_algorithm_class(algorithm_cls):
         name = algorithm_cls.__name__
         module = algorithm_cls.__module__
-        contrib = algorithm_cls.contrib
+        contrib = re.search(contrib_pattern, module).group("contrib")
         input_args = decode_type(algorithm_cls.input_args())
         init_input_types = decode_type(algorithm_cls.init_input_types())
         input_types = decode_type(algorithm_cls.input_types())

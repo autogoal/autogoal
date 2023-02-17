@@ -1,33 +1,33 @@
-from autogoal.kb import AlgorithmBase
-import gensim
-import nltk
-import black
-
-import textwrap
+import abc
 import datetime
+import importlib
 import inspect
 import re
-import numpy as np
+import textwrap
 import warnings
-import abc
-import importlib
-import enlighten
-
-
 from pathlib import Path
-from autogoal.kb import *
+
+import black
+import enlighten
+import gensim
+import nltk
+import numpy as np
+
 from autogoal.grammar import (
-    DiscreteValue,
-    ContinuousValue,
-    CategoricalValue,
     BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
 )
-from autogoal.contrib.sklearn._builder import SklearnWrapper
+from autogoal.kb import *
+from autogoal.kb import AlgorithmBase
+from autogoal.utils import nice_repr
+
 from ._utils import (
     _is_algorithm,
+    _is_tagger,
     get_input_output,
     is_algorithm,
-    _is_tagger,
     is_pretrained_tagger,
 )
 
@@ -50,6 +50,50 @@ languages = [
 ]
 
 languages_re = re.compile("|".join(languages))
+
+
+@nice_repr
+class SklearnLikeWrapper(AlgorithmBase):
+    def __init__(self):
+        self._mode = "train"
+
+    def train(self):
+        self._mode = "train"
+
+    def eval(self):
+        self._mode = "eval"
+
+    def run(self, *args):
+        if self._mode == "train":
+            return self._train(*args)
+        elif self._mode == "eval":
+            return self._eval(*args)
+
+        raise ValueError("Invalid mode: %s" % self._mode)
+
+    @abc.abstractmethod
+    def _train(self, *args):
+        pass
+
+    @abc.abstractmethod
+    def _eval(self, *args):
+        pass
+
+class SklearnLikeTransformer(SklearnLikeWrapper):
+    def _train(self, X, y=None):
+        return self.fit_transform(X)
+
+    def _eval(self, X, y=None):
+        return self.transform(X)
+
+    @abc.abstractmethod
+    def fit_transform(self, X, y=None):
+        pass
+
+    @abc.abstractmethod
+    def transform(self, X, y=None):
+        pass
+
 
 
 class NltkTokenizer(AlgorithmBase):
@@ -79,7 +123,7 @@ class NltkLemmatizer(AlgorithmBase):
         pass
 
 
-class NltkClusterer(SklearnWrapper):
+class NltkClusterer(SklearnLikeWrapper):
     def _train(self, input):
         X, y = input
         self.cluster(X)
@@ -90,7 +134,7 @@ class NltkClusterer(SklearnWrapper):
         return X, [self.classify(x) for x in X]
 
 
-class NltkTagger(SklearnWrapper):
+class NltkTagger(SklearnLikeWrapper):
     def _train(self, X, y):
         tagged_sentences = [list(zip(words, tags)) for words, tags in zip(X, y)]
         self._instance = self.tagger(train=tagged_sentences)
@@ -102,7 +146,7 @@ class NltkTagger(SklearnWrapper):
         ]
 
 
-class NltkTrainedTagger(SklearnWrapper):
+class NltkTrainedTagger(SklearnLikeWrapper):
     def _train(self, X, y):
         # X expected to be a tokenized sentence
         return self.tag(X), y

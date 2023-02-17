@@ -295,7 +295,7 @@ class Seq(SemanticType):
 
 
 from numpy import ndarray, array
-from scipy.sparse.base import spmatrix
+from scipy.sparse import spmatrix
 from json import JSONEncoder
 import numpy
 

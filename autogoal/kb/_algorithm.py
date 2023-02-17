@@ -166,7 +166,7 @@ class Algorithm(abc.ABC):
         return True
 
 
-class AlgorithmBase(Algorithm, AlgorithmMetadata):
+class AlgorithmBase(Algorithm):
     """Represents an algorithm,
 
     Automatically implements the input and output introspection methods using the `inspect` module.
@@ -678,7 +678,6 @@ def build_pipeline_graph(
 
 
 __all__ = [
-    "AlgorithmMetadata",
     "AlgorithmBase",
     "Supervised",
     "Pipeline",

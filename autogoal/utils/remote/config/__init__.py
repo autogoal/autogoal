@@ -15,7 +15,7 @@ class Alias(YamlAble):
 
 @yaml_info(yaml_tag_ns='autogoal.remote.connectionConfig')
 class ConnectionConfig(YamlAble):
-    def __init__(self, connections):
+    def __init__(self, connections: dict):
         self.connections = connections
 
 def load_config() -> ConnectionConfig:
@@ -39,11 +39,11 @@ def save_config(config: ConnectionConfig):
 def store_connection(ip: str, port: int, alias: str):
     config = load_config()
     calias = Alias(alias, ip, port)
-    config.connections.append(calias)
+    config.connections[alias] = calias
     save_config(config)
 
 
 def clear_connetions():
     config = load_config()
-    config.connections = []
+    config.connections = dict()
     save_config(config)
