@@ -1,18 +1,20 @@
 import io
+import os
 import pathlib
 import pickle
-import statistics
-import os
 import shutil
+import statistics
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 import numpy as np
-from autogoal.contrib import find_classes
-from pathlib import Path
 
-from autogoal.kb import build_pipeline_graph, SemanticType, Pipeline
+from autogoal.contrib import find_classes, find_remote_classes
+from autogoal.kb import Pipeline, SemanticType, build_pipeline_graph
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
-from autogoal.utils import nice_repr, generate_production_dockerfile
+from autogoal.utils import generate_production_dockerfile, nice_repr
+from autogoal.utils.remote import get_algorithms
 
 
 @nice_repr
@@ -39,6 +41,7 @@ class AutoML:
         cross_validation_steps=3,
         registry=None,
         score_metric=None,
+        remote_sources: List[Tuple[str, int] or str] = None,
         **search_kwargs,
     ):
         self.input = input
@@ -54,6 +57,7 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.score_metric = score_metric or accuracy
+        self.remote_sources = remote_sources
         self.search_kwargs = search_kwargs
         self._unpickled = False
 
@@ -70,6 +74,15 @@ class AutoML:
         registry = self.registry or find_classes(
             include=self.include_filter, exclude=self.exclude_filter
         )
+
+        # update registry with remote algorithms if available
+        if self.registry is None and self.remote_sources is not None:
+            remote_registry = find_remote_classes(
+                sources=self.remote_sources,
+                include=self.include_filter,
+                exclude=self.exclude_filter,
+            )
+            registry += remote_registry
 
         return build_pipeline_graph(
             input_types=self.input,
@@ -105,7 +118,7 @@ class AutoML:
         self.best_pipeline_.send("eval")
 
     def save(self, fp: io.BytesIO):
-        """
+        """ 
         Serializes the AutoML instance.
         """
         self._check_fitted()

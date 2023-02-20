@@ -1,3 +1,6 @@
+from typing import List, Tuple
+
+
 def find_classes(include=None, exclude=None, modules=None, input=None, output=None):
     import inspect
     import re
@@ -109,16 +112,16 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
 
 
 def find_remote_classes(
-    ip: str = None,
-    port: int = None,
+    sources: List[Tuple[str, int] or Tuple[str, int, str] or str] = None,
     include=None,
     exclude=None,
     input=None,
     output=None,
 ):
+    import itertools
     import re
 
-    from autogoal.utils.remote._client import get_algotihms
+    from autogoal.utils.remote import get_algorithms, store_connection
 
     if include:
         include = f".*({include}).*"
@@ -134,27 +137,47 @@ def find_remote_classes(
     if output:
         output = f".*({output}).*"
 
-    result = []
-    classes = get_algotihms(ip, port)
-    for cls in classes:
+    classes_by_contrib = {}
+    for source in sources:
+        s_type = type(source)
+        ip = None
+        port = None
+        alias = source if s_type == str else None
 
-        if not re.match(include, repr(cls)):
-            continue
+        if s_type == tuple:
+            if len(source) == 2:
+                ip, port = source
+            elif len(source) == 3:
+                ip, port, alias = source
+                store_connection(ip, port, alias)
 
-        if exclude is not None and re.match(exclude, repr(cls)):
-            continue
+        for contrib in itertools.groupby(
+            get_algorithms(ip, port, alias), lambda x: x.contrib
+        ):
+            key, classes = contrib
+            contrib_results = []
 
-        inp = cls.input_types()
-        outp = cls.output_type()
+            for cls in classes:
+                if not re.match(include, repr(cls)):
+                    continue
 
-        if input and not re.match(input, str(inp)):
-            continue
+                if exclude is not None and re.match(exclude, repr(cls)):
+                    continue
 
-        if output and not re.match(output, str(outp)):
-            continue
+                inp = cls.input_types()
+                outp = cls.output_type()
 
-        result.append(cls)
-    return classes
+                if input and not re.match(input, str(inp)):
+                    continue
+
+                if output and not re.match(output, str(outp)):
+                    continue
+
+                contrib_results.append(cls)
+            classes_by_contrib[key] = contrib_results
+
+    result = [cls for _, classes in classes_by_contrib.items() for cls in classes]
+    return result
 
 
 import enum

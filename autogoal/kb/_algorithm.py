@@ -18,6 +18,7 @@ from autogoal.kb._semantics import SemanticType, Seq
 from autogoal.contrib import find_classes
 from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
 import dill as pickle
+
 # from autogoal.experimental import generate_requirements
 
 
@@ -115,6 +116,7 @@ def algorithm(*annotations):
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 
+
 class Algorithm(abc.ABC):
     """Represents an abstract algorithm with a run method.
 
@@ -136,7 +138,7 @@ class Algorithm(abc.ABC):
     def output_type(cls) -> type:
         """Returns an ordered list of the expected semantic output type of the `run` method."""
         pass
-    
+
     @abc.abstractmethod
     def run(self, *args):
         """Executes the algorithm."""
@@ -173,7 +175,6 @@ class AlgorithmBase(Algorithm):
     Users inheriting from this class must provide type annotations in the `run` method.
     """
 
-
     @classmethod
     def init_input_types(cls) -> Tuple[type]:
         return tuple(
@@ -181,6 +182,10 @@ class AlgorithmBase(Algorithm):
             for name, param in inspect.signature(cls.__init__).parameters.items()
             if name != "self"
         )
+
+    @classmethod
+    def get_inner_signature(cls) -> inspect.Signature:
+        return inspect.signature(cls.__init__)
 
     @classmethod
     def input_types(cls) -> Tuple[type]:

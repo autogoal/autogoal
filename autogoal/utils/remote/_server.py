@@ -1,3 +1,6 @@
+import json
+import pickle
+import uuid
 from typing import Any
 
 import uvicorn
@@ -5,9 +8,16 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 
 from autogoal.contrib import find_classes
-from autogoal.utils.remote._algorithm import RemoteAlgorithmDTO, RemoteAttrCallDTO, RemoteInstantiateRequest
 from autogoal.utils._dynamic import dynamic_call
-import json
+from autogoal.utils.remote._algorithm import (
+    AttrCallRequest,
+    InstantiateRequest,
+    RemoteAlgorithmDTO,
+    decode,
+    dumps,
+    encode,
+    loads,
+)
 
 app = FastAPI()
 algorithms = find_classes()
@@ -18,8 +28,9 @@ algorithm_pool = {}
 async def root():
     return {"message": "Service Running"}
 
+
 @app.get("/algorithms")
-async def get_algorithms(request: Request):
+async def get_exposed_algorithms(request: Request):
     """
     Returns exposed algorithms
     """
@@ -31,33 +42,35 @@ async def get_algorithms(request: Request):
 
 
 @app.post("/algorithm/call")
-async def post_call(request: RemoteAttrCallDTO):
-    dto = RemoteAlgorithmDTO.parse_obj(request.algorithm_dto)
-    inst = algorithm_pool.get(dto.id)
-    if (inst == None):
-        raise HTTPException(400, f"Algorithm instance with id={dto.id} not found")
-    
-    result = dynamic_call(inst, request.attr, *json.loads(request.args), **json.loads(request.kwargs))
-    return result
+async def post_call(request: AttrCallRequest):
+    id = uuid.UUID(request.instance_id, version=4)
+    inst = algorithm_pool.get(id)
+    if inst == None:
+        raise HTTPException(400, f"Algorithm instance with id={id} not found")
+
+    return {
+        "result": dumps(
+            dynamic_call(
+                inst, request.attr, *loads(request.args), **loads(request.kwargs)
+            )
+        )
+    }
 
 
 @app.post("/algorithm/instantiate")
-async def post_call(request: RemoteInstantiateRequest):
+async def post_call(request: InstantiateRequest):
     dto = RemoteAlgorithmDTO.parse_obj(request.algorithm_dto)
     cls = dto.get_original_class()
-    inst = cls(*json.loads(request.args), **json.loads(request.kwargs))
-    algorithm_pool[dto.id] = inst
-    return {
-        "message" : "success"
-    }
+    new_id = uuid.uuid4()
+    algorithm_pool[new_id] = cls(*loads(request.args), **loads(request.kwargs))
+    return {"message": "success", "id": new_id}
 
-@app.delete("/algorithm")
-async def delete_algorithm(request: RemoteAlgorithmDTO):
-    algorithm_pool.pop(request.id)
-    return {
-        "message" : f"deleted instance for {request.id}"
-    }
 
+@app.delete("/algorithm/{raw_id}")
+async def delete_algorithm(raw_id):
+    id = uuid.UUID(raw_id, version=4)
+    algorithm_pool.pop(id)
+    return {"message": f"deleted instance with id={id}"}
 
 
 def run(ip=None, port=None):
@@ -65,3 +78,7 @@ def run(ip=None, port=None):
     Starts HTTP API with specified model.
     """
     uvicorn.run(app, host=ip or "0.0.0.0", port=port or 8000)
+
+
+if __name__ == "__main__":
+    run()

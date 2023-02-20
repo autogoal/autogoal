@@ -78,8 +78,8 @@ def remote_main():
 
 @remote_app.command("connect")
 def remote_connect(
-    ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
-    port: int = typer.Argument(8000, help="Port to be bind by the server"),
+    ip: str = typer.Argument(None, help="Interface ip to be used by the HTTP API"),
+    port: int = typer.Argument(None, help="Port to be bind by the server"),
     connection_alias: int = typer.Argument(None, help="Connection alias for future references to the remote AutoGOAL instance"),
     verbose: bool = False
 ):
@@ -88,14 +88,23 @@ def remote_connect(
     """
 
     # try connection and request algorithms
-    classes = find_remote_classes(ip=ip, port=port)
+    sources = []
+    if (ip is None or port is None):
+        if (connection_alias is not None):
+            sources.append(connection_alias)
+    else:
+        if (connection_alias is not None):
+            sources.append((ip, port, connection_alias))
+        else:
+            sources.append((ip, port))
+        
+    classes = find_remote_classes(sources)
 
     typer.echo(
         f"⚙️  Successfully connected to remote AutoGOAL!", color="green"
     )
 
     if (connection_alias):
-        store_connection(ip, port, connection_alias)
         typer.echo(
         f"⚙️  Stored connection to {ip}:{port} with alias '{connection_alias}' for future usage.", color="blue"
         )
@@ -107,7 +116,7 @@ def remote_connect(
         classes_by_contrib[cls.contrib].append(cls)
 
     typer.echo(
-        f"⚙️ Found a total of {len(classes)} matching remote algorithms.", color="blue"
+        f"⚙️  Found a total of {len(classes)} matching remote algorithms.", color="blue"
     )
 
     for contrib, clss in classes_by_contrib.items():
@@ -273,7 +282,7 @@ def automl_fit(
     y = dataset[target].values
 
     automl = AutoML(
-        output=VectorCategorical(),
+        output=VectorCategorical,
         search_kwargs=dict(
             evaluation_timeout=evaluation_timeout,
             memory_limit=memory_limit,
@@ -421,11 +430,11 @@ def data_generate():
 
 
 if __name__ == "__main__":
-    remote_connect("172.18.0.3", 8000, "remote-nltk")
-    # try:
-    #     app(prog_name="autogoal")
-    # except Exception as e:
-    #     console.print(f'⚠️  The command failed with message:\n"{str(e)}".')
+    # remote_connect("172.18.0.3", 8000, "remote-sklearn")
+    try:
+        app(prog_name="autogoal")
+    except Exception as e:
+        console.print(f'⚠️  The command failed with message:\n"{str(e)}".')
 
-    #     if console.input("❓ Do you want to inspect the traceback? \[y/N] ") == "y":
-    #         logger.exception("Check the traceback below.")
+        if console.input("❓ Do you want to inspect the traceback? \[y/N] ") == "y":
+            logger.exception("Check the traceback below.")
