@@ -5,30 +5,39 @@ import re
 import textwrap
 import warnings
 from pathlib import Path
+from typing import Tuple
 
 import black
 import enlighten
 import numpy as np
-from autogoal import kb
-from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
-from autogoal.kb import AlgorithmBase
-from autogoal.grammar import (
-    BooleanValue,
-    CategoricalValue,
-    ContinuousValue,
-    DiscreteValue,
-)
-from autogoal.utils import nice_repr
-from joblib import parallel_backend
-from numpy import inf, nan
-
 import sklearn
 import sklearn.cluster
 import sklearn.cross_decomposition
 import sklearn.feature_extraction
 import sklearn.impute
 import sklearn.naive_bayes
+from joblib import parallel_backend
+from numpy import inf, nan
 from sklearn.datasets import make_classification
+
+from autogoal import kb
+from autogoal.contrib.sklearn._utils import get_input_output, is_algorithm
+from autogoal.grammar import (
+    BooleanValue,
+    CategoricalValue,
+    ContinuousValue,
+    DiscreteValue,
+)
+from autogoal.kb import (
+    AlgorithmBase,
+    Tensor,
+    Continuous,
+    Categorical,
+    Dense,
+    Discrete,
+    Sparse,
+)
+from autogoal.utils import nice_repr
 
 # try:
 #     import dask
@@ -101,6 +110,21 @@ class SklearnTransformer(SklearnWrapper):
     def transform(self, X, y=None):
         pass
 
+TYPE_ALIASES = {
+    Tensor[1, None, None]: "Vector",
+    Tensor[1, Continuous, None]: "VectorContinuous",
+    Tensor[1, Categorical, Dense]: "VectorCategorical",
+    Tensor[1, Discrete, Dense]: "VectorDiscrete",
+    Tensor[2, None, None]: "Matrix",
+    Tensor[2, Continuous, None]: "MatrixContinuous",
+    Tensor[2, Continuous, Dense]: "MatrixContinuousDense",
+    Tensor[2, Continuous, Sparse]: "MatrixContinuousSparse",
+    Tensor[2, Categorical, Dense]: "MatrixCategorical",
+    Tensor[2, Discrete, Dense]: "MatrixDiscrete",
+    Tensor[3, Continuous, Dense]: "Tensor3",
+    Tensor[4, Continuous, Dense]: "Tensor4"
+}
+
 
 GENERATION_RULES = dict(
     LatentDirichletAllocation=dict(ignore_params=set(["evaluate_every"])),
@@ -147,7 +171,7 @@ def build_sklearn_wrappers():
 
             from numpy import inf, nan
 
-            from autogoal.grammar import Continuous, Discrete, Categorical, Boolean
+            from autogoal.grammar import ContinuousValue, DiscreteValue, CategoricalValue, BooleanValue
             from autogoal.contrib.sklearn._builder import SklearnEstimator, SklearnTransformer
             from autogoal.kb import *
             """
@@ -192,15 +216,24 @@ def _write_class(cls, fp):
 
     s = " " * 4
     args_str = f",\n{s * 4}".join(f"{key}: {value}" for key, value in args.items())
-    # self_str = f"\n{s * 4}".join(f"self.{key}={key}" for key in args)
     init_str = f",\n{s * 5}".join(f"{key}={key}" for key in args)
-    input_str, output_str = repr(inputs), repr(outputs)
+    
+    output_str = TYPE_ALIASES.get(outputs) or repr(outputs)
 
     base_class = (
         "SklearnEstimator" if is_algorithm(cls) == "estimator" else "SklearnTransformer"
     )
 
-    print(cls)
+    input_str = "input: " + (TYPE_ALIASES.get(inputs) or repr(inputs))
+    run_input_str = "input"
+    if type(inputs) == tuple:
+        if (len(inputs) > 2):
+            raise Exception(
+                    "Unsuported input string representation for algorithms with more than 2 input elements."
+                )
+        x, y = inputs
+        input_str = f"X: {TYPE_ALIASES.get(x) or repr(x)}, y: Supervised[{TYPE_ALIASES.get(y) or repr(y)}]"
+        run_input_str = "X, y"
 
     fp.write(
         textwrap.dedent(
@@ -218,12 +251,13 @@ def _write_class(cls, fp):
                     {init_str}
                 )
 
-            def run(self, input: {input_str}) -> {output_str}:
-               return {base_class}.run(self, input)
+            def run(self, {input_str}) -> {output_str}:
+               return {base_class}.run(self, {run_input_str})
         """
         )
     )
 
+    print("Successfully generated" + cls.__name__)
     fp.flush()
 
 
@@ -357,15 +391,20 @@ def _try(cls, arg, value):
 def _get_args(cls):
     specs = inspect.getfullargspec(cls.__init__)
 
-    args = specs.args
-    specs = specs.defaults
+    args = []
+    args += specs.args or []
+    args += specs.kwonlyargs or []
 
-    if not args or not specs:
+    defaults = []
+    defaults += specs.defaults or []
+    defaults += list((specs.kwonlydefaults or {}).values())
+
+    if not args or not defaults:
         return {}
 
-    args = args[-len(specs) :]
+    args = args[-len(defaults) :]
 
-    args_map = {k: v for k, v in zip(args, specs)}
+    args_map = {k: v for k, v in zip(args, defaults)}
 
     drop_args = [
         "verbose",

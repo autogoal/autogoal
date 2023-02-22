@@ -4,6 +4,7 @@ import warnings
 
 import numpy as np
 import scipy.sparse as sp
+from typing import List, Tuple
 
 from autogoal.contrib._utils import (
     is_categorical,
@@ -30,8 +31,8 @@ def combine_types(*types):
 
     types = set(types)
 
-    if types == {kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()}:
-        return kb.MatrixContinuous()
+    if types == {kb.MatrixContinuousDense, kb.MatrixContinuousSparse}:
+        return kb.MatrixContinuous
 
     return None
 
@@ -91,10 +92,10 @@ def is_classifier(cls, verbose=False):
 
     inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
+    for input_type in [kb.MatrixContinuousDense, kb.MatrixContinuousSparse]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[kb.CategoricalVector()]
+            y = DATA_TYPE_EXAMPLES[kb.VectorCategorical]
 
             clf = cls()
             clf.fit(X, y)
@@ -109,7 +110,7 @@ def is_classifier(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (kb.Tuple(inputs, kb.CategoricalVector()), kb.CategoricalVector())
+        return True, ((inputs, kb.VectorCategorical), kb.VectorCategorical)
     else:
         return False, None
 
@@ -132,10 +133,10 @@ def is_regressor(cls, verbose=False):
 
     inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
+    for input_type in [kb.MatrixContinuousDense, kb.MatrixContinuousSparse]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
-            y = DATA_TYPE_EXAMPLES[kb.ContinuousVector()]
+            y = DATA_TYPE_EXAMPLES[kb.VectorContinuous]
 
             clf = cls()
             clf.fit(X, y)
@@ -150,7 +151,7 @@ def is_regressor(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (kb.Tuple(inputs, kb.ContinuousVector()), kb.ContinuousVector())
+        return True, ((inputs, kb.VectorContinuous), kb.VectorContinuous)
     else:
         return False, None
 
@@ -176,7 +177,7 @@ def is_clusterer(cls, verbose=False):
 
     inputs = []
 
-    for input_type in [kb.MatrixContinuousDense(), kb.MatrixContinuousSparse()]:
+    for input_type in [kb.MatrixContinuousDense, kb.MatrixContinuousSparse]:
         try:
             X = DATA_TYPE_EXAMPLES[input_type]
 
@@ -192,7 +193,7 @@ def is_clusterer(cls, verbose=False):
     inputs = combine_types(*inputs)
 
     if inputs:
-        return True, (inputs, kb.DiscreteVector())
+        return True, (inputs, kb.VectorDiscrete)
     else:
         return False, None
 
@@ -218,14 +219,14 @@ def is_transformer(cls, verbose=False):
     allowed_outputs = set()
 
     for input_type in [
-        kb.MatrixContinuousDense(),
-        kb.MatrixContinuousSparse(),
-        kb.List(kb.Sentence()),
+        kb.MatrixContinuousDense,
+        kb.MatrixContinuousSparse,
+        kb.Seq[kb.Sentence],
     ]:
         for output_type in [
-            kb.MatrixContinuousDense(),
-            kb.MatrixContinuousSparse(),
-            kb.List(kb.Sentence()),
+            kb.MatrixContinuousDense,
+            kb.MatrixContinuousSparse,
+            kb.Seq[kb.Sentence],
         ]:
             try:
                 X = DATA_TYPE_EXAMPLES[input_type]

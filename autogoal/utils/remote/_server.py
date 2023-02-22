@@ -1,3 +1,4 @@
+import inspect
 import json
 import pickle
 import uuid
@@ -48,13 +49,31 @@ async def post_call(request: AttrCallRequest):
     if inst == None:
         raise HTTPException(400, f"Algorithm instance with id={id} not found")
 
-    return {
-        "result": dumps(
-            dynamic_call(
-                inst, request.attr, *loads(request.args), **loads(request.kwargs)
-            )
-        )
-    }
+    attr = getattr(inst, request.attr)
+    is_callable = hasattr(attr, "__call__")
+
+    result = (
+        dynamic_call(inst, request.attr, *loads(request.args), **loads(request.kwargs))
+        if is_callable
+        else attr
+    )
+    return {"result": dumps(result)}
+
+
+@app.post("/algorithm/has_attr")
+async def has_attr(request: AttrCallRequest):
+    id = uuid.UUID(request.instance_id, version=4)
+    inst = algorithm_pool.get(id)
+    if inst == None:
+        raise HTTPException(400, f"Algorithm instance with id={id} not found")
+
+    try:
+        attr = getattr(inst, request.attr)
+        result = True
+    except:
+        result = False
+
+    return {"exists": result, "is_callable": result and hasattr(attr, "__call__")}
 
 
 @app.post("/algorithm/instantiate")

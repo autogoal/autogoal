@@ -382,7 +382,7 @@ class DiscreteValue:
         self.max = max
 
     def __repr__(self):
-        return "Discrete(min=%r, max=%r)" % (self.min, self.max)
+        return "DiscreteValue(min=%r, max=%r)" % (self.min, self.max)
 
     def generate_cfg(self, grammar, head):
         grammar.add(
@@ -393,7 +393,7 @@ class DiscreteValue:
 
 class ContinuousValue(DiscreteValue):
     def __repr__(self):
-        return "Continuous(min=%r, max=%r)" % (self.min, self.max)
+        return "ContinuousValue(min=%r, max=%r)" % (self.min, self.max)
 
     def generate_cfg(self, grammar, head):
         grammar.add(
@@ -408,7 +408,7 @@ class CategoricalValue:
 
     def __repr__(self):
         options = ", ".join(repr(o) for o in self.options)
-        return f"Categorical({options})"
+        return f"CategoricalValue({options})"
 
     def generate_cfg(self, grammar, head):
         grammar.add(
@@ -419,7 +419,7 @@ class CategoricalValue:
 
 class BooleanValue:
     def __repr__(self):
-        return f"Boolean()"
+        return f"BooleanValue()"
 
     @staticmethod
     def generate_cfg(grammar, head):

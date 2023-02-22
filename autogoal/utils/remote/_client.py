@@ -27,3 +27,11 @@ def get_algorithms(
         for ralg in raw_algorithms
     ]
     return algorithms
+
+# if __name__=="__main__":
+#     alg = get_algorithms(alias="remote-sklearn")[0]
+#     inst = alg(n_iter=1, tol=0.005, compute_score=True, threshold_lambda=1, fit_intercept=False )
+#     print(hasattr(inst, "train"))
+#     print(inst)
+#     print(inst.__dict__)
+#     print("end")

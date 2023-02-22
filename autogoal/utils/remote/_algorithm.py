@@ -7,7 +7,7 @@ import pickle
 import uuid
 from pydantic import BaseModel
 from requests.api import post, delete
-
+from functools import partial
 from autogoal.kb import AlgorithmBase
 from autogoal.utils._dynamic import dynamic_imp
 
@@ -116,22 +116,8 @@ class RemoteAlgorithmBase(AlgorithmBase):
             f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/{self.id}",
         )
 
-    def __getattribute__(self, name):
-        # wrapper function for proxy calls to be returned
-        def intercept(*args, **kwargs):
-            return self.proxy_call(name, *args, **kwargs)
-        
-        # first check if the attr is present in this class definition and ignore calls 
-        # to proxy_call itself as any call to intercept() would trigger
-        try:
-            attr = object.__getattribute__(self, name)
-            if hasattr(attr, "__call__") and attr.__name__ != "proxy_call":
-                return intercept
-        except:
-            # if the attr is not present in this class then just send the intercept
-            return intercept
-
-    def proxy_call(self, attr_name, *args, **kwargs):
+    def _proxy_call(self, attr_name, *args, **kwargs):
+        print(f"calling get attr {attr_name}")
         call = AttrCallRequest.build(str(self.id), attr_name, args, kwargs)
         response = post(
             f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/call",
@@ -140,6 +126,40 @@ class RemoteAlgorithmBase(AlgorithmBase):
         if response.status_code == 200:
             content = json.loads(response.content)
             return loads(content["result"])
+
+    def _has_attr(self, attr_name):
+        print(f"calling has attr {attr_name}")
+        call = AttrCallRequest.build(str(self.id), attr_name, None, None)
+        response = post(
+            f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/has_attr",
+            json=call.dict(),
+        )
+        if response.status_code == 200:
+            return RemoteAttrInfo.construct(**json.loads(response.content))
+
+    def __getattribute__(self, name):
+        # Calls to proxy_call are not supposed to be proxied.
+        # Check for attributes from the local instance
+        if (
+            name == "_proxy_call"
+            or name == "_has_attr"
+            or name == "id"
+            or name == "ip"
+            or name == "port"
+        ):
+            return object.__getattribute__(self, name)
+
+        # get remote information for the attribute.
+        # do nothing if the attribute does not exists in the remote instance and return None.
+        remote_attr_info = self._has_attr(name)
+        if remote_attr_info.exists:
+            if remote_attr_info.is_callable:
+                # if attribute is callable then return a partial function based on _proxy_call
+                #  which will take up the args and kwargs specified by the caller
+                return partial(self._proxy_call, name)
+
+            # if object is not callable then return the exact attr from the remote object
+            return self._proxy_call("__getattribute__", name)
 
     def run(self, *args):
         pass
@@ -173,3 +193,9 @@ class InstantiateRequest(BaseModel):
             kwargs=dumps(kwargs),
             algorithm_dto=dto,
         )
+
+
+class RemoteAttrInfo(BaseModel):
+    attr: str
+    exists: bool
+    is_callable: bool
