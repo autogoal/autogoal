@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from requests.api import post, delete
 from functools import partial
 from autogoal.kb import AlgorithmBase
-from autogoal.utils._dynamic import dynamic_imp
+from autogoal.utils._dynamic import dynamic_import
 
 contrib_pattern = r"autogoal\.contrib\.(?P<contrib>\w+)\.?.*"
 
@@ -65,7 +65,7 @@ class RemoteAlgorithmDTO(BaseModel):
         )
 
     def get_original_class(self):
-        return dynamic_imp(self.module, self.name)
+        return dynamic_import(self.module, self.name)
 
     @staticmethod
     def get_original_class_from_dict(data: Dict):
@@ -98,26 +98,36 @@ class RemoteAlgorithmBase(AlgorithmBase):
 
     def __new__(cls: type, *args, **kwargs):
         call = InstantiateRequest.build(cls.dto, args, kwargs)
-        response = post(
-            f"http://{cls.ip or '0.0.0.0'}:{cls.port or 8000}/algorithm/instantiate",
-            json=call.dict(),
-        )
 
-        if response.status_code == 200:
-            content = json.loads(response.content)
-            instance = super().__new__(cls)
-            instance.id = uuid.UUID(content["id"], version=4)
-            return instance
+        try:
+            response = post(
+                f"http://{cls.ip or '0.0.0.0'}:{cls.port or 8000}/algorithm/instantiate",
+                json=call.dict(),
+            )
 
-        raise Exception(response.reason)
+            if response.status_code == 200:
+                content = json.loads(response.content)
+                instance = super().__new__(cls)
+                instance.id = uuid.UUID(content["id"], version=4)
+                return instance
+        except Exception as error:
+            raise Exception(response.reason)
+    
+    def __enter__(self):
+        return self
 
+    def __exit__(self, *args, **kwargs):
+        return self.__del__()
+        
     def __del__(self):
-        delete(
-            f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/{self.id}",
-        )
+        try:
+            delete(
+                f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/{self.id}",
+            )
+        except:
+            pass
 
     def _proxy_call(self, attr_name, *args, **kwargs):
-        print(f"calling get attr {attr_name}")
         call = AttrCallRequest.build(str(self.id), attr_name, args, kwargs)
         response = post(
             f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/call",
@@ -126,9 +136,11 @@ class RemoteAlgorithmBase(AlgorithmBase):
         if response.status_code == 200:
             content = json.loads(response.content)
             return loads(content["result"])
+        else:
+            # print(json.loads(response.content)["detail"])
+            raise Exception(json.loads(response.content)["detail"]) 
 
     def _has_attr(self, attr_name):
-        print(f"calling has attr {attr_name}")
         call = AttrCallRequest.build(str(self.id), attr_name, None, None)
         response = post(
             f"http://{self.ip or '0.0.0.0'}:{self.port or 8000}/algorithm/has_attr",
@@ -146,6 +158,7 @@ class RemoteAlgorithmBase(AlgorithmBase):
             or name == "id"
             or name == "ip"
             or name == "port"
+            or name == "__class__"
         ):
             return object.__getattribute__(self, name)
 
@@ -160,6 +173,14 @@ class RemoteAlgorithmBase(AlgorithmBase):
 
             # if object is not callable then return the exact attr from the remote object
             return self._proxy_call("__getattribute__", name)
+
+    def __repr__(self) -> str:
+        inner = self._proxy_call("__repr__")
+        return f"{self.__class__.__name__}({inner})"
+
+    def __str__(self) -> str:
+        inner = self._proxy_call("__repr__")
+        return f"{self.__class__.__name__}({inner})"
 
     def run(self, *args):
         pass

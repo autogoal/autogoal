@@ -9,20 +9,34 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 
 from autogoal.contrib import find_classes
+from autogoal.utils import RestrictedWorkerByJoin
+from autogoal.utils import Gb, Hour, Kb, Mb, Min, Sec
 from autogoal.utils._dynamic import dynamic_call
-from autogoal.utils.remote._algorithm import (
-    AttrCallRequest,
-    InstantiateRequest,
-    RemoteAlgorithmDTO,
-    decode,
-    dumps,
-    encode,
-    loads,
-)
+from autogoal.utils.remote._algorithm import (AttrCallRequest,
+                                              InstantiateRequest,
+                                              RemoteAlgorithmDTO, decode,
+                                              dumps, encode, loads)
+
+                                              
 
 app = FastAPI()
+
+# get references for every algorithm in contribs
 algorithms = find_classes()
+
+# simple set for pooling algorithm instances. If instances
+# are not properly deleted can (and will) fill the memory
 algorithm_pool = {}
+
+# sets the RAM usage restriction for remote calls. This will only affect
+# remote attribute calls and is ignored during the instance creation. 
+# Defaults to 4Gb.
+remote_call_ram_limit = 4*Gb
+
+# sets the remote call timeout. This will only affect
+# remote attribute calls and is ignored during the instance creation. 
+# Defaults to 20 Sec.
+remote_call_timeout = 20*Sec
 
 
 @app.get("/")
@@ -52,11 +66,15 @@ async def post_call(request: AttrCallRequest):
     attr = getattr(inst, request.attr)
     is_callable = hasattr(attr, "__call__")
 
-    result = (
-        dynamic_call(inst, request.attr, *loads(request.args), **loads(request.kwargs))
-        if is_callable
-        else attr
-    )
+    try:
+        result = (
+            dynamic_call(inst, request.attr, *loads(request.args), **loads(request.kwargs))
+            if is_callable
+            else attr
+        )
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
     return {"result": dumps(result)}
 
 
@@ -88,7 +106,13 @@ async def post_call(request: InstantiateRequest):
 @app.delete("/algorithm/{raw_id}")
 async def delete_algorithm(raw_id):
     id = uuid.UUID(raw_id, version=4)
-    algorithm_pool.pop(id)
+
+    try:
+        algorithm_pool.pop(id)
+    except KeyError:
+        # do nothing, key is already out of the pool. Dont ask that many questions...
+        pass
+
     return {"message": f"deleted instance with id={id}"}
 
 

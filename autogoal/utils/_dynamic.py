@@ -1,7 +1,6 @@
 import importlib
 
-# dynamic import 
-def dynamic_imp(name, class_name):
+def dynamic_import(name, class_name):
     module = importlib.import_module(name)
     return getattr(module, class_name)
 
