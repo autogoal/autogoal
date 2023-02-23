@@ -154,4 +154,4 @@ metalearning.json
 *.bin
 output.csv
 
-./autogoal/utils/remote/config/connections.yml
+autogoal/utils/remote/config/connections.yml
