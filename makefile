@@ -37,12 +37,12 @@ clean:
 # docker-base  Builds the development base image from scratch.
 .PHONY: docker
 docker:
-	docker build . -t autogoal/autogoal:base -f dockerfiles/base/dockerfile
+	docker build . -t autogoal/autogoal:core -f dockerfiles/core/dockerfile
 
-# docker-contrib Builds the development image with target contrib from scratch.
+# docker-contrib Builds the development image with target contrib from scratch. Includes autogoal-remote
 .PHONY: docker-contrib
 docker-contrib:
-	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg contrib=$(CONTRIB) --no-cache
+	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="$(CONTRIB) remote" --no-cache
 
 # docker-sklearn Builds the development image with sklearn contrib from scratch.
 .PHONY: docker-sklearn
