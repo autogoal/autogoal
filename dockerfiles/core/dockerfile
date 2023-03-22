@@ -1,5 +1,5 @@
 # =====================
-# Python 3.7 core image
+# Python 3.9 core image
 # ---------------------
 
 FROM python:3.9
@@ -49,11 +49,15 @@ WORKDIR /home/coder/autogoal
 # Make RUN commands use the autogoal environment
 COPY autogoal/pyproject.toml makefile /home/coder/autogoal/autogoal/
 
-# RUN poetry install
+# Setup poetry configuration
 RUN pip install -U pip setuptools
 RUN pip install poetry==1.2
 RUN poetry config virtualenvs.create false
-RUN cd autogoal/ && poetry install
+
+# Install autogoal core
+COPY dockerfiles/install-package.sh install-package.sh 
+RUN chmod +x /install-package.sh
+RUN ./install-package.sh core
 
 SHELL ["/bin/bash", "-c"]
 USER coder
