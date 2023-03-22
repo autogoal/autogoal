@@ -76,11 +76,10 @@ shell:
 	docker-compose run --service-ports autogoal bash
 
 # demo         Run the demo in the base development image.
-SERVICE=autogoal-base
+SERVICE=autogoal-core
 .PHONY: demo
 demo:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
-	# bash run-nameserver.sh $(SERVICE)
 
 # demo         Run the demo in the base development image.
 .PHONY: demo-sklearn

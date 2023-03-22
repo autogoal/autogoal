@@ -62,7 +62,6 @@ VOLUME /home/coder/autogoal
 COPY ../autogoal /home/coder/autogoal
 RUN sudo rm -rf /home/coder/autogoal/storage
 RUN sudo ln -s /home/coder/autogoal/autogoal /usr/local/lib/python3.9/site-packages/autogoal
-RUN sudo ln -s /home/coder/autogoal/autogoal-remote /usr/local/lib/python3.9/site-packages/autogoal-remote
 RUN sudo chown -R coder /home/coder
 
 CMD ["/bin/bash"]

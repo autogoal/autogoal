@@ -16,22 +16,6 @@ services:
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
 
-  autogoal-base:
-    container_name: autogoal-base
-    hostname: autogoal-base
-    image: autogoal/autogoal:base
-    ports:
-      - 8501:8501
-      - 8001:8000
-    volumes: 
-      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
-      - "./autogoal-remote:/usr/lib/python3/dist-packages/autogoal-remote"
-      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
-      - ".:/home/coder/autogoal"
-      - "~/.ssh:/home/coder/.ssh"
-      - "~/.gitconfig:/home/coder/.gitconfig"
-    user: "1000:1000"
-
   autogoal-sklearn:
     container_name: autogoal-sklearn
     hostname: autogoal-sklearn

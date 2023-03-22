@@ -14,8 +14,6 @@ from autogoal.kb import Pipeline, SemanticType, build_pipeline_graph
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
 from autogoal.utils import generate_production_dockerfile, nice_repr
-from autogoal.utils.remote import get_algorithms
-
 
 @nice_repr
 class AutoML:

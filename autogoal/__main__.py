@@ -22,10 +22,8 @@ from autogoal.contrib import (
 from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
-from autogoal.utils import Gb, Min, inspect_storage, run
-from autogoal.utils.remote import _server as rm_server
-from autogoal.utils.remote import _client as rm_client
-from autogoal.utils.remote.config import store_connection
+from autogoal.utils import Gb, Min, inspect_storage
+
 from autogoal.datasets import datapath, get_datasets_list, download, dummy
 import autogoal.logging
 
@@ -83,6 +81,12 @@ def remote_connect(
     connection_alias: int = typer.Argument(None, help="Connection alias for future references to the remote AutoGOAL instance"),
     verbose: bool = False
 ):
+    try:
+        from autogoal_remote import _client as rm_client
+        from autogoal_remote import store_connection
+    except:
+        raise Exception("autogoal-remote installation not detected")
+
     """
     📡  Connect to an existing AutoGOAL instance.
     """
@@ -137,6 +141,13 @@ def share_contribs(
     ),
     port: int = typer.Argument(8000, help="Port of listening AutoGOAL service"),
 ):
+
+    try:
+        from autogoal_remote import _server as rm_server
+        a = 3
+    except:
+        raise Exception("autogoal-remote installation not detected")
+
     """
     Expose algorithms from installed contribs to other AutoGOAL instances over the network.
     """
@@ -197,6 +208,7 @@ def contrib_status():
         ContribStatus.RequiresDownload: "🔴 Requires download",
         ContribStatus.Ready: "🟢 Ready",
     }
+    
 
     for key, value in status().items():
         table.add_row(key, statuses[value])
@@ -350,18 +362,18 @@ def automl_inspect(model: str = typer.Argument(".", help="Autogoal serialized mo
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
 
 
-@automl_app.command("serve")
-def automl_server(
-    path: str = typer.Argument(".", help="Autogoal serialized model"),
-    ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
-    port: int = typer.Argument(8000, help="Port to be bind by the server"),
-):
-    """
-    Load and serve a previously trained AutoML instance as a service.
-    """
-    console.print(f"Loading model from folder: {path}")
-    model = AutoML.folder_load(Path(path))
-    run(model, ip, port)
+# @automl_app.command("serve")
+# def automl_server(
+#     path: str = typer.Argument(".", help="Autogoal serialized model"),
+#     ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
+#     port: int = typer.Argument(8000, help="Port to be bind by the server"),
+# ):
+#     """
+#     Load and serve a previously trained AutoML instance as a service.
+#     """
+#     console.print(f"Loading model from folder: {path}")
+#     model = AutoML.folder_load(Path(path))
+#     run(model, ip, port)
 
 
 @automl_app.command("export")
