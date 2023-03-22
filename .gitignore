@@ -155,3 +155,4 @@ metalearning.json
 output.csv
 
 autogoal/utils/remote/config/connections.yml
+.vscode/
