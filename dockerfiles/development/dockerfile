@@ -2,14 +2,16 @@
 # Autogoal base image
 # ---------------------
 
-FROM autogoal/autogoal:base
+FROM autogoal/autogoal:core
 
 USER root
 
-ARG contrib
+ARG extras
 
 COPY dockerfiles/development/install-contrib.sh install-contrib.sh 
-RUN ./install-contrib.sh $contrib
+RUN chmod +x /install-contrib.sh
+
+RUN for arg in $extras; do ./install-contrib.sh $arg; done
 
 SHELL ["/bin/bash", "-c"]
 

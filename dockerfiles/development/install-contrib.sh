@@ -1,23 +1,18 @@
 #!/bin/bash
+arg=$1
 
-set +e #otherwise the script will exit on error
-containsElement () {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
-
-declare -a contribs=("sklearn" "nltk")
-
-for word in "$@"; 
-    do containsElement "$word" "${contribs[@]}";
-    if [ $? == 0 ]; then
-        echo "Installing contrib" "'$word'.";
-        poetry config virtualenvs.create false
-        poetry install --with="$word"
-        echo ""
-    else
-        echo "AutoGOAL do not support" "'$word'" "so far."
-    fi
-done
+case $arg in
+    remote)
+        echo "Installing autogoal-$arg"
+        ln -s /home/coder/autogoal/autogoal-"$arg" /usr/local/lib/python3.9/site-packages/autogoal-"$arg"
+        cd autogoal-contrib/"$arg" && poetry install
+    ;;
+    sklearn | nltk)
+        echo "Installing autogoal-$arg"
+        ln -s /home/coder/autogoal/autogoal-"$arg" /usr/local/lib/python3.9/site-packages/autogoal-"$arg"
+        cd autogoal-contrib/"$arg" && poetry install
+    ;;
+    *)
+        echo "Invalid argument"
+    ;;
+esac
