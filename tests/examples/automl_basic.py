@@ -3,6 +3,7 @@
 from autogoal.datasets import cars
 from autogoal.kb import MatrixContinuousDense, Supervised, VectorCategorical
 from autogoal.ml import AutoML
+from autogoal.search._base import ConsoleLogger
 
 # Load dataset
 X, y = cars.load()
@@ -14,7 +15,7 @@ automl = AutoML(
 )
 
 # Run the pipeline search process
-automl.fit(X, y)
+automl.fit(X, y, logger=ConsoleLogger())
 
 # Report the best pipeline
 print(automl.best_pipeline_)
