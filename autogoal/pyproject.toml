@@ -8,6 +8,7 @@ readme = "Readme.md"
 homepage = "https://autogoal.github.io"
 documentation = "https://autogoal.github.io"
 repository = "https://github.com/autogoal/autogoal"
+packages = [{include = "autogoal"}]
 
 classifiers = [
     "Development Status :: 3 - Alpha",
