@@ -1,4 +1,11 @@
 from typing import List, Tuple
+from autogoal.utils import find_packages
+from os.path import abspath, dirname, join
+from inspect import getsourcefile
+import enum
+import yaml
+
+config_dir = dirname(abspath(getsourcefile(lambda: 0)))
 
 
 def find_classes(include=None, exclude=None, modules=None, input=None, output=None):
@@ -180,7 +187,30 @@ def find_remote_classes(
     return result
 
 
-import enum
+def get_registered_contribs():
+    path = join(config_dir, "registered-contribs.yml")
+    try:
+        with open(path, "r") as fd:
+            result = yaml.safe_load(fd)
+    except IOError as e:
+        result = []
+    return result
+
+
+def get_installed_contribs():
+    """
+    find all installed contrib modules.
+    """
+    modules = []
+    for pkg in find_packages("autogoal-"):
+        try:
+            __import__(pkg.key)
+            modules.append(pkg)
+        except ImportError as e:
+            print(
+                f"Error importing {pkg.project_name} {pkg.version}. Use pip install {pkg.project_name} to ensure all dependencies are installed correctly."
+            )
+    return modules
 
 
 class ContribStatus(enum.Enum):
@@ -193,62 +223,17 @@ def status():
     status = {}
     modules = []
 
-    try:
-        from autogoal.contrib import sklearn
+    for pkg_name in get_registered_contribs():
+        status[pkg_name] = ContribStatus.RequiresDependency
 
-        modules.append(sklearn)
-    except ImportError as e:
-        status["autogoal.contrib.sklearn"] = ContribStatus.RequiresDependency
+    for module in get_installed_contribs():
+        status[module.project_name] = ContribStatus.Ready
+        modules.append(module)
 
-    try:
-        from autogoal.contrib import nltk
-
-        modules.append(nltk)
-    except ImportError as e:
-        status["autogoal.contrib.nltk"] = ContribStatus.RequiresDependency
-
-    try:
-        from autogoal.contrib import gensim
-
-        modules.append(gensim)
-    except ImportError as e:
-        status["autogoal.contrib.gensim"] = ContribStatus.RequiresDependency
-
-    try:
-        from autogoal.contrib import keras
-
-        modules.append(keras)
-    except ImportError as e:
-        status["autogoal.contrib.keras"] = ContribStatus.RequiresDependency
-
-    try:
-        from autogoal.contrib import transformers
-
-        modules.append(transformers)
-    except ImportError as e:
-        status["autogoal.contrib.transformers"] = ContribStatus.RequiresDependency
-
-    try:
-        from autogoal.contrib import spacy
-
-        modules.append(spacy)
-    except ImportError as e:
-        status["autogoal.contrib.spacy"] = ContribStatus.RequiresDependency
-
-    try:
-        from autogoal.contrib import wikipedia
-
-        modules.append(wikipedia)
-    except ImportError as e:
-        status["autogoal.contrib.wikipedia"] = ContribStatus.RequiresDependency
-
-    modules.sort(key=lambda m: m.__name__)
-
+    modules.sort(key=lambda m: m.project_name)
     for module in modules:
         if hasattr(module, "status"):
-            status[module.__name__] = module.status()
-        else:
-            status[module.__name__] = ContribStatus.Ready
+            status[module.project_name] = module.status()
 
     return status
 
@@ -316,4 +301,10 @@ def download(contrib: str):
     return contrib.download()
 
 
-__all__ = ["find_classes", "status", "download"]
+__all__ = [
+    "find_classes",
+    "status",
+    "download",
+    "get_installed_contribs",
+    "get_registered_contribs",
+]

@@ -201,15 +201,14 @@ def contrib_status():
     """
     ✔️ Shows the status of all contrib libraries.
     """
-    table = Table("🛠️  Contrib", "✔️ Status")
+    table = Table("🛠️  Contrib", "✔️  Status")
 
     statuses = {
-        ContribStatus.RequiresDependency: "🔴 Required dependency",
-        ContribStatus.RequiresDownload: "🔴 Requires download",
-        ContribStatus.Ready: "🟢 Ready",
+        ContribStatus.RequiresDependency: "🔴  Required dependency",
+        ContribStatus.RequiresDownload: "🔴  Requires download",
+        ContribStatus.Ready: "🟢  Ready",
     }
     
-
     for key, value in status().items():
         table.add_row(key, statuses[value])
 
