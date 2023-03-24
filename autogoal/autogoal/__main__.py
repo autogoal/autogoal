@@ -12,13 +12,6 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.table import Table
 
-from autogoal.contrib import (
-    find_classes,
-    find_remote_classes,
-    status,
-    ContribStatus,
-    download as download_contrib,
-)
 from autogoal.kb import VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search import RichLogger
@@ -82,10 +75,19 @@ def remote_connect(
     verbose: bool = False
 ):
     try:
-        from autogoal_remote import _client as rm_client
-        from autogoal_remote import store_connection
+        import autogoal_remote as rm_server
     except:
-        raise Exception("autogoal-remote installation not detected")
+        raise Exception("autogoal-remote not installed")
+    
+    try:
+        from autogoal_contrib import find_remote_classes
+    except:
+        raise Exception("autogoal-contrib not installed")
+    
+    
+    from autogoal_contrib import (
+        find_remote_classes,
+    )
 
     """
     📡  Connect to an existing AutoGOAL instance.
@@ -141,17 +143,16 @@ def share_contribs(
     ),
     port: int = typer.Argument(8000, help="Port of listening AutoGOAL service"),
 ):
-
-    try:
-        from autogoal_remote import _server as rm_server
-        a = 3
-    except:
-        raise Exception("autogoal-remote installation not detected")
-
     """
     Expose algorithms from installed contribs to other AutoGOAL instances over the network.
     """
-    rm_server.run(ip, port)
+
+    try:
+        rm_server = autogoal.resolve_contrib("autogoal-remote")
+    except:
+        raise Exception("autogoal-remote installation not detected")
+    
+    rm_server.distributed.run(ip, port)
 
 
 
@@ -173,6 +174,13 @@ def contrib_list(
     """
     ⚙️ List all currently available contrib algorithms.
     """
+    
+    try:
+        from autogoal_contrib import find_classes
+    except:
+        raise Exception("autogoal-contrib not installed")
+    
+    
     classes = find_classes(include=include, exclude=exclude, input=input, output=output)
     classes_by_contrib = collections.defaultdict(list)
     max_cls_name_length = 0
@@ -201,6 +209,12 @@ def contrib_status():
     """
     ✔️ Shows the status of all contrib libraries.
     """
+
+    try:
+        from autogoal_contrib import (ContribStatus, status)
+    except:
+        raise Exception("autogoal-contrib not installed")
+    
     table = Table("🛠️  Contrib", "✔️  Status")
 
     statuses = {
@@ -224,6 +238,13 @@ def contrib_download(
     """
     💾 Download necessary contrib files.
     """
+
+    try:
+        from autogoal_contrib import (ContribStatus, status, download_contrib)
+    except:
+        raise Exception("autogoal-contrib not installed")
+    
+
     if status()[f"autogoal.contrib.{contrib}"] == ContribStatus.Ready:
         console.print(f"✅ Nothing to download for contrib `{contrib}`.")
     elif download_contrib(contrib):

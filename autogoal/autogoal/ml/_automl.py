@@ -9,7 +9,6 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from autogoal.contrib import find_classes, find_remote_classes
 from autogoal.kb import Pipeline, SemanticType, build_pipeline_graph
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
@@ -69,18 +68,24 @@ class AutoML:
             )
 
     def make_pipeline_builder(self):
-        registry = self.registry or find_classes(
-            include=self.include_filter, exclude=self.exclude_filter
-        )
-
-        # update registry with remote algorithms if available
-        if self.registry is None and self.remote_sources is not None:
-            remote_registry = find_remote_classes(
-                sources=self.remote_sources,
-                include=self.include_filter,
-                exclude=self.exclude_filter,
+        if self.registry is None:
+            try:
+                from autogoal_contrib import find_classes, find_remote_classes
+            except:
+                raise ImportError("Contrib support not installed. To install basic contrib support run pip install autogoal-contrib")
+            
+            registry = find_classes(
+                include=self.include_filter, exclude=self.exclude_filter
             )
-            registry += remote_registry
+
+            # update registry with remote algorithms if available
+            if self.remote_sources is not None:
+                remote_registry = find_remote_classes(
+                    sources=self.remote_sources,
+                    include=self.include_filter,
+                    exclude=self.exclude_filter,
+                )
+                registry += remote_registry
 
         return build_pipeline_graph(
             input_types=self.input,

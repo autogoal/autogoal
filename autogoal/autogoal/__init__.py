@@ -38,7 +38,7 @@ from autogoal import ml
 
 # The [`contrib`](ref:autogoal.contrib.__init__) submodule contains all the juicy stuff:
 # machine learning algorithms from several external dependencies.
-from autogoal import contrib
+# from autogoal import contrib
 
 # The [`datasets`](ref:autogoal.datasets.__init__) submodule contains several example
 # datasets that can be used to showcase AutoGOAL.
@@ -53,3 +53,6 @@ from autogoal.utils._helpers import optimize
 
 # Before leaving, let's setup logging at the warning level by default.
 logging.setup(level="WARNING")
+
+# make some helper functions accessible from autogoal root
+from autogoal.utils import resolve_contrib

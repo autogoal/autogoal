@@ -1,15 +1,12 @@
 import pytest
 
+from autogoal import resolve_contrib
 from autogoal.contrib import find_classes
 from autogoal.grammar import generate_cfg, Sampler
 from autogoal.exceptions import InterfaceIncompatibleError
 
-from autogoal.contrib import sklearn
-from autogoal.contrib.sklearn._manual import CountVectorizerNoTokenize
-
-
+sklearn = resolve_contrib("sklearn")
 classes = find_classes(modules=[sklearn], exclude="CountVectorizerNoTokenize")
-
 
 @pytest.mark.contrib
 @pytest.mark.parametrize("clss", classes)
