@@ -42,7 +42,7 @@ docker:
 # docker-contrib Builds the development image with target contrib from scratch. Includes autogoal-remote
 .PHONY: docker-contrib
 docker-contrib:
-	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="$(CONTRIB) remote" --no-cache
+	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="common $(CONTRIB) remote" --no-cache
 
 # docker-sklearn Builds the development image with sklearn contrib from scratch.
 .PHONY: docker-sklearn

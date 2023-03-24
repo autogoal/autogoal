@@ -24,8 +24,6 @@ services:
       - 8502:8501
       - 8002:8000
     volumes: 
-      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
-      - "./autogoal-remote:/usr/lib/python3/dist-packages/autogoal-remote"
       - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
