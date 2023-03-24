@@ -15,7 +15,6 @@ import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
-from autogoal.contrib import find_classes
 from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
 import dill as pickle
 
@@ -366,27 +365,27 @@ class Pipeline:
         with open(path / "algorithms.yml", "w") as fd:
             yaml.dump(info, fd)
 
-    @classmethod
-    def load_algorithms(self, path: Path):
-        """
-        Load piplien algorithms list from given path
-        """
-        with open(path / "algorithms.yml", "r") as fd:
-            algorithms = yaml.safe_load(fd)
+    # @classmethod
+    # def load_algorithms(self, path: Path):
+    #     """
+    #     Load piplien algorithms list from given path
+    #     """
+    #     with open(path / "algorithms.yml", "r") as fd:
+    #         algorithms = yaml.safe_load(fd)
 
-        autogoal_algorithms = find_classes()
+    #     autogoal_algorithms = find_classes()
 
-        answer = []
+    #     answer = []
 
-        algorithm_clases = []
+    #     algorithm_clases = []
 
-        for i, algorithm in enumerate(algorithms.get("algorithms")):
-            for cls in autogoal_algorithms:
-                if algorithm in object.__str__(cls):
-                    algorithm_clases.append(cls)
-                    answer.append(cls.load(path / "algorithms" / str(i)))
+    #     for i, algorithm in enumerate(algorithms.get("algorithms")):
+    #         for cls in autogoal_algorithms:
+    #             if algorithm in object.__str__(cls):
+    #                 algorithm_clases.append(cls)
+    #                 answer.append(cls.load(path / "algorithms" / str(i)))
 
-        return answer
+    #     return answer
 
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
