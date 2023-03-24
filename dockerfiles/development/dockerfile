@@ -9,7 +9,7 @@ USER root
 ARG extras
 
 COPY dockerfiles/install-package.sh install-package.sh 
-RUN for arg in $extras; do ./install-package.sh $arg; done
+RUN for arg in $extras; do sudo ./install-package.sh $arg; done
 
 SHELL ["/bin/bash", "-c"]
 
