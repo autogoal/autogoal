@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from autogoal.kb import AlgorithmBase
 from autogoal.utils import find_packages
 from os.path import abspath, dirname, join
 from inspect import getsourcefile
@@ -31,62 +32,8 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
     if modules is None:
         modules = []
 
-        try:
-            from autogoal.contrib import sklearn
-
-            modules.append(sklearn)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import nltk
-
-            modules.append(nltk)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import gensim
-
-            modules.append(gensim)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import keras
-
-            modules.append(keras)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import transformers
-
-            modules.append(transformers)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import spacy
-
-            modules.append(spacy)
-        except ImportError as e:
-            pass
-
-        try:
-            from autogoal.contrib import wikipedia
-
-            modules.append(wikipedia)
-        except ImportError as e:
-            pass
-
-        from autogoal.contrib import wrappers
-
-        modules.append(wrappers)
-
-        from autogoal.contrib import regex
-
-        modules.append(regex)
+        for package in get_installed_contribs(exclude="remote"):
+            modules.append(__import__(package.key))
 
     for module in modules:
         for _, cls in inspect.getmembers(module, inspect.isclass):
@@ -102,7 +49,7 @@ def find_classes(include=None, exclude=None, modules=None, input=None, output=No
             if exclude is not None and re.match(exclude, repr(cls)):
                 continue
 
-            if not cls.__module__.startswith("autogoal.contrib"):
+            if not issubclass(cls, AlgorithmBase):
                 continue
 
             sig = inspect.signature(cls.run)
@@ -125,10 +72,18 @@ def find_remote_classes(
     input=None,
     output=None,
 ):
+    try:
+        autogoal_remote = __import__("autogoal-remote")
+    except ImportError as e:
+        print(
+            "Module autogoal-remote not installed. To install it with all its dependencies run pip install autogoal-remote"
+        )
+
     import itertools
     import re
 
-    from autogoal.utils.remote import get_algorithms, store_connection
+    get_algorithms = autogoal_remote.get_algorithms
+    store_connection = autogoal_remote.store_connection
 
     if include:
         include = f".*({include}).*"
@@ -143,6 +98,9 @@ def find_remote_classes(
 
     if output:
         output = f".*({output}).*"
+
+    if len(sources) == 0:
+        pass
 
     classes_by_contrib = {}
     for source in sources:
@@ -197,12 +155,16 @@ def get_registered_contribs():
     return result
 
 
-def get_installed_contribs():
+def get_installed_contribs(exclude: str = None):
     """
     find all installed contrib modules.
     """
+
+    packages_identifier = (
+        "autogoal-" if exclude is None else rf"autogoal-(?!.*\b{exclude}\b).*"
+    )
     modules = []
-    for pkg in find_packages("autogoal-"):
+    for pkg in find_packages(packages_identifier):
         try:
             __import__(pkg.key)
             modules.append(pkg)
@@ -241,54 +203,8 @@ def status():
 def download(contrib: str):
     modules = {}
 
-    try:
-        from autogoal.contrib import sklearn
-
-        modules["sklearn"] = sklearn
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import nltk
-
-        modules["nltk"] = nltk
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import gensim
-
-        modules["gensim"] = gensim
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import keras
-
-        modules["keras"] = keras
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import transformers
-
-        modules["transformers"] = transformers
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import spacy
-
-        modules["spacy"] = spacy
-    except ImportError as e:
-        pass
-
-    try:
-        from autogoal.contrib import wikipedia
-
-        modules["wikipedia"] = wikipedia
-    except ImportError as e:
-        pass
+    for package in get_installed_contribs():
+        modules[package.key] = __import__(package.key)
 
     if contrib not in modules:
         raise ValueError(f"Contrib `{contrib}` cannot be imported.")

@@ -58,9 +58,17 @@ SHELL ["/bin/bash", "-c"]
 USER coder
 RUN sudo mkdir -p /home/coder/autogoal/data && sudo chown coder:coder /home/coder/autogoal
 VOLUME /home/coder/autogoal
-COPY ../autogoal /home/coder/autogoal/autogoal
 RUN sudo rm -rf /home/coder/autogoal/storage
 RUN sudo chown -R coder /home/coder
+
+# Copy code-base for autogoal-core
+COPY ../autogoal /home/coder/autogoal/autogoal
+
+# Copy code-base for autogoal-contrib
+COPY ../autogoal-contrib /home/coder/autogoal/autogoal-contrib
+
+# Copy code-base for autogoal-remote
+COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
 
 # Install autogoal core
 COPY dockerfiles/install-package.sh install-package.sh 
