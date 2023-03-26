@@ -7,6 +7,7 @@ import os
 import traceback
 import logging
 import platform
+from numpy.core._exceptions import _ArrayMemoryError
 
 if platform.system() == "Linux":
     import resource
@@ -41,14 +42,15 @@ class RestrictedWorker:
             else:
                 warnings.warn("Cannot restrict cpu time")
 
-    def _restricted_function(self, result_bucket, args, kwargs):
+    def _restricted_function(self, result_bucket, *args, **kwargs):
         try:
             self._restrict()
             result = self.function(*args, **kwargs)
             result_bucket["result"] = result
+        except _ArrayMemoryError as e:
+            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
         except Exception as e:
-            msg = "{}\n\nOriginal {}".format(e, traceback.format_exc())
-            result_bucket["result"] = e.__class__(msg)
+            result_bucket["result"] = e
 
     def run_restricted(self, *args, **kwargs):
         """
@@ -63,7 +65,14 @@ class RestrictedWorker:
         )
 
         rprocess.start()
-        rprocess.join()
+        rprocess.join(timeout=self.timeout)
+
+        if rprocess.is_alive():
+            rprocess.terminate()
+            raise TimeoutError(
+                f"Process took more than {self.timeout} seconds to complete and has been terminated."
+            )
+
         result = result_bucket["result"]
 
         if isinstance(result, Exception):  # Exception ocurred
@@ -119,7 +128,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         result_bucket = manager.dict()
 
         rprocess = multiprocessing.Process(
-            target=self._restricted_function, args=[result_bucket, args, kwargs]
+            target=self._restricted_function, args=[result_bucket, *args], kwargs=kwargs
         )
 
         rprocess.start()
@@ -129,9 +138,61 @@ class RestrictedWorkerByJoin(RestrictedWorker):
             result = result_bucket["result"]
         else:
             rprocess.terminate()
-            raise TimeoutError()
+            raise TimeoutError(f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds.")
 
         if isinstance(result, Exception):  # Exception ocurred
             raise result
 
+        return result
+
+
+class RestrictedWorkerWithState(RestrictedWorkerByJoin):
+    def __init__(self, function, timeout: int, memory: int):
+        self.function = function
+        self.timeout = timeout
+        self.memory = memory
+
+    def _restricted_function(self, result_bucket, arguments_bucket, *args, **kwargs):
+        try:
+            instance = arguments_bucket['instance']
+            self._restrict()
+            result = self.function(instance, *args, **kwargs)
+            result_bucket["result"] = result
+            result_bucket["instance"] = instance
+        except _ArrayMemoryError as e:
+            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
+        except Exception as e:
+            result_bucket["result"] = e
+
+    def run_restricted(self, instance, *args, **kwargs):
+        """
+        Executes a given function with restricted amount of
+        CPU time and RAM memory usage
+        """
+        manager = multiprocessing.Manager()
+        result_bucket = manager.dict()
+        arguments_bucket = manager.dict(
+            {
+                "instance": instance,
+            }
+        )
+
+        rprocess = multiprocessing.Process(
+            target=self._restricted_function,
+            args=[result_bucket, arguments_bucket, *args],
+            kwargs=kwargs,
+        )
+
+        rprocess.start()
+        rprocess.join(self.timeout)
+
+        if rprocess.exitcode == 0:
+            result = result_bucket.get("result"), result_bucket.get("instance")
+        else:
+            rprocess.kill()
+            raise TimeoutError(f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds.")
+
+        if isinstance(result, Exception):  # Exception ocurred
+            raise result
+        
         return result
