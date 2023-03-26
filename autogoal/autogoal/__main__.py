@@ -148,7 +148,7 @@ def share_contribs(
     """
 
     try:
-        rm_server = autogoal.resolve_contrib("autogoal-remote")
+        import autogoal_remote as rm_server
     except:
         raise Exception("autogoal-remote installation not detected")
     

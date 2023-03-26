@@ -1,7 +1,7 @@
 import inspect
 from typing import List, Dict, Set
 
-from ._base import Grammar
+from autogoal.grammar._base import Grammar
 
 
 class Symbol:

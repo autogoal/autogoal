@@ -14,6 +14,7 @@ from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
 from autogoal.utils import generate_production_dockerfile, nice_repr
 
+
 @nice_repr
 class AutoML:
     """
@@ -72,8 +73,10 @@ class AutoML:
             try:
                 from autogoal_contrib import find_classes, find_remote_classes
             except:
-                raise ImportError("Contrib support not installed. To install basic contrib support run pip install autogoal-contrib")
-            
+                raise ImportError(
+                    "Algorithm registry nor provided and Contrib support not installed. To enable automatic code instrospection install basic contrib support running pip install autogoal-contrib"
+                )
+
             registry = find_classes(
                 include=self.include_filter, exclude=self.exclude_filter
             )
@@ -121,7 +124,7 @@ class AutoML:
         self.best_pipeline_.send("eval")
 
     def save(self, fp: io.BytesIO):
-        """ 
+        """
         Serializes the AutoML instance.
         """
         self._check_fitted()

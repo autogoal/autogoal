@@ -53,6 +53,3 @@ from autogoal.utils._helpers import optimize
 
 # Before leaving, let's setup logging at the warning level by default.
 logging.setup(level="WARNING")
-
-# make some helper functions accessible from autogoal root
-from autogoal.utils import resolve_contrib
