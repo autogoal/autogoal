@@ -42,6 +42,6 @@ def generate_installer(path: Path, list: List):
 
 
 def resolve_contrib(contrib: str):
-    if not contrib.startswith("autogoal-"):
-        contrib = f"autogoal-{contrib}"
+    if not contrib.startswith("autogoal_"):
+        contrib = f"autogoal_{contrib}"
     return __import__(contrib)
