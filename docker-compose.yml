@@ -8,8 +8,63 @@ services:
     ports:
       - 8500:8501
       - 8000:8000
-    volumes: 
-      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-gensim:
+    container_name: autogoal-gensim
+    hostname: autogoal-gensim
+    image: autogoal/autogoal:gensim
+    ports:
+      - 8504:8501
+      - 8004:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-keras:
+    container_name: autogoal-keras
+    hostname: autogoal-keras
+    image: autogoal/autogoal:keras
+    ports:
+      - 8505:8501
+      - 8005:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-nltk:
+    container_name: autogoal-nltk
+    hostname: autogoal-nltk
+    image: autogoal/autogoal:nltk
+    ports:
+      - 8503:8501
+      - 8003:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-regex:
+    container_name: autogoal-regex
+    hostname: autogoal-regex
+    image: autogoal/autogoal:regex
+    ports:
+      - 8507:8501
+      - 8007:8000
+    volumes:
       - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
@@ -23,23 +78,77 @@ services:
     ports:
       - 8502:8501
       - 8002:8000
-    volumes: 
+    volumes:
       - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
-  
-  autogoal-nltk:
-    container_name: autogoal-nltk
-    hostname: autogoal-nltk
-    image: autogoal/autogoal:nltk
+
+  autogoal-spacy:
+    container_name: autogoal-spacy
+    hostname: autogoal-spacy
+    image: autogoal/autogoal:spacy
     ports:
-      - 8503:8501
-      - 8003:8000
-    volumes: 
-      - "./autogoal:/usr/lib/python3/dist-packages/autogoal"
-      - "./autogoal-remote:/usr/lib/python3/dist-packages/autogoal-remote"
+      - 8506:8501
+      - 8006:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-streamlit:
+    container_name: autogoal-streamlit
+    hostname: autogoal-streamlit
+    image: autogoal/autogoal:streamlit
+    ports:
+      - 8508:8501
+      - 8008:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-telegram:
+    container_name: autogoal-telegram
+    hostname: autogoal-telegram
+    image: autogoal/autogoal:telegram
+    ports:
+      - 8509:8501
+      - 8009:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-transformers:
+    container_name: autogoal-transformers
+    hostname: autogoal-transformers
+    image: autogoal/autogoal:transformers
+    ports:
+      - 8510:8501
+      - 8010:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+
+  autogoal-wikipedia:
+    container_name: autogoal-wikipedia
+    hostname: autogoal-wikipedia
+    image: autogoal/autogoal:wikipedia
+    ports:
+      - 8511:8501
+      - 8011:8000
+    volumes:
       - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
       - ".:/home/coder/autogoal"
       - "~/.ssh:/home/coder/.ssh"
