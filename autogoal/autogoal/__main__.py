@@ -32,11 +32,28 @@ remote_app = typer.Typer(name="remote")
 automl_app = typer.Typer(name="ml")
 data_app = typer.Typer(name="data")
 
-
 app.add_typer(contrib_app)
 app.add_typer(remote_app)
 app.add_typer(automl_app)
 app.add_typer(data_app)
+
+
+# Import all typer apps defined in contribs
+try:
+    import autogoal_contrib
+    contribs = autogoal_contrib.get_installed_contribs()
+    for contrib in contribs:
+        try:
+            contrib_name = contrib.__name__.split('autogoal_')[1]
+            app.add_typer(contrib.typer_app)
+            console.print(f'Using CLI extension from contrib "{contrib.__name__}". Functionalities present in command "{app.info.name} {contrib.typer_app.info.name}"')
+        except:
+            # we ignore any exception thrown by trying to add typer apps.
+            # contribs might not define any typer app.
+            pass
+except:
+    # Should be trigger if autogoal-contrib is not installed. We ignore the exception
+    pass
 
 
 @app.callback()
@@ -44,116 +61,6 @@ def main():
     """
     🤩 Manage AutoGOAL directly from the CLI.
     """
-
-
-@app.command()
-def demo():
-    """
-    🌟 Launch streamlit demo.
-    """
-
-    try:
-        from streamlit.bootstrap import run
-
-        run(Path(__file__).parent / "contrib" / "streamlit" / "demo.py", "", "")
-    except ImportError:
-        console.print("(!) Too run the demo you need streamlit installed.")
-        console.print("(!) Fix it by running `pip install autogoal[streamlit]`.")
-
-
-@remote_app.callback()
-def remote_main():
-    """
-    📶  Connect multiple AutoGOAL instances and share algorithms.
-    """
-
-@remote_app.command("connect")
-def remote_connect(
-    ip: str = typer.Argument(None, help="Interface ip to be used by the HTTP API"),
-    port: int = typer.Argument(None, help="Port to be bind by the server"),
-    connection_alias: int = typer.Argument(None, help="Connection alias for future references to the remote AutoGOAL instance"),
-    verbose: bool = False
-):
-    try:
-        import autogoal_remote as rm_server
-    except:
-        raise Exception("autogoal-remote not installed")
-    
-    try:
-        from autogoal_contrib import find_remote_classes
-    except:
-        raise Exception("autogoal-contrib not installed")
-    
-    
-    from autogoal_contrib import (
-        find_remote_classes,
-    )
-
-    """
-    📡  Connect to an existing AutoGOAL instance.
-    """
-
-    # try connection and request algorithms
-    sources = []
-    if (ip is None or port is None):
-        if (connection_alias is not None):
-            sources.append(connection_alias)
-    else:
-        if (connection_alias is not None):
-            sources.append((ip, port, connection_alias))
-        else:
-            sources.append((ip, port))
-        
-    classes = find_remote_classes(sources)
-
-    typer.echo(
-        f"⚙️  Successfully connected to remote AutoGOAL!", color="green"
-    )
-
-    if (connection_alias):
-        typer.echo(
-        f"⚙️  Stored connection to {ip}:{port} with alias '{connection_alias}' for future usage.", color="blue"
-        )
-
-    classes_by_contrib = collections.defaultdict(list)
-    max_cls_name_length = 0
-
-    for cls in classes:
-        classes_by_contrib[cls.contrib].append(cls)
-
-    typer.echo(
-        f"⚙️  Found a total of {len(classes)} matching remote algorithms.", color="blue"
-    )
-
-    for contrib, clss in classes_by_contrib.items():
-        typer.echo(f"🛠️  {connection_alias} -> {contrib}: {len(clss)} algorithms.")
-
-        if verbose:
-            for cls in clss:
-                sig = inspect.signature(cls.run)
-                typer.echo(
-                    f" 🔹 {cls.__name__.ljust(max_cls_name_length)} : {sig.parameters['input'].annotation} -> {sig.return_annotation}"
-                )
-
-
-@remote_app.command("share-contribs")
-def share_contribs(
-    ip: str = typer.Argument(
-        "0.0.0.0", help="Interface ip of listening AutoGOAL service"
-    ),
-    port: int = typer.Argument(8000, help="Port of listening AutoGOAL service"),
-):
-    """
-    Expose algorithms from installed contribs to other AutoGOAL instances over the network.
-    """
-
-    try:
-        import autogoal_remote as rm_server
-    except:
-        raise Exception("autogoal-remote installation not detected")
-    
-    rm_server.distributed.run(ip, port)
-
 
 
 @contrib_app.callback()
@@ -174,13 +81,12 @@ def contrib_list(
     """
     ⚙️ List all currently available contrib algorithms.
     """
-    
+
     try:
         from autogoal_contrib import find_classes
     except:
         raise Exception("autogoal-contrib not installed")
-    
-    
+
     classes = find_classes(include=include, exclude=exclude, input=input, output=output)
     classes_by_contrib = collections.defaultdict(list)
     max_cls_name_length = 0
@@ -211,10 +117,10 @@ def contrib_status():
     """
 
     try:
-        from autogoal_contrib import (ContribStatus, status)
+        from autogoal_contrib import ContribStatus, status
     except:
         raise Exception("autogoal-contrib not installed")
-    
+
     table = Table("🛠️  Contrib", "✔️  Status")
 
     statuses = {
@@ -222,7 +128,7 @@ def contrib_status():
         ContribStatus.RequiresDownload: "🔴  Requires download",
         ContribStatus.Ready: "🟢  Ready",
     }
-    
+
     for key, value in status().items():
         table.add_row(key, statuses[value])
 
@@ -240,10 +146,9 @@ def contrib_download(
     """
 
     try:
-        from autogoal_contrib import (ContribStatus, status, download_contrib)
+        from autogoal_contrib import ContribStatus, status, download_contrib
     except:
         raise Exception("autogoal-contrib not installed")
-    
 
     if status()[f"autogoal.contrib.{contrib}"] == ContribStatus.Ready:
         console.print(f"✅ Nothing to download for contrib `{contrib}`.")
@@ -380,20 +285,6 @@ def automl_inspect(model: str = typer.Argument(".", help="Autogoal serialized mo
     )
 
     # console.print(f"⭐ Best pipeline (score={automl.best_score_:0.3f}):")
-
-
-# @automl_app.command("serve")
-# def automl_server(
-#     path: str = typer.Argument(".", help="Autogoal serialized model"),
-#     ip: str = typer.Argument("0.0.0.0", help="Interface ip to be used by the HTTP API"),
-#     port: int = typer.Argument(8000, help="Port to be bind by the server"),
-# ):
-#     """
-#     Load and serve a previously trained AutoML instance as a service.
-#     """
-#     console.print(f"Loading model from folder: {path}")
-#     model = AutoML.folder_load(Path(path))
-#     run(model, ip, port)
 
 
 @automl_app.command("export")
