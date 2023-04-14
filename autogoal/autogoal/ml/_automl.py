@@ -1,18 +1,19 @@
 import io
 import os
 import pathlib
-import pickle
 import shutil
 import statistics
 from pathlib import Path
 from typing import Dict, List, Tuple
+import dill as pickle
+import zipfile
 
 import numpy as np
 
 from autogoal.kb import Pipeline, SemanticType, build_pipeline_graph
 from autogoal.ml.metrics import accuracy
 from autogoal.search import PESearch
-from autogoal.utils import generate_production_dockerfile, nice_repr
+from autogoal.utils import generate_production_dockerfile, nice_repr, create_zip_file
 
 
 @nice_repr
@@ -58,6 +59,7 @@ class AutoML:
         self.remote_sources = remote_sources
         self.search_kwargs = search_kwargs
         self._unpickled = False
+        self.export_path = None
 
         if random_state:
             np.random.seed(random_state)
@@ -147,13 +149,13 @@ class AutoML:
             os.makedirs(save_path)
 
         tmp = self.best_pipeline_.algorithms
-        self.best_pipeline_.save_algorithms(save_path)
+        contribs = self.best_pipeline_.save_algorithms(save_path)
         self.best_pipeline_.algorithms = []
         with open(save_path / "model.bin", "wb") as fd:
             self.save(fd)
         self.best_pipeline_.algorithms = tmp
 
-        generate_production_dockerfile(path)
+        generate_production_dockerfile(path, [contrib.split('autogoal_')[1] for contrib in contribs])
 
     @classmethod
     def load(self, fp: io.FileIO) -> "AutoML":
@@ -170,7 +172,7 @@ class AutoML:
         return automl
 
     @classmethod
-    def folder_load(self, path: Path) -> "AutoML":
+    def folder_load(self, path: Path = None) -> "AutoML":
         """
         Deserializes an AutoML instance from a given path.
 
@@ -179,7 +181,11 @@ class AutoML:
         load_path = path / "storage"
         with open(load_path / "model.bin", "rb") as fd:
             automl = self.load(fd)
-        automl.best_pipeline_.algorithms = Pipeline.load_algorithms(load_path)
+        
+        algorithms, input_types = Pipeline.load_algorithms(load_path)
+        automl.best_pipeline_.algorithms = algorithms
+        automl.best_pipeline_.input_types = input_types
+        automl.export_path = path
         return automl
 
     def score(self, X, y):
@@ -225,9 +231,13 @@ class AutoML:
         )
         os.system(f"docker save -o {name}.tar autogoal:production")
 
-    def export_portable(self, path=None):
+    def export_portable(self, path=None, generate_zip=False):
         """
-        Generate a portable set of files that can be used to export the model into a new Docker image
+        Generates a portable set of files that can be used to export the model into a new Docker image.
+
+        :param path: Optional. The path where the generated portable set of files will be saved. If not specified, the files will be saved to the current working directory.
+        :param generate_zip: Optional. A boolean value that determines whether a zip file should be generated with the exported assets. If True, a zip file will be generated and its path will be returned.
+        :return: If generate_zip is False, the path to the assets directory. If generate_zip is True, the path of the generated zip file containing the exported assets.
         """
         if path is None:
             path = os.getcwd()
@@ -243,11 +253,20 @@ class AutoML:
         makefile.write(
             """
 build:
-
 	docker build --file ./dockerfile -t autogoal:production .
-    docker save -o autogoal-prod.tar autogoal:production
+	docker save -o autogoal-prod.tar autogoal:production
+
+serve:
+	docker run -p 8000:8000 autogoal:production
+
         """
         )
         makefile.close()
 
+        if generate_zip:
+            filename = create_zip_file(datapath, "production_assets")
+            datapath = f"{path}/{filename}.zip"
+
         print("generated assets for production deployment")
+
+        return datapath

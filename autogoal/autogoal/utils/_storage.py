@@ -1,24 +1,47 @@
+from typing import List
 import yaml
+import dill
+import pickle
 from pathlib import Path
+import shutil
+import os
 
-dockerfile = """
+
+def dumps(data: object, use_dill=False) -> str:
+    data = dill.dumps(data) if use_dill else pickle.dumps(data)
+    return decode(data)
+
+
+def decode(data: bytes) -> str:
+    return data.decode("latin1")
+
+
+def loads(data: str, use_dill=False):
+    raw_data = data.encode("latin1")
+    return dill.loads(raw_data) if use_dill else pickle.loads(raw_data)
+
+
+def encode(code: str):
+    return code.encode("latin1")
+
+
+def get_prod_dockerfile(contribs):
+    return f"""
 # =====================
-# Autogoal base image
+# Autogoal production image
 # ---------------------
 
-FROM autogoal:base
-
-EXPOSE 8000
+FROM autogoal/autogoal:core
 
 USER root
 
+RUN ./install-package.sh common remote {contribs}
+
+EXPOSE 8000
+
 COPY ./storage /home/coder/autogoal/storage
 
-SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
-
-RUN chmod +x ./storage/contribs.sh && ./storage/contribs.sh
-
-CMD [ "conda", "run", "-n", "autogoal", "python3", "-m", "autogoal", "ml", "serve" ]
+CMD ["python3", "-m", "autogoal", "remote", "serve" ]
 
 """
 
@@ -67,6 +90,18 @@ def inspect_storage(path: Path) -> "str":
     return str(algorithms) + str(inputs)
 
 
-def generate_production_dockerfile(path: Path):
+def generate_production_dockerfile(path: Path, contribs: List[str]):
     with open(path / "dockerfile", "w") as fd:
-        fd.write(dockerfile)
+        fd.write(get_prod_dockerfile(" ".join(contribs)))
+
+
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+
+def create_zip_file(folder_path, file_name):
+    output_filename = file_name
+    shutil.make_archive(output_filename, 'zip', folder_path)
+    return output_filename

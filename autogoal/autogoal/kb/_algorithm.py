@@ -15,10 +15,8 @@ import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
-from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer
+from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer, loads, dumps
 import dill as pickle
-
-# from autogoal.experimental import generate_requirements
 
 
 class Supervised(SemanticType):
@@ -354,38 +352,37 @@ class Pipeline:
             algorithm_class = f"'{algorithm.__module__}.{algorithm.__class__.__name__}'"
             algorithms.append(algorithm_class)
 
-        generate_installer(path, list(contribs))
-
         info["algorithms"] = algorithms
-
-        inputs = [str(x) for x in self.input_types]
-
-        info["inputs"] = inputs
+        info["inputs"] = dumps(self.input_types)
 
         with open(path / "algorithms.yml", "w") as fd:
             yaml.dump(info, fd)
 
-    # @classmethod
-    # def load_algorithms(self, path: Path):
-    #     """
-    #     Load piplien algorithms list from given path
-    #     """
-    #     with open(path / "algorithms.yml", "r") as fd:
-    #         algorithms = yaml.safe_load(fd)
+        return contribs
 
-    #     autogoal_algorithms = find_classes()
+    @staticmethod
+    def load_algorithms(path: Path):
+        """
+        Load pipeline algorithms list from given path
+        """
+        with open(path / "algorithms.yml", "r") as fd:
+            stored_data = yaml.safe_load(fd)
+        
+        from autogoal_contrib import find_classes
+        autogoal_algorithms = find_classes()
 
-    #     answer = []
+        algorithms = []
 
-    #     algorithm_clases = []
+        algorithm_clases = []
 
-    #     for i, algorithm in enumerate(algorithms.get("algorithms")):
-    #         for cls in autogoal_algorithms:
-    #             if algorithm in object.__str__(cls):
-    #                 algorithm_clases.append(cls)
-    #                 answer.append(cls.load(path / "algorithms" / str(i)))
+        for i, algorithm in enumerate(stored_data.get("algorithms")):
+            for cls in autogoal_algorithms:
+                if algorithm in object.__str__(cls):
+                    algorithm_clases.append(cls)
+                    algorithms.append(cls.load(path / "algorithms" / str(i)))
 
-    #     return answer
+        inputs = loads(stored_data.get("inputs"))
+        return (algorithms, inputs)
 
 
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:

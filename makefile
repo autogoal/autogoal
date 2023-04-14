@@ -39,10 +39,15 @@ clean:
 docker:
 	docker build . -t autogoal/autogoal:core -f dockerfiles/core/dockerfile
 
-# docker-contrib Builds the development image with target contrib from scratch. Includes autogoal-remote
+# docker-contrib Builds the development image with target contrib from scratch. 
 .PHONY: docker-contrib
 docker-contrib:
 	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="common $(CONTRIB) remote" --no-cache
+
+# docker-sklearn Builds the development image with sklearn and streamlit contrib from scratch. Includes autogoal-remote and autogoal-contrib.
+.PHONY: docker-sklearn-streamlit
+docker-sklearn-streamlit:
+	docker build . -t autogoal/autogoal:sklearn -f dockerfiles/development/dockerfile --build-arg extras="common sklearn streamlit remote" --no-cache
 
 # docker-sklearn Builds the development image with sklearn contrib from scratch.
 .PHONY: docker-sklearn

@@ -2,9 +2,12 @@
 # Autogoal base image
 # ---------------------
 
-FROM autogoal/autogoal:base
+FROM autogoal/autogoal:core
 
 USER root
+
+ARG extras
+RUN ./install-package.sh $extras
 
 EXPOSE 8000
 
