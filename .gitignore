@@ -156,4 +156,4 @@ output.csv
 
 autogoal/utils/remote/config/connections.yml
 .vscode/
-autogoal-export/storage/algorithms/0/algorithm.yml
+autogoal-export/
