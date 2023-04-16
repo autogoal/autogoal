@@ -36,7 +36,6 @@ typer = "^0.7.0"
 rich = "^13.2.0"
 Cython = "^0.29.33"
 networkx = "^2.4"
-codecov = "^2.1.12"
 dill="^0.3.6"
 yamlable = "^1.1.1"
 

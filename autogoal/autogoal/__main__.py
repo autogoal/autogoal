@@ -353,7 +353,6 @@ def data_generate():
 
 
 if __name__ == "__main__":
-    # remote_connect("172.18.0.3", 8000, "remote-sklearn")
     try:
         app(prog_name="autogoal")
     except Exception as e:

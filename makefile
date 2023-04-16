@@ -45,9 +45,9 @@ docker-contrib:
 	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="common $(CONTRIB) remote" --no-cache
 
 # docker-sklearn Builds the development image with sklearn and streamlit contrib from scratch. Includes autogoal-remote and autogoal-contrib.
-.PHONY: docker-sklearn-streamlit
-docker-sklearn-streamlit:
-	docker build . -t autogoal/autogoal:sklearn -f dockerfiles/development/dockerfile --build-arg extras="common sklearn streamlit remote" --no-cache
+.PHONY: docker-streamlit-demo
+docker-streamlit-demo:
+	docker build . -t autogoal/autogoal:streamlit-demo -f dockerfiles/demo/dockerfile --no-cache
 
 # docker-sklearn Builds the development image with sklearn contrib from scratch.
 .PHONY: docker-sklearn
@@ -80,21 +80,25 @@ push:
 shell:
 	docker-compose run --service-ports autogoal bash
 
-# demo         Run the demo in the base development image.
+.PHONY: streamlit-demo
+streamlit-demo:
+	docker run -p 8500:8501 autogoal/autogoal:streamlit-demo
+
+# dev          Run the base development image.
 SERVICE=autogoal-core
-.PHONY: demo
-demo:
+.PHONY: dev
+dev:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
 
-# demo         Run the demo in the base development image.
-.PHONY: demo-sklearn
-demo-sklearn:
-	make demo SERVICE=autogoal-sklearn
+# dev-sklearn  Run the development image with sklearn.
+.PHONY: dev-sklearn
+dev-sklearn:
+	make dev SERVICE=autogoal-sklearn
 
-# demo         Run the demo in the base development image.
-.PHONY: demo-nltk
-demo-nltk:
-	make demo SERVICE=autogoal-nltk
+# dev-nltk     Run the development image with nltk.
+.PHONY: dev-nltk
+dev-nltk:
+	make dev SERVICE=autogoal-nltk
 
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
