@@ -309,7 +309,7 @@ def generate_cfg(cls, registry=None) -> ContextFreeGrammar:
 def _generate_cfg(
     cls, grammar: ContextFreeGrammar = None, head: Symbol = None, registry=None
 ) -> ContextFreeGrammar:
-    symbol = head or Symbol(cls.__name__)   
+    symbol = head or Symbol(cls.__name__)
 
     if grammar is None:
         grammar = ContextFreeGrammar(start=symbol)

@@ -5,7 +5,9 @@ from autogoal.grammar import generate_cfg, Sampler
 from autogoal.exceptions import InterfaceIncompatibleError
 
 import autogoal_sklearn as sklearn
+
 classes = find_classes(modules=[sklearn], exclude="CountVectorizerNoTokenize")
+
 
 @pytest.mark.contrib
 @pytest.mark.parametrize("clss", classes)

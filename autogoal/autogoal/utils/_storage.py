@@ -99,9 +99,13 @@ def zipdir(path, ziph):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
-            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+            ziph.write(
+                os.path.join(root, file),
+                os.path.relpath(os.path.join(root, file), os.path.join(path, "..")),
+            )
+
 
 def create_zip_file(folder_path, file_name):
     output_filename = file_name
-    shutil.make_archive(output_filename, 'zip', folder_path)
+    shutil.make_archive(output_filename, "zip", folder_path)
     return output_filename

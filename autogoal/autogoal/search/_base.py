@@ -29,7 +29,7 @@ class SearchAlgorithm:
         search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
-        logger=None
+        logger=None,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
@@ -45,7 +45,7 @@ class SearchAlgorithm:
         self._search_timeout = search_timeout
         self._target_fn = target_fn
         self._allow_duplicates = allow_duplicates
-        self._logger=logger
+        self._logger = logger
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(

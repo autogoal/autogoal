@@ -15,7 +15,13 @@ import networkx as nx
 from autogoal.utils import nice_repr
 from autogoal.grammar import Graph, GraphSpace, generate_cfg
 from autogoal.kb._semantics import SemanticType, Seq
-from autogoal.utils import AlgorithmConfig, get_contrib, generate_installer, loads, dumps
+from autogoal.utils import (
+    AlgorithmConfig,
+    get_contrib,
+    generate_installer,
+    loads,
+    dumps,
+)
 import dill as pickle
 
 
@@ -367,8 +373,9 @@ class Pipeline:
         """
         with open(path / "algorithms.yml", "r") as fd:
             stored_data = yaml.safe_load(fd)
-        
+
         from autogoal_contrib import find_classes
+
         autogoal_algorithms = find_classes()
 
         algorithms = []

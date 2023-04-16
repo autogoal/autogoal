@@ -138,7 +138,9 @@ class RestrictedWorkerByJoin(RestrictedWorker):
             result = result_bucket["result"]
         else:
             rprocess.terminate()
-            raise TimeoutError(f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds.")
+            raise TimeoutError(
+                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
+            )
 
         if isinstance(result, Exception):  # Exception ocurred
             raise result
@@ -154,7 +156,7 @@ class RestrictedWorkerWithState(RestrictedWorkerByJoin):
 
     def _restricted_function(self, result_bucket, arguments_bucket, *args, **kwargs):
         try:
-            instance = arguments_bucket['instance']
+            instance = arguments_bucket["instance"]
             self._restrict()
             result = self.function(instance, *args, **kwargs)
             result_bucket["result"] = result
@@ -190,9 +192,11 @@ class RestrictedWorkerWithState(RestrictedWorkerByJoin):
             result = result_bucket.get("result"), result_bucket.get("instance")
         else:
             rprocess.kill()
-            raise TimeoutError(f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds.")
+            raise TimeoutError(
+                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
+            )
 
         if isinstance(result, Exception):  # Exception ocurred
             raise result
-        
+
         return result

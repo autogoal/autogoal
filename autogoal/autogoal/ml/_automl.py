@@ -155,7 +155,9 @@ class AutoML:
             self.save(fd)
         self.best_pipeline_.algorithms = tmp
 
-        generate_production_dockerfile(path, [contrib.split('autogoal_')[1] for contrib in contribs])
+        generate_production_dockerfile(
+            path, [contrib.split("autogoal_")[1] for contrib in contribs]
+        )
 
     @classmethod
     def load(self, fp: io.FileIO) -> "AutoML":
@@ -181,7 +183,7 @@ class AutoML:
         load_path = path / "storage"
         with open(load_path / "model.bin", "rb") as fd:
             automl = self.load(fd)
-        
+
         algorithms, input_types = Pipeline.load_algorithms(load_path)
         automl.best_pipeline_.algorithms = algorithms
         automl.best_pipeline_.input_types = input_types

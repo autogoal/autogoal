@@ -175,12 +175,10 @@ def factory(func_or_type, *args, **kwargs):
 
     return call
 
+
 from autogoal.utils._resource import *
 from autogoal.utils._package_helper import *
 from autogoal.utils._process import *
 from autogoal.utils._cache import *
 from autogoal.utils._storage import *
 from autogoal.utils._dependency_resolver import *
-
-
-

@@ -41,12 +41,15 @@ app.add_typer(data_app)
 # Import all typer apps defined in contribs
 try:
     import autogoal_contrib
+
     contribs = autogoal_contrib.get_installed_contribs()
     for contrib in contribs:
         try:
-            contrib_name = contrib.__name__.split('autogoal_')[1]
+            contrib_name = contrib.__name__.split("autogoal_")[1]
             app.add_typer(contrib.typer_app)
-            console.print(f'Using CLI extension from contrib "{contrib.__name__}". Functionalities present in command "{app.info.name} {contrib.typer_app.info.name}"')
+            console.print(
+                f'Using CLI extension from contrib "{contrib.__name__}". Functionalities present in command "{app.info.name} {contrib.typer_app.info.name}"'
+            )
         except:
             # we ignore any exception thrown by trying to add typer apps.
             # contribs might not define any typer app.
