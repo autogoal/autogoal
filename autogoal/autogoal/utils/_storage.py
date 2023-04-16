@@ -39,7 +39,7 @@ RUN ./install-package.sh common remote {contribs}
 
 EXPOSE 8000
 
-COPY ./storage /home/coder/autogoal/storage
+COPY ./storage /home/coder/autogoal/autogoal-export/storage
 
 CMD ["python3", "-m", "autogoal", "remote", "serve" ]
 
