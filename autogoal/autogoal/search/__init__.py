@@ -1,4 +1,4 @@
-from ._base import (
+from autogoal.search._base import (
     SearchAlgorithm,
     ProgressLogger,
     ConsoleLogger,
@@ -7,6 +7,7 @@ from ._base import (
     RichLogger,
     JsonLogger,
 )
-from ._random import RandomSearch
-from ._pge import ModelSampler, PESearch
-from ._learning import SurrogateSearch
+from autogoal.search._random import RandomSearch
+from autogoal.search._pge import ModelSampler, PESearch
+from autogoal.search._learning import SurrogateSearch
+from autogoal.search._nspge import NSPESearch

@@ -11,9 +11,18 @@ import zipfile
 import numpy as np
 
 from autogoal.kb import Pipeline, SemanticType, build_pipeline_graph
-from autogoal.ml.metrics import accuracy
+from autogoal.ml.metrics import (
+    accuracy,
+    supervised_fitness_fn_moo,
+    unsupervised_fitness_fn_moo,
+)
 from autogoal.search import PESearch
-from autogoal.utils import generate_production_dockerfile, nice_repr, create_zip_file
+from autogoal.utils import (
+    generate_production_dockerfile,
+    nice_repr,
+    create_zip_file,
+    ensure_directory,
+)
 
 
 @nice_repr
@@ -39,7 +48,7 @@ class AutoML:
         cross_validation="median",
         cross_validation_steps=3,
         registry=None,
-        score_metric=None,
+        objectives=None,
         remote_sources: List[Tuple[str, int] or str] = None,
         **search_kwargs,
     ):
@@ -55,17 +64,23 @@ class AutoML:
         self.cross_validation_steps = cross_validation_steps
         self.registry = registry
         self.random_state = random_state
-        self.score_metric = score_metric or accuracy
+        self.objectives = objectives or accuracy
         self.remote_sources = remote_sources
         self.search_kwargs = search_kwargs
         self._unpickled = False
         self.export_path = None
 
+        # If objectives were not specified as iterables then create the correct objectives object
+        if not type(self.objectives) is type(tuple) and not type(
+            self.objectives
+        ) is type(list):
+            self.objectives = (self.objectives,)
+
         if random_state:
             np.random.seed(random_state)
 
     def _check_fitted(self):
-        if not hasattr(self, "best_pipeline_"):
+        if not hasattr(self, "best_pipelines_"):
             raise TypeError(
                 "This operation cannot be performed on an unfitted AutoML instance. Call `fit` first."
             )
@@ -112,7 +127,7 @@ class AutoML:
             **self.search_kwargs,
         )
 
-        self.best_pipeline_, self.best_score_ = search.run(
+        self.best_pipelines_, self.best_scores_ = search.run(
             self.search_iterations, **kwargs
         )
 
@@ -121,9 +136,10 @@ class AutoML:
     def fit_pipeline(self, X, y):
         self._check_fitted()
 
-        self.best_pipeline_.send("train")
-        self.best_pipeline_.run(X, y)
-        self.best_pipeline_.send("eval")
+        for pipeline in self.best_pipelines_:
+            pipeline.send("train")
+            pipeline.run(X, y)
+            pipeline.send("eval")
 
     def save(self, fp: io.BytesIO):
         """
@@ -132,35 +148,59 @@ class AutoML:
         self._check_fitted()
         pickle.Pickler(fp).dump(self)
 
-    def folder_save(self, path: Path):
+    def folder_save(self, path: Path, pipelines: List[Pipeline] = None):
         """
-        Serializes the AutoML into a given path.
+        Serialize the AutoML object and save it in a directory.
+        The serialized objects include the pipelines and the algorithms they use.
+
+        Args:
+        - `path (Path)`: A Path object that specifies the directory in which to save the serialized objects.
+        - `pipelines (List[Pipeline], optional)`: A list of Pipeline objects to serialize. Defaults to None.
+
+        Returns:
+        None
         """
+        # Make sure the AutoML object has been fitted before saving
+        self._check_fitted()
+
+        # If no path was specified, save to the current working directory
         if path is None:
             path = os.getcwd()
 
-        self._check_fitted()
+        # Ensure the save directory exists
         save_path = path / "storage"
+        ensure_directory(save_path)
 
-        try:
-            os.makedirs(save_path)
-        except:
-            shutil.rmtree(save_path)
-            os.makedirs(save_path)
+        # If no pipelines were specified, save all the optimal ones
+        if pipelines is None:
+            pipelines = self.best_pipelines_
 
-        tmp = self.best_pipeline_.algorithms
-        contribs = self.best_pipeline_.save_algorithms(save_path)
-        self.best_pipeline_.algorithms = []
+        # Set to store the used algorithm contributions
+        used_contribs = set()
+
+        # Save each pipeline and its algorithms
+        for i, pipeline in enumerate(pipelines):
+            # Ensure the save directory exists for each solution (pipeline)
+            solution_path = save_path / f"solution_{i}"
+            ensure_directory(solution_path)
+
+            # Save all algorithm contributions used by the pipeline
+            used_contribs.union(pipeline.save_algorithms(solution_path))
+
+        # serialize the AutoML instance without pipelines
+        tmp = self.best_pipelines_
+        self.best_pipelines_ = []
         with open(save_path / "model.bin", "wb") as fd:
             self.save(fd)
-        self.best_pipeline_.algorithms = tmp
+        self.best_pipelines_ = tmp
 
+        # Generate the Dockerfile for production use, specifying the used algorithm contributions
         generate_production_dockerfile(
-            path, [contrib.split("autogoal_")[1] for contrib in contribs]
+            path, [contrib.split("autogoal_")[1] for contrib in used_contribs]
         )
 
-    @classmethod
-    def load(self, fp: io.FileIO) -> "AutoML":
+    @staticmethod
+    def load(fp: io.FileIO) -> "AutoML":
         """
         Deserializes an AutoML instance.
 
@@ -173,41 +213,78 @@ class AutoML:
 
         return automl
 
-    @classmethod
-    def folder_load(self, path: Path = None) -> "AutoML":
+    @staticmethod
+    def folder_load(path: Path = None) -> "AutoML":
         """
         Deserializes an AutoML instance from a given path.
 
         After deserialization, the best pipeline found is ready to predict.
         """
+        if path is None:
+            path = Path(os.getcwd()) / "autogoal-export"
+
         load_path = path / "storage"
         with open(load_path / "model.bin", "rb") as fd:
-            automl = self.load(fd)
+            automl = AutoML.load(fd)
 
-        algorithms, input_types = Pipeline.load_algorithms(load_path)
-        automl.best_pipeline_.algorithms = algorithms
-        automl.best_pipeline_.input_types = input_types
+        pipelines = []
+        solutions_folders = [
+            p for p in os.listdir(load_path) if p.startswith("solution_")
+        ]
+        for solution_dir in solutions_folders:
+            solution_path = load_path / solution_dir
+            algorithms, input_types = Pipeline.load_algorithms(solution_path)
+            pipelines.append(Pipeline(algorithms, input_types))
+
+        automl.best_pipelines_ = pipelines
         automl.export_path = path
         return automl
 
-    def score(self, X, y):
+    def score(self, X, y = None, solution_index=None):
+        """
+        Compute the score of the best pipelines on the given dataset.
+        """
         self._check_fitted()
 
-        y_pred = self.best_pipeline_.run(X, np.zeros_like(y))
-        return self.score_metric(y, y_pred)
+        scores = []
+        if solution_index is None:
+            for pipeline in self.best_pipelines_:
+                y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
+                scores.append(tuple([objective(y or X, y_pred) for objective in self.objectives]))
+        else:
+            pipeline = self.best_pipelines_[0]
+            y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
+            scores.append(tuple([objective(y or X, y_pred) for objective in self.objectives]))
+
+        return scores
 
     def _input_type(self, X):
+        """
+        Helper function to determine the input type of the dataset.
+        """
         return self.input or SemanticType.infer(X)
 
     def _output_type(self, y):
+        """
+        Helper function to determine the output type of the dataset.
+        """
         return self.output or SemanticType.infer(y)
 
     def make_fitness_fn(self, X, y=None):
+        """
+        Create a fitness function to evaluate pipelines.
+        """
         if not y is None:
             y = np.asarray(y)
 
+        inner_fitness_fn = (
+            unsupervised_fitness_fn_moo(self.objectives)
+            if y is None
+            else supervised_fitness_fn_moo(self.objectives)
+        )
+
         def fitness_fn(pipeline):
-            return self.score_metric(
+            return inner_fitness_fn(
                 pipeline,
                 X,
                 y,
@@ -218,10 +295,24 @@ class AutoML:
 
         return fitness_fn
 
-    def predict(self, X):
+    def predict_all(self, X):
+        """
+        Compute predictions for all pipelines on the given dataset.
+        """
+        self._check_fitted()
+        return [pipeline.run(X, None) for pipeline in self.best_pipelines_]
+
+    def predict(self, X, solution_index=0):
+        """
+        Compute predictions for the best pipeline on the given dataset.
+        """
         self._check_fitted()
 
-        return self.best_pipeline_.run(X, None)
+        assert solution_index < len(
+            self.best_pipelines_
+        ), f"Cannot find solution with index {solution_index}"
+
+        return self.best_pipelines_[solution_index].run(X, None)
 
     def export(self, name):
         """
@@ -233,7 +324,9 @@ class AutoML:
         )
         os.system(f"docker save -o {name}.tar autogoal:production")
 
-    def export_portable(self, path=None, generate_zip=False):
+    def export_portable(
+        self, path=None, pipelines: List[Pipeline] = None, generate_zip=False
+    ):
         """
         Generates a portable set of files that can be used to export the model into a new Docker image.
 
@@ -249,7 +342,7 @@ class AutoML:
         if final_path.exists():
             shutil.rmtree(datapath)
 
-        self.folder_save(final_path)
+        self.folder_save(final_path, pipelines)
 
         makefile = open(final_path / "makefile", "w")
         makefile.write(
@@ -258,7 +351,7 @@ build:
 	docker build --file ./dockerfile -t autogoal:production .
 	docker save -o autogoal-prod.tar autogoal:production
 
-serve:
+serve: build
 	docker run -p 8000:8000 autogoal:production
 
         """

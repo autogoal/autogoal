@@ -1,3 +1,4 @@
+import functools
 import logging
 import enlighten
 import time
@@ -14,6 +15,9 @@ from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
 
+from typing import List, Tuple
+from autogoal.search.utils import dominates, non_dominated_sort
+
 
 class SearchAlgorithm:
     def __init__(
@@ -21,15 +25,16 @@ class SearchAlgorithm:
         generator_fn=None,
         fitness_fn=None,
         pop_size=20,
-        maximize=True,
+        maximize=(True,),
         errors="raise",
         early_stop=0.5,
-        evaluation_timeout: int = 5 * Min,
+        evaluation_timeout: int = 1 * Min,
         memory_limit: int = 4 * Gb,
         search_timeout: int = 5 * Min,
         target_fn=None,
         allow_duplicates=True,
         logger=None,
+        ranking_fn=None,
     ):
         if generator_fn is None and fitness_fn is None:
             raise ValueError("You must provide either `generator_fn` or `fitness_fn`")
@@ -37,7 +42,12 @@ class SearchAlgorithm:
         self._generator_fn = generator_fn
         self._fitness_fn = fitness_fn or (lambda x: x)
         self._pop_size = pop_size
-        self._maximize = maximize
+
+        # double check for several objectives
+        self._maximize = (
+            maximize if isinstance(maximize, (tuple, list)) else (maximize,)
+        )
+
         self._errors = errors
         self._evaluation_timeout = evaluation_timeout
         self._memory_limit = memory_limit
@@ -45,18 +55,38 @@ class SearchAlgorithm:
         self._search_timeout = search_timeout
         self._target_fn = target_fn
         self._allow_duplicates = allow_duplicates
-        self._logger = logger
+        self._logger = logger or Logger()
+
+        self._worst_fns = tuple(
+            [
+                -math.inf if should_maximize_fn else math.inf
+                for should_maximize_fn in self._maximize
+            ]
+        )
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             self._fitness_fn = RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 
+        self._ranking_fn = ranking_fn or (
+            lambda _, fns: tuple(
+                map(
+                    functools.cmp_to_key(
+                        lambda x, y: 1
+                        if dominates(x, y, self._maximize)
+                        else (-1 if dominates(y, x, self._maximize) else 0)
+                    ),
+                    fns,
+                )
+            )
+        )
+
     def run(self, generations=None, logger=None):
         """Runs the search performing at most `generations` of `fitness_fn`.
 
         Returns:
-            Tuple `(best, fn)` of the best found solution and its corresponding fitness.
+            Tuple `([best1, ..., bestn], [fn1, ..., fnn])` of the best found solutions and their corresponding fitnesses.
         """
         if logger is None:
             logger = self._logger
@@ -72,11 +102,12 @@ class SearchAlgorithm:
         else:
             early_stop = self._early_stop
 
-        best_solution = None
-        best_fn = None
         no_improvement = 0
         start_time = time.time()
         seen = set()
+
+        best_solutions = []
+        best_fns = []
 
         logger.begin(generations, self._pop_size)
 
@@ -84,9 +115,10 @@ class SearchAlgorithm:
             while generations > 0:
                 stop = False
 
-                logger.start_generation(generations, best_fn)
+                logger.start_generation(generations, best_solutions, best_fns)
                 self._start_generation()
 
+                solutions = []
                 fns = []
 
                 improvement = False
@@ -109,30 +141,32 @@ class SearchAlgorithm:
                         logger.sample_solution(solution)
                         fn = self._fitness_fn(solution)
                     except Exception as e:
-                        fn = -math.inf if self._maximize else math.inf
+                        fn = self._worst_fns
                         logger.error(e, solution)
 
                         if self._errors == "raise":
-                            logger.end(best_solution, best_fn)
+                            logger.end(best_solutions, best_fns)
                             raise e from None
 
                     if not self._allow_duplicates:
                         seen.add(repr(solution))
 
                     logger.eval_solution(solution, fn)
+                    solutions.append(solution)
                     fns.append(fn)
 
-                    if (
-                        best_fn is None
-                        or (fn > best_fn and self._maximize)
-                        or (fn < best_fn and not self._maximize)
-                    ):
-                        logger.update_best(solution, fn, best_solution, best_fn)
-                        best_solution = solution
-                        best_fn = fn
-                        improvement = True
+                    new_best_solutions, new_best_fns, dominated_solutions = self._rank_solutions(
+                        best_solutions, best_fns, solutions, fns
+                    )
 
-                        if self._target_fn and best_fn >= self._target_fn:
+                    if len(best_fns) == 0 or new_best_fns != best_fns:
+                        logger.update_best(solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, dominated_solutions)
+                        best_solutions, best_fns = new_best_solutions, new_best_fns
+                        improvement = True
+                        if self._target_fn is not None and any(
+                            dominates(top_fn, self._target_fn, self._maximize)
+                            for top_fn in best_fns
+                        ):
                             stop = True
                             break
 
@@ -176,8 +210,68 @@ class SearchAlgorithm:
         except KeyboardInterrupt:
             pass
 
-        logger.end(best_solution, best_fn)
-        return best_solution, best_fn
+        logger.end(best_solutions, best_fns)
+        return best_solutions, best_fns
+
+    def _rank_solutions(self, best_solutions, best_fns, gen_solutions, gen_fns):
+        """
+        Rank solutions based on their objective function values and return the optimal solutions.
+
+        Args:
+        `best_solutions (list)`: A list of the best solutions found so far.
+        `best_fns (list)`: A list of the objective function values of the best solutions found so far.
+        `gen_solutions (list)`: A list of the solutions generated in the current generation.
+        `gen_fns (list)`: A list of the objective function values of the generated solutions.
+
+        Returns:
+        tuple: A tuple containing three lists - optimal_solutions, optimal_fns, and dominated_solutions. 
+        These lists contain the solutions and their objective function values that belong to the optimal front
+        and the solutions that are dominated by the newly found optimal solutions.
+        """
+
+        # Helper set for ensuring no solution duplicates
+        added_solutions = set(best_solutions)
+
+        # Add generated solutions to the list of best solutions
+        new_best_solutions = list(best_solutions)
+        new_best_fns = list(best_fns)
+        for solution, fn in zip(gen_solutions, gen_fns):
+            if solution is not None and solution not in added_solutions:
+                new_best_solutions.append(solution)
+                new_best_fns.append(fn)
+
+        # If no new solutions were found, return the current best solutions
+        if len(gen_solutions) == len(best_solutions):
+            return best_solutions, best_fns, []
+
+        # Rank the solutions based on their objective function values
+        solutions_ranking = self._ranking_fn(new_best_solutions, new_best_fns)
+
+        # Sort the solutions based on their ranking
+        _, ranked_solutions, ranked_fns = zip(
+            *sorted(
+                zip(solutions_ranking, new_best_solutions, new_best_fns),
+                key=lambda x: x[0],
+                reverse=True,
+            )
+        )
+
+        # Identify the solutions that belong to the optimal front
+        optimal_front_indices = non_dominated_sort(ranked_fns, self._maximize)[0]
+        optimal_solutions = [ranked_solutions[i] for i in optimal_front_indices]
+        optimal_fns = [ranked_fns[i] for i in optimal_front_indices]
+
+        # Identify the dominated solutions that were previously in the best solutions parameter
+        dominated_indices = []
+        for i, solution in enumerate(best_solutions):
+            if solution in optimal_solutions:
+                index = optimal_solutions.index(solution)
+                if index not in optimal_front_indices:
+                    dominated_indices.append(i)
+        
+        dominated_solutions = [best_solutions[i] for i in dominated_indices]
+
+        return optimal_solutions, optimal_fns, dominated_solutions
 
     def _generate(self):
         # BUG: When multiprocessing is used for evaluation and no generation
@@ -209,10 +303,10 @@ class Logger:
     def begin(self, generations, pop_size):
         pass
 
-    def end(self, best, best_fn):
+    def end(self, best_solutions, best_fns):
         pass
 
-    def start_generation(self, generations, best_fn):
+    def start_generation(self, generations, best_solutions, best_fns):
         pass
 
     def finish_generation(self, fns):
@@ -227,7 +321,7 @@ class Logger:
     def error(self, e: Exception, solution):
         pass
 
-    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
         pass
 
 
@@ -261,17 +355,21 @@ class ConsoleLogger(Logger):
     def err(text):
         return termcolor.colored(text, color="red")
 
-    def start_generation(self, generations, best_fn):
+    def start_generation(self, generations, best_solutions, best_fns):
         current_time = time.time()
         elapsed = int(current_time - self.start_time)
         avg_time = elapsed / (self.start_generations - generations + 1)
         remaining = int(avg_time * generations)
         elapsed = datetime.timedelta(seconds=elapsed)
         remaining = datetime.timedelta(seconds=remaining)
+        
+        print(self.emph("New generation started"))
+
+        for i, best_fn in enumerate(best_fns):
+            best_solution_i = best_solutions[i]
+            print(self.success(f"best_{i}={best_solution_i} with score: {best_fn}"))
 
         print(
-            self.emph("New generation started"),
-            self.success(f"best_fn={float(best_fn or 0.0):0.3}"),
             self.primary(f"generations={generations}"),
             self.primary(f"elapsed={elapsed}"),
             self.primary(f"remaining={remaining}"),
@@ -280,23 +378,61 @@ class ConsoleLogger(Logger):
     def error(self, e: Exception, solution):
         print(self.err("(!) Error evaluating pipeline: %s" % e))
 
-    def end(self, best, best_fn):
-        print(self.emph("Search completed: best_fn=%.3f, best=\n%r" % (best_fn, best)))
+    def end(self, best_solutions, best_fns):
+        if len(best_fns) == 0:
+            print(self.error("No solutions found"))
+
+        print(
+            self.emph("Search completed:"),
+            *[
+                self.emph(f"best_fn_{i}={best_fn}, best_{i}=\n{best_solution}")
+                for i, (best_solution, best_fn) in enumerate(
+                    zip(best_solutions, best_fns)
+                )
+            ],
+        )
 
     def sample_solution(self, solution):
         print(self.emph("Evaluating pipeline:"))
         print(solution)
 
     def eval_solution(self, solution, fitness):
-        print(self.primary("Fitness=%.3f" % fitness))
+        if (len(fitness) > 1):
+            print(self.primary(f"Fitness={fitness}"))
+        else:
+            print(self.primary("Fitness=%.3f" % fitness))
 
-    def update_best(self, new_best, new_fn, previous_best, previous_fn):
-        print(
-            self.success(
-                "Best solution: improved=%.3f, previous=%.3f"
-                % (new_fn, previous_fn or 0)
-            )
-        )
+    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
+        print(self.success(
+            f"New best: {solution} with score {fn}"
+        ))
+        
+        print(self.primary(
+            f"{len(new_dominated_solutions)} previously optimal solutions are now sub-optimal."
+        ))
+
+        print(self.success(
+            f"{len(new_best_solutions)} optimal solutions so far. Improved: {new_best_fns}. Previous {best_fns}."
+        ))
+        # if (len(fn) > 1):
+        #     print(self.success(
+        #         f"New best: {new_best_solutions} with score {fn}"
+        #     ))
+            
+        #     print(self.primary(
+        #         f"{len(new_dominated_solutions)} previously optimal solutions are now sub-optimal."
+        #     ))
+
+        #     print(self.success(
+        #         f"{len(new_best_solutions)} optimal solutions so far. Best scores: {new_best_fns}"
+        #     ))
+        # else:
+        #     print(
+        #         self.success(
+        #             "Best solution: improved=%.3f, previous=%.3f"
+        #             % (fn[0], max([ofn[0] for ofn in best_fns] or [0]) or 0)
+        #         )
+        #     )
 
 
 class ProgressLogger(Logger):
@@ -351,12 +487,11 @@ class RichLogger(Logger):
     def error(self, e: Exception, solution):
         self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
-    def start_generation(self, generations, best_fn):
-        self.console.rule(
-            f"New generation - Remaining={generations} - Best={best_fn or 0:.3f}"
-        )
+    def start_generation(self, generations, best_fns):
+        bests = "\n".join(f"Best_{i}: {fn}" for i, fn in enumerate(best_fns))
+        self.console.rule(f"New generation - Remaining={generations}\n{bests}")
 
-    def start_generation(self, generations, best_fn):
+    def start_generation(self, generations, best_fns):
         self.progress.update(self.pop_counter, completed=0)
 
     def update_best(self, new_best, new_fn, previous_best, previous_fn):

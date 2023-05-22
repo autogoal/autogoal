@@ -1,6 +1,6 @@
 import random
 
-from ._base import SearchAlgorithm
+from autogoal.search._base import SearchAlgorithm
 from autogoal.sampling import Sampler
 
 

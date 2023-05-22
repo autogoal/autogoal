@@ -21,7 +21,7 @@ class PESearch(SearchAlgorithm):
         random_state: Optional[int] = None,
         name: str = None,
         save: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self._learning_factor = learning_factor
@@ -45,12 +45,18 @@ class PESearch(SearchAlgorithm):
 
         self._samplers.append(sampler)
         return sampler
+    
+    def _indices_of_fittest(self, fns):
+        assert all([len(fn) == 1 for fn in fns]), "PGE can only optimize one metric. Please use instead a multiobjective optimizer."
+        return best_indices(
+            [fn[0] for fn in fns],
+            k=int(self._selection * len(fns)),
+            maximize=self._maximize[0],
+        )
 
     def _finish_generation(self, fns):
         # Compute the marginal model of the best pipelines
-        indices = best_indices(
-            fns, k=int(self._selection * len(fns)), maximize=self._maximize
-        )
+        indices = self._indices_of_fittest(fns)
         samplers: List[ModelSampler] = [self._samplers[i] for i in indices]
         updates: Dict = merge_updates(*[sampler.updates for sampler in samplers])
 

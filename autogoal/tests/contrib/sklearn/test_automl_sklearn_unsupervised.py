@@ -242,7 +242,7 @@ def test_run_unsupervised():
     automl = AutoML(
         input=MatrixContinuousDense,
         output=VectorCategorical,
-        score_metric=calinski_harabasz_score,
+        objectives=calinski_harabasz_score,
         search_timeout=120,
     )
     automl.fit(X)

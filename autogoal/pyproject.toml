@@ -38,6 +38,7 @@ Cython = "^0.29.33"
 networkx = "^2.4"
 dill="^0.3.6"
 yamlable = "^1.1.1"
+Deprecated = "^1.2.13"
 
 [build-system]
 requires = ["poetry-core"]

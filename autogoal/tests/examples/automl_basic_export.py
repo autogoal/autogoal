@@ -19,13 +19,18 @@ X_train, y_train, X_test, y_test = dorothea.load()
 #     ok_count = ok_count + 1 if y_test[i] == response[i] else ok_count
 # print(f"ok: {ok_count} out of {total}")
 
+# automl = AutoML.folder_load()
+
+# print(automl.best_pipelines_)
+# print(automl.best_scores_)
+
+# print(automl.score(X_test, y_test))
+# print(automl.predict(X_test))
+# print(automl.predict_all(X_test))
 # Instantiate AutoML and define input/output types
 automl = AutoML(
     input=(MatrixContinuousSparse, Supervised[VectorCategorical]),
     output=VectorCategorical,
-    search_iterations=5,
-    search_timeout=60,
-    evaluation_timeout=10
     # remote_sources=["remote-sklearn"],
 )
 
@@ -33,10 +38,12 @@ automl = AutoML(
 automl.fit(X_train, y_train, logger=ConsoleLogger())
 
 # Report the best pipeline
-print(automl.best_pipeline_)
-print(automl.best_score_)
+print(automl.best_pipelines_)
+
+print(automl.score(X_test, y_test))
 
 # Export the result of the search process onto a brand new image called "AutoGOAL-Cars"
 # automl.export_portable()
 
 automl.export_portable(generate_zip=True)
+

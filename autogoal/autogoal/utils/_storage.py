@@ -25,6 +25,14 @@ def encode(code: str):
     return code.encode("latin1")
 
 
+def ensure_directory(path):
+    try:
+        os.makedirs(path)
+    except:
+        shutil.rmtree(path)
+        os.makedirs(path)
+
+
 def get_prod_dockerfile(contribs):
     return f"""
 # =====================

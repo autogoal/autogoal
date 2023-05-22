@@ -85,7 +85,7 @@ classifier = AutoML(
     output=Seq[Seq[Label]],
     registry=find_classes(exclude="Keras|Bert"),
     search_iterations=args.iterations,
-    score_metric=meddocan.F1_beta,
+    objectives=meddocan.F1_beta,
     cross_validation_steps=1,
     pop_size=args.popsize,
     search_timeout=args.global_timeout,

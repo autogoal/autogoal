@@ -18,7 +18,7 @@ automl = AutoML(
     input=(Seq[Sentence], Supervised[VectorCategorical]),  # **tipos de entrada**
     output=VectorCategorical,  # **tipo de salida**
     # el score_metric define la función objetivo a optimizar y puede ser definida por nosotros en un método propio
-    score_metric=balanced_accuracy_score,
+    objectives=balanced_accuracy_score,
     # el parámetro registry nos permite seleccionar un conjunto específico de algoritmo a utilizar en nuestra implementación.
     # Si no se define o se pone None se utilizan todos los algorismos disponibles en AutoGOAL.
     registry=None,

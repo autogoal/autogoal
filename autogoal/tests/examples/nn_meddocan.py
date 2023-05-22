@@ -30,7 +30,7 @@ classifier = AutoML(
     search_algorithm=PESearch,
     input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
     output=Seq[Seq[Label]],
-    score_metric=meddocan.F1_beta,
+    objectives=meddocan.F1_beta,
     cross_validation_steps=1,
     # Since we only want to try neural networks, we restrict
     # the contrib registry to algorithms matching with `Keras`.
