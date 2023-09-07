@@ -7,11 +7,11 @@ FROM autogoal/autogoal:core
 
 USER root
 
-RUN ./install-package.sh common remote sklearn
+RUN ./install-package.sh common remote 
 
 EXPOSE 8000
 
-COPY ./storage /home/coder/autogoal/storage
+COPY ./storage /home/coder/autogoal/autogoal-export/storage
 
 CMD ["python3", "-m", "autogoal", "remote", "serve" ]
 

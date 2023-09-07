@@ -414,25 +414,6 @@ class ConsoleLogger(Logger):
         print(self.success(
             f"{len(new_best_solutions)} optimal solutions so far. Improved: {new_best_fns}. Previous {best_fns}."
         ))
-        # if (len(fn) > 1):
-        #     print(self.success(
-        #         f"New best: {new_best_solutions} with score {fn}"
-        #     ))
-            
-        #     print(self.primary(
-        #         f"{len(new_dominated_solutions)} previously optimal solutions are now sub-optimal."
-        #     ))
-
-        #     print(self.success(
-        #         f"{len(new_best_solutions)} optimal solutions so far. Best scores: {new_best_fns}"
-        #     ))
-        # else:
-        #     print(
-        #         self.success(
-        #             "Best solution: improved=%.3f, previous=%.3f"
-        #             % (fn[0], max([ofn[0] for ofn in best_fns] or [0]) or 0)
-        #         )
-        #     )
 
 
 class ProgressLogger(Logger):
@@ -519,12 +500,22 @@ class JsonLogger(Logger):
     def begin(self, generations, pop_size):
         pass
 
-    def start_generation(self, generations, best_fn):
-        eval_log = {"generations left": generations, "best_fn": best_fn}
+    def start_generation(self, generations, best_solutions, best_fns):
+        eval_log = {"generations left": generations, "best_fns": best_fns}
         self.update_log(eval_log)
 
-    def update_best(self, new_best, new_fn, previous_best, previous_fn):
-        eval_log = {"new-best-fn": new_fn, "previous-best-fn": previous_fn}
+    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
+        eval_log = {
+            "new-best" : {
+                "solution": repr(solution),
+                "fitness": fn
+            },
+            "pareto-front": [
+                {f"fitness_{i}": best_fn, f"solution_{i}" : repr(best_solution) }
+                for i, (best_solution, best_fn) in enumerate(
+                    zip(best_solutions, best_fns)
+                )
+            ]}
         self.update_log(eval_log)
 
     def eval_solution(self, solution, fitness):
@@ -538,15 +529,16 @@ class JsonLogger(Logger):
         }
         self.update_log(eval_log)
 
-    def end(self, best, best_fn):
+    def end(self, best_solutions, best_fns):
         eval_log = {
             "Finished run": True,
-            "best-pipeline": repr(best)
-            .replace("\n", "")
-            .replace(" ", "")
-            .replace(",", ", "),
-            "best-multiline-pipeline": repr(best),
-            "best-fitness": best_fn,
+            "pareto-front": [
+                {f"fitness_{i}": best_fn, f"solution_{i}" : repr(best_solution) }
+                for i, (best_solution, best_fn) in enumerate(
+                    zip(best_solutions, best_fns)
+                )
+            ],
+            "best-fitness": best_fns,
         }
         self.update_log(eval_log)
 
@@ -559,7 +551,6 @@ class JsonLogger(Logger):
 
         with open(self.log_file_name, "w") as log_file:
             json.dump(new_data, log_file)
-
 
 class MemoryLogger(Logger):
     def __init__(self):

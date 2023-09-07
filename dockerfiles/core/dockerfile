@@ -1,8 +1,8 @@
 # =====================
-# Python 3.9 core image
+# Python 3.9.16 core image
 # ---------------------
 
-FROM python:3.9
+FROM python:3.9.16
 
 # =====================
 # Basic enviroment setup
