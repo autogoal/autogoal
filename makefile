@@ -100,6 +100,11 @@ dev-sklearn:
 dev-nltk:
 	make dev SERVICE=autogoal-nltk
 
+# dev-full     Run the development image with all contribs installed.
+.PHONY: dev-full
+dev-full:
+	make dev SERVICE=autogoal-full
+
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
 mkdocs:

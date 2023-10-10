@@ -154,5 +154,19 @@ services:
       - "~/.ssh:/home/coder/.ssh"
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
+    
+  autogoal-full:
+    container_name: autogoal-full
+    hostname: autogoal-full
+    image: autogoal/autogoal:all-contribs
+    ports:
+      - 8512:8501
+      - 8012:8000
+    volumes:
+      - "./vendor/illiterate/illiterate:/usr/lib/python3/dist-packages/illiterate"
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
 
   
