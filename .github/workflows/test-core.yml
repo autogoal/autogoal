@@ -11,28 +11,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          python-version: 3.9.16
-          architecture: x64
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Setup dependencies
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          tags: autogoal/autogoal:core
+          context: "."
+          file: "dockerfiles/core/dockerfile"
+
+      - name: Run tests in Docker container
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-          source $HOME/.poetry/env
-          poetry config virtualenvs.create false
-          poetry install --extras dev
-
-      - name: Check format
-        run: black --check autogoal/ tests/
-
-      - name: Run core tests
-        run: make test-core
-        env:
-          BUILD_ENVIRONMENT: development 
-
-      - name: Run codecov
-        run: python -m codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          docker run --name test-container -d autogoal/autogoal:core tail -f /dev/null
+          docker exec test-container bash -c "black --check autogoal/ tests/"
+          docker exec test-container bash -c "make test-core"

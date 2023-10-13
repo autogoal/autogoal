@@ -1,6 +1,5 @@
 #!/bin/bash
-contribs=(sklearn nltk gensim regex keras spacy streamlit telegram transformers wikipedia)
-
+contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
 for contrib in "${contribs[@]}"
 do
   make docker-contrib CONTRIB="$contrib"

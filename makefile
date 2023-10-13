@@ -199,8 +199,12 @@ test-core: ensure-dev
 # test-contrib Run the contrib unit tests.
 .PHONY: test-contrib
 test-contrib: ensure-dev
-	python -m pytest autogoal tests/contrib/$(CONTRIB) --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
+	bash run_all_contrib_tests.sh
 
+# test-specific-contrib Run any specific contrib unit tests.
+test-specific-contrib:
+	bash run_specific_contrib_tests.sh $(CONTRIB)
+	
 # test-sklearn Run the sklearn contrib unit tests.
 .PHONY: test-sklearn
 test-sklearn: 
@@ -213,14 +217,8 @@ test-nltk:
 
 # test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full
-test-full: ensure-dev
+test-full: ensure-dev test-contrib
 	python -m pytest autogoal tests/core tests/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
-
-test:
-	bash run_all_contrib_tests.sh $(CONTRIB)
-
-test-contrib-new:
-	bash run_specific_contrib_tests.sh $(CONTRIB)
 
 # cov          Run the coverage analysis.
 .PHONY: cov
