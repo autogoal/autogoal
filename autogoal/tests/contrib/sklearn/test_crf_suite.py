@@ -1,10 +1,10 @@
 import pytest
 
-from autogoal.contrib import find_classes
+from autogoal_contrib import find_classes
 from autogoal.kb import *
 from autogoal.kb import Supervised
 from autogoal.sampling import Sampler
-from autogoal.contrib import sklearn
+from autogoal_sklearn import sklearn
 
 
 def _build_pipeline():

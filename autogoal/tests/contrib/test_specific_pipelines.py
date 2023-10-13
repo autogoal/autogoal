@@ -1,6 +1,6 @@
-from autogoal.contrib.sklearn import CountVectorizer
-from autogoal.contrib.sklearn._generated import SGDClassifier
-from autogoal.contrib.nltk._generated import ClassifierBasedPOSTagger
+from autogoal_sklearn import CountVectorizer
+from autogoal_sklearn._generated import SGDClassifier
+from autogoal_nltk._generated import ClassifierBasedPOSTagger
 from autogoal.kb import Supervised
 from autogoal.kb import (
     Categorical,

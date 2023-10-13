@@ -50,6 +50,7 @@ from autogoal import logging
 
 # Finally, we import the top-level [`optimize`](ref:autogoal.utils._helpers:optimize) function.
 from autogoal.utils._helpers import optimize
+from autogoal.utils._package_helper import is_package_installed
 
 # Before leaving, let's setup logging at the warning level by default.
 logging.setup(level="WARNING")

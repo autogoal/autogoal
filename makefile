@@ -194,7 +194,7 @@ host-ns: ensure-dev
 # test-core    Run the core unit tests (not contrib).
 .PHONY: test-core
 test-core: ensure-dev
-	python -m pytest autogoal tests/core --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
+	python -m pytest autogoal autogoal/tests/core --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
 
 # test-contrib Run the contrib unit tests.
 .PHONY: test-contrib
@@ -215,6 +215,12 @@ test-nltk:
 .PHONY: test-full
 test-full: ensure-dev
 	python -m pytest autogoal tests/core tests/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
+
+test:
+	bash run_all_contrib_tests.sh $(CONTRIB)
+
+test-contrib-new:
+	bash run_specific_contrib_tests.sh $(CONTRIB)
 
 # cov          Run the coverage analysis.
 .PHONY: cov

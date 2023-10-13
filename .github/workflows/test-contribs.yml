@@ -1,4 +1,4 @@
-name: Test Core
+name: Test Contribs
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9.16
           architecture: x64
 
       - name: Setup dependencies
@@ -27,10 +27,8 @@ jobs:
       - name: Check format
         run: black --check autogoal/ tests/
 
-      - name: Run core tests
-        run: make test-core
-        env:
-          BUILD_ENVIRONMENT: development 
+      - name: Run all contrib tests
+        run: bash run_all_contrib_tests.sh && echo "All tests passed!"
 
       - name: Run codecov
         run: python -m codecov

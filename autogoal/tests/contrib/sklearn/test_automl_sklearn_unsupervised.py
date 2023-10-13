@@ -1,4 +1,4 @@
-from autogoal.kb import MatrixContinuousDense, Supervised, VectorCategorical
+from autogoal.kb import MatrixContinuousDense, Supervised, VectorDiscrete
 from autogoal.ml import AutoML, calinski_harabasz_score
 import numpy as np
 
@@ -241,8 +241,13 @@ def test_run_unsupervised():
 
     automl = AutoML(
         input=MatrixContinuousDense,
-        output=VectorCategorical,
+        output=VectorDiscrete,
         objectives=calinski_harabasz_score,
         search_timeout=120,
     )
     automl.fit(X)
+    print(automl.best_pipelines_)
+    print(automl.best_scores_)
+
+
+test_run_unsupervised()

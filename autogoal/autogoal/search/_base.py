@@ -15,7 +15,7 @@ from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
 
-from typing import List, Tuple
+from typing import List, Tuple  
 from autogoal.search.utils import dominates, non_dominated_sort
 
 
@@ -463,29 +463,40 @@ class RichLogger(Logger):
         self.console.print(repr(solution))
 
     def eval_solution(self, solution, fitness):
-        self.console.print(Panel(f"📈 Fitness=[blue]{fitness:.3f}"))
+        self.console.print(Panel(f"📈 Fitness=[blue]{fitness}"))
 
     def error(self, e: Exception, solution):
         self.console.print(f"⚠️[red bold]Error:[/] {e}")
 
-    def start_generation(self, generations, best_fns):
+    def start_generation(self, generations, best_solutions, best_fns):
         bests = "\n".join(f"Best_{i}: {fn}" for i, fn in enumerate(best_fns))
         self.console.rule(f"New generation - Remaining={generations}\n{bests}")
-
-    def start_generation(self, generations, best_fns):
         self.progress.update(self.pop_counter, completed=0)
 
-    def update_best(self, new_best, new_fn, previous_best, previous_fn):
+    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
         self.console.print(
             Panel(
-                f"🔥 Best improved from [red bold]{previous_fn or 0:.3f}[/] to [green bold]{new_fn:.3f}[/]"
+                f"🔥 New Best found {solution} [green bold]{fn}[/]"
             )
         )
 
-    def end(self, best, best_fn):
+        self.console.print(
+            Panel(
+                f"🔥 {len(new_best_solutions)} optimal solutions so far. Improved: [green bold]{new_best_fns}[/]. Previous [red bold]{best_fns}[/]."
+            )
+        )
+    
+    def end(self, best_solutions, best_fns):
         self.console.rule(f"Search finished")
-        self.console.print(repr(best))
-        self.console.print(Panel(f"🌟 Best=[green bold]{best_fn or 0:.3f}"))
+
+        if len(best_fns) == 0:
+            self.console.print(self.error("No solutions found"))
+        else:
+            for i, (best_solution, best_fn) in enumerate(zip(best_solutions, best_fns)):
+                self.console.print(Panel(f"{i}🌟 Optimal Solution [green bold]{best_fn or 0}"))
+                self.console.print(repr(best_solution))
+                self.console.print()
+
         self.progress.stop()
         self.console.rule("Search finished", style="red")
 
@@ -567,7 +578,6 @@ class MemoryLogger(Logger):
             mean = 0
         self.generation_mean_fn.append(mean)
         self.generation_best_fn.append(self.generation_best_fn[-1])
-
 
 class MultiLogger(Logger):
     def __init__(self, *loggers):
