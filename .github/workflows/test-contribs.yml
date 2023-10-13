@@ -17,6 +17,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build Core Docker image
+        run: make docker
+      
       - name: Build Docker image
         run: bash ./generate_full_image.sh
 
