@@ -37,7 +37,7 @@ clean:
 # docker-base  Builds the development base image from scratch.
 .PHONY: docker
 docker:
-	docker build . -t autogoal/autogoal:core -f dockerfiles/core/dockerfile
+	docker build . -t autogoal/autogoal:core -f dockerfiles/core/dockerfile --no-cache
 
 # docker-contrib Builds the development image with target contrib from scratch. 
 .PHONY: docker-contrib

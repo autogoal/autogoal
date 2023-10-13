@@ -72,6 +72,10 @@ COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
 
 # Install autogoal core
 COPY dockerfiles/install-package.sh install-package.sh 
-RUN sudo ./install-package.sh core
+
+RUN ls -la
+
+RUN chmod +x install-package.sh
+RUN ./install-package.sh core
 
 CMD ["/bin/bash"]
