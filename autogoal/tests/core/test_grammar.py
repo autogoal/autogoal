@@ -110,7 +110,7 @@ def test_subset_annotation_with_callables():
         generate_cfg(A),
         """
         <A>      := A (features=<Subset>)
-        <Subset> := { Discrete(min=1, max=5) , Categorical('adam', 'sgd') }
+        <Subset> := { DiscreteValue(min=1, max=5) , CategoricalValue('adam', 'sgd') }
         """,
     )
 
@@ -126,23 +126,7 @@ def test_subset_annotation():
         generate_cfg(A),
         """
         <A>      := A (features=<Subset>)
-        <Subset> := { Discrete(min=1, max=5) , 'Hello' , 1 , None }
-        """,
-    )
-
-
-def test_subset_annotation():
-    class A:
-        def __init__(
-            self, features: Subset("Subset", DiscreteValue(1, 5), "Hello", 1, None)
-        ):
-            pass
-
-    check_grammar(
-        generate_cfg(A),
-        """
-        <A>      := A (features=<Subset>)
-        <Subset> := { Discrete(min=1, max=5) , 'Hello' , 1 , None }
+        <Subset> := { DiscreteValue(min=1, max=5) , 'Hello' , 1 , None }
         """,
     )
 

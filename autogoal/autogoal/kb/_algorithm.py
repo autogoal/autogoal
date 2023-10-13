@@ -366,6 +366,13 @@ class Pipeline:
 
         return contribs
 
+    def serialize(self, use_dill=False):
+        return dumps(self, use_dill)
+    
+    @staticmethod
+    def deserialize(data, use_dill=False):
+        return loads(data, use_dill)
+
     @staticmethod
     def load_algorithms(path: Path):
         """

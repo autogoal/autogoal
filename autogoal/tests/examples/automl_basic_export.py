@@ -6,8 +6,6 @@ from autogoal.utils import Min, Gb, Hour, Sec
 from autogoal.search import ConsoleLogger, RichLogger
 from autogoal.kb import *
 
-from autogoal.search._base import ConsoleLogger
-
 # Load dataset
 X_train, y_train, X_test, y_test = dorothea.load()
 

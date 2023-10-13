@@ -1,7 +1,6 @@
 import pytest
 
 import numpy as np
-from autogoal.contrib import find_classes
 from autogoal.ml import *
 from autogoal.kb import *
 from autogoal.utils import nice_repr

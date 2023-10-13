@@ -194,7 +194,7 @@ host-ns: ensure-dev
 # test-core    Run the core unit tests (not contrib).
 .PHONY: test-core
 test-core: ensure-dev
-	python -m pytest autogoal autogoal/tests/core --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
+	pytest autogoal/tests/core
 
 # test-contrib Run the contrib unit tests.
 .PHONY: test-contrib

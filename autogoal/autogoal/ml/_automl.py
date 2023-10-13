@@ -1,12 +1,9 @@
 import io
 import os
-import pathlib
 import shutil
-import statistics
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 import dill as pickle
-import zipfile
 
 import numpy as np
 
@@ -86,7 +83,9 @@ class AutoML:
             )
 
     def make_pipeline_builder(self):
-        if self.registry is None:
+        if self.registry is not None:
+            registry = self.registry
+        else:
             try:
                 from autogoal_contrib import find_classes, find_remote_classes
             except:
@@ -142,12 +141,34 @@ class AutoML:
             pipeline.run(X, y)
             pipeline.send("eval")
 
-    def save(self, fp: io.BytesIO):
+    def save(self, fp: io.BytesIO, pipelines: List[Pipeline] = None):
         """
         Serializes the AutoML instance.
         """
         self._check_fitted()
         pickle.Pickler(fp).dump(self)
+
+    
+    def serialize(self, pipelines: List[Pipeline] = None) -> List[str]:
+        """
+        Serializes the AutoML instance.
+        """
+        # If no pipelines were specified, save all the optimal ones
+        if pipelines is None:
+            pipelines = self.best_pipelines_
+
+        return [pipeline.serialize() for pipeline in pipelines]
+    
+    
+    def deserialize(self, serialization: List[str] = None):
+        """
+        Serializes the AutoML instance.
+        """
+        # If no pipelines were specified, save all the optimal ones
+        if serialization is None or len(serialization) == 0:
+            raise Exception("Nothing to deserialize")
+
+        self.best_pipelines_ = [Pipeline.deserialize(p) for p in serialization]
 
     def folder_save(self, path: Path, pipelines: List[Pipeline] = None):
         """
