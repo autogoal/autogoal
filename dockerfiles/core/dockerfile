@@ -75,7 +75,7 @@ COPY dockerfiles/install-package.sh install-package.sh
 
 RUN ls -la
 
-RUN chmod +x install-package.sh
+RUN sudo chmod +x install-package.sh
 RUN ./install-package.sh core
 
 CMD ["/bin/bash"]
