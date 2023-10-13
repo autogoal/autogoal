@@ -8,11 +8,13 @@ from autogoal.ml.metrics import unsupervised_fitness_fn_moo
 from sklearn.decomposition import PCA
 import argparse
 
-#TODO: Fix this example. Unsupervised is not working as intended right now.
+# TODO: Fix this example. Unsupervised is not working as intended right now.
+
 
 @unsupervised_fitness_fn_moo
 def silhouette_score(X, labels):
     return s_score(X, labels)
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--executions", type=int, default=1)
@@ -56,7 +58,5 @@ for n_features in [2, 20, 100]:
                     search_timeout=args.global_timeout,
                 )
 
-                loggers = [
-                    ConsoleLogger()
-                ]
+                loggers = [ConsoleLogger()]
                 automl.fit(X, logger=loggers)

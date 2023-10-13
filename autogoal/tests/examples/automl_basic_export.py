@@ -24,4 +24,3 @@ print(automl.best_scores_)
 
 # Export the result of the search process onto a brand new image called "AutoGOAL-Cars"
 automl.export_portable(generate_zip=True)
-

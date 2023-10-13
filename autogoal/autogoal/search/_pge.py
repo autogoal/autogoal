@@ -45,9 +45,11 @@ class PESearch(SearchAlgorithm):
 
         self._samplers.append(sampler)
         return sampler
-    
+
     def _indices_of_fittest(self, fns):
-        assert all([len(fn) == 1 for fn in fns]), "PGE can only optimize one metric. Please use instead a multiobjective optimizer."
+        assert all(
+            [len(fn) == 1 for fn in fns]
+        ), "PGE can only optimize one metric. Please use instead a multiobjective optimizer."
         return best_indices(
             [fn[0] for fn in fns],
             k=int(self._selection * len(fns)),

@@ -15,7 +15,7 @@ from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
 
-from typing import List, Tuple  
+from typing import List, Tuple
 from autogoal.search.utils import dominates, non_dominated_sort
 
 
@@ -155,12 +155,22 @@ class SearchAlgorithm:
                     solutions.append(solution)
                     fns.append(fn)
 
-                    new_best_solutions, new_best_fns, dominated_solutions = self._rank_solutions(
-                        best_solutions, best_fns, solutions, fns
-                    )
+                    (
+                        new_best_solutions,
+                        new_best_fns,
+                        dominated_solutions,
+                    ) = self._rank_solutions(best_solutions, best_fns, solutions, fns)
 
                     if len(best_fns) == 0 or new_best_fns != best_fns:
-                        logger.update_best(solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, dominated_solutions)
+                        logger.update_best(
+                            solution,
+                            fn,
+                            new_best_solutions,
+                            best_solutions,
+                            new_best_fns,
+                            best_fns,
+                            dominated_solutions,
+                        )
                         best_solutions, best_fns = new_best_solutions, new_best_fns
                         improvement = True
                         if self._target_fn is not None and any(
@@ -224,7 +234,7 @@ class SearchAlgorithm:
         `gen_fns (list)`: A list of the objective function values of the generated solutions.
 
         Returns:
-        tuple: A tuple containing three lists - optimal_solutions, optimal_fns, and dominated_solutions. 
+        tuple: A tuple containing three lists - optimal_solutions, optimal_fns, and dominated_solutions.
         These lists contain the solutions and their objective function values that belong to the optimal front
         and the solutions that are dominated by the newly found optimal solutions.
         """
@@ -268,7 +278,7 @@ class SearchAlgorithm:
                 index = optimal_solutions.index(solution)
                 if index not in optimal_front_indices:
                     dominated_indices.append(i)
-        
+
         dominated_solutions = [best_solutions[i] for i in dominated_indices]
 
         return optimal_solutions, optimal_fns, dominated_solutions
@@ -321,7 +331,16 @@ class Logger:
     def error(self, e: Exception, solution):
         pass
 
-    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
+    def update_best(
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
         pass
 
 
@@ -362,7 +381,7 @@ class ConsoleLogger(Logger):
         remaining = int(avg_time * generations)
         elapsed = datetime.timedelta(seconds=elapsed)
         remaining = datetime.timedelta(seconds=remaining)
-        
+
         print(self.emph("New generation started"))
 
         for i, best_fn in enumerate(best_fns):
@@ -397,23 +416,34 @@ class ConsoleLogger(Logger):
         print(solution)
 
     def eval_solution(self, solution, fitness):
-        if (len(fitness) > 1):
+        if len(fitness) > 1:
             print(self.primary(f"Fitness={fitness}"))
         else:
             print(self.primary("Fitness=%.3f" % fitness))
 
-    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
-        print(self.success(
-            f"New best: {solution} with score {fn}"
-        ))
-        
-        print(self.primary(
-            f"{len(new_dominated_solutions)} previously optimal solutions are now sub-optimal."
-        ))
+    def update_best(
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
+        print(self.success(f"New best: {solution} with score {fn}"))
 
-        print(self.success(
-            f"{len(new_best_solutions)} optimal solutions so far. Improved: {new_best_fns}. Previous {best_fns}."
-        ))
+        print(
+            self.primary(
+                f"{len(new_dominated_solutions)} previously optimal solutions are now sub-optimal."
+            )
+        )
+
+        print(
+            self.success(
+                f"{len(new_best_solutions)} optimal solutions so far. Improved: {new_best_fns}. Previous {best_fns}."
+            )
+        )
 
 
 class ProgressLogger(Logger):
@@ -473,19 +503,24 @@ class RichLogger(Logger):
         self.console.rule(f"New generation - Remaining={generations}\n{bests}")
         self.progress.update(self.pop_counter, completed=0)
 
-    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
-        self.console.print(
-            Panel(
-                f"🔥 New Best found {solution} [green bold]{fn}[/]"
-            )
-        )
+    def update_best(
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
+        self.console.print(Panel(f"🔥 New Best found {solution} [green bold]{fn}[/]"))
 
         self.console.print(
             Panel(
                 f"🔥 {len(new_best_solutions)} optimal solutions so far. Improved: [green bold]{new_best_fns}[/]. Previous [red bold]{best_fns}[/]."
             )
         )
-    
+
     def end(self, best_solutions, best_fns):
         self.console.rule(f"Search finished")
 
@@ -493,7 +528,9 @@ class RichLogger(Logger):
             self.console.print(self.error("No solutions found"))
         else:
             for i, (best_solution, best_fn) in enumerate(zip(best_solutions, best_fns)):
-                self.console.print(Panel(f"{i}🌟 Optimal Solution [green bold]{best_fn or 0}"))
+                self.console.print(
+                    Panel(f"{i}🌟 Optimal Solution [green bold]{best_fn or 0}")
+                )
                 self.console.print(repr(best_solution))
                 self.console.print()
 
@@ -515,18 +552,25 @@ class JsonLogger(Logger):
         eval_log = {"generations left": generations, "best_fns": best_fns}
         self.update_log(eval_log)
 
-    def update_best(self, solution, fn, new_best_solutions, best_solutions, new_best_fns, best_fns, new_dominated_solutions):
+    def update_best(
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
         eval_log = {
-            "new-best" : {
-                "solution": repr(solution),
-                "fitness": fn
-            },
+            "new-best": {"solution": repr(solution), "fitness": fn},
             "pareto-front": [
-                {f"fitness_{i}": best_fn, f"solution_{i}" : repr(best_solution) }
+                {f"fitness_{i}": best_fn, f"solution_{i}": repr(best_solution)}
                 for i, (best_solution, best_fn) in enumerate(
                     zip(best_solutions, best_fns)
                 )
-            ]}
+            ],
+        }
         self.update_log(eval_log)
 
     def eval_solution(self, solution, fitness):
@@ -544,7 +588,7 @@ class JsonLogger(Logger):
         eval_log = {
             "Finished run": True,
             "pareto-front": [
-                {f"fitness_{i}": best_fn, f"solution_{i}" : repr(best_solution) }
+                {f"fitness_{i}": best_fn, f"solution_{i}": repr(best_solution)}
                 for i, (best_solution, best_fn) in enumerate(
                     zip(best_solutions, best_fns)
                 )
@@ -563,6 +607,7 @@ class JsonLogger(Logger):
         with open(self.log_file_name, "w") as log_file:
             json.dump(new_data, log_file)
 
+
 class MemoryLogger(Logger):
     def __init__(self):
         self.generation_best_fn = [0]
@@ -578,6 +623,7 @@ class MemoryLogger(Logger):
             mean = 0
         self.generation_mean_fn.append(mean)
         self.generation_best_fn.append(self.generation_best_fn[-1])
+
 
 class MultiLogger(Logger):
     def __init__(self, *loggers):

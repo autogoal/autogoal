@@ -148,7 +148,6 @@ class AutoML:
         self._check_fitted()
         pickle.Pickler(fp).dump(self)
 
-    
     def serialize(self, pipelines: List[Pipeline] = None) -> List[str]:
         """
         Serializes the AutoML instance.
@@ -158,8 +157,7 @@ class AutoML:
             pipelines = self.best_pipelines_
 
         return [pipeline.serialize() for pipeline in pipelines]
-    
-    
+
     def deserialize(self, serialization: List[str] = None):
         """
         Serializes the AutoML instance.
@@ -262,7 +260,7 @@ class AutoML:
         automl.export_path = path
         return automl
 
-    def score(self, X, y = None, solution_index=None):
+    def score(self, X, y=None, solution_index=None):
         """
         Compute the score of the best pipelines on the given dataset.
         """
@@ -272,11 +270,15 @@ class AutoML:
         if solution_index is None:
             for pipeline in self.best_pipelines_:
                 y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
-                scores.append(tuple([objective(y or X, y_pred) for objective in self.objectives]))
+                scores.append(
+                    tuple([objective(y or X, y_pred) for objective in self.objectives])
+                )
         else:
             pipeline = self.best_pipelines_[0]
             y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
-            scores.append(tuple([objective(y or X, y_pred) for objective in self.objectives]))
+            scores.append(
+                tuple([objective(y or X, y_pred) for objective in self.objectives])
+            )
 
         return scores
 

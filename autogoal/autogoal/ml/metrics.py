@@ -317,9 +317,7 @@ def silhouette_score(X, labels):
     b = np.zeros(n)
     for i in range(n):
         other_cluster_indices = np.where(labels != labels[i])[0]
-        min_distances = np.min(
-            np.linalg.norm(X[i] - X[other_cluster_indices], axis=1)
-        )
+        min_distances = np.min(np.linalg.norm(X[i] - X[other_cluster_indices], axis=1))
         b[i] = np.mean(min_distances)
 
     # Calculate the silhouette score for each point

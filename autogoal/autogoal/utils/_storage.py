@@ -11,6 +11,7 @@ def dumps(data: object, use_dill=False) -> str:
     data = dill.dumps(data) if use_dill else pickle.dumps(data)
     return decode(data)
 
+
 def decode(data: bytes) -> str:
     return data.decode("latin1")
 
