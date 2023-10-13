@@ -72,11 +72,7 @@ COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
 
 # Install autogoal core
 COPY dockerfiles/install-package.sh install-package.sh 
-
-RUN ls -la
-
 RUN sudo chmod +x install-package.sh
-RUN poetry config virtualenvs.create false && cd /home/coder/autogoal/autogoal && sudo poetry install
-RUN cd /home/coder/autogoal/autogoal-contrib && sudo pip install -e autogoal_contrib
+RUN sudo ./install-package.sh core
 
 CMD ["/bin/bash"]
