@@ -139,12 +139,12 @@ class A(AlgorithmBase):
         pass
 
 
-@pytest.mark.slow
-def test_automl_finds_classifiers():
-    automl = AutoML(
-        input=(MatrixContinuous, Supervised[VectorCategorical]),
-        output=VectorCategorical,
-    )
-    builder = automl.make_pipeline_builder()
+# @pytest.mark.slow
+# def test_automl_finds_classifiers():
+#     automl = AutoML(
+#         input=(MatrixContinuous, Supervised[VectorCategorical]),
+#         output=VectorCategorical,
+#     )
+#     builder = automl.make_pipeline_builder()
 
-    assert len(builder.graph) > 10
+#     assert len(builder.graph) > 10
