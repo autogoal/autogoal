@@ -76,6 +76,7 @@ COPY dockerfiles/install-package.sh install-package.sh
 RUN ls -la
 
 RUN sudo chmod +x install-package.sh
-RUN ./install-package.sh core
+RUN cd /home/coder/autogoal/autogoal && poetry install
+RUN cd /home/coder/autogoal/autogoal-contrib && pip install -e autogoal_contrib
 
 CMD ["/bin/bash"]
