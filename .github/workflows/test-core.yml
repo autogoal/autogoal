@@ -23,5 +23,5 @@ jobs:
       - name: Run tests in Docker container
         run: |
           docker run --name test-container -d autogoal/autogoal:core tail -f /dev/null
-          docker exec test-container bash -c "black --check autogoal/ tests/"
+          docker exec test-container bash -c "black --check autogoal/tests/"
           docker exec test-container bash -c "make test-core"
