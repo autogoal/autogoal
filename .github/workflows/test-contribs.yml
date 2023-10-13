@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: make dev-full
+        run: bash ./generate_full_image.sh
 
       - name: Run tests in Docker container
         run: |
