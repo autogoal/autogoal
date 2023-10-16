@@ -8,14 +8,11 @@ USER root
 
 ARG extras
 
-RUN ls -la /home/coder/autogoal/autogoal-remote/
 RUN mv /home/coder/autogoal/autogoal-remote/readme.md /home/coder/autogoal/autogoal-remote/README.md
-RUN ls -la /home/coder/autogoal/autogoal-remote/
 
-
-# COPY dockerfiles/install-package.sh install-package.sh 
-# RUN chmod +x install-package.sh
-# RUN ./install-package.sh $extras
+COPY dockerfiles/install-package.sh install-package.sh 
+RUN chmod +x install-package.sh
+RUN ./install-package.sh $extras
 
 SHELL ["/bin/bash", "-c"]
 
