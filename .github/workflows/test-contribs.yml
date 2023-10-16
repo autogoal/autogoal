@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(toJson(github.event.commits), '[skip ci]') == false
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
