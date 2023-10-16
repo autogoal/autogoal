@@ -24,7 +24,7 @@ jobs:
         run: make docker
       
       - name: Build Docker image
-        run: bash ./generate_full_image.sh
+        run: bash ./scripts/generate_full_image.sh
 
       - name: Run tests in Docker container
         run: |
