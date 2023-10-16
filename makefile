@@ -199,11 +199,11 @@ test-core: ensure-dev
 # test-contrib Run the contrib unit tests.
 .PHONY: test-contrib
 test-contrib: ensure-dev
-	bash run_all_contrib_tests.sh
+	bash scripts/run_all_contrib_tests.sh
 
 # test-specific-contrib Run any specific contrib unit tests.
 test-specific-contrib:
-	bash run_specific_contrib_tests.sh $(CONTRIB)
+	bash scripts/run_specific_contrib_tests.sh $(CONTRIB)
 	
 # test-sklearn Run the sklearn contrib unit tests.
 .PHONY: test-sklearn

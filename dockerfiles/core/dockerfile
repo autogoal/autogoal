@@ -70,6 +70,9 @@ COPY ../autogoal-contrib /home/coder/autogoal/autogoal-contrib
 # Copy code-base for autogoal-remote
 COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
 
+# Copy code-base for autogoal-remote
+COPY ../scripts /home/coder/autogoal/scripts
+
 # Install autogoal core
 COPY dockerfiles/install-package.sh install-package.sh 
 RUN sudo chmod +x install-package.sh
