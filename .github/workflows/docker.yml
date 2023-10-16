@@ -34,7 +34,7 @@ jobs:
 
       - name: Discover contribs and build main image
         run: |
-          contribs="common remote $(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
+          contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
           docker build . -t autogoal/autogoal:latest-full -f dockerfiles/development/dockerfile --build-arg extras="common $contribs remote" --no-cache
           docker push autogoal/autogoal:latest-full
 
