@@ -153,3 +153,7 @@ demo-short.webm
 metalearning.json
 *.bin
 output.csv
+
+autogoal/utils/remote/config/connections.yml
+.vscode/
+autogoal-export/

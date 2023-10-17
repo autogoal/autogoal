@@ -1,15 +1,18 @@
 # =====================
-# Autogoal base image
+# Autogoal development image
 # ---------------------
 
-FROM autogoal/autogoal:base
+FROM autogoal/autogoal:core
 
 USER root
 
-SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
+ARG extras
 
-RUN conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1 torch==1.10.1 torchvision==0.11.2
-RUN poetry install -E contrib -E dev
+RUN mv /home/coder/autogoal/autogoal-remote/readme.md /home/coder/autogoal/autogoal-remote/README.md
+
+COPY dockerfiles/install-package.sh install-package.sh 
+RUN chmod +x install-package.sh
+RUN ./install-package.sh $extras
 
 SHELL ["/bin/bash", "-c"]
 

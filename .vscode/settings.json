@@ -8,4 +8,10 @@
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.analysis.extraPaths": [
+        "./autogoal-remote/autogoal-remote/distributed",
+        "./autogoal-contrib/autogoal_contrib",
+        "./autogoal-remote",
+        "./autogoal-remote"
+    ],
 }

@@ -28,17 +28,24 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: autogoal/autogoal:base
+          tags: autogoal/autogoal:core
           context: "."
-          file: "dockerfiles/base/dockerfile"
+          file: "dockerfiles/core/dockerfile"
 
-      - name: Build main image
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: autogoal/autogoal:latest
-          context: "."
-          file: "dockerfiles/development/dockerfile"
+      - name: Discover contribs and build main image
+        run: |
+          contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
+          docker build . -t autogoal/autogoal:latest-full -f dockerfiles/development/dockerfile --build-arg extras="common $contribs remote" --no-cache
+          docker push autogoal/autogoal:latest-full
+
+      - name: Generate Docker images for each contrib
+        run: |
+          contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
+          for contrib in $contribs
+          do
+            docker build . -t autogoal/autogoal:$contrib -f dockerfiles/development/dockerfile --build-arg extras="common $contrib remote" --no-cache
+            docker push autogoal/autogoal:$contrib
+          done
       
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

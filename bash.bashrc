@@ -16,22 +16,7 @@
 # ==============================================================================
 
 # Change ownership of datasets folder
-sudo chown -R coder:coder /home/coder/.autogoal
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/usr/local/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/usr/local/etc/profile.d/conda.sh" ]; then
-        . "/usr/local/etc/profile.d/conda.sh"
-    else
-        export PATH="/usr/local/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+sudo chown -R coder:coder /home/coder/autogoal
 
 export PS1="\[\e[31m\]autogoal-docker\[\e[m\] \[\e[33m\]\w\[\e[m\] > "
 export TERM=xterm-256color
@@ -69,5 +54,3 @@ fi
 
 # Turn off colors
 echo -e "\e[m"
-
-conda activate autogoal

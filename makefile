@@ -6,6 +6,9 @@
 # /_/   \_\__,_|\__\___/ \____|\___/_/   \_\_____|
 #                                                 
 # Usage: make [command]
+
+
+
 # ‎‎
 # ---------------------------------------------------------------------------
 # The following commands can be run anywhere.
@@ -22,23 +25,46 @@ help:
 clean:
 	git clean -xdff
 
+
+
+
 # ‎‎
 # ---------------------------------------------------------------------------
 # The following commands must be run OUTSIDE the development environment.
 # ---------------------------------------------------------------------------
 # ‎‎
 
-# docker       Builds the development image from scratch.
+# docker-base  Builds the development base image from scratch.
 .PHONY: docker
 docker:
-	docker build -t autogoal/autogoal:latest .
+	docker build . -t autogoal/autogoal:core -f dockerfiles/core/dockerfile --no-cache
+
+# docker-contrib Builds the development image with target contrib from scratch. 
+.PHONY: docker-contrib
+docker-contrib:
+	docker build . -t autogoal/autogoal:$(CONTRIB) -f dockerfiles/development/dockerfile --build-arg extras="common $(CONTRIB) remote" --no-cache
+
+# docker-sklearn Builds the development image with sklearn and streamlit contrib from scratch. Includes autogoal-remote and autogoal-contrib.
+.PHONY: docker-streamlit-demo
+docker-streamlit-demo:
+	docker build . -t autogoal/autogoal:streamlit-demo -f dockerfiles/demo/dockerfile --no-cache
+
+# docker-sklearn Builds the development image with sklearn contrib from scratch.
+.PHONY: docker-sklearn
+docker-sklearn: 
+	make docker-contrib CONTRIB=sklearn
+
+# docker-sklearn Builds the development image with nltk contrib from scratch.
+.PHONY: docker-nltk
+docker-nltk: 
+	make docker-contrib CONTRIB=nltk
 
 # pull         Pull the development image.
 .PHONY: pull
 pull:
 	docker pull autogoal/autogoal:latest
 
-# pull-safe         Pull the development image using docker.uclv.cu.
+# pull-safe    Pull the development image using docker.uclv.cu.
 .PHONY: pull-safe
 pull-safe:
 	docker pull docker.uclv.cu/autogoal/autogoal:latest
@@ -52,12 +78,32 @@ push:
 # shell        Opens a shell in the development image.
 .PHONY: shell
 shell:
-	docker-compose run autogoal bash
+	docker-compose run --service-ports autogoal bash
 
-# demo         Run the demo in the development image.
-.PHONY: demo
-demo:
-	docker-compose run autogoal
+.PHONY: streamlit-demo
+streamlit-demo:
+	docker run -p 8500:8501 autogoal/autogoal:streamlit-demo
+
+# dev          Run the base development image.
+SERVICE=autogoal-core
+.PHONY: dev
+dev:
+	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
+
+# dev-sklearn  Run the development image with sklearn.
+.PHONY: dev-sklearn
+dev-sklearn:
+	make dev SERVICE=autogoal-sklearn
+
+# dev-nltk     Run the development image with nltk.
+.PHONY: dev-nltk
+dev-nltk:
+	make dev SERVICE=autogoal-nltk
+
+# dev-full     Run the development image with all contribs installed.
+.PHONY: dev-full
+dev-full:
+	make dev SERVICE=autogoal-full
 
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
@@ -68,6 +114,9 @@ mkdocs:
 .PHONY: test-ci
 test-ci:
 	docker build -t autogoal:basic -f tests/basic.dockerfile .
+
+
+
 
 # ‎‎
 # ---------------------------------------------------------------------------
@@ -112,8 +161,8 @@ anim:
 # env          Setup the development environment.
 .PHONY: env
 env: ensure-dev
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-	ln -s ${HOME}/.poetry/bin/poetry /usr/bin/poetry
+	curl -sSL https://install.python-poetry.org | python3 -
+	ln -s ${HOME}/.local/share/pypoetry /usr/bin/poetry
 	poetry config virtualenvs.create false
 
 # install      Install all the development dependencies.
@@ -121,15 +170,55 @@ env: ensure-dev
 install: ensure-dev
 	poetry install
 
+
+
+
+# ‎‎
+# ---------------------------------------------------------------------------
+# The following commands are for remote communication between enviroments.
+# ---------------------------------------------------------------------------
+# ‎‎
+
+
+.PHONY: host-ns
+host-ns: ensure-dev
+	pyro5-ns 
+
+
+# ‎‎
+# ---------------------------------------------------------------------------
+# The following commands are for testing in the development enviroment.
+# ---------------------------------------------------------------------------
+# ‎‎
+
 # test-core    Run the core unit tests (not contrib).
 .PHONY: test-core
 test-core: ensure-dev
-	python -m pytest autogoal tests/core --doctest-modules -m "not slow" --ignore=autogoal/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental --cov=autogoal --cov-report=term-missing -v
+	pytest autogoal/tests/core
+
+# test-contrib Run the contrib unit tests.
+.PHONY: test-contrib
+test-contrib: ensure-dev
+	bash scripts/run_all_contrib_tests.sh
+
+# test-specific-contrib Run any specific contrib unit tests.
+test-specific-contrib:
+	bash scripts/run_specific_contrib_tests.sh $(CONTRIB)
+	
+# test-sklearn Run the sklearn contrib unit tests.
+.PHONY: test-sklearn
+test-sklearn: 
+	make test-contrib CONTRIB=sklearn
+
+# test-nltk    Run the nltk contrib unit tests.
+.PHONY: test-nltk
+test-nltk: 
+	make test-contrib CONTRIB=nltk
 
 # test-full    Run all unit tests including the (very) slow ones.
 .PHONY: test-full
-test-full: ensure-dev
-	python -m pytest autogoal tests/core tests/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental --cov=autogoal --cov-report=term-missing -v
+test-full: ensure-dev test-contrib
+	python -m pytest autogoal tests/core tests/contrib --ignore=autogoal/datasets --ignore=autogoal/experimental -v
 
 # cov          Run the coverage analysis.
 .PHONY: cov

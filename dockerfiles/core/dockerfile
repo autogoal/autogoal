@@ -1,0 +1,81 @@
+# =====================
+# Python 3.9.16 core image
+# ---------------------
+
+FROM python:3.9.16
+
+# =====================
+# Basic enviroment setup
+# ---------------------
+
+RUN apt update \
+ && apt install -y \
+    curl \
+    locales \
+    nano \
+    ssh \
+    sudo \
+    bash \
+    git \
+    make \
+    gcc \
+    build-essential \ 
+    python3-dev
+
+
+# =====================
+# User stuff
+# ---------------------
+
+# https://wiki.debian.org/Locale#Manually
+RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
+  && locale-gen
+ENV LANG=en_US.UTF-8
+RUN chsh -s /bin/bash
+ENV SHELL=/bin/bash
+RUN adduser --gecos '' --disabled-password coder && \
+  echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+
+# ==========================================
+# Project-specific installation instruction
+# ------------------------------------------
+
+COPY bash.bashrc /etc
+RUN chmod +x /etc/bash.bashrc
+ENV BUILD_ENVIRONMENT="development"
+ENV XDG_CACHE_HOME="/opt/dev/cache"
+WORKDIR /home/coder/autogoal
+
+# Make RUN commands use the autogoal environment
+COPY makefile /home/coder/autogoal/
+
+# Setup poetry configuration
+RUN pip install -U pip setuptools
+RUN pip install poetry==1.2
+RUN poetry config virtualenvs.create false
+
+SHELL ["/bin/bash", "-c"]
+USER coder
+RUN sudo mkdir -p /home/coder/autogoal/data && sudo chown coder:coder /home/coder/autogoal
+VOLUME /home/coder/autogoal
+RUN sudo rm -rf /home/coder/autogoal/storage
+RUN sudo chown -R coder /home/coder
+
+# Copy code-base for autogoal-core
+COPY ../autogoal /home/coder/autogoal/autogoal
+
+# Copy code-base for autogoal-contrib
+COPY ../autogoal-contrib /home/coder/autogoal/autogoal-contrib
+
+# Copy code-base for autogoal-remote
+COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
+
+# Copy code-base for autogoal-remote
+COPY ../scripts /home/coder/autogoal/scripts
+
+# Install autogoal core
+COPY dockerfiles/install-package.sh install-package.sh 
+RUN sudo chmod +x install-package.sh
+RUN sudo ./install-package.sh core
+
+CMD ["/bin/bash"]

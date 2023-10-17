@@ -1,0 +1,27 @@
+name: Test Core
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: contains(toJson(github.event.commits), '[skip ci]') == false
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: make docker
+
+      - name: Run tests in Docker container
+        run: |
+          docker run --name test-container -d autogoal/autogoal:core tail -f /dev/null
+          docker exec test-container bash -c "black --check autogoal/tests/"
+          docker exec test-container bash -c "make test-core"
