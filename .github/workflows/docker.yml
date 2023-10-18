@@ -32,20 +32,11 @@ jobs:
           context: "."
           file: "dockerfiles/core/dockerfile"
 
-      - name: Discover contribs and build main image
-        run: |
-          contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
-          docker build . -t autogoal/autogoal:latest-full -f dockerfiles/development/dockerfile --build-arg extras="common $contribs remote" --no-cache
-          docker push autogoal/autogoal:latest-full
+      - name: Build and Push Image with all contribs
+        run: bash ./scripts/generate_full_image.sh
 
       - name: Generate Docker images for each contrib
-        run: |
-          contribs="$(cd autogoal-contrib/ && ls -d autogoal_* | grep -v 'autogoal_contrib' | sed 's/autogoal_//')"
-          for contrib in $contribs
-          do
-            docker build . -t autogoal/autogoal:$contrib -f dockerfiles/development/dockerfile --build-arg extras="common $contrib remote" --no-cache
-            docker push autogoal/autogoal:$contrib
-          done
+        run: bash ./scripts/generate_contrib_images.sh
       
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
