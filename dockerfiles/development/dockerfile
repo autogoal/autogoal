@@ -8,7 +8,7 @@ USER root
 
 ARG extras
 
-RUN mv /home/coder/autogoal/autogoal-remote/readme.md /home/coder/autogoal/autogoal-remote/README.md
+RUN if [ -f /home/coder/autogoal/autogoal-remote/readme.md ]; then mv /home/coder/autogoal/autogoal-remote/readme.md /home/coder/autogoal/autogoal-remote/README.md; fi
 
 COPY dockerfiles/install-package.sh install-package.sh 
 RUN chmod +x install-package.sh
