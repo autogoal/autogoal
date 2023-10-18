@@ -6,9 +6,9 @@ $contribs = Get-ChildItem -Path autogoal-contrib/ -Filter autogoal_* | Where-Obj
 
 foreach ($contrib in $contribs)
 {
-    make docker-contrib CONTRIB=$contrib
+    make docker-contrib CONTRIB=$contrib-latest
     if ($p)
     {
-        docker push autogoal/autogoal:$contrib
+        docker push autogoal/autogoal:$contrib-latest
     }
 }

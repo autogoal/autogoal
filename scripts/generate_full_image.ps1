@@ -8,4 +8,4 @@ $contribs = Get-ChildItem -Directory | Where-Object { $_.Name -like "autogoal_*"
 Set-Location -Path ..
 
 # Build the Docker image
-docker build . -t autogoal/autogoal:all-contribs -f dockerfiles/development/dockerfile --build-arg extras="common $($contribs -join ' ') remote" --no-cache
+docker build . -t autogoal/autogoal:full-latest -f dockerfiles/development/dockerfile --build-arg extras="common $($contribs -join ' ') remote" --no-cache
