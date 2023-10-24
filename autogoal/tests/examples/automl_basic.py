@@ -18,5 +18,5 @@ automl = AutoML(
 automl.fit(X, y, logger=ConsoleLogger())
 
 # Report the best pipeline
-print(automl.best_pipeline_)
-print(automl.best_score_)
+print(automl.best_pipelines_)
+print(automl.best_scores_)
