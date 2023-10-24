@@ -59,7 +59,10 @@ USER coder
 RUN sudo mkdir -p /home/coder/autogoal/data && sudo chown coder:coder /home/coder/autogoal
 VOLUME /home/coder/autogoal
 RUN sudo rm -rf /home/coder/autogoal/storage
+
+# Set permissions for important directories
 RUN sudo chown -R coder /home/coder
+RUN sudo chown -R coder /opt/dev/cache
 
 # Copy code-base for autogoal-core
 COPY ../autogoal /home/coder/autogoal/autogoal
