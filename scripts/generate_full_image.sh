@@ -21,4 +21,5 @@ docker build . -t autogoal/autogoal:full-latest -f dockerfiles/development/docke
 
 if [ "$push_image" -eq 1 ]; then
     docker push autogoal/autogoal:full-latest
+    docker rmi autogoal/autogoal:full-latest
   fi
