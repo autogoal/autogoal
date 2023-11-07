@@ -158,3 +158,5 @@ autogoal/utils/remote/config/connections.yml
 .vscode/
 autogoal-export/
 models--*/
+text_classification_models_info_basic.json
+text_classification_models_info.json
