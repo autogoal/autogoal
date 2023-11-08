@@ -43,6 +43,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: autogoal/dist
   
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
