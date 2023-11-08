@@ -37,8 +37,8 @@ jobs:
       - name: Build and Push Image with all contribs
         run: bash ./scripts/generate_full_image.sh -p
 
-      - name: Generate Docker images for each contrib
-        run: bash ./scripts/generate_contrib_images.sh -p
+      # - name: Generate Docker images for each contrib
+      #   run: bash ./scripts/generate_contrib_images.sh -p
       
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
