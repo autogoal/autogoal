@@ -90,6 +90,12 @@ SERVICE=autogoal-core
 dev:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
 
+
+# dev          Run the base development image GPU enabled.
+.PHONY: dev-gpu
+dev-gpu:
+	docker-compose run --service-ports --name=$(SERVICE)-gpu $(SERVICE)-gpu
+
 # dev-sklearn  Run the development image with sklearn.
 .PHONY: dev-sklearn
 dev-sklearn:
@@ -104,6 +110,11 @@ dev-nltk:
 .PHONY: dev-full
 dev-full:
 	make dev SERVICE=autogoal-full
+
+# dev-full     Run the development image with all contribs installed and GPU enabled.
+.PHONY: dev-full-gpu
+dev-full-gpu:
+	make dev-gpu SERVICE=autogoal-full
 
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
