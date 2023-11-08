@@ -22,8 +22,7 @@ jobs:
 
       - name: Setup dependencies and build
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-          source $HOME/.poetry/env
+          pip install poetry==1.2
           poetry config virtualenvs.create false
           cd autogoal && poetry install
           cd autogoal && poetry build
