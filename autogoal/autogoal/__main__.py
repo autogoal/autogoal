@@ -137,28 +137,29 @@ def contrib_status():
 
     console.print(table)
 
+# TODO: Implement download command
+# @contrib_app.command("download")
+# def contrib_download(
+#     contrib=typer.Argument(
+#         ..., help="Name of the contrib, e.g., `sklearn` or `nltk`, or `all`."
+#     )
+# ):
+#     """
+#     💾 Download necessary contrib files.
+#     """
 
-@contrib_app.command("download")
-def contrib_download(
-    contrib=typer.Argument(
-        ..., help="Name of the contrib, e.g., `sklearn` or `nltk`, or `all`."
-    )
-):
-    """
-    💾 Download necessary contrib files.
-    """
+#     try:
+#         from autogoal_contrib import ContribStatus, status
+#     except:
+#         raise Exception("autogoal-contrib not installed")
 
-    try:
-        from autogoal_contrib import ContribStatus, status, download_contrib
-    except:
-        raise Exception("autogoal-contrib not installed")
-
-    if status()[f"autogoal.contrib.{contrib}"] == ContribStatus.Ready:
-        console.print(f"✅ Nothing to download for contrib `{contrib}`.")
-    elif download_contrib(contrib):
-        console.print(f"✅ Succesfully downloaded files for contrib `{contrib}`.")
-    else:
-        console.print(f"❌ Cannot download files for contrib `{contrib}`.")
+#     if status()[f"autogoal.contrib.{contrib}"] == ContribStatus.Ready:
+#         console.print(f"✅ Nothing to download for contrib `{contrib}`.")
+#     else:
+#         if (is_package_installed())        
+#         console.print(f"✅ Succesfully downloaded files for contrib `{contrib}`.")
+#     else:
+#         console.print(f"❌ Cannot download files for contrib `{contrib}`.")
 
 
 @automl_app.callback()

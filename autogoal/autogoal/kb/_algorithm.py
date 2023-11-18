@@ -24,48 +24,6 @@ from autogoal.utils import (
 )
 import dill as pickle
 
-
-class Supervised(SemanticType):
-    """Represents a supervised version of some type X.
-
-    It is considered a subclass of X for semantic purposes, but not the other way around:
-
-    # >>> issubclass(Supervised[Vector], Vector)
-    # True
-    # >>> issubclass(Vector, Supervised[Vector])
-    # False
-    # >>> issubclass(Supervised[Seq[Vector]], Seq[Vector])
-    # True
-    # >>> issubclass(Seq[Vector], Supervised[Seq[Vector]])
-    # False
-
-    """
-
-    __internal_types = {}
-
-    @classmethod
-    def _specialize(cls, internal_type):
-        try:
-            return cls.__internal_types[internal_type]
-        except KeyError:
-            pass
-
-        class SupervisedImp(Supervised):
-            __internal = internal_type
-
-            @classmethod
-            def _name(cls):
-                return f"Supervised[{cls.__internal}]"
-
-            @classmethod
-            def _reduce(cls):
-                return Supervised._specialize, (internal_type,)
-
-        cls.__internal_types[internal_type] = SupervisedImp
-
-        return SupervisedImp
-
-
 def algorithm(*annotations):
     from autogoal.grammar import Union, Symbol
 
@@ -334,7 +292,7 @@ class Pipeline:
                 getattr(step, msg)(*args, **kwargs)
                 found = True
             elif hasattr(step, "send"):
-                step.send(msg, *args, **kwargs)
+                step.send(msg, *args, **kwargs) # type: ignore
                 found = True
 
         if not found:
@@ -476,7 +434,6 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
         ns["get_inner_signature"] = get_inner_signature_method
 
     return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
-
 
 Akw = namedtuple("Akw", ["args", "kwargs"])
 
@@ -694,7 +651,6 @@ def build_pipeline_graph(
 
 __all__ = [
     "AlgorithmBase",
-    "Supervised",
     "Pipeline",
     "build_pipeline_graph",
     "algorithm",

@@ -160,3 +160,5 @@ autogoal-export/
 models--*/
 text_classification_models_info_basic.json
 text_classification_models_info.json
+token_classification_models_info.json
+.vscode/settings.json

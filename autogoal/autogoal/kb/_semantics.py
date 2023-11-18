@@ -194,6 +194,51 @@ class FeatureSet(SemanticType):
         return isinstance(x, dict) and isinstance(list(x.keys()[0]), str)
 
 
+class Supervised(SemanticType):
+    """Represents a supervised version of some type X.
+
+    It is considered a subclass of X for semantic purposes, but not the other way around:
+
+    # >>> issubclass(Supervised[Vector], Vector)
+    # True
+    # >>> issubclass(Vector, Supervised[Vector])
+    # False
+    # >>> issubclass(Supervised[Seq[Vector]], Seq[Vector])
+    # True
+    # >>> issubclass(Seq[Vector], Supervised[Seq[Vector]])
+    # False
+
+    """
+
+    __internal_types = {}
+
+    @classmethod
+    def _specialize(cls, internal_type):
+        try:
+            return cls.__internal_types[internal_type]
+        except KeyError:
+            pass
+
+        class SupervisedImp(Supervised):
+            __internal_type__ = internal_type
+
+            @classmethod
+            def _name(cls):
+                return f"Supervised[{cls.__internal_type__}]"
+            
+            @classmethod
+            def _get_internal_type(cls):
+                return cls.__internal_type__
+            
+            @classmethod
+            def _reduce(cls):
+                return Supervised._specialize, (internal_type,)
+
+        cls.__internal_types[internal_type] = SupervisedImp
+
+        return SupervisedImp
+
+
 # A first complex type we can implement is `Seq`, to represent a list (or sequence) of another semantic type.
 # We want this type to be able to specialize in this notation:
 #
@@ -273,7 +318,7 @@ class Seq(SemanticType):
 
                 if other == Seq:
                     return True
-
+                
                 return issubclass(cls.__internal_type__, other.__internal_type__)
 
             @classmethod
@@ -520,6 +565,7 @@ Tensor4 = Tensor[4, Continuous, Dense]
 
 __all__ = [
     "SemanticType",
+    "Supervised",
     "Seq",
     "Text",
     "Document",
