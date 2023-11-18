@@ -77,7 +77,7 @@ print(args)
 # Note that the input and output types here are defined to match the problem statement,
 # i.e., entity recognition.
 
-from autogoal.contrib import find_classes
+from autogoal_contrib import find_classes
 
 classifier = AutoML(
     search_algorithm=PESearch,
@@ -98,7 +98,7 @@ classifier = AutoML(
 loggers = [RichLogger()]
 
 if args.token:
-    from autogoal.contrib.telegram import TelegramLogger
+    from autogoal_telegram import TelegramLogger
 
     telegram = TelegramLogger(
         token=args.token,
