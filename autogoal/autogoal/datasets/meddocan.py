@@ -336,6 +336,3 @@ def test_meddocan():
 
     for xi, yi in zip(X_valid, y_valid):
         assert len(xi) == len(yi)
-
-
-load()

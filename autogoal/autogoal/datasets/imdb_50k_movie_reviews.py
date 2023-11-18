@@ -22,7 +22,7 @@ def load(max_examples=None):
     with open(path / "imdb_50k_movie_reviews" / "imdb_50k_movie_reviews.csv", "r") as fd:
         title_line = True
         for i in fd.readlines():
-            if title_line == True:
+            if title_line:
                 title_line = False
                 continue
 
