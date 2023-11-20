@@ -1,21 +1,47 @@
-from logging import log
 import multiprocessing
 import warnings
 import psutil
 import signal
 import os
-import traceback
 import logging
 import platform
 from numpy.core._exceptions import _ArrayMemoryError
+import dill
+# from autogoal.kb import Pipeline
+from pathlib import Path
 
 if platform.system() == "Linux":
     import resource
+
+TEMPORARY_DATA_PATH = Path.home() / ".autogoal" / "automl"
+
+def ensure_temporary_data_path():
+    global TEMPORARY_DATA_PATH
+    os.makedirs(TEMPORARY_DATA_PATH, exist_ok=True)
+    
+def delete_temporary_data_path():
+    os.remove(TEMPORARY_DATA_PATH)
+    os.removedirs(TEMPORARY_DATA_PATH)
 
 from autogoal.utils import Mb
 
 logger = logging.getLogger("autogoal")
 
+IS_MP_CUDA_INITIALIZED = False
+def initialize_cuda_multiprocessing():
+    try:
+        import torch.multiprocessing as mp
+        global IS_MP_CUDA_INITIALIZED
+        if not IS_MP_CUDA_INITIALIZED:
+            mp.set_start_method('spawn', force=True)
+            print("initialized multiprocessing")
+            IS_MP_CUDA_INITIALIZED = True
+    except:
+        return
+
+def is_cuda_multiprocessing_enabled():
+    import torch.multiprocessing as mp
+    return mp.get_start_method() == 'spawn'
 
 class RestrictedWorker:
     def __init__(self, function, timeout: int, memory: int):
@@ -145,6 +171,70 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         if isinstance(result, Exception):  # Exception ocurred
             raise result
 
+        return result
+
+class RestrictedWorkerDiskSerializableByJoin(RestrictedWorkerByJoin):
+    def __init__(self, function, timeout: int, memory: int):
+        self.function = dill.dumps(function)
+        self.timeout = timeout
+        self.memory = memory
+    
+    def _restricted_function(self, result_bucket, *args, **kwargs):
+        try:
+            self._restrict()
+            
+            from autogoal.kb import Pipeline
+            algorithms, types = Pipeline.load_algorithms(TEMPORARY_DATA_PATH)
+            pipeline = Pipeline(algorithms, types)
+            
+            function = dill.loads(self.function)
+            result = function(pipeline)
+            result_bucket["result"] = result
+        except _ArrayMemoryError as e:
+            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
+        except Exception as e:
+            result_bucket["result"] = e
+    
+    def run_restricted(self, pipeline, *args, **kwargs):
+        """
+        Executes a given function with restricted amount of
+        CPU time and RAM memory usage
+        """
+        manager = multiprocessing.Manager()
+        result_bucket = manager.dict()
+
+        # ensure the directory to where the pipeline is going 
+        # to be exported exists 
+        ensure_temporary_data_path()
+        
+        global TEMPORARY_DATA_PATH
+        pipeline.save_algorithms(TEMPORARY_DATA_PATH)
+
+        rprocess = multiprocessing.Process(
+            target=self._restricted_function, args=[result_bucket, TEMPORARY_DATA_PATH, *args], kwargs=kwargs
+        )
+
+        rprocess.start()
+        rprocess.join(self.timeout)
+
+        if rprocess.exitcode == 0:
+            result = result_bucket["result"]
+        else:
+            rprocess.terminate()
+            raise TimeoutError(
+                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
+            )
+
+        if isinstance(result, Exception):  # Exception ocurred
+            raise result
+
+        # load trained pipeline
+        from autogoal.kb import Pipeline
+        algorithms, _ = Pipeline.load_algorithms(TEMPORARY_DATA_PATH)
+        pipeline.algorithms = algorithms
+        
+        # delete all generated temp files
+        delete_temporary_data_path()
         return result
 
 
