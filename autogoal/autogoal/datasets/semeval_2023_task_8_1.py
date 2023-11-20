@@ -15,7 +15,19 @@ class SemevalDatasetSelection(enum.Enum):
     Original="Original",
     Actual="Actual",
 
-def load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Original, verbose=False):
+class TargetClassesMapping(enum.Enum):
+    Original="Original",
+    Extended="Extended",
+    
+CLASSES_MAP_EXTENDED = {
+    "O", "not_medical_text",
+    "claim", "medical_causal_claim",
+    "per_exp", " medical_causal_experience",
+    "claim_per_exp", "medical_causal_claim_based_on_experience",
+    "question", "medical_question",
+}
+
+def load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Original, verbose=False):
     """
     Loads full dataset from [Semeval 2023 Task 8.1](https://github.com/PlanTL-SANIDAD/SPACCC_MEDDOCAN).
     """
@@ -78,10 +90,10 @@ def load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSel
                 X_train_raw, y_train_raw, X_train, y_train = load_tokens(reader, verbose)
             
             if (mode == TaskTypeSemeval.SentenceClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, True, verbose)
+                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, True, classes_mapping, verbose)
             
             if (mode == TaskTypeSemeval.SentenceMultilabelClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, False, verbose)
+                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, False, classes_mapping, verbose)
             
     return X_train, y_train, X_test, y_test
         
@@ -144,7 +156,7 @@ def load_tokens(reader, verbose=False):
     
     return X_raw, y_raw, X, y
    
-def load_sentences(reader, single_label = True, verbose=False):
+def load_sentences(reader, single_label = True, classes_mapping=TargetClassesMapping.Original, verbose=False):
     X_raw= []
     X = []
     y_raw = []
@@ -192,6 +204,9 @@ def load_sentences(reader, single_label = True, verbose=False):
     
     if (verbose):
         print(f"Loaded {len(X)} items. A total of {invalid_rows} rows were invalid.")
+    
+    if (classes_mapping == TargetClassesMapping.Extended):
+        y = [CLASSES_MAP_EXTENDED[iy] for iy in y]
     
     return X_raw, y_raw, X, y
         
@@ -423,5 +438,87 @@ def basic_fn_plain(y, predicted):
             correct += 1 if tag == predicted_tag else 0
 
     return correct / total
+
+def macro_f1(y, predicted):
+    """
+    Macro-average F1 evaluation function
+    """
+    # Get the unique classes
+    classes = set([tag for sublist in y for tag in sublist])
+
+    # Initialize the total precision and recall
+    total_precision = 0
+    total_recall = 0
+
+    # Calculate precision and recall for each class
+    for _class in classes:
+        # Get the true positives, false positives, and false negatives for this class
+        tp = sum([1 for sublist in zip(y, predicted) for tag, predicted_tag in sublist if tag == predicted_tag == _class])
+        fp = sum([1 for sublist in zip(y, predicted) for tag, predicted_tag in sublist if tag != _class and predicted_tag == _class])
+        fn = sum([1 for sublist in zip(y, predicted) for tag, predicted_tag in sublist if tag == _class and predicted_tag != _class])
+
+        # Calculate precision and recall for this class
+        try:
+            precision = tp / float(tp + fp)
+            recall = tp / float(tp + fn)
+        except ZeroDivisionError:
+            precision = recall = 0.0
+
+        # Add the precision and recall to the totals
+        total_precision += precision
+        total_recall += recall
+
+    # Calculate the macro-average precision and recall
+    macro_precision = total_precision / len(classes)
+    macro_recall = total_recall / len(classes)
+
+    # Calculate the macro-average F1
+    try:
+        macro_f1 = 2 * ((macro_precision * macro_recall) / (macro_precision + macro_recall))
+    except ZeroDivisionError:
+        macro_f1 = 0.0
+
+    return macro_f1
+
+def macro_f1_plain(y, predicted):
+    """
+    Macro-average F1 evaluation function
+    """
+    # Get the unique classes
+    classes = set(y)
+
+    # Initialize the total precision and recall
+    total_precision = 0
+    total_recall = 0
+
+    # Calculate precision and recall for each class
+    for _class in classes:
+        # Get the true positives, false positives, and false negatives for this class
+        tp = sum([1 for tag, predicted_tag in zip(y, predicted) if tag == predicted_tag == _class])
+        fp = sum([1 for tag, predicted_tag in zip(y, predicted) if tag != _class and predicted_tag == _class])
+        fn = sum([1 for tag, predicted_tag in zip(y, predicted) if tag == _class and predicted_tag != _class])
+
+        # Calculate precision and recall for this class
+        try:
+            precision = tp / float(tp + fp)
+            recall = tp / float(tp + fn)
+        except ZeroDivisionError:
+            precision = recall = 0.0
+
+        # Add the precision and recall to the totals
+        total_precision += precision
+        total_recall += recall
+
+    # Calculate the macro-average precision and recall
+    macro_precision = total_precision / len(classes)
+    macro_recall = total_recall / len(classes)
+
+    # Calculate the macro-average F1
+    try:
+        macro_f1 = 2 * ((macro_precision * macro_recall) / (macro_precision + macro_recall))
+    except ZeroDivisionError:
+        macro_f1 = 0.0
+
+    return macro_f1
 
 # load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Actual)

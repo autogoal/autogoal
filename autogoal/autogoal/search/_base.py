@@ -600,6 +600,19 @@ class JsonLogger(Logger):
         }
         self.update_log(eval_log)
 
+    def append_scores(self, scores, best_solutions):
+        eval_log = {
+            "Test Scores": True,
+            "pareto-front": [
+                {f"score_{i}": best_fn, f"solution_{i}": repr(best_solution)}
+                for i, (best_solution, best_fn) in enumerate(
+                    zip(best_solutions, scores)
+                )
+            ],
+            "best-scores": scores,
+        }
+        self.update_log(eval_log)
+    
     def update_log(self, json_load):
         new_data = ""
         with open(self.log_file_name, "r") as log_file:
