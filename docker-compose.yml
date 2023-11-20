@@ -60,6 +60,27 @@ services:
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
 
+  autogoal-keras-gpu:
+    container_name: autogoal-keras-gpu
+    hostname: autogoal-keras-gpu
+    image: autogoal/autogoal:keras
+    ports:
+      - 8505:8501
+      - 8005:8000
+    volumes:
+      - ".:/home/coder/autogoal"
+      - "~/.ssh:/home/coder/.ssh"
+      - "~/.gitconfig:/home/coder/.gitconfig"
+    user: "1000:1000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+
   autogoal-nltk:
     container_name: autogoal-nltk
     hostname: autogoal-nltk
@@ -163,10 +184,13 @@ services:
       - "~/.ssh:/home/coder/.ssh"
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
 
   autogoal-wikipedia:
     container_name: autogoal-wikipedia
@@ -206,9 +230,12 @@ services:
       - "~/.ssh:/home/coder/.ssh"
       - "~/.gitconfig:/home/coder/.gitconfig"
     user: "1000:1000"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
 
   
