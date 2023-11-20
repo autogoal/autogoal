@@ -299,7 +299,7 @@ class AutoML:
         Create a fitness function to evaluate pipelines.
         """
         if not y is None:
-            y = np.asarray(y)
+            y = np.array(y, dtype=list)
 
         inner_fitness_fn = (
             unsupervised_fitness_fn_moo(self.objectives)
