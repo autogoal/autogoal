@@ -10,7 +10,7 @@ import json
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, Min, Gb, Sec
+from autogoal.utils import RestrictedWorkerByJoin, RestrictedWorkerDiskSerializableByJoin, Min, Gb, Sec, is_cuda_multiprocessing_enabled
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
@@ -65,7 +65,10 @@ class SearchAlgorithm:
         )
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
-            self._fitness_fn = RestrictedWorkerByJoin(
+            # Only use Disk Serialization if there is GPU multiprocessing support.
+            self._fitness_fn = RestrictedWorkerDiskSerializableByJoin(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            ) if is_cuda_multiprocessing_enabled() else RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 

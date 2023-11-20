@@ -234,8 +234,9 @@ def unsupervised_fitness_fn(score_metric_fn):
     return fitness_fn
 
 
-def accuracy(ytrue, ypred) -> float:
-    return np.mean([1 if yt == yp else 0 for yt, yp in zip(ytrue, ypred)])
+def accuracy(y, predictions) -> float:
+    return np.mean([1 if yt == yp else 0 for yt, yp in zip(y, predictions)])
+
 
 
 def calinski_harabasz_score(X, labels):
