@@ -10,6 +10,7 @@ from pathlib import Path
 import types
 import os
 import shutil
+import re
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -190,10 +191,19 @@ class AlgorithmBase(Algorithm):
         ]
         values = [getattr(self, param, None) for param in params]
         parameters = {params[i]: values[i] for i in range(len(params))}
+        
+        for pkey in parameters.keys():
+            if isinstance(parameters[pkey], AlgorithmBase):
+                param_path = path / str(pkey)
+                os.mkdir(param_path)
+                p_config = parameters[pkey].save(param_path)
+                parameters[pkey] = p_config
+        
         module = f"'{self.__module__}.{self.__class__.__name__}'"
         name = self.__class__.__name__
         config = AlgorithmConfig(name, module, parameters)
         config.to_yaml(path)
+        return config
 
     def save_model(self, path: Path) -> "None":
         with open(path / "model.bin", "wb") as fd:
@@ -348,10 +358,23 @@ class Pipeline:
         algorithm_clases = []
 
         for i, algorithm in enumerate(stored_data.get("algorithms")):
+            
+            # Patch for when an algorithm is a generated seq algorithm.
+            # If that is the case then we need to know the depth of the sequence algorithms
+            # in order to build the original algorithm
+            inner_algorithm, seq_depth = find_nested_seq_algorithm_and_depth(algorithm)
+            
+            algorithm = inner_algorithm if seq_depth > 0 else algorithm
+            
             for cls in autogoal_algorithms:
                 if algorithm in object.__str__(cls):
                     algorithm_clases.append(cls)
-                    algorithms.append(cls.load(path / "algorithms" / str(i)))
+                    
+                    loaded_algorithm = cls.load(path / "algorithms" / str(i))
+                    while seq_depth > 0:
+                        loaded_algorithm = make_seq_algorithm(loaded_algorithm)()
+                        seq_depth -= 1 
+                    algorithms.append(loaded_algorithm)
 
         inputs = loads(stored_data.get("inputs"))
         return (algorithms, inputs)
@@ -387,13 +410,15 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     >>> b.get_inner_signature()
     <Signature (self, alpha)>
     """
+    
+    is_algorithm_instance = isinstance(algorithm, AlgorithmBase)
 
     output_type = algorithm.output_type()
 
-    name = f"SeqAlgorithm[{algorithm.__name__}]"
+    name = f"SeqAlgorithm[{algorithm.__class__.__name__ if is_algorithm_instance else algorithm.__name__}]"
 
     def init_method(self, *args, **kwargs):
-        self.inner = algorithm(*args, **kwargs)
+        self.inner = algorithm if is_algorithm_instance else algorithm(*args, **kwargs)
 
     def run_method(self, *args, **kwargs) -> Seq[output_type]:
         args_kwargs = _make_list_args_and_kwargs(*args, **kwargs)
@@ -434,6 +459,21 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
         ns["get_inner_signature"] = get_inner_signature_method
 
     return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
+
+def find_nested_seq_algorithm_and_depth(s):
+    # Find all occurrences of the pattern
+    matches = re.findall(r"abc\.SeqAlgorithm\[", s)
+    
+    # The depth is the number of occurrences
+    depth = len(matches)
+    
+    # Find the innermost string by removing the outer layers
+    inner_string = re.sub(r"'",'',s)
+    for _ in range(depth):
+        inner_string = re.sub(r'abc\.SeqAlgorithm\[', '', inner_string, count=1)
+        inner_string = re.sub(r"\]$", '', inner_string, count=1)
+    
+    return inner_string, depth
 
 Akw = namedtuple("Akw", ["args", "kwargs"])
 
