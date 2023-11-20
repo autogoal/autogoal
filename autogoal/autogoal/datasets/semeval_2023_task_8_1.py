@@ -46,26 +46,26 @@ def load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSel
             reader = csv.reader(fd)
             
             if (mode == TaskTypeSemeval.TokenClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_tokens(reader)
+                X_train_raw, y_train_raw, X_train, y_train = load_tokens(reader, verbose)
             
             if (mode == TaskTypeSemeval.SentenceClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader)
+                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, True, verbose)
             
             if (mode == TaskTypeSemeval.SentenceMultilabelClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, False)
+                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, False, verbose)
             
         # load test
-        with open(path / "st1_test.csv", "r") as fd:
-            reader = csv.reader(fd)
+        # with open(path / "st1_test.csv", "r") as fd:
+        #     reader = csv.reader(fd)
             
-            if (mode == TaskTypeSemeval.TokenClassification):
-                X_test_raw, y_test_raw, X_test, y_test = load_tokens(reader)
+        #     if (mode == TaskTypeSemeval.TokenClassification):
+        #         X_test_raw, y_test_raw, X_test, y_test = load_tokens(reader)
             
-            if (mode == TaskTypeSemeval.SentenceClassification):
-                X_test_raw, y_test_raw, X_test, y_test = load_sentences(reader)
+        #     if (mode == TaskTypeSemeval.SentenceClassification):
+        #         X_test_raw, y_test_raw, X_test, y_test = load_sentences(reader)
             
-            if (mode == TaskTypeSemeval.SentenceMultilabelClassification):
-                X_test_raw, y_test_raw, X_test, y_test = load_sentences(reader, False)
+        #     if (mode == TaskTypeSemeval.SentenceMultilabelClassification):
+        #         X_test_raw, y_test_raw, X_test, y_test = load_sentences(reader, False)
                 
     
     else:
@@ -78,7 +78,7 @@ def load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSel
                 X_train_raw, y_train_raw, X_train, y_train = load_tokens(reader, verbose)
             
             if (mode == TaskTypeSemeval.SentenceClassification):
-                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, verbose)
+                X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, True, verbose)
             
             if (mode == TaskTypeSemeval.SentenceMultilabelClassification):
                 X_train_raw, y_train_raw, X_train, y_train = load_sentences(reader, False, verbose)
@@ -104,6 +104,7 @@ def load_tokens(reader, verbose=False):
         except:
             if (verbose):
                 print(f"Invalid row, annotation not recognized at line {reader.line_num}.")
+            continue
             
         if (len(rawl) > 1 and verbose):
             print(f"Warning, multiple annotations detected in line {reader.line_num}!!")
@@ -270,7 +271,7 @@ def span_to_sentence_class(text, entities):
         sentences.extend(sentence.strip() for sentence in sentences_after if sentence)  # Filter out empty sentences
         sentence_labels.extend(['O' for sentence in sentences_after if sentence])
     
-    return sentences, sentence_labels
+    return sentences, [ label if label is not None else 'None' for label in sentence_labels]
 
 def span_to_iob(text, entities):
     # Define the characters to split on
