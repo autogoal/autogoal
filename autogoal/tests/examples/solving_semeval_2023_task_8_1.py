@@ -50,7 +50,10 @@ from autogoal.search import (
     PESearch,
 )
 from autogoal.kb import *
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+import concurrent.futures
+import multiprocessing
+import numpy as np
 
 # ## Parsing arguments
 
@@ -111,10 +114,36 @@ configurations = [
 ]
 
 tasks = [
-    "token-classification",
+    # "token-classification",
     "sentence-classification",
     "extended-sentence-classification",
 ]
+
+def stratified_train_test_split(X, y, test_size=0.3):
+    # Flatten y and remember the lengths of the sublists
+    y_flat = [item for sublist in y for item in sublist]
+    lengths = [len(sublist) for sublist in y]
+
+    # Perform stratified sampling
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
+    train_index, test_index = next(sss.split(X, y_flat))
+
+    # Split X and y
+    X_train, X_test = np.array(X)[train_index], np.array(X)[test_index]
+    y_train_flat, y_test_flat = np.array(y_flat)[train_index], np.array(y_flat)[test_index]
+
+    # Unflatten y_train and y_test
+    y_train = []
+    y_test = []
+    i = 0
+    for length in lengths:
+        if i in train_index:
+            y_train.append(y_train_flat[i:i+length])
+        else:
+            y_test.append(y_test_flat[i:i+length])
+        i += length
+
+    return list(X_train), list(X_test), y_train, y_test
 
 def run_token_classification(configuration):
     classifier = AutoML(
@@ -160,7 +189,7 @@ def run_sentence_classification(configuration):
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=macro_f1,
+        objectives=macro_f1_plain,
         cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
@@ -197,7 +226,7 @@ def run_extended_sentence_classification(configuration):
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=macro_f1,
+        objectives=macro_f1_plain,
         cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
@@ -226,3 +255,65 @@ def run_extended_sentence_classification(configuration):
     
     # save test scores
     json_logger.append_scores(scores, classifier.best_pipelines_)
+    
+    
+# for configuration in configurations:
+#     for task in tasks:
+#         if task == "token-classification":
+#             run_token_classification(configuration)
+#         elif task == "sentence-classification":
+#             run_sentence_classification(configuration)
+#         elif task == "extended-sentence-classification":
+#             run_extended_sentence_classification(configuration)
+#         else:
+#             raise Exception(f"Unknown task {task}")
+
+
+def run_experiment(configuration, task):
+    if task == "token-classification":
+        run_token_classification(configuration)
+    elif task == "sentence-classification":
+        run_sentence_classification(configuration)
+    elif task == "extended-sentence-classification":
+        run_extended_sentence_classification(configuration)
+    else:
+        raise Exception(f"Unknown task {task}")
+    
+# Separate configurations into different lists
+low_resource_configurations = [config for config in configurations if config['name'] == 'low-resources']
+mid_resource_configurations = [config for config in configurations if config['name'] == 'mid-resources']
+high_resource_configurations = [config for config in configurations if config['name'] == 'high-resources']
+    
+# Create a ProcessPoolExecutor
+with concurrent.futures.ProcessPoolExecutor() as executor:
+    # Run low-resource configurations
+    for configuration in low_resource_configurations:
+        max_workers = 4
+        for i in range(0, len(tasks), max_workers):
+            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
+            
+    for future in concurrent.futures.as_completed(concurrent.futures.futures):
+        pass
+    print("Finished low-resource experiments (Sentence Classification)")
+
+    # Run mid-resource configurations
+    for configuration in mid_resource_configurations:
+        max_workers = 2
+        for i in range(0, len(tasks), max_workers):
+            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
+
+    for future in concurrent.futures.as_completed(concurrent.futures.futures):
+        pass
+    print("Finished mid-resource experiments (Sentence Classification)")
+
+    # Run high-resource configurations
+    for configuration in high_resource_configurations:
+        max_workers = 1
+        for i in range(0, len(tasks), max_workers):
+            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
+    
+    for future in concurrent.futures.as_completed(concurrent.futures.futures):
+        pass
+    print("Finished high-resource experiments (Sentence Classification)")
+            
+# run_experiment(configurations[0], tasks[1])
