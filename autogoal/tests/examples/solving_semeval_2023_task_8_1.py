@@ -81,7 +81,6 @@ parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
 parser.add_argument("--token", default=None)
 parser.add_argument("--channel", default=None)
-parser.add_argument("--channel", default=None)
 
 args = parser.parse_args()
 
@@ -174,7 +173,7 @@ def run_token_classification(configuration, index):
         )
         loggers.append(telegram)
 
-    classifier.fit(X_train[:10], y_train[:10], logger=loggers)
+    classifier.fit(X_train, y_train, logger=loggers)
     scores = classifier.score(X_test, y_test)
 
     # save test scores
@@ -197,7 +196,7 @@ def run_sentence_classification(configuration, index):
     )
 
     X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Original)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     log_id = f"sentence-classification-{configuration['name']}-{index}"
     json_logger = JsonLogger(f"{log_id}.json")
