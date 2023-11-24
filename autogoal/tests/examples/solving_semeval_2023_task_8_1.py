@@ -75,7 +75,7 @@ parser.add_argument("--configuration", type=int, default=0)
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=30*Min)
 parser.add_argument("--memory", type=int, default=20)
-parser.add_argument("--popsize", type=int, default=40)
+parser.add_argument("--popsize", type=int, default=50)
 parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
@@ -101,7 +101,7 @@ configurations = [
         "name": "high-resources",
         "memory": 30*Gb,
         "global_timeout": 92*Hour,
-        "timeout": 30*Min
+        "timeout": 20*Min
     }
 ]
 

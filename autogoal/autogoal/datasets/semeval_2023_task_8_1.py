@@ -174,6 +174,7 @@ def load_tokens(reader, verbose=False):
         X.append(tokens)
         y.append(iobtags)
         
+        
     assert len(X) == len(y)
     assert len(X_raw) == len(y_raw)
     assert len(X_raw) == len(X)
@@ -181,6 +182,9 @@ def load_tokens(reader, verbose=False):
     
     if (verbose):
         print(f"Loaded {len(X)} items. A total of {invalid_rows} rows were invalid.")
+    
+    for i in range(len(X)):
+        assert len(X[i]) == len(y[i])
     
     return X_raw, y_raw, X, y
    
@@ -515,5 +519,3 @@ def macro_f1_plain(y, predicted):
         macro_f1 = 0.0
 
     return macro_f1
-
-# load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Actual)
