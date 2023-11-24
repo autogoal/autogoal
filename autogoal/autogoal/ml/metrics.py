@@ -6,6 +6,14 @@ from autogoal.ml.utils import LabelEncoder, check_number_of_labels
 from functools import wraps
 from deprecated import deprecated
 
+RESOURCE_CONTROL_AVAILABLE = False
+
+try:
+    import resource
+    RESOURCE_CONTROL_AVAILABLE = True
+except ImportError:
+    RESOURCE_CONTROL_AVAILABLE = False
+
 METRICS = []
 
 
@@ -237,6 +245,12 @@ def unsupervised_fitness_fn(score_metric_fn):
 def accuracy(y, predictions) -> float:
     return np.mean([1 if yt == yp else 0 for yt, yp in zip(y, predictions)])
 
+def peak_ram_usage(*args) -> float:
+    if not RESOURCE_CONTROL_AVAILABLE:
+        raise Exception("Peak Ram Consumed metric is not available on this system. Try installing the 'resource' package with 'pip install resource'.")
+    
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    return usage.ru_maxrss
 
 
 def calinski_harabasz_score(X, labels):

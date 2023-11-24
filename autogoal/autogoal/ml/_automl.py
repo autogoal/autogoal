@@ -47,6 +47,7 @@ class AutoML:
         registry=None,
         objectives=None,
         remote_sources: List[Tuple[str, int] or str] = None,
+        max_list_depth=1,
         **search_kwargs,
     ):
         self.input = input
@@ -66,11 +67,10 @@ class AutoML:
         self.search_kwargs = search_kwargs
         self._unpickled = False
         self.export_path = None
+        self.max_list_depth = max_list_depth
 
         # If objectives were not specified as iterables then create the correct objectives object
-        if not type(self.objectives) is type(tuple) and not type(
-            self.objectives
-        ) is type(list):
+        if not hasattr(objectives, '__iter__'):
             self.objectives = (self.objectives,)
 
         if random_state:
@@ -111,6 +111,7 @@ class AutoML:
             input_types=self.input,
             output_type=self.output,
             registry=registry,
+            max_list_depth=self.max_list_depth,
         )
 
     def fit(self, X, y=None, **kwargs):

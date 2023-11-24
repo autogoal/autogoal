@@ -39,8 +39,10 @@
 # Most of this example follows the same logic as the [UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
+from time import sleep
 from autogoal.ml import AutoML
 from autogoal.datasets import meddocan
+from autogoal.ml.metrics import peak_ram_usage
 from autogoal_transformers import BertTokenizeEmbedding, BertEmbedding
 from autogoal_keras import KerasSequenceClassifier, KerasClassifier
 from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
@@ -54,6 +56,7 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 import concurrent.futures
 import multiprocessing
 import numpy as np
+from collections import Counter
 
 # ## Parsing arguments
 
@@ -71,7 +74,7 @@ parser.add_argument("--configuration", type=int, default=0)
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=30*Min)
 parser.add_argument("--memory", type=int, default=20)
-parser.add_argument("--popsize", type=int, default=50)
+parser.add_argument("--popsize", type=int, default=40)
 parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
@@ -94,32 +97,24 @@ from autogoal_contrib import find_classes
 
 configurations = [
     {
-        "name": "low-resources",
-        "memory": 6*Gb,
-        "global_timeout": 24*Hour,
-        "timeout": 10*Min
-    },
-    {
-        "name": "mid-resources",
-        "memory": 16*Gb,
-        "global_timeout": 24*Hour,
-        "timeout": 20*Min
-    },
-    {
         "name": "high-resources",
-        "memory": 32*Gb,
-        "global_timeout": 24*Hour,
-        "timeout": 30*Min
+        "memory": 30*Gb,
+        "global_timeout": 72*Hour,
+        "timeout": 20*Min
     }
 ]
 
 tasks = [
-    # "token-classification",
+    "token-classification",
     "sentence-classification",
-    "extended-sentence-classification",
+    # "extended-sentence-classification",
 ]
 
-def stratified_train_test_split(X, y, test_size=0.3):
+def stratified_train_test_token_split(X, y, test_size=0.3):
+    counts = [dict(Counter(sublist)) for sublist in y]
+
+
+
     # Flatten y and remember the lengths of the sublists
     y_flat = [item for sublist in y for item in sublist]
     lengths = [len(sublist) for sublist in y]
@@ -145,175 +140,158 @@ def stratified_train_test_split(X, y, test_size=0.3):
 
     return list(X_train), list(X_test), y_train, y_test
 
-def run_token_classification(configuration):
+def run_token_classification(configuration, index):
     classifier = AutoML(
         search_algorithm=PESearch,
         input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
         output=Seq[Seq[Label]],
         registry=[BertEmbedding, KerasClassifier] + find_classes(exclude="TEC"),
         search_iterations=args.iterations,
-        objectives=macro_f1,
+        objectives=(macro_f1, peak_ram_usage),
+        maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
         evaluation_timeout=configuration["timeout"],
-        memory_limit=configuration["memory"] * Gb,
+        memory_limit=configuration["memory"],
     )
-    
-    X, y, _, _ = load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Original)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    
-    json_logger = JsonLogger("token-classification")
-    loggers = [JsonLogger("token-classification"), RichLogger()]
-    
+
+    X_train, y_train, X_test, y_test = load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Original)
+
+    log_id = f"token-classification-{configuration['name']}-{index}"
+    json_logger = JsonLogger(f"{log_id}.json")
+    loggers = [json_logger, RichLogger()]
+
     if args.token:
         from autogoal_telegram import TelegramLogger
 
         telegram = TelegramLogger(
             token=args.token,
-            name=f"token-classification",
+            name=log_id,
             channel=args.channel,
         )
         loggers.append(telegram)
 
-    classifier.fit(X_train, y_train, logger=loggers)
+    classifier.fit(X_train[:10], y_train[:10], logger=loggers)
     scores = classifier.score(X_test, y_test)
-    
+
     # save test scores
     json_logger.append_scores(scores, classifier.best_pipelines_)
-    
-def run_sentence_classification(configuration):
+
+def run_sentence_classification(configuration, index):
     classifier = AutoML(
         search_algorithm=PESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=macro_f1_plain,
+        objectives=(macro_f1_plain, peak_ram_usage),
+        maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
         evaluation_timeout=configuration["timeout"],
-        memory_limit=configuration["memory"] * Gb,
+        memory_limit=configuration["memory"],
     )
-    
+
     X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Original)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    
-    json_logger = JsonLogger("sentence-classification")
-    loggers = [JsonLogger("sentence-classification"), RichLogger()]
-    
+
+    log_id = f"sentence-classification-{configuration['name']}-{index}"
+    json_logger = JsonLogger(f"{log_id}.json")
+    loggers = [json_logger, RichLogger()]
+
     if args.token:
         from autogoal_telegram import TelegramLogger
 
         telegram = TelegramLogger(
             token=args.token,
-            name=f"sentence-classification",
+            name=log_id,
             channel=args.channel,
         )
         loggers.append(telegram)
-        
+
     classifier.fit(X_train, y_train, logger=loggers)
     scores = classifier.score(X_test, y_test)
-    
+
     # save test scores
     json_logger.append_scores(scores, classifier.best_pipelines_)
-    
-def run_extended_sentence_classification(configuration):
+
+def run_extended_sentence_classification(configuration, index):
     classifier = AutoML(
         search_algorithm=PESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=macro_f1_plain,
+        objectives=(macro_f1_plain, peak_ram_usage),
+        maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
         evaluation_timeout=configuration["timeout"],
-        memory_limit=configuration["memory"] * Gb,
+        memory_limit=configuration["memory"],
     )
-    
+
     X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Extended)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    
-    json_logger = JsonLogger("extended-sentence-classification")
-    loggers = [JsonLogger("extended-sentence-classification"), RichLogger()]
-    
+
+    log_id = f"extended-sentence-classification-{configuration['name']}={index}"
+    json_logger = JsonLogger(f"{log_id}.json")
+    loggers = [json_logger, RichLogger()]
+
     if args.token:
         from autogoal_telegram import TelegramLogger
 
         telegram = TelegramLogger(
             token=args.token,
-            name=f"extended-sentence-classification",
+            name=log_id,
             channel=args.channel,
         )
         loggers.append(telegram)
-        
+
     classifier.fit(X_train, y_train, logger=loggers)
     scores = classifier.score(X_test, y_test)
-    
+
     # save test scores
     json_logger.append_scores(scores, classifier.best_pipelines_)
-    
-    
-# for configuration in configurations:
-#     for task in tasks:
-#         if task == "token-classification":
-#             run_token_classification(configuration)
-#         elif task == "sentence-classification":
-#             run_sentence_classification(configuration)
-#         elif task == "extended-sentence-classification":
-#             run_extended_sentence_classification(configuration)
-#         else:
-#             raise Exception(f"Unknown task {task}")
 
+def run_experiment(configuration, task, index):
+    print(f"Started experiment {task}-{configuration['name']}-{index}")
 
-def run_experiment(configuration, task):
     if task == "token-classification":
-        run_token_classification(configuration)
+        try:
+            run_token_classification(configuration, index)
+        except Exception as e:
+            print(f"Failed experiment {task}-{configuration}. Reason: {e}")
+
     elif task == "sentence-classification":
-        run_sentence_classification(configuration)
+        try:
+            run_sentence_classification(configuration, index)
+        except Exception as e:
+            print(f"Failed experiment {task}-{configuration}. Reason: {e}")
+
     elif task == "extended-sentence-classification":
-        run_extended_sentence_classification(configuration)
+        try:
+            run_extended_sentence_classification(configuration, index)
+        except Exception as e:
+            print(f"Failed experiment {task}-{configuration}. Reason: {e}")
     else:
         raise Exception(f"Unknown task {task}")
-    
+
+    print(f"Finished experiment {task}-{configuration['name']}-{index}")
+
 # Separate configurations into different lists
-low_resource_configurations = [config for config in configurations if config['name'] == 'low-resources']
-mid_resource_configurations = [config for config in configurations if config['name'] == 'mid-resources']
 high_resource_configurations = [config for config in configurations if config['name'] == 'high-resources']
-    
+
+
 # Create a ProcessPoolExecutor
 with concurrent.futures.ProcessPoolExecutor() as executor:
-    # Run low-resource configurations
-    for configuration in low_resource_configurations:
-        max_workers = 4
-        for i in range(0, len(tasks), max_workers):
-            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
-            
-    for future in concurrent.futures.as_completed(concurrent.futures.futures):
-        pass
-    print("Finished low-resource experiments (Sentence Classification)")
-
-    # Run mid-resource configurations
-    for configuration in mid_resource_configurations:
-        max_workers = 2
-        for i in range(0, len(tasks), max_workers):
-            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
-
-    for future in concurrent.futures.as_completed(concurrent.futures.futures):
-        pass
-    print("Finished mid-resource experiments (Sentence Classification)")
-
-    # Run high-resource configurations
     for configuration in high_resource_configurations:
-        max_workers = 1
-        for i in range(0, len(tasks), max_workers):
-            executor.map(run_experiment, [configuration]*max_workers, tasks[i:i+max_workers])
-    
-    for future in concurrent.futures.as_completed(concurrent.futures.futures):
-        pass
-    print("Finished high-resource experiments (Sentence Classification)")
-            
-# run_experiment(configurations[0], tasks[1])
+        futures = [executor.submit(run_experiment, configuration, task, 0) for task in tasks]
+        
+        for future in concurrent.futures.as_completed(futures):
+            # If you need to use the result of the task
+            result = future.result()
+
+print("Finished experiments (Sentence Classification)")

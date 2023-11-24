@@ -148,7 +148,11 @@ class AlgorithmBase(Algorithm):
     @classmethod
     def get_inner_signature(cls) -> inspect.Signature:
         return inspect.signature(cls.__init__)
-
+    
+    @classmethod
+    def is_upscalable(cls) -> bool:
+        return True
+    
     @classmethod
     def input_types(cls) -> Tuple[type]:
         # if not hasattr(cls, "__run_signature__"):
@@ -412,6 +416,9 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """
     
     is_algorithm_instance = isinstance(algorithm, AlgorithmBase)
+    
+    if not (algorithm.__class__.is_upscalable() if is_algorithm_instance else algorithm.is_upscalable()):
+        return None
 
     output_type = algorithm.output_type()
 
@@ -588,7 +595,8 @@ def build_pipeline_graph(
     for algorithm in registry:
         for _ in range(max_list_depth):
             algorithm = make_seq_algorithm(algorithm)
-            pool.add(algorithm)
+            if not algorithm is None:
+                pool.add(algorithm)
 
     # For building the graph, we'll keep at each node the guaranteed output types
 

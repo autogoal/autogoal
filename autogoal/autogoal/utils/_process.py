@@ -9,6 +9,7 @@ from numpy.core._exceptions import _ArrayMemoryError
 import dill
 # from autogoal.kb import Pipeline
 from pathlib import Path
+import sys
 
 if platform.system() == "Linux":
     import resource
@@ -58,6 +59,8 @@ class RestrictedWorker:
 
             if self.memory and self.memory > (used_memory + 500 * Mb):
                 # memory may be restricted
+                
+                self.memory = min(self.memory, sys.maxsize)
                 resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
             else:
                 warnings.warn("Cannot restrict memory")
@@ -137,10 +140,15 @@ class RestrictedWorkerByJoin(RestrictedWorker):
 
             if self.memory > (used_memory + 50 * Mb):
                 # memory may be restricted
+                self.memory = min(self.memory, sys.maxsize)
                 logger.info("💻 Restricting memory to %s" % self.memory)
-                resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
+                try: 
+                    resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
+                except Exception as e:
+                    logger.info("💻 Failed to restrict memory to %s" % self.memory)
+                    raise e
             else:
-                raise ValueError(
+                raise Exception (
                     "Cannot restrict memory to %s < %i"
                     % (self.memory, used_memory + 50 * Mb)
                 )
