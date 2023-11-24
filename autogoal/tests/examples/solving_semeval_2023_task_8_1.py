@@ -49,7 +49,7 @@ from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, lo
 from autogoal.search import (
     JsonLogger,
     RichLogger,
-    PESearch,
+    NSPESearch,
 )
 from autogoal.kb import *
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
@@ -69,7 +69,8 @@ import argparse
 from autogoal.utils import Gb, Min, Hour
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--parallel", type=int, default=1)
+parser.add_argument("--experiment", type=str, default="token")
+parser.add_argument("--id", type=int, default=0)
 parser.add_argument("--configuration", type=int, default=0)
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=30*Min)
@@ -79,6 +80,7 @@ parser.add_argument("--selection", type=int, default=10)
 parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
 parser.add_argument("--token", default=None)
+parser.add_argument("--channel", default=None)
 parser.add_argument("--channel", default=None)
 
 args = parser.parse_args()
@@ -99,8 +101,8 @@ configurations = [
     {
         "name": "high-resources",
         "memory": 30*Gb,
-        "global_timeout": 72*Hour,
-        "timeout": 20*Min
+        "global_timeout": 92*Hour,
+        "timeout": 30*Min
     }
 ]
 
@@ -142,7 +144,7 @@ def stratified_train_test_token_split(X, y, test_size=0.3):
 
 def run_token_classification(configuration, index):
     classifier = AutoML(
-        search_algorithm=PESearch,
+        search_algorithm=NSPESearch,
         input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
         output=Seq[Seq[Label]],
         registry=[BertEmbedding, KerasClassifier] + find_classes(exclude="TEC"),
@@ -180,7 +182,7 @@ def run_token_classification(configuration, index):
 
 def run_sentence_classification(configuration, index):
     classifier = AutoML(
-        search_algorithm=PESearch,
+        search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
@@ -219,7 +221,7 @@ def run_sentence_classification(configuration, index):
 
 def run_extended_sentence_classification(configuration, index):
     classifier = AutoML(
-        search_algorithm=PESearch,
+        search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
@@ -286,12 +288,16 @@ high_resource_configurations = [config for config in configurations if config['n
 
 
 # Create a ProcessPoolExecutor
-with concurrent.futures.ProcessPoolExecutor() as executor:
-    for configuration in high_resource_configurations:
-        futures = [executor.submit(run_experiment, configuration, task, 0) for task in tasks]
+# with concurrent.futures.ProcessPoolExecutor() as executor:
+#     for configuration in high_resource_configurations:
+#         futures = [executor.submit(run_experiment, configuration, task, 0) for task in tasks]
         
-        for future in concurrent.futures.as_completed(futures):
-            # If you need to use the result of the task
-            result = future.result()
+#         for future in concurrent.futures.as_completed(futures):
+#             # If you need to use the result of the task
+#             result = future.result()
 
-print("Finished experiments (Sentence Classification)")
+if args.experiment == "token":
+    run_experiment(configurations[0], "token-classification", args.id)
+elif args.experiment == "sentence":
+    run_experiment(configurations[0], "sentence-classification", args.id)
+
