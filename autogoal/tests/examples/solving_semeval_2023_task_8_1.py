@@ -51,6 +51,10 @@ from autogoal.search import (
     RichLogger,
     NSPESearch,
 )
+from autogoal_sklearn._generated import MultinomialNB, MinMaxScaler, Perceptron, KNNImputer, StandardScaler, PassiveAggressiveClassifier, LinearSVC,SVC,NuSVC,DecisionTreeClassifier
+from autogoal_sklearn._manual import ClassifierTransformerTagger, ClassifierTagger, AggregatedTransformer
+from autogoal_nltk import WordPunctTokenizer, TweetTokenizer
+
 from autogoal.kb import *
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 import concurrent.futures
@@ -75,8 +79,8 @@ parser.add_argument("--configuration", type=int, default=0)
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=30*Min)
 parser.add_argument("--memory", type=int, default=20)
-parser.add_argument("--popsize", type=int, default=40)
-parser.add_argument("--selection", type=int, default=10)
+parser.add_argument("--popsize", type=int, default=20)
+parser.add_argument("--selection", type=int, default=5)
 parser.add_argument("--global-timeout", type=int, default=None)
 parser.add_argument("--examples", type=int, default=None)
 parser.add_argument("--token", default=None)
@@ -99,9 +103,9 @@ from autogoal_contrib import find_classes
 configurations = [
     {
         "name": "high-resources",
-        "memory": 30*Gb,
-        "global_timeout": 90*Hour,
-        "timeout": 30*Min
+        "memory": 50*Gb,
+        "global_timeout": 48*Hour,
+        "timeout": 60*Min
     }
 ]
 
@@ -184,7 +188,21 @@ def run_sentence_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
-        registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
+        registry=[
+            AggregatedTransformer,
+            Perceptron,
+            PassiveAggressiveClassifier,
+            BertEmbedding,
+            BertTokenizeEmbedding,
+            WordPunctTokenizer, 
+            TweetTokenizer,
+            StandardScaler,
+            MinMaxScaler,
+            MultinomialNB,
+            LinearSVC,
+            SVC,
+            NuSVC,
+            DecisionTreeClassifier] + find_classes(include="TEC|Keras"),
         search_iterations=args.iterations,
         objectives=(macro_f1_plain, peak_ram_usage),
         maximize=(True, False),
