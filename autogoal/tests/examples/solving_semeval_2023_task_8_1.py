@@ -154,7 +154,7 @@ def run_token_classification(configuration, index):
         search_iterations=args.iterations,
         objectives=(macro_f1, peak_ram_usage),
         maximize=(True, False),
-        cross_validation_steps=2,
+        cross_validation_steps=1,
         pop_size=args.popsize,
         search_timeout=configuration["global_timeout"],
         evaluation_timeout=configuration["timeout"],
