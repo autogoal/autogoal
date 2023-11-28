@@ -1,4 +1,3 @@
-import multiprocessing
 import warnings
 import psutil
 import signal
@@ -11,6 +10,11 @@ import dill
 from pathlib import Path
 import sys
 
+try:
+    import torch.multiprocessing as multiprocessing
+except:
+    import multiprocessing
+    
 if platform.system() == "Linux":
     import resource
 
@@ -24,6 +28,7 @@ def delete_temporary_data_path():
     os.remove(TEMPORARY_DATA_PATH)
     os.removedirs(TEMPORARY_DATA_PATH)
 
+            
 from autogoal.utils import Mb
 
 logger = logging.getLogger("autogoal")
@@ -31,22 +36,21 @@ logger = logging.getLogger("autogoal")
 IS_MP_CUDA_INITIALIZED = False
 def initialize_cuda_multiprocessing():
     try:
-        import torch.multiprocessing as mp
         global IS_MP_CUDA_INITIALIZED
         if not IS_MP_CUDA_INITIALIZED:
-            mp.set_start_method('spawn', force=True)
+            multiprocessing.set_start_method('forkserver', force=True)
             print("initialized multiprocessing")
             IS_MP_CUDA_INITIALIZED = True
     except:
         return
 
 def is_cuda_multiprocessing_enabled():
-    import torch.multiprocessing as mp
-    return mp.get_start_method() == 'spawn'
+    start_method = multiprocessing.get_start_method()
+    return start_method == 'spawn' or start_method == 'forkserver'
 
 class RestrictedWorker:
     def __init__(self, function, timeout: int, memory: int):
-        self.function = function
+        self.function = dill.dumps(function)
         self.timeout = timeout
         self.memory = memory
         signal.signal(signal.SIGXCPU, alarm_handler)
@@ -74,7 +78,10 @@ class RestrictedWorker:
     def _restricted_function(self, result_bucket, *args, **kwargs):
         try:
             self._restrict()
-            result = self.function(*args, **kwargs)
+            print("inside_function")
+            
+            function = dill.loads(self.function)
+            result = function(*args, **kwargs)
             result_bucket["result"] = result
         except _ArrayMemoryError as e:
             result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
@@ -126,7 +133,8 @@ def alarm_handler(*args):
 
 class RestrictedWorkerByJoin(RestrictedWorker):
     def __init__(self, function, timeout: int, memory: int):
-        self.function = function
+        self.function = dill.dumps(function)
+        print(self.function)
         self.timeout = timeout
         self.memory = memory
 
@@ -161,6 +169,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         manager = multiprocessing.Manager()
         result_bucket = manager.dict()
 
+        print("here")
         rprocess = multiprocessing.Process(
             target=self._restricted_function, args=[result_bucket, *args], kwargs=kwargs
         )
@@ -179,6 +188,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         if isinstance(result, Exception):  # Exception ocurred
             raise result
 
+        print("after")
         return result
 
 class RestrictedWorkerDiskSerializableByJoin(RestrictedWorkerByJoin):
@@ -245,7 +255,6 @@ class RestrictedWorkerDiskSerializableByJoin(RestrictedWorkerByJoin):
         delete_temporary_data_path()
         return result
 
-
 class RestrictedWorkerWithState(RestrictedWorkerByJoin):
     def __init__(self, function, timeout: int, memory: int):
         self.function = function
@@ -298,3 +307,75 @@ class RestrictedWorkerWithState(RestrictedWorkerByJoin):
             raise result
 
         return result
+
+
+import joblib
+from joblib import Parallel, delayed, wrap_non_picklable_objects
+
+def get_used_memory():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss
+
+def handler(signum, frame):
+    raise TimeoutError()
+
+def restrict(memory, timeout):
+    if platform.system() == "Linux":
+        _, mhard = resource.getrlimit(resource.RLIMIT_AS)
+        used_memory = get_used_memory()
+        if memory is None:
+            return
+        if memory > (used_memory + 50 * Mb):
+            # memory may be restricted
+            memory = min(memory, sys.maxsize)
+            logger.info("💻 Restricting memory to %s" % memory)
+            try: 
+                resource.setrlimit(resource.RLIMIT_DATA, (memory, mhard))
+            except Exception as e:
+                logger.info("💻 Failed to restrict memory to %s" % memory)
+                raise e
+        else:
+            raise Exception (
+                "Cannot restrict memory to %s < %i"
+                % (memory, used_memory + 50 * Mb)
+            )
+        
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(timeout)  # Number of seconds before alarm is raised
+
+def restricted_function(memory, timeout, function, *args, **kwargs):
+    try:
+        restrict(memory, timeout)
+        return function(*args, **kwargs)
+    except _ArrayMemoryError as e:
+        raise _ArrayMemoryError(e.shape, e.dtype)
+    except TimeoutError as e:
+        raise TimeoutError(
+                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {timeout} seconds."
+            )
+    except Exception as e:
+        raise e
+
+class JobLibRestrictedWorkerByJoin:
+    def __init__(self, function, timeout: int, memory: int):
+        self.function = function
+        self.timeout = timeout
+        self.memory = memory
+        
+    def run_restricted(self, pipeline, *args, **kwargs):
+        """
+        Executes a given function with restricted amount of
+        CPU time and RAM memory usage
+        """
+        
+        from joblib import parallel_backend
+
+        parallel = Parallel(n_jobs=1)
+        result = parallel (
+            delayed(restricted_function)(self.memory, self.timeout, self.function, pipeline) for _ in range(1)
+        )
+        
+        return result[0]
+
+    def __call__(self, *args, **kwargs):
+        return self.run_restricted(*args, **kwargs)
