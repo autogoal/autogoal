@@ -41,7 +41,7 @@
 
 from autogoal.ml import AutoML
 from autogoal.ml.metrics import peak_ram_usage, evaluation_time
-from autogoal_transformers import BertTokenizeEmbedding, BertEmbedding
+from autogoal_transformers import BertTokenizeSequenceEmbedding, BertEmbedding, BertSequenceEmbedding
 from autogoal_keras import KerasSequenceClassifier
 from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
 from autogoal.search import (
@@ -153,7 +153,7 @@ def run_token_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
         output=Seq[Seq[Label]],
-        registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTransformerTagger, BertEmbedding] + find_classes(exclude="CRFTagger|Stopword"),
+        registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTransformerTagger, BertEmbedding, BertSequenceEmbedding] + find_classes(exclude="Stopword"),
         search_iterations=args.iterations,
         objectives=(macro_f1, configuration["complexity_objective"]),
         maximize=(True, False),
@@ -191,7 +191,7 @@ def run_sentence_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
-        registry=[KerasSequenceClassifier, BertTokenizeEmbedding] + find_classes(exclude="TOC"),
+        registry=[KerasSequenceClassifier, BertTokenizeSequenceEmbedding] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
         objectives=(macro_f1_plain, configuration["complexity_objective"]),
         maximize=(True, False),
