@@ -479,6 +479,13 @@ def macro_f1(y, predicted, *args, **kwargs):
 
     return macro_f1_plain(y_flat, predicted_flat)
 
+def weighted_f1(y, predicted, *args, **kwargs):
+    y_flat = [tag for sublist in y for tag in sublist]
+    predicted_flat = [tag for sublist in predicted for tag in sublist]
+
+    return weighted_f1_plain(y_flat, predicted_flat)
+
+
 def macro_f1_plain(y, predicted, *args, **kwargs):
     """
     Macro-average F1 evaluation function
@@ -486,6 +493,13 @@ def macro_f1_plain(y, predicted, *args, **kwargs):
     from sklearn.metrics import f1_score
     
     # Get the unique classes
-    classes = set(y)
-    return f1_score(y, predicted, labels=classes, average='macro')
+    return f1_score(y, predicted, average='macro')
 
+def weighted_f1_plain(y, predicted, *args, **kwargs):
+    """
+    Macro-average F1 evaluation function
+    """
+    from sklearn.metrics import f1_score
+    
+    # Get the unique classes
+    return f1_score(y, predicted, average='weighted')
