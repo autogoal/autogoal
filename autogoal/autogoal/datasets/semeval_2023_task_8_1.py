@@ -483,39 +483,9 @@ def macro_f1_plain(y, predicted, *args, **kwargs):
     """
     Macro-average F1 evaluation function
     """
+    from sklearn.metrics import f1_score
+    
     # Get the unique classes
     classes = set(y)
+    return f1_score(y, predicted, labels=classes, average='macro')
 
-    # Initialize the total precision and recall
-    total_precision = 0
-    total_recall = 0
-
-    # Calculate precision and recall for each class
-    for _class in classes:
-        # Get the true positives, false positives, and false negatives for this class
-        tp = sum([1 for tag, predicted_tag in zip(y, predicted) if tag == predicted_tag == _class])
-        fp = sum([1 for tag, predicted_tag in zip(y, predicted) if tag != _class and predicted_tag == _class])
-        fn = sum([1 for tag, predicted_tag in zip(y, predicted) if tag == _class and predicted_tag != _class])
-
-        # Calculate precision and recall for this class
-        try:
-            precision = tp / float(tp + fp)
-            recall = tp / float(tp + fn)
-        except ZeroDivisionError:
-            precision = recall = 0.0
-
-        # Add the precision and recall to the totals
-        total_precision += precision
-        total_recall += recall
-
-    # Calculate the macro-average precision and recall
-    macro_precision = total_precision / len(classes)
-    macro_recall = total_recall / len(classes)
-
-    # Calculate the macro-average F1
-    try:
-        macro_f1 = 2 * ((macro_precision * macro_recall) / (macro_precision + macro_recall))
-    except ZeroDivisionError:
-        macro_f1 = 0.0
-
-    return macro_f1
