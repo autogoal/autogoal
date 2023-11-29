@@ -51,7 +51,7 @@ from autogoal.search import (
     RichLogger,
     NSPESearch,
 )
-from autogoal_sklearn._generated import MultinomialNB, MinMaxScaler, Perceptron, KNNImputer, StandardScaler, PassiveAggressiveClassifier, LinearSVC,SVC,NuSVC,DecisionTreeClassifier, LogisticRegression
+from autogoal_sklearn._generated import  TfidfVectorizer, MultinomialNB, MinMaxScaler, Perceptron, KNNImputer, StandardScaler, PassiveAggressiveClassifier, LinearSVC,SVC,NuSVC,DecisionTreeClassifier, LogisticRegression
 from autogoal_sklearn._manual import ClassifierTransformerTagger, ClassifierTagger, AggregatedTransformer
 from autogoal_nltk import WordPunctTokenizer, TweetTokenizer
 
@@ -179,18 +179,61 @@ def run_token_classification(configuration, index):
     log_id = f"token-classification-{configuration['name']}-{index}"
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
+    
+    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem
+    from autogoal_nltk import MWETokenizer, ISRIStemmer, StopwordRemover
 
-    if args.token:
-        from autogoal_telegram import TelegramLogger
-
-        telegram = TelegramLogger(
-            token=args.token,
-            name=log_id,
-            channel=args.channel,
+    pipelines = [
+        Pipeline(
+            algorithms=[
+                TfidfVectorizer(
+                    binary=True,
+                    lowercase=True,
+                    smooth_idf=False,
+                    sublinear_tf=True,
+                    use_idf=False,
+                ),
+                LogisticRegression(
+                    C=9.991,
+                    dual=False,
+                    fit_intercept=True,
+                    multi_class="multinomial",
+                    penalty="l2",
+                ),
+            ],
+            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
+        ), 
+        
+        Pipeline(
+            algorithms=[
+                TfidfVectorizer(
+                    binary=True,
+                    lowercase=True,
+                    smooth_idf=False,
+                    sublinear_tf=True,
+                    use_idf=True,
+                ),
+                NearestCentroid(),
+            ],
+            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
+        ),
+        Pipeline(
+            algorithms=[
+                CountVectorizerTokenizeStem(
+                    lowercase=False,
+                    stopwords_remove=True,
+                    binary=True,
+                    inner_tokenizer=MWETokenizer(),
+                    inner_stemmer=ISRIStemmer(),
+                    inner_stopwords=StopwordRemover(language="russian"),
+                ),
+                NearestCentroid(),
+            ],
+            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
         )
-        loggers.append(telegram)
-
-    classifier.fit(X_train, y_train, logger=loggers)
+        ]
+    
+    
     scores = classifier.score(X_test, y_test)
 
     # save test scores
@@ -302,7 +345,17 @@ def run_experiment(configuration, task, index):
 # Separate configurations into different lists
 high_resource_configurations = [config for config in configurations if config['name'] == 'high-resources']
 
-# initialize_cuda_multiprocessing()
+
+# Create a ProcessPoolExecutor
+# with concurrent.futures.ProcessPoolExecutor() as executor:
+#     for configuration in high_resource_configurations:
+#         futures = [executor.submit(run_experiment, configuration, task, 0) for task in tasks]
+        
+#         for future in concurrent.futures.as_completed(futures):
+#             # If you need to use the result of the task
+#             result = future.result()
+
+initialize_cuda_multiprocessing()
 if args.experiment == "token":
     run_experiment(configurations[0], "token-classification", args.id)
 elif args.experiment == "sentence":

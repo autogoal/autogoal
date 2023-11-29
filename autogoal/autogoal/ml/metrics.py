@@ -1,5 +1,6 @@
 import inspect
 from textwrap import wrap
+import time
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels
@@ -102,6 +103,8 @@ def supervised_fitness_fn_moo(objectives):
                     y[test_indices],
                 )
 
+            start = time.time()
+            
             # Train the pipeline on the training set
             pipeline.send("train")
             pipeline.run(X_train, y_train, **kwargs)
@@ -110,8 +113,10 @@ def supervised_fitness_fn_moo(objectives):
             pipeline.send("eval")
             y_pred = pipeline.run(X_test, None, **kwargs)
 
+            end = time.time()
+
             # Calculate the scores for each objective function
-            scores.append([objective(y_test, y_pred) for objective in objectives])
+            scores.append([objective(y_test, y_pred, evaluation_time=end-start) for objective in objectives])
 
         # Aggregate the scores over the cross-validation steps
         scores_per_objective = list(zip(*scores))
@@ -242,15 +247,18 @@ def unsupervised_fitness_fn(score_metric_fn):
     return fitness_fn
 
 
-def accuracy(y, predictions) -> float:
+def accuracy(y, predictions, *args, **kwargs) -> float:
     return np.mean([1 if yt == yp else 0 for yt, yp in zip(y, predictions)])
 
-def peak_ram_usage(*args) -> float:
+def peak_ram_usage(*args, **kwargs) -> float:
     if not RESOURCE_CONTROL_AVAILABLE:
         raise Exception("Peak Ram Consumed metric is not available on this system. Try installing the 'resource' package with 'pip install resource'.")
     
     usage = resource.getrusage(resource.RUSAGE_SELF)
     return usage.ru_maxrss
+
+def evaluation_time(*args, evaluation_time=None, **kwargs) -> float:
+    return evaluation_time
 
 
 def calinski_harabasz_score(X, labels):

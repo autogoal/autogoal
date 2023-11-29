@@ -10,7 +10,7 @@ import json
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, RestrictedWorkerDiskSerializableByJoin, Min, Gb, Sec, is_cuda_multiprocessing_enabled
+from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, RestrictedWorkerDiskSerializableByJoin, Min, Gb, Sec, is_cuda_multiprocessing_enabled, clear_cuda_cache
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
@@ -65,13 +65,11 @@ class SearchAlgorithm:
         )
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
-            # Only use Disk Serialization if there is GPU multiprocessing support.
-            # self._fitness_fn = RestrictedWorkerDiskSerializableByJoin(
-            #     self._fitness_fn, self._evaluation_timeout, self._memory_limit
-            # ) if is_cuda_multiprocessing_enabled() else RestrictedWorkerByJoin(
-            #     self._fitness_fn, self._evaluation_timeout, self._memory_limit
-            # )
+            # Only use Joblib Serialization we need GPU multiprocessing support.
+            # and multiprocessing cuda is initialized
             self._fitness_fn = JobLibRestrictedWorkerByJoin(
+                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            ) if is_cuda_multiprocessing_enabled() else RestrictedWorkerByJoin(
                 self._fitness_fn, self._evaluation_timeout, self._memory_limit
             )
 
@@ -139,6 +137,8 @@ class SearchAlgorithm:
                             "Error while generating solution: %s" % e, solution
                         )
                         continue
+                    
+                        clear_cuda_cache()
 
                     if not self._allow_duplicates and repr(solution) in seen:
                         continue
@@ -578,6 +578,17 @@ class JsonLogger(Logger):
             ],
         }
         self.update_log(eval_log)
+        
+    def error(self, e: Exception, solution):
+        error_log = {
+            "pipeline": repr(solution)
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace(",", ", "),
+            "multiline-pipeline": repr(solution),
+            "Error": str(e),
+        }
+        self.update_log(error_log)
 
     def eval_solution(self, solution, fitness):
         eval_log = {
