@@ -50,7 +50,7 @@ def is_cuda_multiprocessing_enabled():
 
 class RestrictedWorker:
     def __init__(self, function, timeout: int, memory: int):
-        self.function = dill.dumps(function)
+        self.function = function
         self.timeout = timeout
         self.memory = memory
         signal.signal(signal.SIGXCPU, alarm_handler)
@@ -78,10 +78,7 @@ class RestrictedWorker:
     def _restricted_function(self, result_bucket, *args, **kwargs):
         try:
             self._restrict()
-            print("inside_function")
-            
-            function = dill.loads(self.function)
-            result = function(*args, **kwargs)
+            result = self.function(*args, **kwargs)
             result_bucket["result"] = result
         except _ArrayMemoryError as e:
             result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
@@ -133,8 +130,7 @@ def alarm_handler(*args):
 
 class RestrictedWorkerByJoin(RestrictedWorker):
     def __init__(self, function, timeout: int, memory: int):
-        self.function = dill.dumps(function)
-        print(self.function)
+        self.function = function
         self.timeout = timeout
         self.memory = memory
 
@@ -169,7 +165,6 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         manager = multiprocessing.Manager()
         result_bucket = manager.dict()
 
-        print("here")
         rprocess = multiprocessing.Process(
             target=self._restricted_function, args=[result_bucket, *args], kwargs=kwargs
         )
