@@ -39,26 +39,21 @@
 # Most of this example follows the same logic as the [UCI example](/examples/solving_uci_datasets).
 # First the necessary imports
 
-from time import sleep
 from autogoal.ml import AutoML
-from autogoal.datasets import meddocan
 from autogoal.ml.metrics import peak_ram_usage, evaluation_time
 from autogoal_transformers import BertTokenizeEmbedding, BertEmbedding
-from autogoal_keras import KerasSequenceClassifier, KerasClassifier
+from autogoal_keras import KerasSequenceClassifier
 from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
 from autogoal.search import (
     JsonLogger,
     RichLogger,
     NSPESearch,
 )
-from autogoal_sklearn._generated import MultinomialNB, MinMaxScaler, Perceptron, KNNImputer, StandardScaler, PassiveAggressiveClassifier, LinearSVC,SVC,NuSVC,DecisionTreeClassifier, LogisticRegression
-from autogoal_sklearn._manual import ClassifierTransformerTagger, ClassifierTagger, AggregatedTransformer
-from autogoal_nltk import WordPunctTokenizer, TweetTokenizer
+from autogoal_sklearn._generated import Perceptron, KNNImputer
+from autogoal_sklearn._manual import ClassifierTransformerTagger, AggregatedTransformer
 
 from autogoal.kb import *
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
-import concurrent.futures
-import multiprocessing
 import numpy as np
 from collections import Counter
 
@@ -70,7 +65,7 @@ from collections import Counter
 
 import argparse
 
-from autogoal.utils import Gb, Min, Hour, initialize_cuda_multiprocessing
+from autogoal.utils import Gb, Min, Hour
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--experiment", type=str, default="token")
