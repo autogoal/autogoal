@@ -70,7 +70,7 @@ from autogoal.utils import Gb, Min, Hour
 parser = argparse.ArgumentParser()
 parser.add_argument("--experiment", type=str, default="token")
 parser.add_argument("--id", type=int, default=0)
-parser.add_argument("--configuration", type=int, default=0)
+parser.add_argument("--configuration", type=str, default="cpu")
 parser.add_argument("--iterations", type=int, default=10000)
 parser.add_argument("--timeout", type=int, default=30*Min)
 parser.add_argument("--memory", type=int, default=20)
@@ -96,25 +96,20 @@ from autogoal_contrib import find_classes
 # try token classification first
 
 configurations = [
-    # {
-    #     "name": "high-resources",
-    #     "memory": 50*Gb,
-    #     "global_timeout": 48*Hour,
-    #     "timeout": 60*Min
-    # }
-    # {
-    #     "name": "high-resources",
-    #     "memory": 50*Gb,
-    #     "global_timeout": 72*Hour,
-    #     "timeout": 30*Min
-    # }
     {
-        "name": "high-resources-gpu",
+        "name": "cpu",
         "memory": 50*Gb,
-        "global_timeout": 38*Hour,
-        "timeout": 90*Min
+        "global_timeout": 72*Hour,
+        "timeout": 30*Min,
+        "complexity_objective" : peak_ram_usage
+    },
+    {
+        "name": "gpu",
+        "memory": 50*Gb,
+        "global_timeout": 72*Hour,
+        "timeout": 90*Min,
+        "complexity_objective" : evaluation_time
     }
-    
 ]
 
 tasks = [
@@ -160,7 +155,7 @@ def run_token_classification(configuration, index):
         output=Seq[Seq[Label]],
         registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTransformerTagger, BertEmbedding] + find_classes(exclude="CRFTagger|Stopword"),
         search_iterations=args.iterations,
-        objectives=(macro_f1, peak_ram_usage),
+        objectives=(macro_f1, configuration["complexity_objective"]),
         maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
@@ -171,7 +166,7 @@ def run_token_classification(configuration, index):
 
     X_train, y_train, X_test, y_test = load(mode=TaskTypeSemeval.TokenClassification, data_option=SemevalDatasetSelection.Original)
 
-    log_id = f"token-classification-{configuration['name']}-{index}"
+    log_id = f"token-classification-{configuration['name']}"
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
 
@@ -196,9 +191,9 @@ def run_sentence_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
-        registry=find_classes(exclude="TOC"),
+        registry=[KerasSequenceClassifier, BertTokenizeEmbedding] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=(macro_f1_plain, evaluation_time),
+        objectives=(macro_f1_plain, configuration["complexity_objective"]),
         maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
@@ -237,7 +232,7 @@ def run_extended_sentence_classification(configuration, index):
         output=VectorCategorical,
         registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
         search_iterations=args.iterations,
-        objectives=(macro_f1_plain, peak_ram_usage),
+        objectives=(macro_f1_plain, configuration["complexity_objective"]),
         maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
@@ -249,7 +244,7 @@ def run_extended_sentence_classification(configuration, index):
     X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Extended)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
 
-    log_id = f"extended-sentence-classification-{configuration['name']}={index}"
+    log_id = f"extended-sentence-classification-{configuration['name']}"
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
 
@@ -294,12 +289,13 @@ def run_experiment(configuration, task, index):
 
     print(f"Finished experiment {task}-{configuration['name']}-{index}")
 
-# Separate configurations into different lists
-high_resource_configurations = [config for config in configurations if config['name'] == 'high-resources']
+
+condition = lambda x: x["name"] == args.configuration
+configuration = next(x for x in configurations if condition(x))
 
 # initialize_cuda_multiprocessing()
 if args.experiment == "token":
-    run_experiment(configurations[0], "token-classification", args.id)
+    run_experiment(configuration, "token-classification", args.id)
 elif args.experiment == "sentence":
-    run_experiment(configurations[0], "sentence-classification", args.id)
+    run_experiment(configuration, "sentence-classification", args.id)
 
