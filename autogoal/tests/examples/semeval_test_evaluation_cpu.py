@@ -43,9 +43,9 @@ from time import sleep
 from autogoal.ml import AutoML
 from autogoal.datasets import meddocan
 from autogoal.ml.metrics import peak_ram_usage, evaluation_time
-from autogoal_transformers import BertTokenizeEmbedding, BertEmbedding
+from autogoal_transformers import BertTokenizeSequenceEmbedding, BertEmbedding
 from autogoal_keras import KerasSequenceClassifier, KerasClassifier
-from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
+from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, weighted_f1, macro_f1_plain, weighted_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
 from autogoal.search import (
     JsonLogger,
     RichLogger,
@@ -56,6 +56,7 @@ from autogoal_sklearn._manual import ClassifierTransformerTagger, ClassifierTagg
 from autogoal_nltk import WordPunctTokenizer, TweetTokenizer
 
 from autogoal.kb import *
+from autogoal.kb._algorithm import make_seq_algorithm
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 import concurrent.futures
 import multiprocessing
@@ -128,36 +129,6 @@ tasks = [
     # "extended-sentence-classification",
 ]
 
-def stratified_train_test_token_split(X, y, test_size=0.3):
-    counts = [dict(Counter(sublist)) for sublist in y]
-
-
-
-    # Flatten y and remember the lengths of the sublists
-    y_flat = [item for sublist in y for item in sublist]
-    lengths = [len(sublist) for sublist in y]
-
-    # Perform stratified sampling
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
-    train_index, test_index = next(sss.split(X, y_flat))
-
-    # Split X and y
-    X_train, X_test = np.array(X)[train_index], np.array(X)[test_index]
-    y_train_flat, y_test_flat = np.array(y_flat)[train_index], np.array(y_flat)[test_index]
-
-    # Unflatten y_train and y_test
-    y_train = []
-    y_test = []
-    i = 0
-    for length in lengths:
-        if i in train_index:
-            y_train.append(y_train_flat[i:i+length])
-        else:
-            y_test.append(y_test_flat[i:i+length])
-        i += length
-
-    return list(X_train), list(X_test), y_train, y_test
-
 def run_token_classification(configuration, index):
     classifier = AutoML(
         search_algorithm=NSPESearch,
@@ -165,7 +136,7 @@ def run_token_classification(configuration, index):
         output=Seq[Seq[Label]],
         registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTransformerTagger, BertEmbedding] + find_classes(exclude="CRFTagger|Stopword"),
         search_iterations=args.iterations,
-        objectives=(macro_f1, peak_ram_usage),
+        objectives=(macro_f1, weighted_f1),
         maximize=(True, False),
         cross_validation_steps=1,
         pop_size=args.popsize,
@@ -180,6 +151,136 @@ def run_token_classification(configuration, index):
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
     
+    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem, CRFTagger
+    from autogoal_nltk import MWETokenizer, ISRIStemmer, StopwordRemover, FeatureSeqExtractor
+
+    pipelines = [
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(
+                    FeatureSeqExtractor(
+                        extract_word=True, 
+                        window_size=5
+                    )
+                )(), 
+                CRFTagger(
+                    algorithm="ap"
+                )
+            ], 
+            input_types=(
+                Seq[Seq[Word]], 
+                Supervised[Seq[Seq[Label]]]
+            )
+        ), 
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(
+                    FeatureSeqExtractor(
+                        extract_word=False, 
+                        window_size=4
+                    )
+                )(), 
+                CRFTagger(
+                    algorithm="pa"
+                )
+            ], 
+            input_types=(
+                Seq[Seq[Word]], 
+                Supervised[Seq[Seq[Label]]]
+            )
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(
+                    FeatureSeqExtractor(
+                        extract_word=True, 
+                        window_size=1
+                    )
+                )(), 
+                CRFTagger(
+                    algorithm="pa"
+                )
+            ], 
+            input_types=(
+                Seq[Seq[Word]], 
+                Supervised[Seq[Seq[Label]]]
+            )
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=False, window_size=3))(),
+                CRFTagger(algorithm="arow"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=True, window_size=0))(),
+                CRFTagger(algorithm="l2sgd"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=True, window_size=3))(),
+                CRFTagger(algorithm="ap"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=True, window_size=0))(),
+                CRFTagger(algorithm="pa"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=True, window_size=5))(),
+                CRFTagger(algorithm="pa"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        ),
+        Pipeline(
+            algorithms=[
+                make_seq_algorithm(FeatureSeqExtractor(extract_word=True, window_size=2))(),
+                CRFTagger(algorithm="pa"),
+            ],
+            input_types=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
+        )]
+    
+    classifier.best_pipelines_ = pipelines
+    classifier.fit_pipeline(X_train, y_train)
+    print("trained")
+    scores = classifier.score(X_test, y_test)
+    print(scores)
+
+    # save test scores
+    json_logger.append_scores(scores, classifier.best_pipelines_)
+
+def run_sentence_classification(configuration, index):
+    classifier = AutoML(
+        search_algorithm=NSPESearch,
+        input=(Seq[Sentence], Supervised[VectorCategorical]),
+        output=VectorCategorical,
+        registry=find_classes(exclude="TOC"),
+        search_iterations=args.iterations,
+        objectives=(macro_f1_plain, weighted_f1_plain),
+        maximize=(True, False),
+        cross_validation_steps=1,
+        pop_size=args.popsize,
+        search_timeout=configuration["global_timeout"],
+        evaluation_timeout=configuration["timeout"],
+        memory_limit=configuration["memory"],
+    )
+
+    X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Original)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+    log_id = f"sentence-classification-{configuration['name']}"
+    json_logger = JsonLogger(f"{log_id}.json")
+    loggers = [json_logger, RichLogger()]
+
     from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem
     from autogoal_nltk import MWETokenizer, ISRIStemmer, StopwordRemover
 
@@ -201,7 +302,7 @@ def run_token_classification(configuration, index):
                     penalty="l2",
                 ),
             ],
-            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
+            input_types=[Seq[Sentence], Supervised[VectorCategorical]],
         ), 
         
         Pipeline(
@@ -215,7 +316,7 @@ def run_token_classification(configuration, index):
                 ),
                 NearestCentroid(),
             ],
-            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
+            input_types=[Seq[Sentence], Supervised[VectorCategorical]],
         ),
         Pipeline(
             algorithms=[
@@ -229,90 +330,14 @@ def run_token_classification(configuration, index):
                 ),
                 NearestCentroid(),
             ],
-            input_types=[Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]],
+            input_types=[Seq[Sentence], Supervised[VectorCategorical]],
         )
         ]
     
-    
+    classifier.best_pipelines_ = pipelines
+    classifier.fit_pipeline(X_train, y_train)
     scores = classifier.score(X_test, y_test)
-
-    # save test scores
-    json_logger.append_scores(scores, classifier.best_pipelines_)
-
-def run_sentence_classification(configuration, index):
-    classifier = AutoML(
-        search_algorithm=NSPESearch,
-        input=(Seq[Sentence], Supervised[VectorCategorical]),
-        output=VectorCategorical,
-        registry=find_classes(exclude="TOC"),
-        search_iterations=args.iterations,
-        objectives=(macro_f1_plain, evaluation_time),
-        maximize=(True, False),
-        cross_validation_steps=1,
-        pop_size=args.popsize,
-        search_timeout=configuration["global_timeout"],
-        evaluation_timeout=configuration["timeout"],
-        memory_limit=configuration["memory"],
-    )
-
-    X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Original)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-
-    log_id = f"sentence-classification-{configuration['name']}"
-    json_logger = JsonLogger(f"{log_id}.json")
-    loggers = [json_logger, RichLogger()]
-
-    if args.token:
-        from autogoal_telegram import TelegramLogger
-
-        telegram = TelegramLogger(
-            token=args.token,
-            name=log_id,
-            channel=args.channel,
-        )
-        loggers.append(telegram)
-
-    classifier.fit(X_train, y_train, logger=loggers)
-    scores = classifier.score(X_test, y_test)
-
-    # save test scores
-    json_logger.append_scores(scores, classifier.best_pipelines_)
-
-def run_extended_sentence_classification(configuration, index):
-    classifier = AutoML(
-        search_algorithm=NSPESearch,
-        input=(Seq[Sentence], Supervised[VectorCategorical]),
-        output=VectorCategorical,
-        registry=[BertTokenizeEmbedding, KerasSequenceClassifier] + find_classes(exclude="TOC"),
-        search_iterations=args.iterations,
-        objectives=(macro_f1_plain, peak_ram_usage),
-        maximize=(True, False),
-        cross_validation_steps=1,
-        pop_size=args.popsize,
-        search_timeout=configuration["global_timeout"],
-        evaluation_timeout=configuration["timeout"],
-        memory_limit=configuration["memory"],
-    )
-
-    X, y, _, _ = load(mode=TaskTypeSemeval.SentenceClassification, data_option=SemevalDatasetSelection.Original, classes_mapping=TargetClassesMapping.Extended)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-
-    log_id = f"extended-sentence-classification-{configuration['name']}={index}"
-    json_logger = JsonLogger(f"{log_id}.json")
-    loggers = [json_logger, RichLogger()]
-
-    if args.token:
-        from autogoal_telegram import TelegramLogger
-
-        telegram = TelegramLogger(
-            token=args.token,
-            name=log_id,
-            channel=args.channel,
-        )
-        loggers.append(telegram)
-
-    classifier.fit(X_train, y_train, logger=loggers)
-    scores = classifier.score(X_test, y_test)
+    print(scores)
 
     # save test scores
     json_logger.append_scores(scores, classifier.best_pipelines_)
@@ -332,14 +357,6 @@ def run_experiment(configuration, task, index):
         except Exception as e:
             print(f"Failed experiment {task}-{configuration}. Reason: {e}")
 
-    elif task == "extended-sentence-classification":
-        try:
-            run_extended_sentence_classification(configuration, index)
-        except Exception as e:
-            print(f"Failed experiment {task}-{configuration}. Reason: {e}")
-    else:
-        raise Exception(f"Unknown task {task}")
-
     print(f"Finished experiment {task}-{configuration['name']}-{index}")
 
 # Separate configurations into different lists
@@ -355,9 +372,14 @@ high_resource_configurations = [config for config in configurations if config['n
 #             # If you need to use the result of the task
 #             result = future.result()
 
-initialize_cuda_multiprocessing()
-if args.experiment == "token":
-    run_experiment(configurations[0], "token-classification", args.id)
-elif args.experiment == "sentence":
-    run_experiment(configurations[0], "sentence-classification", args.id)
+# initialize_cuda_multiprocessing()
+# run_experiment(configurations[0], "sentence-classification", args.id)
+# [(0.485842966380485, 0.7352862431969472), (0.4182583506298185, 0.625048113270782), (0.4023407780366961, 0.6277978814542059)]
+
+run_experiment(configurations[0], "token-classification", args.id)
+
+# if args.experiment == "token":
+#     run_experiment(configurations[0], "token-classification", args.id)
+# elif args.experiment == "sentence":
+#     run_experiment(configurations[0], "sentence-classification", args.id)
 
