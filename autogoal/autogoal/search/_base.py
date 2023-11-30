@@ -1,5 +1,5 @@
+import errno
 import functools
-import logging
 import enlighten
 import time
 import datetime
@@ -7,15 +7,15 @@ import statistics
 import math
 import termcolor
 import json
+import os
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, RestrictedWorkerDiskSerializableByJoin, Min, Gb, Sec, is_cuda_multiprocessing_enabled, clear_cuda_cache
+from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, Min, Gb, is_cuda_multiprocessing_enabled, clear_cuda_cache
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
 
-from typing import List, Tuple
 from autogoal.search.utils import dominates, non_dominated_sort
 
 
@@ -629,13 +629,33 @@ class JsonLogger(Logger):
     
     def update_log(self, json_load):
         new_data = ""
-        with open(self.log_file_name, "r") as log_file:
-            data = json.load(log_file)
-            new_data = data
-            new_data.append(json_load)
+        try:
+            # Try to open the file
+            with open(self.log_file_name, "r") as log_file:
+                data = json.load(log_file)
+                new_data = data
+                new_data.append(json_load)
 
-        with open(self.log_file_name, "w") as log_file:
-            json.dump(new_data, log_file)
+            # Try to write to the file
+            with open(self.log_file_name, "w") as log_file:
+                json.dump(new_data, log_file)
+        except IOError as e:
+            # Handle file access errors
+            if e.errno == errno.EACCES:
+                print(f"Permission denied for file {self.log_file_name}. Trying to change permissions.")
+                try:
+                    # Try to change the permissions of the file to allow read and write access
+                    os.chmod(self.log_file_name, 0o600)
+                    print(f"Permissions changed for file {self.log_file_name}. Please try again.")
+                except Exception as e:
+                    print(f"Could not change permissions for file {self.log_file_name}. Error: {str(e)}")
+            elif e.errno == errno.ENOENT:
+                print(f"File {self.log_file_name} does not exist.")
+            else:
+                print(f"An error occurred while accessing file {self.log_file_name}. Error: {str(e)}")
+        except Exception as e:
+            # Handle other exceptions
+            print(f"An error occurred: {str(e)}")
 
 
 class MemoryLogger(Logger):
