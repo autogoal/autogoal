@@ -192,7 +192,7 @@ def run_sentence_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
-        registry=[KerasSequenceClassifier, BertTokenizeSequenceEmbedding] + find_classes(exclude="TOC|TEC"),
+        registry=[KerasSequenceClassifier, BertTokenizeSequenceEmbedding] + find_classes(),
         search_iterations=args.iterations,
         objectives=(macro_f1_plain, configuration["complexity_objective"]),
         maximize=(True, False),
@@ -297,8 +297,11 @@ configuration = next(x for x in configurations if condition(x))
 if args.configuration == "gpu":
     initialize_cuda_multiprocessing()
     
-if args.experiment == "token":
-    run_experiment(configuration, "token-classification", args.id)
-elif args.experiment == "sentence":
-    run_experiment(configuration, "sentence-classification", args.id)
+for exp in ["sentence", "token"]:
+    run_experiment(configuration, f"{exp}-classification", args.id)
+        
+# if args.experiment == "token":
+#     run_experiment(configuration, "token-classification", args.id)
+# elif args.experiment == "sentence":
+#     run_experiment(configuration, "sentence-classification", args.id)
 
