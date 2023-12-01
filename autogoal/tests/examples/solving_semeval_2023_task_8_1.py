@@ -41,6 +41,7 @@
 
 from autogoal.ml import AutoML
 from autogoal.ml.metrics import peak_ram_usage, evaluation_time
+from autogoal.utils import initialize_cuda_multiprocessing
 from autogoal_transformers import BertTokenizeSequenceEmbedding, BertEmbedding, BertSequenceEmbedding
 from autogoal_keras import KerasSequenceClassifier
 from autogoal.datasets.semeval_2023_task_8_1 import macro_f1, macro_f1_plain, load, TaskTypeSemeval, TargetClassesMapping, SemevalDatasetSelection
@@ -191,7 +192,7 @@ def run_sentence_classification(configuration, index):
         search_algorithm=NSPESearch,
         input=(Seq[Sentence], Supervised[VectorCategorical]),
         output=VectorCategorical,
-        registry=[KerasSequenceClassifier, BertTokenizeSequenceEmbedding] + find_classes(exclude="TOC"),
+        registry=[KerasSequenceClassifier, BertTokenizeSequenceEmbedding] + find_classes(exclude="TOC|TEC"),
         search_iterations=args.iterations,
         objectives=(macro_f1_plain, configuration["complexity_objective"]),
         maximize=(True, False),
@@ -293,7 +294,9 @@ def run_experiment(configuration, task, index):
 condition = lambda x: x["name"] == args.configuration
 configuration = next(x for x in configurations if condition(x))
 
-# initialize_cuda_multiprocessing()
+if args.configuration == "gpu":
+    initialize_cuda_multiprocessing()
+    
 if args.experiment == "token":
     run_experiment(configuration, "token-classification", args.id)
 elif args.experiment == "sentence":
