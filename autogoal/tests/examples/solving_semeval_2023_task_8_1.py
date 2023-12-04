@@ -297,11 +297,11 @@ configuration = next(x for x in configurations if condition(x))
 if args.configuration == "gpu":
     initialize_cuda_multiprocessing()
     
-for exp in ["sentence", "token"]:
-    run_experiment(configuration, f"{exp}-classification", args.id)
+# for exp in ["sentence", "token"]:
+#     run_experiment(configuration, f"{exp}-classification", args.id)
         
-# if args.experiment == "token":
-#     run_experiment(configuration, "token-classification", args.id)
-# elif args.experiment == "sentence":
-#     run_experiment(configuration, "sentence-classification", args.id)
+if args.experiment == "token":
+    run_experiment(configuration, "token-classification", args.id)
+elif args.experiment == "sentence":
+    run_experiment(configuration, "sentence-classification", args.id)
 
