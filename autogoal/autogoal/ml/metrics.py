@@ -79,39 +79,53 @@ def supervised_fitness_fn_moo(objectives):
 
         scores = []
         for _ in range(cross_validation_steps):
+            
+            X_instances = [X]
+            if isinstance(X, tuple):
+                X_instances = list(X)
+            
             # Split the data into training and validation sets
-            len_x = len(X) if isinstance(X, list) else X.shape[0]
+            len_x = len(X_instances[0]) if isinstance(X_instances[0], list) else X_instances[0].shape[0]
             indices = np.arange(0, len_x)
             np.random.shuffle(indices)
             split_index = int(validation_split * len(indices))
             train_indices = indices[:-split_index]
             test_indices = indices[-split_index:]
-
-            # Split the data into training and validation sets
-            if isinstance(X, list):
-                X_train, y_train, X_test, y_test = (
-                    [X[i] for i in train_indices],
-                    y[train_indices],
-                    [X[i] for i in test_indices],
-                    y[test_indices],
-                )
-            else:
-                X_train, y_train, X_test, y_test = (
-                    X[train_indices],
-                    y[train_indices],
-                    X[test_indices],
-                    y[test_indices],
-                )
+            
+            X_train_instances = []
+            X_test_instances = []
+            for Xi in X_instances:
+                # Split the data into training and validation sets
+                X_train = []
+                X_test = []
+                
+                if isinstance(Xi, list):
+                    X_train, X_test = (
+                        [Xi[i] for i in train_indices],
+                        [Xi[i] for i in test_indices],
+                    )
+                else:
+                    X_train, X_test = (
+                        Xi[train_indices],
+                        Xi[test_indices],
+                    )
+                    
+                X_train_instances.append(X_train)
+                X_test_instances.append(X_test)
+                
+                    
+            y_train = y[train_indices]
+            y_test = y[test_indices]
 
             start = time.time()
             
             # Train the pipeline on the training set
             pipeline.send("train")
-            pipeline.run(X_train, y_train, **kwargs)
+            pipeline.run(*X_train_instances, y_train, **kwargs)
 
             # Evaluate the pipeline on the validation set
             pipeline.send("eval")
-            y_pred = pipeline.run(X_test, None, **kwargs)
+            y_pred = pipeline.run(*X_test_instances, None, **kwargs)
 
             end = time.time()
 

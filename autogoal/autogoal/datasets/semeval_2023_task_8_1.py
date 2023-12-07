@@ -485,7 +485,6 @@ def weighted_f1(y, predicted, *args, **kwargs):
 
     return weighted_f1_plain(y_flat, predicted_flat)
 
-
 def macro_f1_plain(y, predicted, *args, **kwargs):
     """
     Macro-average F1 evaluation function

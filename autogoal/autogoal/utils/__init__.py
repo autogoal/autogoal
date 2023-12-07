@@ -122,7 +122,6 @@ def nice_repr(cls):
     cls.__repr__ = repr_method
     return cls
 
-
 Kb = 1024
 Mb = 1024 * Kb
 Gb = 1024 * Mb

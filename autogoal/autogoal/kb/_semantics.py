@@ -539,6 +539,58 @@ class Tensor(SemanticType):
         return array(value)
 
 
+class AggregatedTensor(Tensor):
+    __internal_types = {}
+
+    @classmethod
+    def _match(self, x):
+        return isinstance(x, (ndarray, spmatrix))
+
+    @classmethod
+    def _specialize(
+        cls, tensor: Tensor
+    ):
+        try:
+            return AggregatedTensor.__internal_types[tensor]
+        except KeyError:
+            pass
+
+        class AggregatedTensorImp(Tensor):
+            @classmethod
+            def _name(cls):
+                return f"AggregatedTensor[{tensor}]"
+
+            @classmethod
+            def _match(cls, x):
+                if not super()._match(x):
+                    return False
+
+                return True
+
+            @classmethod
+            def _conforms(cls, other: type) -> bool:
+                if other == AggregatedTensor:
+                    return True
+
+                return issubclass(tensor, other)
+
+            @classmethod
+            def _reduce(cls):
+                # To reduce Tensor implementations for pickling
+                return AggregatedTensor._specialize, tensor
+
+        AggregatedTensor.__internal_types[tensor] = AggregatedTensorImp
+        return AggregatedTensorImp
+
+    @classmethod
+    def to_json(x, data):
+        return json.dumps(data, cls=TensorEncoder)
+
+    @classmethod
+    def from_json(x, data):
+        value = super().from_json(data)
+        return array(value)
+
 # Now that we have the basic tensorial type implemented, we can add some aliases here.
 # These aliases mostly serve for `SemanticType.infer` to work, and also to simplify imports,
 # but keep in mind that anywhere we use `Vector` we just as well use `Tensor[1, None, None]`,
@@ -555,6 +607,8 @@ MatrixContinuousDense = Tensor[2, Continuous, Dense]
 MatrixContinuousSparse = Tensor[2, Continuous, Sparse]
 MatrixCategorical = Tensor[2, Categorical, Dense]
 MatrixDiscrete = Tensor[2, Discrete, Dense]
+
+AggregatedMatrixContinuousSparse = AggregatedTensor[MatrixContinuousSparse]
 
 # 📝 Makes no sense to have sparse discrete or categorical tensors as you cannot have missing categories.
 
@@ -591,6 +645,7 @@ __all__ = [
     "MatrixDiscrete",
     "Tensor3",
     "Tensor4",
+    "AggregatedMatrixContinuousSparse",
     "Dense",
     "Sparse",
     "Categorical",
