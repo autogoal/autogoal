@@ -601,6 +601,8 @@ VectorContinuous = Tensor[1, Continuous, None]
 VectorCategorical = Tensor[1, Categorical, Dense]
 VectorDiscrete = Tensor[1, Discrete, Dense]
 
+AggregatedVectorCategorical = AggregatedTensor[VectorCategorical]
+
 Matrix = Tensor[2, None, None]
 MatrixContinuous = Tensor[2, Continuous, None]
 MatrixContinuousDense = Tensor[2, Continuous, Dense]
@@ -646,6 +648,7 @@ __all__ = [
     "Tensor3",
     "Tensor4",
     "AggregatedMatrixContinuousSparse",
+    "AggregatedVectorCategorical",
     "Dense",
     "Sparse",
     "Categorical",

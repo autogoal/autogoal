@@ -51,7 +51,7 @@ from autogoal.search import (
     NSPESearch,
 )
 from autogoal_sklearn._generated import Perceptron, KNNImputer
-from autogoal_sklearn._manual import ClassifierTransformerTagger, AggregatedTransformer
+from autogoal_sklearn._manual import ClassifierTransformerTagger, AggregatedTransformer, ClassifierTagger
 
 from autogoal.kb import *
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
@@ -119,42 +119,12 @@ tasks = [
     # "extended-sentence-classification",
 ]
 
-def stratified_train_test_token_split(X, y, test_size=0.3):
-    counts = [dict(Counter(sublist)) for sublist in y]
-
-
-
-    # Flatten y and remember the lengths of the sublists
-    y_flat = [item for sublist in y for item in sublist]
-    lengths = [len(sublist) for sublist in y]
-
-    # Perform stratified sampling
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
-    train_index, test_index = next(sss.split(X, y_flat))
-
-    # Split X and y
-    X_train, X_test = np.array(X)[train_index], np.array(X)[test_index]
-    y_train_flat, y_test_flat = np.array(y_flat)[train_index], np.array(y_flat)[test_index]
-
-    # Unflatten y_train and y_test
-    y_train = []
-    y_test = []
-    i = 0
-    for length in lengths:
-        if i in train_index:
-            y_train.append(y_train_flat[i:i+length])
-        else:
-            y_test.append(y_test_flat[i:i+length])
-        i += length
-
-    return list(X_train), list(X_test), y_train, y_test
-
 def run_token_classification(configuration, index):
     classifier = AutoML(
         search_algorithm=NSPESearch,
         input=(Seq[Seq[Word]], Supervised[Seq[Seq[Label]]]),
         output=Seq[Seq[Label]],
-        registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTransformerTagger, BertEmbedding, BertSequenceEmbedding] + find_classes(exclude="Stopword"),
+        registry=[AggregatedTransformer, KNNImputer, Perceptron, ClassifierTagger, BertSequenceEmbedding] + find_classes(exclude="Stopword"),
         search_iterations=args.iterations,
         objectives=(macro_f1, configuration["complexity_objective"]),
         maximize=(True, False),
