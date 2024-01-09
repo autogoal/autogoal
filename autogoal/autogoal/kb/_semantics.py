@@ -611,6 +611,8 @@ MatrixCategorical = Tensor[2, Categorical, Dense]
 MatrixDiscrete = Tensor[2, Discrete, Dense]
 
 AggregatedMatrixContinuousSparse = AggregatedTensor[MatrixContinuousSparse]
+AggregatedMatrixContinuousDense = AggregatedTensor[MatrixContinuousDense]
+AggregatedMatrixContinuous = AggregatedTensor[MatrixContinuous]
 
 # 📝 Makes no sense to have sparse discrete or categorical tensors as you cannot have missing categories.
 
@@ -648,6 +650,8 @@ __all__ = [
     "Tensor3",
     "Tensor4",
     "AggregatedMatrixContinuousSparse",
+    "AggregatedMatrixContinuousDense",
+    "AggregatedMatrixContinuous",
     "AggregatedVectorCategorical",
     "Dense",
     "Sparse",

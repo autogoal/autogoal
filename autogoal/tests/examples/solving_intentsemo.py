@@ -56,7 +56,7 @@ from autogoal_sklearn._generated import Perceptron, KNNImputer
 from autogoal_sklearn._manual import ClassifierTransformerTagger, AggregatedTransformer, ClassifierTagger
 
 from autogoal.kb import *
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedKFold, train_test_split, StratifiedShuffleSplit
 import numpy as np
 from collections import Counter
 
@@ -69,6 +69,8 @@ from collections import Counter
 import argparse
 
 from autogoal.utils import Gb, Min, Hour
+
+from autogoal_contrib.wrappers import MatrixBuilder
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--experiment", type=str, default="token")
@@ -214,8 +216,7 @@ def run_text(configuration):
             memory_limit=configuration["memory"],
         )
 
-        X, y, _, _ = intentsemo.load(mode=intentsemo.TaskType.SentenceClassification)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+        X_train, y_train, X_test, y_test = intentsemo.load(mode=intentsemo.TaskType.SentenceClassification)
         
         X_train_0, X_train_1 = zip(*X_train)
         X_train_0, X_train_1 = list(X_train_0), list(X_train_1)
@@ -272,9 +273,9 @@ def test_text_sent_emo():
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
 
-    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem, HashingVectorizer, SGDClassifier
+    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem, HashingVectorizer, SGDClassifier, PolynomialFeatures, TruncatedSVD
     from autogoal_nltk import MWETokenizer, ISRIStemmer, StopwordRemover
-    from autogoal_contrib import AggregatedMatrixClassifier, SparseMatrixConcatenator
+    from autogoal_contrib import AggregatedDenseMatrixClassifier, SparseMatrixConcatenator, AggregatedMatrixTransform, DenseMatrixConcatenator
 
     pipelines = [
         Pipeline(
@@ -286,8 +287,10 @@ def test_text_sent_emo():
                     n_features=2097151,
                     norm="l1",
                 ),
-                SparseMatrixConcatenator(),
-                AggregatedMatrixClassifier(
+                # TruncatedSVD(),
+                # PolynomialFeatures(degree=1),
+                DenseMatrixConcatenator(),
+                AggregatedDenseMatrixClassifier(
                     classifier=SGDClassifier(
                     average=True,
                     early_stopping=False,
@@ -321,13 +324,39 @@ def test_text_sent_emo():
     X_test_0, X_test_1 = zip(*X_test)
     X_test_0, X_test_1 = list(X_test_0), list(X_test_1)
     
-    classifier.best_pipelines_ = pipelines
-    classifier.fit_pipeline((X_train_0, X_train_1), y_train)
-    scores = classifier.score((X_test_0, X_test_1), y_test)
-    print("text + sent + emo:", scores)
+    # classifier.best_pipelines_ = pipelines
+    # classifier.fit_pipeline((X_train_0, X_train_1), y_train)
+    # scores = classifier.score((X_test_0, X_test_1), y_test)
+    # print("text + sent + emo:", scores)
+    
+    print("Text + Sentiment + Emotion") 
+    cv = StratifiedKFold(n_splits=30, shuffle=True, random_state=42)
+    
+    X_0 = X_train_0 + X_test_0
+    X_1 = X_train_1 + X_test_1
+    y = y_train + y_test
+    scores = []
+    for train_index, test_index in cv.split(X_0, y):
+        # Get the train and test splits
+        X_train_cv = ([X_0[i] for i in train_index], [X_1[i] for i in train_index])
+        X_test_cv = ([X_0[i] for i in test_index], [X_1[i] for i in test_index])
+        y_train_cv, y_test_cv = [y[i] for i in train_index], [y[i] for i in test_index]
 
-    # save test scores
-    json_logger.append_scores(scores, classifier.best_pipelines_)
+        # Fit the classifier and compute the score
+        classifier.best_pipelines_ = pipelines
+        classifier.fit_pipeline(X_train_cv, y_train_cv)
+        score = classifier.score(X_test_cv, y_test_cv)
+
+        # Print or save the score
+        print("Score: ", score[0][0])
+        scores.append(score[0][0])
+        
+    print("mean :", np.mean(scores))
+    print("final scores :")
+    print(scores)
+    print()
+    
+    return scores
 
 def test_text_emo():
     classifier = AutoML(
@@ -464,8 +493,7 @@ def test_text_sent():
                 Seq[Tensor[1, Continuous, None]],
                 Supervised[AggregatedVectorCategorical],
             ),
-        ),
-        ]
+        )]
     
     X_train, y_train, X_test, y_test = intentsemo.load(mode=intentsemo.TaskType.SentenceClassification, include_sentiment=True, include_emotions=False)
     
@@ -502,9 +530,9 @@ def test_text():
     json_logger = JsonLogger(f"{log_id}.json")
     loggers = [json_logger, RichLogger()]
 
-    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem, HashingVectorizer, SGDClassifier
+    from autogoal_sklearn import TfidfVectorizer, NearestCentroid, CountVectorizerTokenizeStem, HashingVectorizer, SGDClassifier, TruncatedSVD
     from autogoal_nltk import MWETokenizer, ISRIStemmer, StopwordRemover
-    from autogoal_contrib import AggregatedMatrixClassifier, SparseMatrixConcatenator
+    from autogoal_contrib import SparseMatrixConcatenator, DenseClassifier
 
     pipelines = [
         Pipeline(
@@ -516,6 +544,7 @@ def test_text():
                     n_features=2097151,
                     norm="l1",
                 ),
+                # TruncatedSVD(),
                 SGDClassifier(
                     average=True,
                     early_stopping=False,
@@ -540,6 +569,9 @@ def test_text():
         )
         ]
     
+    from sklearn.model_selection import StratifiedKFold
+
+    
     X_train, y_train, X_test, y_test = intentsemo.load(mode=intentsemo.TaskType.SentenceClassification)
     
     X_train_0, X_train_1 = zip(*X_train)
@@ -548,13 +580,32 @@ def test_text():
     X_test_0, X_test_1 = zip(*X_test)
     X_test_0, X_test_1 = list(X_test_0), list(X_test_1)
     
-    classifier.best_pipelines_ = pipelines
-    classifier.fit_pipeline(X_train_0, y_train)
-    scores = classifier.score(X_test_0, y_test)
-    print("only_text :", scores)
+    print("Only Text")
+    cv = StratifiedKFold(n_splits=30, shuffle=True, random_state=42)
+    
+    X = X_train_0 + X_test_0
+    y = y_train + y_test
+    scores = []
+    for train_index, test_index in cv.split(X, y):
+        # Get the train and test splits
+        X_train_cv, X_test_cv = [X[i] for i in train_index], [X[i] for i in test_index]
+        y_train_cv, y_test_cv = [y[i] for i in train_index], [y[i] for i in test_index]
 
-    # save test scores
-    json_logger.append_scores(scores, classifier.best_pipelines_)
+        # Fit the classifier and compute the score
+        classifier.best_pipelines_ = pipelines
+        classifier.fit_pipeline(X_train_cv, y_train_cv)
+        score = classifier.score(X_test_cv, y_test_cv)
+
+        # Print or save the score
+        print("Score: ", score[0][0])
+        scores.append(score[0][0])
+        
+    print("mean :", np.mean(scores))
+    print("final scores :")
+    print(scores)
+    print()
+    
+    return scores
 
 def test_sent_emo():
     classifier = AutoML(
@@ -624,6 +675,14 @@ def test_sent_emo():
     json_logger.append_scores(scores, classifier.best_pipelines_)
 
 
+def t_test(pred1, pred2):
+    from scipy import stats
+    
+    t_statistic, p_value = stats.ttest_ind(pred1, pred2)
+
+    print("t-statistic:", t_statistic)
+    print("p-value:", p_value)
+
 
 tasks = {
     # "text": run_text,
@@ -636,11 +695,13 @@ tasks = {
 
 # initialize_cuda_multiprocessing()
 
-# test_text_sent_emo()
+tse = test_text_sent_emo()
 # test_text_emo()
 # test_text_sent()
 # test_sent_emo()
-test_text()
+t = test_text()
+
+t_test(tse, t)
 
 # for task in tasks.keys():
 #     experiment = tasks[task]
