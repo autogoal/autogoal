@@ -139,7 +139,12 @@ class AutoML:
 
         for pipeline in self.best_pipelines_:
             pipeline.send("train")
-            pipeline.run(X, y)
+            
+            if isinstance(X, tuple):
+                pipeline.run(*X, y)
+            else:
+                pipeline.run(X, y)
+                
             pipeline.send("eval")
 
     def save(self, fp: io.BytesIO, pipelines: List[Pipeline] = None):
@@ -270,19 +275,20 @@ class AutoML:
         scores = []
         if solution_index is None:
             for pipeline in self.best_pipelines_:
-                y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
+                
+                y_pred = pipeline.run(*X, np.zeros_like(y) if y else None) if isinstance(X, tuple) else pipeline.run(X, np.zeros_like(y) if y else None)
                 scores.append(
                     tuple([objective(y or X, y_pred) for objective in self.objectives])
                 )
         else:
             pipeline = self.best_pipelines_[0]
-            y_pred = pipeline.run(X, np.zeros_like(y) if y else None)
+            y_pred = pipeline.run(*X, np.zeros_like(y) if y else None) if isinstance(X, tuple) else pipeline.run(X, np.zeros_like(y) if y else None)
             scores.append(
                 tuple([objective(y or X, y_pred) for objective in self.objectives])
             )
 
         return scores
-
+    
     def _input_type(self, X):
         """
         Helper function to determine the input type of the dataset.

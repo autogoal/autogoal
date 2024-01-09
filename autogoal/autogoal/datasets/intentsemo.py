@@ -41,6 +41,7 @@ def load(
     y_test=[]
     
     with open(path / "train.csv", "r") as fd:
+    with open(path / "train.csv", "r") as fd:
         reader = csv.reader(fd)
         
         if (mode == TaskType.TokenClassification):
@@ -57,11 +58,26 @@ def load(
         
         if (mode == TaskType.TokenClassification):
             _, _, X_test, y_test = load_tokens(reader, include_sentiment, include_emotions, verbose)
+            _, _, X_train, y_train = load_tokens(reader, include_sentiment, include_emotions, verbose)
+        
+        if (mode == TaskType.SentenceClassification):
+            _, _, X_train, y_train = load_sentences(reader,include_sentiment,include_emotions, True, verbose)
+        
+        if (mode == TaskType.TextClassification):
+            _, _, X_train, y_train = load_texts(reader,include_sentiment,include_emotions, True, verbose)
+    
+    with open(path / "test.csv", "r") as fd:
+        reader = csv.reader(fd)
+        
+        if (mode == TaskType.TokenClassification):
+            _, _, X_test, y_test = load_tokens(reader, include_sentiment, include_emotions, verbose)
         
         if (mode == TaskType.SentenceClassification):
             _, _, X_test, y_test = load_sentences(reader,include_sentiment,include_emotions, True, verbose)
+            _, _, X_test, y_test = load_sentences(reader,include_sentiment,include_emotions, True, verbose)
         
         if (mode == TaskType.TextClassification):
+            _, _, X_test, y_test = load_texts(reader,include_sentiment,include_emotions, True, verbose)
             _, _, X_test, y_test = load_texts(reader,include_sentiment,include_emotions, True, verbose)
     
     return X_train, y_train, X_test, y_test
@@ -167,6 +183,9 @@ def load_sentences(
         sentiment_neu_intex = 1
         sentiment_pos_intex = 2
         sentiment_neg_intex = 3
+        sentiment_neu_intex = 1
+        sentiment_pos_intex = 2
+        sentiment_neg_intex = 3
         
         emotion_others_index = 4
         emotion_joy_index = 5
@@ -175,7 +194,15 @@ def load_sentences(
         emotion_sadness_index = 8
         emotion_anger_index = 9
         emotion_disgust_index = 10
+        emotion_others_index = 4
+        emotion_joy_index = 5
+        emotion_surprise_index = 6
+        emotion_fear_index = 7
+        emotion_sadness_index = 8
+        emotion_anger_index = 9
+        emotion_disgust_index = 10
         
+        label_index = 11
         label_index = 11
         
         text = row[text_index]
@@ -192,6 +219,7 @@ def load_sentences(
                     float(row[emotion_anger_index]), 
                     float(row[emotion_disgust_index])]
         
+        sentences, labels = [text], [row[label_index]] #span_to_sentence_class(text, entities) if single_label else span_to_sentence_multilabel_class(text, entities)
         sentences, labels = [text], [row[label_index]] #span_to_sentence_class(text, entities) if single_label else span_to_sentence_multilabel_class(text, entities)
         
         for sentence in sentences:
