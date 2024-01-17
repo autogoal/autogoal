@@ -27,10 +27,10 @@ jobs:
           cd autogoal && poetry install
           cd autogoal && poetry build
 
-      - name: Build docs
-        run: make docs
-        env:
-          BUILD_ENVIRONMENT: development
+      # - name: Build docs
+      #   run: make docs
+      #   env:
+      #     BUILD_ENVIRONMENT: development
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -45,10 +45,10 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages-dir: autogoal/dist
   
-      - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.GH_PAGES_TOKEN }}
-          external_repository: autogoal/autogoal.github.io
-          publish_branch: master
-          publish_dir: ./site
+      # - name: Deploy docs
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     personal_token: ${{ secrets.GH_PAGES_TOKEN }}
+      #     external_repository: autogoal/autogoal.github.io
+      #     publish_branch: master
+      #     publish_dir: ./site
