@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "3.9.16"
+python = ">=3.9.13,<3.10"
 pytest = "^7.2.1"
 numpy = "^1.21.6"
 psutil = "^5.9.4"
