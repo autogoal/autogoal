@@ -130,11 +130,11 @@ ensure-dev:
 
 .PHONY: docs-dev
 docs-dev:
-	python3 -m illiterate --inline autogoal docs/api
-	python3 -m illiterate --inline tests/examples docs/examples
-	python3 -m illiterate --inline tests/guide docs/guide
-	cp Readme.md docs/index.md
-	# python3 -m typer_cli autogoal/__main__.py utils docs > docs/cli-api.md
+	python3 -m illiterate autogoal/autogoal autogoal/docs/api
+	python3 -m illiterate autogoal/tests/examples autogoal/docs/examples
+	python3 -m illiterate autogoal/tests/guide autogoal/docs/guide
+	cp Readme.md autogoal/docs/index.md
+	# python3 -m typer_cli autogoal/autogoal/__main__.py utils autogoal/docs > autogoal/docs/cli-api.md
 
 # docs         Compile and publish the documentation to Github.
 .PHONY: docs
