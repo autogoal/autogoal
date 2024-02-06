@@ -84,26 +84,26 @@ shell:
 streamlit-demo:
 	docker run -p 8500:8501 autogoal/autogoal:streamlit-demo
 
-# dev          Run the base development image.
+# container          Creates the base development container.
 SERVICE=autogoal-core
-.PHONY: dev
-dev:
+.PHONY: container
+container:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
 
-# dev-sklearn  Run the development image with sklearn.
-.PHONY: dev-sklearn
-dev-sklearn:
-	make dev SERVICE=autogoal-sklearn
+# container-sklearn  Run the development image with sklearn.
+.PHONY: container-sklearn
+container-sklearn:
+	make container SERVICE=autogoal-sklearn
 
 # dev-nltk     Run the development image with nltk.
-.PHONY: dev-nltk
-dev-nltk:
-	make dev SERVICE=autogoal-nltk
+.PHONY: container-nltk
+container-nltk:
+	make container SERVICE=autogoal-nltk
 
-# dev-full     Run the development image with all contribs installed.
-.PHONY: dev-full
-dev-full:
-	make dev SERVICE=autogoal-full
+# container-full     Run the development image with all contribs installed.
+.PHONY: container-full
+container-full:
+	make container SERVICE=autogoal-full
 
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
