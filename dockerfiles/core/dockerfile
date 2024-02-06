@@ -8,8 +8,8 @@ FROM python:3.9.16
 # Basic enviroment setup
 # ---------------------
 
-RUN apt update \
- && apt install -y \
+RUN apt-get update \
+ && apt-get install -y \
     curl \
     locales \
     nano \
@@ -65,20 +65,19 @@ RUN sudo chown -R coder /home/coder
 RUN sudo chown -R coder /opt/dev/cache
 
 # Copy code-base for autogoal-core
-COPY ../autogoal /home/coder/autogoal/autogoal
+COPY autogoal/ /home/coder/autogoal/autogoal
 
 # Copy code-base for autogoal-contrib
-COPY ../autogoal-contrib /home/coder/autogoal/autogoal-contrib
+COPY autogoal-contrib/ /home/coder/autogoal/autogoal-contrib
 
 # Copy code-base for autogoal-remote
-COPY ../autogoal-remote /home/coder/autogoal/autogoal-remote
+COPY autogoal-remote/ /home/coder/autogoal/autogoal-remote
 
 # Copy code-base for autogoal-remote
-COPY ../scripts /home/coder/autogoal/scripts
+COPY scripts/ /home/coder/autogoal/scripts
 
 # Install autogoal core
-COPY dockerfiles/install-package.sh install-package.sh 
-RUN sudo chmod +x install-package.sh
-RUN sudo ./install-package.sh core
+COPY dockerfiles/install-package.sh /home/coder/autogoal/install-package.sh 
+RUN sudo chmod +x install-package.sh && sudo ./install-package.sh core
 
 CMD ["/bin/bash"]

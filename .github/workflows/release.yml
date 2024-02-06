@@ -13,7 +13,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: 3.9.16
           architecture: x64
 
       - name: Setup vendor libs
@@ -22,42 +22,33 @@ jobs:
 
       - name: Setup dependencies and build
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-          source $HOME/.poetry/env
+          pip install poetry==1.2
           poetry config virtualenvs.create false
-          poetry install --extras dev
-          poetry build
+          cd autogoal && poetry install
+          cd autogoal && poetry build
 
-      - name: Build docs
-        run: make docs
-        env:
-          BUILD_ENVIRONMENT: development
+      # - name: Build docs
+      #   run: make docs
+      #   env:
+      #     BUILD_ENVIRONMENT: development
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      
-      - name: Build and Test
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          tags: autogoal/autogoal:test
-          context: "."
-          file: "tests/tests.dockerfile"
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: autogoal/dist
   
-      - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.GH_PAGES_TOKEN }}
-          external_repository: autogoal/autogoal.github.io
-          publish_branch: master
-          publish_dir: ./site
+      # - name: Deploy docs
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     personal_token: ${{ secrets.GH_PAGES_TOKEN }}
+      #     external_repository: autogoal/autogoal.github.io
+      #     publish_branch: master
+      #     publish_dir: ./site
