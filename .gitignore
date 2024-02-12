@@ -156,5 +156,7 @@ output.csv
 
 autogoal/utils/remote/config/connections.yml
 .vscode/
-autogoal-export/
 models--*/
+autogoal-export/*
+autogoal-export/dockerfile
+autogoal-export/makefile
