@@ -9,7 +9,7 @@
 [<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
 
 [![Build and Push to Docker (main branch)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml)
-[![Test Core (main branch)](https://github.com/autogoal/autogoal/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/autogoal/autogoal/actions/workflows/test.yml)
+<!-- [![Test Core (main branch)](https://github.com/autogoal/autogoal/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/autogoal/autogoal/actions/workflows/test.yml) -->
 [![Release to PyPI](https://github.com/autogoal/autogoal/actions/workflows/release.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/release.yml)
 
 ---

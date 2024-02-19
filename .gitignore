@@ -156,9 +156,11 @@ output.csv
 
 autogoal/utils/remote/config/connections.yml
 .vscode/
-autogoal-export/
 models--*/
 text_classification_models_info_basic.json
 text_classification_models_info.json
 token_classification_models_info.json
 .vscode/settings.json
+autogoal-export/*
+autogoal-export/dockerfile
+autogoal-export/makefile

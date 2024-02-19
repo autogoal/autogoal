@@ -466,11 +466,20 @@ class ProgressLogger(Logger):
         self.pop_counter.update()
         self.total_counter.update()
 
-    def start_generation(self, generations, best_fn):
+    def start_generation(self, generations, best_solutions, best_fns):
         self.pop_counter.count = 0
 
-    def update_best(self, new_best, new_fn, *args):
-        self.total_counter.desc = "Best: %.3f" % new_fn
+    def update_best(
+            self,
+            solution,
+            fn,
+            new_best_solutions,
+            best_solutions,
+            new_best_fns,
+            best_fns,
+            new_dominated_solutions,
+        ):
+        self.total_counter.desc = "Best: %.3f" % fn
 
     def end(self, *args):
         self.pop_counter.close()
@@ -663,8 +672,17 @@ class MemoryLogger(Logger):
         self.generation_best_fn = [0]
         self.generation_mean_fn = []
 
-    def update_best(self, new_best, new_fn, previous_best, previous_fn):
-        self.generation_best_fn[-1] = new_fn
+    def update_best(
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
+        self.generation_best_fn[-1] = fn
 
     def finish_generation(self, fns):
         try:

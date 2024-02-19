@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import List, Tuple
+from deprecated import deprecated
 import dill as pickle
 
 import numpy as np
@@ -147,6 +148,7 @@ class AutoML:
                 
             pipeline.send("eval")
 
+    @deprecated
     def save(self, fp: io.BytesIO, pipelines: List[Pipeline] = None):
         """
         Serializes the AutoML instance.
@@ -226,6 +228,7 @@ class AutoML:
         )
 
     @staticmethod
+    @deprecated
     def load(fp: io.FileIO) -> "AutoML":
         """
         Deserializes an AutoML instance.
