@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "autogoal"
-version = "1.0.1a1"
+version = "1.0.2"
 authors = ["Suilan Estevez-Velarde <suilanestevez@gmail.com>", "Alejandro Piad-Morffis <apiad@apiad.net>", "Ernesto L. Estevanell-Valladares <ernestoestevanellv@gmail.com>"]
 description = "Automatic Generation Optimization And Learning"
 license = "MIT"
@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9.13,<3.10"
+python = ">=3.9.13,<3.11"
 pytest = "^7.2.1"
 numpy = "^1.21.6"
 psutil = "^5.9.4"
