@@ -164,3 +164,5 @@ token_classification_models_info.json
 autogoal-export/*
 autogoal-export/dockerfile
 autogoal-export/makefile
+autogoal-contrib/autogoal_transformers/autogoal_transformers/hub/*
+autogoal-contrib/autogoal_transformers/autogoal_transformers/.locks/*
