@@ -11,7 +11,7 @@ import os
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, Min, Gb, is_cuda_multiprocessing_enabled, clear_cuda_cache
+from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, Min, Gb, is_cuda_multiprocessing_enabled, clear_cuda_memory
 from autogoal.sampling import ReplaySampler
 from rich.progress import Progress
 from rich.panel import Panel
@@ -138,7 +138,7 @@ class SearchAlgorithm:
                         )
                         continue
                     
-                        clear_cuda_cache()
+                        clear_cuda_memory()
 
                     if not self._allow_duplicates and repr(solution) in seen:
                         continue

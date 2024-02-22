@@ -29,7 +29,7 @@ TEST_SPLIT_SIZE_TO_INDEXES = {
     }
 
 CLASSES_MAP_EXTENDED = {
-    "O", "not_medical_text",
+    "O", "not_medical_claim_nor_experience_nor_question",
     "claim", "medical_causal_claim",
     "per_exp", " medical_causal_experience",
     "claim_per_exp", "medical_causal_claim_based_on_experience",
@@ -458,7 +458,6 @@ def F1_beta_plain(y, predicted, beta=1):
         return (1 + beta**2) * ((p * r) / (p + r))
     except ZeroDivisionError:
         return 0.0
-        pass
 
 def basic_fn_plain(y, predicted):
     correct = 0

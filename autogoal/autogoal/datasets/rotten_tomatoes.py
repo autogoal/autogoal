@@ -5,14 +5,14 @@ from autogoal.datasets import download, datapath
 
 def load():
     try:
-        download("imdb_50k_movie_reviews")
+        download("rotten_tomatoes")
     except:
         print(
             "Error loading data. This may be caused due to bad connection. Please delete badly downloaded data and retry"
         )
         raise
 
-    path = datapath("imdb_50k_movie_reviews")
+    path = datapath("rotten_tomatoes")
     
     X_train = []
     y_train = []
@@ -26,8 +26,8 @@ def load():
                 title_line = False
                 continue
             
-            X_train.append(row[0])
-            y_train.append(row[1])
+            X_train.append(row[1])
+            y_train.append(row[2])
             
     with open(path / "test.csv", "r") as fd:
         reader = csv.reader(fd)
@@ -37,25 +37,10 @@ def load():
                 title_line = False
                 continue
             
-            X_test.append(row[0])
-            y_test.append(row[1])
+            X_test.append(row[1])
+            y_test.append(row[2])
             
     return X_train, y_train, X_test, y_test
-
-def make_fn(test_size=0.5, examples=None):
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import accuracy_score
-
-    X, y = load(examples)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
-
-    def fitness_fn(pipeline):
-        pipeline.fit(X_train, y_train)
-        y_pred = pipeline.predict(X_test)
-
-        return accuracy_score(y_test, y_pred)
-
-    return fitness_fn
 
 if __name__ == "__main__":
     load()

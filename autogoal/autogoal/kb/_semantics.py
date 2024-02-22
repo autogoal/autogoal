@@ -138,16 +138,19 @@ class Text(SemanticType):
     def _match(cls, x):
         return isinstance(x, str)
 
+class GeneratedText(Text):
+    pass
+
+class Prompt(Text):
+    pass
 
 class Document(Text):
     pass
-
 
 class Sentence(Document):
     @classmethod
     def _match(cls, x):
         return super()._match(x) and x.count(".") <= 1
-
 
 class Word(Sentence):
     @classmethod
@@ -626,6 +629,8 @@ __all__ = [
     "Supervised",
     "Seq",
     "Text",
+    "GeneratedText",
+    "Prompt",
     "Document",
     "Sentence",
     "Word",

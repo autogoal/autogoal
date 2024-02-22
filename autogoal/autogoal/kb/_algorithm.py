@@ -297,7 +297,7 @@ class Pipeline:
             data[output_type] = output
 
         return data[self.algorithms[-1].output_type()]
-
+ 
     def send(self, msg: str, *args, **kwargs):
         found = False
 

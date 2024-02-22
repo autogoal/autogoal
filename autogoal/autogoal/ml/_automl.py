@@ -322,9 +322,9 @@ class AutoML:
                 pipeline,
                 X,
                 y,
-                self.validation_split,
-                self.cross_validation_steps,
-                self.cross_validation,
+                validation_split = self.validation_split,
+                cross_validation_steps = self.cross_validation_steps,
+                cross_validation = self.cross_validation,
             )
 
         return fitness_fn

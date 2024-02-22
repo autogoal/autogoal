@@ -338,27 +338,29 @@ def restrict(memory, timeout):
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(timeout)  # Number of seconds before alarm is raised
 
-def clear_cuda_cache():
+def clear_cuda_memory():
     try:
         import torch
         torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
     except:
         pass
 
 def restricted_function(memory, timeout, function, *args, **kwargs):
     try:
         restrict(memory, timeout)
+        clear_cuda_memory()
         return function(*args, **kwargs)
     except _ArrayMemoryError as e:
-        clear_cuda_cache()
+        clear_cuda_memory()
         raise _ArrayMemoryError(e.shape, e.dtype)
     except TimeoutError as e:
-        clear_cuda_cache()
+        clear_cuda_memory()
         raise TimeoutError(
                 f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {timeout} seconds."
             )
     except Exception as e:
-        clear_cuda_cache()
+        clear_cuda_memory()
         raise e
 
 class JobLibRestrictedWorkerByJoin:

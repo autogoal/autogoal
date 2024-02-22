@@ -1,12 +1,12 @@
 # AutoGOAL Example: basic usage of the AutoML class
 
-from autogoal.datasets import imdb_50k_movie_reviews
+from autogoal.datasets import sst2
 from autogoal.kb import Seq, Sentence, Supervised, VectorCategorical
 from autogoal.ml import AutoML
 from autogoal.search._base import ConsoleLogger
 
 # Load dataset
-X, y = imdb_50k_movie_reviews.load()
+X, y = sst2.load()
 
 # Instantiate AutoML and define input/output types
 automl = AutoML(
