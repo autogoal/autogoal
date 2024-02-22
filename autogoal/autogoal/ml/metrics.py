@@ -3,7 +3,7 @@ from textwrap import wrap
 import time
 import numpy as np
 import statistics
-from autogoal.ml.utils import LabelEncoder, check_number_of_labels
+from autogoal.ml.utils import LabelEncoder, check_number_of_labels, stratified_split_indices
 from functools import wraps
 from deprecated import deprecated
 
@@ -16,6 +16,7 @@ except ImportError:
     RESOURCE_CONTROL_AVAILABLE = False
 
 METRICS = []
+
 
 
 def register_metric(func):
@@ -59,6 +60,7 @@ def supervised_fitness_fn_moo(objectives):
         validation_split=0.3,
         cross_validation_steps=3,
         cross_validation="median",
+        stratified=True,
         **kwargs
     ):
         """
@@ -71,6 +73,7 @@ def supervised_fitness_fn_moo(objectives):
         - validation_split: the proportion of data to use for validation
         - cross_validation_steps: the number of times to perform cross-validation
         - cross_validation: the function to use to aggregate the cross-validation scores (either 'mean' or 'median')
+        - stratified: whether to use stratified k-fold cross-validation
         - kwargs: additional arguments to pass to the pipeline
 
         Returns:
@@ -83,17 +86,23 @@ def supervised_fitness_fn_moo(objectives):
             X_instances = [X]
             if isinstance(X, tuple):
                 X_instances = list(X)
+                
+            train_indices = []
+            val_indices = []
             
-            # Split the data into training and validation sets
-            len_x = len(X_instances[0]) if isinstance(X_instances[0], list) else X_instances[0].shape[0]
-            indices = np.arange(0, len_x)
-            np.random.shuffle(indices)
-            split_index = int(validation_split * len(indices))
-            train_indices = indices[:-split_index]
-            test_indices = indices[-split_index:]
-            
+            if stratified:
+                train_indices, val_indices = stratified_split_indices(y, validation_split)
+            else:
+                # Split the data into training and validation sets
+                len_x = len(X_instances[0]) if isinstance(X_instances[0], list) else X_instances[0].shape[0]
+                indices = np.arange(0, len_x)
+                np.random.shuffle(indices)
+                split_index = int(validation_split * len(indices))
+                train_indices = indices[:-split_index]
+                val_indices = indices[-split_index:]
+                
             X_train_instances = []
-            X_test_instances = []
+            X_val_instances = []
             for Xi in X_instances:
                 # Split the data into training and validation sets
                 X_train = []
@@ -102,20 +111,20 @@ def supervised_fitness_fn_moo(objectives):
                 if isinstance(Xi, list):
                     X_train, X_test = (
                         [Xi[i] for i in train_indices],
-                        [Xi[i] for i in test_indices],
+                        [Xi[i] for i in val_indices],
                     )
                 else:
                     X_train, X_test = (
                         Xi[train_indices],
-                        Xi[test_indices],
+                        Xi[val_indices],
                     )
                     
                 X_train_instances.append(X_train)
-                X_test_instances.append(X_test)
+                X_val_instances.append(X_test)
                 
                     
             y_train = y[train_indices]
-            y_test = y[test_indices]
+            y_test = y[val_indices]
 
             start = time.time()
             
@@ -125,7 +134,7 @@ def supervised_fitness_fn_moo(objectives):
 
             # Evaluate the pipeline on the validation set
             pipeline.send("eval")
-            y_pred = pipeline.run(*X_test_instances, None, **kwargs)
+            y_pred = pipeline.run(*X_val_instances, None, **kwargs)
 
             end = time.time()
 
@@ -327,7 +336,6 @@ def calinski_harabasz_score(X, labels):
         if intra_disp == 0.0
         else extra_disp * (n_samples - n_labels) / (intra_disp * (n_labels - 1.0))
     )
-
 
 def silhouette_score(X, labels):
     """

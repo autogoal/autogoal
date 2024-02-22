@@ -45,6 +45,7 @@ class AutoML:
         errors="warn",
         cross_validation="median",
         cross_validation_steps=3,
+        stratified_cross_validation=True,
         registry=None,
         objectives=None,
         remote_sources: List[Tuple[str, int] or str] = None,
@@ -61,6 +62,7 @@ class AutoML:
         self.errors = errors
         self.cross_validation = cross_validation
         self.cross_validation_steps = cross_validation_steps
+        self.stratified_cross_validation = stratified_cross_validation
         self.registry = registry
         self.random_state = random_state
         self.objectives = objectives or accuracy
@@ -325,6 +327,7 @@ class AutoML:
                 validation_split = self.validation_split,
                 cross_validation_steps = self.cross_validation_steps,
                 cross_validation = self.cross_validation,
+                stratified = self.stratified_cross_validation
             )
 
         return fitness_fn

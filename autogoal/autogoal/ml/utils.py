@@ -378,3 +378,45 @@ def is_scalar_nan(x):
     # convert from numpy.bool_ to python bool to ensure that testing
     # is_scalar_nan(x) is True does not fail.
     return bool(isinstance(x, numbers.Real) and np.isnan(x))
+
+def stratified_split_indices(y, validation_split=0.3):
+    """
+    Generate indices for a stratified train/validation split.
+
+    Args:
+    - y: the output data
+    - validation_split: the proportion of data to use for validation
+
+    Returns:
+    - train_indices: an array of indices for the training set
+    - val_indices: an array of indices for the validation set
+    """
+    # Map the classes to integer indices
+    class_to_index = {c: i for i, c in enumerate(np.unique(y))}
+    y_indices = np.array([class_to_index[c] for c in y])
+
+    # Get the unique classes and their counts
+    classes, counts = np.unique(y_indices, return_counts=True)
+
+    # Calculate the number of samples per class for validation
+    samples_per_class_for_val = (counts * validation_split).astype(int)
+
+    # Initialize the lists of indices
+    train_indices = []
+    val_indices = []
+
+    # For each class...
+    for c in classes:
+        # Get the indices of the samples of this class
+        class_indices = np.where(y_indices == c)[0]
+
+        # Shuffle the indices
+        np.random.shuffle(class_indices)
+
+        # Assign samples of this class to validation and training sets
+        val_indices.extend(class_indices[:samples_per_class_for_val[c]])
+        train_indices.extend(class_indices[samples_per_class_for_val[c]:])
+
+    np.random.shuffle(train_indices)
+    np.random.shuffle(val_indices)
+    return train_indices, val_indices

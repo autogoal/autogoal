@@ -348,7 +348,7 @@ def clear_cuda_memory():
 
 def restricted_function(memory, timeout, function, *args, **kwargs):
     try:
-        restrict(memory, timeout)
+        restrict(int(memory), int(timeout))
         clear_cuda_memory()
         return function(*args, **kwargs)
     except _ArrayMemoryError as e:
