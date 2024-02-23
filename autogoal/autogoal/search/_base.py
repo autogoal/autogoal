@@ -137,8 +137,6 @@ class SearchAlgorithm:
                             "Error while generating solution: %s" % e, solution
                         )
                         continue
-                    
-                        clear_cuda_memory()
 
                     if not self._allow_duplicates and repr(solution) in seen:
                         continue

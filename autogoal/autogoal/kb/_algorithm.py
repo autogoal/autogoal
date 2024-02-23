@@ -25,7 +25,7 @@ from autogoal.utils import (
 )
 import dill as pickle
 
-def algorithm(*annotations):
+def algorithm(*annotations, exceptions:List[str]=None):
     from autogoal.grammar import Union, Symbol
 
     *inputs, output = annotations
@@ -33,6 +33,11 @@ def algorithm(*annotations):
     def match(cls):
         if not hasattr(cls, "run"):
             return False
+        
+        if exceptions is not None:
+            for exc in exceptions:
+                if exc in cls.__name__ or exc in cls.__module__:
+                    return False
 
         signature = inspect.signature(cls.run)
         input_types = [
