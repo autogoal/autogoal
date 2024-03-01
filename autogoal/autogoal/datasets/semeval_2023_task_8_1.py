@@ -491,7 +491,7 @@ def macro_f1_plain(y, predicted, *args, **kwargs):
     from sklearn.metrics import f1_score
     
     # Get the unique classes
-    return f1_score(y, predicted, average='macro')
+    return f1_score(list(y), list(predicted), average='macro')
 
 def weighted_f1_plain(y, predicted, *args, **kwargs):
     """

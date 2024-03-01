@@ -22,21 +22,25 @@ def load():
     classes = ["World", "Sports", "Business", "Science/Technology"]
     with open(path / "train.csv", "r") as fd:
         reader = csv.reader(fd)
+        title_line = True
         for row in reader:
-            X_train.append({
-                "title": row[1],
-                "content": row[2]
-            })
-            y_train.append(classes[int(row[0])])
+            if title_line:
+                title_line = False
+                continue
+            
+            X_train.append(row[0])
+            y_train.append(classes[int(row[1])])
             
     with open(path / "test.csv", "r") as fd:
         reader = csv.reader(fd)
+        title_line = True
         for row in reader:
-            X_test.append({
-                "title": row[1],
-                "content": row[2]
-            })
-            y_test.append(classes[int(row[0])])
+            if title_line:
+                title_line = False
+                continue
+            
+            X_test.append(row[0])
+            y_test.append(classes[int(row[1])])
             
     return X_train, y_train, X_test, y_test
 
