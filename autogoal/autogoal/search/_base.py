@@ -502,18 +502,22 @@ class RichLogger(Logger):
     def sample_solution(self, solution):
         self.progress.advance(self.pop_counter)
         self.progress.advance(self.total_counter)
-        self.console.rule("Evaluating pipeline")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.console.rule(f"Evaluating pipeline at {timestamp}")
         self.console.print(repr(solution))
 
     def eval_solution(self, solution, fitness):
-        self.console.print(Panel(f"📈 Fitness=[blue]{fitness}"))
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.console.print(Panel(f"📈 Fitness=[blue]{fitness} at {timestamp}"))
 
     def error(self, e: Exception, solution):
-        self.console.print(f"⚠️[red bold]Error:[/] {e}")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.console.print(f"⚠️[red bold]Error:[/] {e} at {timestamp}")
 
     def start_generation(self, generations, best_solutions, best_fns):
         bests = "\n".join(f"Best_{i}: {fn}" for i, fn in enumerate(best_fns))
-        self.console.rule(f"New generation - Remaining={generations}\n{bests}")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.console.rule(f"New generation - Remaining={generations}\n{bests} at {timestamp}")
         self.progress.update(self.pop_counter, completed=0)
 
     def update_best(
@@ -636,6 +640,7 @@ class JsonLogger(Logger):
     
     def update_log(self, json_load):
         new_data = ""
+        json_load["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
             # Try to open the file
             with open(self.log_file_name, "r") as log_file:

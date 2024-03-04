@@ -4,6 +4,7 @@ import time
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels, stratified_split_indices
+from autogoal.kb import Pipeline
 from functools import wraps
 from deprecated import deprecated
 
@@ -53,7 +54,7 @@ def supervised_fitness_fn_moo(objectives):
     """
 
     def fitness_fn(
-        pipeline,
+        pipeline: Pipeline,
         X,
         y,
         *args,

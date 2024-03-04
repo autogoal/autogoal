@@ -7,7 +7,7 @@ import requests
 import os
 from tqdm import tqdm
 from functools import lru_cache
-
+from autogoal.datasets._dataset import Dataset, SimpleDataset
 
 DATASETS_METADATA = (
     "https://raw.githubusercontent.com/autogoal/datasets/master/datasets.json"
@@ -17,6 +17,7 @@ DATA_PATH = Path.home() / ".autogoal" / "data"
 
 # ensure data path directory creation
 os.makedirs(DATA_PATH, exist_ok=True)
+
 
 
 @lru_cache()

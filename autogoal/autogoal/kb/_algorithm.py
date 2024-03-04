@@ -3,8 +3,8 @@ import inspect
 import abc
 import types
 import warnings
+from autogoal.datasets import Dataset, SimpleDataset
 import yaml
-import glob
 from typing import Any, Dict, List, Set, Tuple, Type
 from pathlib import Path
 import types
@@ -19,13 +19,13 @@ from autogoal.kb._semantics import SemanticType, Seq
 from autogoal.utils import (
     AlgorithmConfig,
     get_contrib,
-    generate_installer,
     loads,
     dumps,
 )
 import dill as pickle
 
-def algorithm(*annotations, exceptions:List[str]=None):
+
+def algorithm(*annotations, exceptions: List[str] = None):
     from autogoal.grammar import Union, Symbol
 
     *inputs, output = annotations
@@ -33,7 +33,7 @@ def algorithm(*annotations, exceptions:List[str]=None):
     def match(cls):
         if not hasattr(cls, "run"):
             return False
-        
+
         if exceptions is not None:
             for exc in exceptions:
                 if exc in cls.__name__ or exc in cls.__module__:
@@ -153,11 +153,11 @@ class AlgorithmBase(Algorithm):
     @classmethod
     def get_inner_signature(cls) -> inspect.Signature:
         return inspect.signature(cls.__init__)
-    
+
     @classmethod
     def is_upscalable(cls) -> bool:
         return True
-    
+
     @classmethod
     def input_types(cls) -> Tuple[type]:
         # if not hasattr(cls, "__run_signature__"):
@@ -200,14 +200,14 @@ class AlgorithmBase(Algorithm):
         ]
         values = [getattr(self, param, None) for param in params]
         parameters = {params[i]: values[i] for i in range(len(params))}
-        
+
         for pkey in parameters.keys():
             if isinstance(parameters[pkey], AlgorithmBase):
                 param_path = path / str(pkey)
                 os.mkdir(param_path)
                 p_config = parameters[pkey].save(param_path)
                 parameters[pkey] = p_config
-        
+
         module = f"'{self.__module__}.{self.__class__.__name__}'"
         name = self.__class__.__name__
         config = AlgorithmConfig(name, module, parameters)
@@ -263,11 +263,11 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
 
     for name, type in zip(algorithm.input_args(), algorithm.input_types()):
         try:
-            result[name] = values[type]
+            result[name] = values[type].load_all_data()
         except KeyError:
             for key in values:
                 if issubclass(key, type):
-                    result[name] = values[key]
+                    result[name] = values[key].load_all_data()
                     break
             else:
                 raise TypeError(f"Cannot find compatible input value for {type}")
@@ -293,16 +293,16 @@ class Pipeline:
         data = {}
 
         for i, t in zip(inputs, self.input_types):
-            data[t] = i
+            data[t] = SimpleDataset(t, i)
 
         for algorithm in self.algorithms:
             args = build_input_args(algorithm, data)
             output = algorithm.run(**args)
             output_type = algorithm.output_type()
-            data[output_type] = output
+            data[output_type] = SimpleDataset(output_type, output)
 
-        return data[self.algorithms[-1].output_type()]
- 
+        return data[self.algorithms[-1].output_type()].load_all_data()
+
     def send(self, msg: str, *args, **kwargs):
         found = False
 
@@ -311,7 +311,7 @@ class Pipeline:
                 getattr(step, msg)(*args, **kwargs)
                 found = True
             elif hasattr(step, "send"):
-                step.send(msg, *args, **kwargs) # type: ignore
+                step.send(msg, *args, **kwargs)  # type: ignore
                 found = True
 
         if not found:
@@ -367,22 +367,22 @@ class Pipeline:
         algorithm_clases = []
 
         for i, algorithm in enumerate(stored_data.get("algorithms")):
-            
+
             # Patch for when an algorithm is a generated seq algorithm.
             # If that is the case then we need to know the depth of the sequence algorithms
             # in order to build the original algorithm
             inner_algorithm, seq_depth = find_nested_seq_algorithm_and_depth(algorithm)
-            
+
             algorithm = inner_algorithm if seq_depth > 0 else algorithm
-            
+
             for cls in autogoal_algorithms:
                 if algorithm in object.__str__(cls):
                     algorithm_clases.append(cls)
-                    
+
                     loaded_algorithm = cls.load(path / "algorithms" / str(i))
                     while seq_depth > 0:
                         loaded_algorithm = make_seq_algorithm(loaded_algorithm)()
-                        seq_depth -= 1 
+                        seq_depth -= 1
                     algorithms.append(loaded_algorithm)
 
         inputs = loads(stored_data.get("inputs"))
@@ -419,10 +419,14 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     >>> b.get_inner_signature()
     <Signature (self, alpha)>
     """
-    
+
     is_algorithm_instance = isinstance(algorithm, AlgorithmBase)
-    
-    if not (algorithm.__class__.is_upscalable() if is_algorithm_instance else algorithm.is_upscalable()):
+
+    if not (
+        algorithm.__class__.is_upscalable()
+        if is_algorithm_instance
+        else algorithm.is_upscalable()
+    ):
         return None
 
     output_type = algorithm.output_type()
@@ -472,20 +476,22 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
 
     return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
 
+
 def find_nested_seq_algorithm_and_depth(s):
     # Find all occurrences of the pattern
     matches = re.findall(r"abc\.SeqAlgorithm\[", s)
-    
+
     # The depth is the number of occurrences
     depth = len(matches)
-    
+
     # Find the innermost string by removing the outer layers
-    inner_string = re.sub(r"'",'',s)
+    inner_string = re.sub(r"'", "", s)
     for _ in range(depth):
-        inner_string = re.sub(r'abc\.SeqAlgorithm\[', '', inner_string, count=1)
-        inner_string = re.sub(r"\]$", '', inner_string, count=1)
-    
+        inner_string = re.sub(r"abc\.SeqAlgorithm\[", "", inner_string, count=1)
+        inner_string = re.sub(r"\]$", "", inner_string, count=1)
+
     return inner_string, depth
+
 
 Akw = namedtuple("Akw", ["args", "kwargs"])
 
