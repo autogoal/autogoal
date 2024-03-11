@@ -63,7 +63,6 @@ class RestrictedWorker:
 
             if self.memory and self.memory > (used_memory + 500 * Mb):
                 # memory may be restricted
-                
                 self.memory = min(self.memory, sys.maxsize)
                 resource.setrlimit(resource.RLIMIT_DATA, (self.memory, mhard))
             else:
@@ -335,8 +334,8 @@ def restrict(memory, timeout):
                 % (memory, used_memory + 50 * Mb)
             )
         
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(timeout)  # Number of seconds before alarm is raised
+        # signal.signal(signal.SIGALRM, handler)
+        # signal.alarm(timeout)  # Number of seconds before alarm is raised
 
 def clear_cuda_memory():
     try:
@@ -345,6 +344,14 @@ def clear_cuda_memory():
         torch.cuda.ipc_collect()
     except:
         pass
+    
+def mock_function(*args, **kwargs):
+    """
+    A mock function that does minimal work.
+    Its primary purpose is to allow the usage of multiple jobs in joblib
+    to enable setting a timeout for the primary task.
+    """
+    pass
 
 def restricted_function(memory, timeout, function, *args, **kwargs):
     try:
@@ -372,17 +379,31 @@ class JobLibRestrictedWorkerByJoin:
     def run_restricted(self, pipeline, *args, **kwargs):
         """
         Executes a given function with restricted amount of
-        CPU time and RAM memory usage
+        CPU time and RAM memory usage, alongside a mock function
+        to enable joblib's timeout feature.
         """
-        
-        from joblib import parallel_backend
-
-        parallel = Parallel(n_jobs=1)
-        result = parallel (
-            delayed(restricted_function)(self.memory, self.timeout, self.function, pipeline) for _ in range(1)
-        )
-        
-        return result[0]
+        try:
+            with Parallel(n_jobs=2, backend='threading', timeout=self.timeout) as parallel:
+                result = parallel([
+                    delayed(restricted_function)(self.memory, self.timeout, self.function, pipeline, *args, **kwargs),
+                    delayed(mock_function)()
+                ])
+            return result[0]
+        except _ArrayMemoryError as e:
+            clear_cuda_memory()
+            raise _ArrayMemoryError(e.shape, e.dtype)
+        except TimeoutError as e:
+            clear_cuda_memory()
+            raise TimeoutError(
+                    f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
+                )
+        except Exception as e:
+            clear_cuda_memory()
+            if (e.__class__.__name__ == "TimeoutError"):
+                raise TimeoutError(
+                    f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
+                )
+            raise e
 
     def __call__(self, *args, **kwargs):
         return self.run_restricted(*args, **kwargs)

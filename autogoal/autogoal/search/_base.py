@@ -13,6 +13,7 @@ import autogoal.logging
 
 from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, Min, Gb, is_cuda_multiprocessing_enabled, clear_cuda_memory
 from autogoal.sampling import ReplaySampler
+from autogoal.datasets import clean_temporary_datasets
 from rich.progress import Progress
 from rich.panel import Panel
 
@@ -146,6 +147,7 @@ class SearchAlgorithm:
                         fn = self._fitness_fn(solution)
                     except Exception as e:
                         fn = self._worst_fns
+                        clean_temporary_datasets()
                         logger.error(e, solution)
 
                         if self._errors == "raise":

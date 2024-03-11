@@ -3,7 +3,7 @@ import inspect
 import abc
 import types
 import warnings
-from autogoal.datasets import Dataset, SimpleDataset
+from autogoal.datasets import Dataset, SimpleDataset, clean_temporary_datasets
 import yaml
 from typing import Any, Dict, List, Set, Tuple, Type
 from pathlib import Path
@@ -301,7 +301,9 @@ class Pipeline:
             output_type = algorithm.output_type()
             data[output_type] = SimpleDataset(output_type, output)
 
-        return data[self.algorithms[-1].output_type()].load_all_data()
+        results = data[self.algorithms[-1].output_type()].load_all_data()
+        clean_temporary_datasets()
+        return results
 
     def send(self, msg: str, *args, **kwargs):
         found = False

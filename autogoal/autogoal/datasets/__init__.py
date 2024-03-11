@@ -7,7 +7,7 @@ import requests
 import os
 from tqdm import tqdm
 from functools import lru_cache
-from autogoal.datasets._dataset import Dataset, SimpleDataset
+from autogoal.datasets._dataset import Dataset, SimpleDataset, clean_temporary_datasets
 
 DATASETS_METADATA = (
     "https://raw.githubusercontent.com/autogoal/datasets/master/datasets.json"

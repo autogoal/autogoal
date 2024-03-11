@@ -9,14 +9,24 @@ from tempfile import mkdtemp
 import shutil
 from scipy.sparse import issparse, vstack
 
-DATA_PATH = Path.home() / ".autogoal" / "data"
+TEMP_DATA_PATH = Path.home() / ".autogoal" / "data" / "temp"
+
+def clean_temporary_datasets():
+    try:
+        shutil.rmtree(TEMP_DATA_PATH)
+    except FileNotFoundError:
+        pass  # Directory already deleted, no action required
+    except Exception as e:
+        print(f"Error deleting temporary directory: {e}")
 
 class Dataset:
     def __init__(self, semantic_type_instance: SemanticType, data: List[Any] or np.ndarray, storage_batch_size: int = 100, load_batch_size: int = 200): # type: ignore
         self.semantic_type_instance = semantic_type_instance
         self.storage_batch_size = storage_batch_size
         self.load_batch_size = load_batch_size
-        self.storage_path = mkdtemp(prefix=semantic_type_instance._name(), dir=DATA_PATH)  # Creates a temporary directory for storage
+        
+        os.makedirs(TEMP_DATA_PATH, exist_ok=True)
+        self.storage_path = mkdtemp(prefix=semantic_type_instance._name(), dir=TEMP_DATA_PATH)  # Creates a temporary directory for storage
         self.metadata = {
             "type": semantic_type_instance._name(),
             "shape": None,
@@ -131,7 +141,9 @@ class Dataset:
 class SimpleDataset():
     def __init__(self, semantic_type_instance: SemanticType, data: List[Any] or np.ndarray): # type: ignore
         self.semantic_type_instance = semantic_type_instance
-        self.storage_path = mkdtemp(prefix=semantic_type_instance._name(), dir=DATA_PATH)  # Creates a temporary directory for storage
+        
+        os.makedirs(TEMP_DATA_PATH, exist_ok=True)
+        self.storage_path = mkdtemp(prefix=semantic_type_instance._name(), dir=TEMP_DATA_PATH)  # Creates a temporary directory for storage
         
         # Determine the length or size of the dataset depending on the data type
         if data is None:
