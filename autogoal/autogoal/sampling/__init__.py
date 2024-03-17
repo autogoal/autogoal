@@ -109,6 +109,26 @@ class Sampler:
         """
         return self.rand.choice(options)
 
+    def subset(self, options, handle=None):
+        picks = []
+
+        for i,o in enumerate(options):
+            pick = self.boolean(handle=f"{handle}-{i}" if handle else None)
+            if pick:
+                picks.append(o)
+
+        return picks
+
+    def shuffled(self, options, handle=None):
+        copy = list(options)
+
+        for i in range(len(options)):
+            j = self.discrete(0, len(copy)-1, handle=f"{handle}-{i}" if handle else None)
+            tmp = copy[i]
+            copy[i] = copy[j]
+            copy[j] = tmp
+
+        return copy
 
 class ModelSampler(Sampler):
     """
