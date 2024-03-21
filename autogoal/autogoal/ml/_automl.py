@@ -48,7 +48,7 @@ class AutoML:
         stratified_cross_validation=True,
         registry=None,
         objectives=None,
-        remote_sources: List[Tuple[str, int] or str] = None,
+        remote_sources: List[Tuple[str, int] or str] = None, # type: ignore
         max_list_depth=1,
         **search_kwargs,
     ):
@@ -123,7 +123,7 @@ class AutoML:
         if not y is None:
             self.output = self._output_type(y)
 
-        search = self.search_algorithm(
+        self.search = self.search_algorithm(
             self.make_pipeline_builder(),
             self.make_fitness_fn(X, y),
             random_state=self.random_state,
@@ -131,7 +131,7 @@ class AutoML:
             **self.search_kwargs,
         )
 
-        self.best_pipelines_, self.best_scores_ = search.run(
+        self.best_pipelines_, self.best_scores_ = self.search.run(
             self.search_iterations, **kwargs
         )
 

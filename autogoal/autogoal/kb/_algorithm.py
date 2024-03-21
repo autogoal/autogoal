@@ -22,8 +22,8 @@ from autogoal.utils import (
     loads,
     dumps,
 )
+from autogoal.utils._process import get_used_memory
 import dill as pickle
-
 
 def algorithm(*annotations, exceptions: List[str] = None):
     from autogoal.grammar import Union, Symbol
@@ -263,17 +263,16 @@ def build_input_args(algorithm: Algorithm, values: Dict[type, Any]):
 
     for name, type in zip(algorithm.input_args(), algorithm.input_types()):
         try:
-            result[name] = values[type].load_all_data()
+            result[name] = values[type]
         except KeyError:
             for key in values:
                 if issubclass(key, type):
-                    result[name] = values[key].load_all_data()
+                    result[name] = values[key]
                     break
             else:
                 raise TypeError(f"Cannot find compatible input value for {type}")
 
     return result
-
 
 @nice_repr
 class Pipeline:
@@ -291,18 +290,24 @@ class Pipeline:
 
     def run(self, *inputs):
         data = {}
+        print(f"Starting pipeline eval. [MEM]: {get_used_memory()} MB" )
 
         for i, t in zip(inputs, self.input_types):
-            data[t] = SimpleDataset(t, i)
-
+            data[t] = i
+        
+        alg_count = 0
         for algorithm in self.algorithms:
             args = build_input_args(algorithm, data)
             output = algorithm.run(**args)
             output_type = algorithm.output_type()
-            data[output_type] = SimpleDataset(output_type, output)
-
-        results = data[self.algorithms[-1].output_type()].load_all_data()
-        clean_temporary_datasets()
+            data[output_type] = output#SimpleDataset(output_type, output)
+            print(f"After Algorithm {alg_count}. [MEM]: {get_used_memory()} MB" )
+            alg_count += 1
+            
+        results = data[self.algorithms[-1].output_type()]
+        del data
+        
+        print(f"After pipeline eval. [MEM]: {get_used_memory()} MB" )
         return results
 
     def send(self, msg: str, *args, **kwargs):
@@ -347,7 +352,6 @@ class Pipeline:
 
     def serialize(self, use_dill=False):
         return dumps(self, use_dill)
-
     @staticmethod
     def deserialize(data, use_dill=False):
         return loads(data, use_dill)
@@ -390,7 +394,9 @@ class Pipeline:
         inputs = loads(stored_data.get("inputs"))
         return (algorithms, inputs)
 
-
+def reconstruct_seq_algorithm(algorithm, args, kwargs):
+    return make_seq_algorithm(algorithm)(*args, **kwargs)
+    
 def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     """Lift an algorithm with input types T1, T2, Tn to a meta-algorithm with types Seq[T1], Seq[T2], ...
 
@@ -436,6 +442,8 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     name = f"SeqAlgorithm[{algorithm.__class__.__name__ if is_algorithm_instance else algorithm.__name__}]"
 
     def init_method(self, *args, **kwargs):
+        self.__class__.args = args
+        self.__class__.kwargs = kwargs
         self.inner = algorithm if is_algorithm_instance else algorithm(*args, **kwargs)
 
     def run_method(self, *args, **kwargs) -> Seq[output_type]:
@@ -466,6 +474,10 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
     def output_types_method(cls):
         return Seq[algorithm.output_type()]
 
+    @classmethod
+    def reduce_method(cls):
+        return (reconstruct_seq_algorithm, (algorithm, cls.args, cls.kwargs))
+    
     def body(ns):
         ns["__init__"] = init_method
         ns["run"] = run_method
@@ -475,6 +487,7 @@ def make_seq_algorithm(algorithm: Algorithm) -> Algorithm:
         ns["input_args"] = input_args_method
         ns["output_type"] = output_types_method
         ns["get_inner_signature"] = get_inner_signature_method
+        ns["__reduce__"] = reduce_method
 
     return types.new_class(name=name, bases=(Algorithm,), exec_body=body)
 

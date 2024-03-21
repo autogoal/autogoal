@@ -128,10 +128,7 @@ def _reduce_semantic_type(t):
 
 
 copyreg.pickle(SemanticTypeMeta, _reduce_semantic_type)
-
-
 # Let's start with the natural language hierarchy.
-
 
 class Text(SemanticType):
     @classmethod
@@ -235,12 +232,10 @@ class Supervised(SemanticType):
             
             @classmethod
             def _reduce(cls):
-                return Supervised._specialize, (internal_type,)
+                return (Supervised._specialize, (internal_type,))
 
-        cls.__internal_types[internal_type] = SupervisedImp
-
+        Supervised.__internal_types[internal_type] = SupervisedImp
         return SupervisedImp
-
 
 # A first complex type we can implement is `Seq`, to represent a list (or sequence) of another semantic type.
 # We want this type to be able to specialize in this notation:
@@ -255,6 +250,8 @@ class Supervised(SemanticType):
 # Finally, we want `Seq[Word]`` to be a subclass of `Seq[Sentence]`, or more generally, `Seq[X]` to be a subclass
 # of `Seq[Y]` whenever `X < Y`.
 
+def specialize_seq(internal_type: Type[SemanticType]):
+    return Seq._specialize(internal_type)
 
 class Seq(SemanticType):
     """Represents a sequence that can be specialized in concrete internal semantic types.
@@ -295,7 +292,7 @@ class Seq(SemanticType):
     """
 
     __internal_types = {}
-
+    
     @classmethod
     def _specialize(cls, internal_type: Type[SemanticType]):
         try:
@@ -315,27 +312,24 @@ class Seq(SemanticType):
                 return isinstance(x, (list, tuple)) and internal_type._match(x[0])
 
             @classmethod
-            def _conforms(cls, other):
-                if not issubclass(other, Seq):
-                    return False
-
-                if other == Seq:
-                    return True
-                
-                return issubclass(cls.__internal_type__, other.__internal_type__)
-
-            @classmethod
             def _specialize(cls, *args, **kwargs):
                 raise TypeError("Cannot specialize more a `Seq` type.")
 
             @classmethod
+            def _conforms(cls, other):
+                if not issubclass(other, Seq):
+                    return False
+                if other == Seq:
+                    return True
+                
+                return issubclass(cls.__internal_type__, other.__internal_type__)
+            
+            @classmethod
             def _reduce(cls):
-                return Seq._specialize, (internal_type,)
+                return (specialize_seq, (internal_type,))
 
         Seq.__internal_types[internal_type] = SeqImp
-
         return SeqImp
-
 
 # Now let's move to the algebraic types, vectors, matrices, and tensors.
 # These wrap numpy arrays of different dimensionalities
@@ -421,6 +415,8 @@ class TensorEncoder(JSONEncoder):
         else:
             return super(TensorEncoder, self).default(obj)
 
+def specialize_tensor(dimension: int, internal_type: TensorData, structure: TensorStructure):
+    return Tensor._specialize(dimension, internal_type, structure)
 
 class Tensor(SemanticType):
     """Represents an abstract tensor type. Can be specialized into more concrete types.
@@ -486,6 +482,10 @@ class Tensor(SemanticType):
             @classmethod
             def _name(cls):
                 return f"Tensor[{cls.__flags[0]}, {cls.__flags[1]}, {cls.__flags[2]}]"
+            
+            @classmethod
+            def _flags(cls):
+                return cls.__flags
 
             @classmethod
             def _match(cls, x):
@@ -510,7 +510,7 @@ class Tensor(SemanticType):
 
                 if not hasattr(other, "_TensorImp__flags"):
                     return False
-
+                
                 for fmine, fother in zip(cls.__flags, other.__flags):
                     if fother is None:
                         continue
@@ -526,10 +526,9 @@ class Tensor(SemanticType):
             @classmethod
             def _reduce(cls):
                 # To reduce Tensor implementations for pickling
-                return Tensor._specialize, (dimension, internal_type, structure)
+                return specialize_tensor, (dimension, internal_type, structure)
 
         Tensor.__internal_types[(dimension, internal_type, structure)] = TensorImp
-
         return TensorImp
 
     @classmethod
@@ -540,7 +539,6 @@ class Tensor(SemanticType):
     def from_json(x, data):
         value = super().from_json(data)
         return array(value)
-
 
 class AggregatedTensor(Tensor):
     __internal_types = {}

@@ -1,6 +1,7 @@
 import inspect
 from textwrap import wrap
 import time
+from joblib import wrap_non_picklable_objects
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels, stratified_split_indices
@@ -62,6 +63,7 @@ def supervised_fitness_fn_moo(objectives):
         cross_validation_steps=3,
         cross_validation="median",
         stratified=True,
+        pipeline_generator=None,
         **kwargs
     ):
         """
@@ -80,7 +82,8 @@ def supervised_fitness_fn_moo(objectives):
         Returns:
         - r_scores: a tuple of scores for each objective function, aggregated over the cross-validation steps
         """
-
+        original_pipeline = pipeline
+        eval_pipeline = pipeline
         scores = []
         for _ in range(cross_validation_steps):
             
@@ -123,25 +126,29 @@ def supervised_fitness_fn_moo(objectives):
                 X_train_instances.append(X_train)
                 X_val_instances.append(X_test)
                 
-                    
             y_train = y[train_indices]
             y_test = y[val_indices]
 
             start = time.time()
             
+            # if able, recreate the pipeline so it wont store much memory
+            if (pipeline_generator is not None):
+                original_pipeline.sampler_.replay()
+                eval_pipeline = pipeline_generator(original_pipeline.sampler_)
+            
             # Train the pipeline on the training set
-            pipeline.send("train")
-            pipeline.run(*X_train_instances, y_train, **kwargs)
+            eval_pipeline.send("train")
+            eval_pipeline.run(*X_train_instances, y_train, **kwargs)
 
             # Evaluate the pipeline on the validation set
-            pipeline.send("eval")
-            y_pred = pipeline.run(*X_val_instances, None, **kwargs)
-
+            eval_pipeline.send("eval")
+            y_pred = eval_pipeline.run(*X_val_instances, None, **kwargs)
+            
             end = time.time()
 
             # Calculate the scores for each objective function
             scores.append([objective(y_test, y_pred, evaluation_time=end-start) for objective in objectives])
-
+        
         # Aggregate the scores over the cross-validation steps
         scores_per_objective = list(zip(*scores))
         r_scores = tuple(

@@ -8,15 +8,21 @@ import math
 import termcolor
 import json
 import os
+import gc
 
 import autogoal.logging
 
-from autogoal.utils import RestrictedWorkerByJoin, JobLibRestrictedWorkerByJoin, Min, Gb, is_cuda_multiprocessing_enabled, clear_cuda_memory
+from autogoal.utils import (
+    RestrictedWorkerByJoin,
+    Min,
+    Gb,
+    is_cuda_multiprocessing_enabled,
+)
 from autogoal.sampling import ReplaySampler
 from autogoal.datasets import clean_temporary_datasets
 from rich.progress import Progress
 from rich.panel import Panel
-
+from autogoal.kb import Pipeline
 from autogoal.search.utils import dominates, non_dominated_sort
 
 
@@ -68,19 +74,25 @@ class SearchAlgorithm:
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
             # Only use Joblib Serialization we need GPU multiprocessing support.
             # and multiprocessing cuda is initialized
-            self._fitness_fn = JobLibRestrictedWorkerByJoin(
-                self._fitness_fn, self._evaluation_timeout, self._memory_limit
-            ) if is_cuda_multiprocessing_enabled() else RestrictedWorkerByJoin(
-                self._fitness_fn, self._evaluation_timeout, self._memory_limit
+            self._fitness_fn = (
+                RestrictedWorkerByJoin(
+                    self._fitness_fn, self._evaluation_timeout, self._memory_limit
+                )
+                if is_cuda_multiprocessing_enabled()
+                else RestrictedWorkerByJoin(
+                    self._fitness_fn, self._evaluation_timeout, self._memory_limit
+                )
             )
 
         self._ranking_fn = ranking_fn or (
             lambda _, fns: tuple(
                 map(
                     functools.cmp_to_key(
-                        lambda x, y: 1
-                        if dominates(x, y, self._maximize)
-                        else (-1 if dominates(y, x, self._maximize) else 0)
+                        lambda x, y: (
+                            1
+                            if dominates(x, y, self._maximize)
+                            else (-1 if dominates(y, x, self._maximize) else 0)
+                        )
                     ),
                     fns,
                 )
@@ -129,36 +141,43 @@ class SearchAlgorithm:
                 improvement = False
 
                 for _ in range(self._pop_size):
-                    solution = None
+                    solution_keepsake = None
+                    solution_keepsake = None
 
                     try:
                         solution = self._generate()
+
+                        # replay the sampler in order to get a keepsake solution.
+                        # only the original solution will be used to calculate the fitness
+                        # and then it will be destroyed
+                        solution.sampler_.replay()
+                        solution_keepsake = self._generator_fn(solution.sampler_)
                     except Exception as e:
                         logger.error(
-                            "Error while generating solution: %s" % e, solution
+                            "Error while generating solution: %s" % e, solution_keepsake
                         )
                         continue
 
-                    if not self._allow_duplicates and repr(solution) in seen:
+                    if not self._allow_duplicates and repr(solution_keepsake) in seen:
                         continue
 
                     try:
-                        logger.sample_solution(solution)
+                        logger.sample_solution(solution_keepsake)
                         fn = self._fitness_fn(solution)
                     except Exception as e:
                         fn = self._worst_fns
                         clean_temporary_datasets()
-                        logger.error(e, solution)
+                        logger.error(e, solution_keepsake)
 
                         if self._errors == "raise":
                             logger.end(best_solutions, best_fns)
                             raise e from None
 
                     if not self._allow_duplicates:
-                        seen.add(repr(solution))
+                        seen.add(repr(solution_keepsake))
 
-                    logger.eval_solution(solution, fn)
-                    solutions.append(solution)
+                    logger.eval_solution(solution_keepsake, fn)
+                    solutions.append(solution_keepsake)
                     fns.append(fn)
 
                     (
@@ -169,7 +188,7 @@ class SearchAlgorithm:
 
                     if len(best_fns) == 0 or new_best_fns != best_fns:
                         logger.update_best(
-                            solution,
+                            solution_keepsake,
                             fn,
                             new_best_solutions,
                             best_solutions,
@@ -185,6 +204,9 @@ class SearchAlgorithm:
                         ):
                             stop = True
                             break
+
+                    del solution
+                    gc.collect()
 
                     spent_time = time.time() - start_time
 
@@ -289,7 +311,7 @@ class SearchAlgorithm:
 
         return optimal_solutions, optimal_fns, dominated_solutions
 
-    def _generate(self):
+    def _generate(self) -> Pipeline or ReplaySampler:  # type: ignore
         # BUG: When multiprocessing is used for evaluation and no generation
         #      function is defined, the actual sampling occurs during fitness
         #      evaluation, and since that process has a copy of the solution
@@ -470,15 +492,15 @@ class ProgressLogger(Logger):
         self.pop_counter.count = 0
 
     def update_best(
-            self,
-            solution,
-            fn,
-            new_best_solutions,
-            best_solutions,
-            new_best_fns,
-            best_fns,
-            new_dominated_solutions,
-        ):
+        self,
+        solution,
+        fn,
+        new_best_solutions,
+        best_solutions,
+        new_best_fns,
+        best_fns,
+        new_dominated_solutions,
+    ):
         self.total_counter.desc = "Best: %.3f" % fn
 
     def end(self, *args):
@@ -519,7 +541,9 @@ class RichLogger(Logger):
     def start_generation(self, generations, best_solutions, best_fns):
         bests = "\n".join(f"Best_{i}: {fn}" for i, fn in enumerate(best_fns))
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.console.rule(f"New generation - Remaining={generations}\n{bests} at {timestamp}")
+        self.console.rule(
+            f"New generation - Remaining={generations}\n{bests} at {timestamp}"
+        )
         self.progress.update(self.pop_counter, completed=0)
 
     def update_best(
@@ -591,7 +615,7 @@ class JsonLogger(Logger):
             ],
         }
         self.update_log(eval_log)
-        
+
     def error(self, e: Exception, solution):
         error_log = {
             "pipeline": repr(solution)
@@ -639,7 +663,7 @@ class JsonLogger(Logger):
             "best-scores": scores,
         }
         self.update_log(eval_log)
-    
+
     def update_log(self, json_load):
         new_data = ""
         json_load["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -656,17 +680,25 @@ class JsonLogger(Logger):
         except IOError as e:
             # Handle file access errors
             if e.errno == errno.EACCES:
-                print(f"Permission denied for file {self.log_file_name}. Trying to change permissions.")
+                print(
+                    f"Permission denied for file {self.log_file_name}. Trying to change permissions."
+                )
                 try:
                     # Try to change the permissions of the file to allow read and write access
                     os.chmod(self.log_file_name, 0o600)
-                    print(f"Permissions changed for file {self.log_file_name}. Please try again.")
+                    print(
+                        f"Permissions changed for file {self.log_file_name}. Please try again."
+                    )
                 except Exception as e:
-                    print(f"Could not change permissions for file {self.log_file_name}. Error: {str(e)}")
+                    print(
+                        f"Could not change permissions for file {self.log_file_name}. Error: {str(e)}"
+                    )
             elif e.errno == errno.ENOENT:
                 print(f"File {self.log_file_name} does not exist.")
             else:
-                print(f"An error occurred while accessing file {self.log_file_name}. Error: {str(e)}")
+                print(
+                    f"An error occurred while accessing file {self.log_file_name}. Error: {str(e)}"
+                )
         except Exception as e:
             # Handle other exceptions
             print(f"An error occurred: {str(e)}")
