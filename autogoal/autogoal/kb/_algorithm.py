@@ -352,6 +352,13 @@ class Pipeline:
 
     def serialize(self, use_dill=False):
         return dumps(self, use_dill)
+    
+    def serialize_inner_algorithms(self, use_dill=False):
+        return [dumps(algorithm, use_dill) for algorithm in self.algorithms]
+    
+    def deserialize_inner_algorithms(self, algorithms, use_dill=False):
+        self.algorithms = [loads(algorithm, use_dill) for algorithm in algorithms]
+    
     @staticmethod
     def deserialize(data, use_dill=False):
         return loads(data, use_dill)
