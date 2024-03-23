@@ -35,7 +35,10 @@ def load():
                 "content": row[2]
             })
             y_test.append(row[0])
-            
+    
+    assert len(X_train) == len(y_train)
+    assert len(X_test) == len(y_test)
+    
     return X_train, y_train, X_test, y_test
 
 if __name__ == "__main__":

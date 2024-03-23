@@ -152,14 +152,16 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         try:
             self._restrict()
             function = cloudpickle.loads(self.p_function)
-            input_types = [pickle.loads(i) for i in p_input_types]
             pipeline.deserialize_inner_algorithms(p_algorithms)
+            input_types = [pickle.loads(i) for i in p_input_types]
             pipeline.input_types = input_types
 
             result = function(pipeline, *args, **kwargs)
             result_bucket["result"] = result
         except _ArrayMemoryError as e:
             result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
+        except MemoryError as e:
+            result_bucket["result"] = MemoryError(f"Process exceeded memory limit of {self.memory/1024**2} MBs")
         except Exception as e:
             result_bucket["result"] = e
 
