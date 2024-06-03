@@ -25,7 +25,7 @@ from autogoal.utils import (
 from autogoal.utils._process import get_used_memory
 import dill as pickle
 
-def algorithm(*annotations, exceptions: List[str] = None):
+def algorithm(*annotations, include: List[str] = None, exceptions: List[str] = None):
     from autogoal.grammar import Union, Symbol
 
     *inputs, output = annotations
@@ -33,10 +33,25 @@ def algorithm(*annotations, exceptions: List[str] = None):
     def match(cls):
         if not hasattr(cls, "run"):
             return False
+        
+        if include is not None:
+            is_included = False
+            for inc in include:
+                if inc in cls.__name__ or inc in cls.__module__:
+                    is_included = True
+                    break
+                
+                # If include filter matched then continue
+                if is_included:
+                    break
+            
+            # If include filter did not matched then fail
+            if not is_included:
+                return False
 
         if exceptions is not None:
-            for exc in exceptions:
-                if exc in cls.__name__ or exc in cls.__module__:
+            for inc in exceptions:
+                if inc in cls.__name__ or inc in cls.__module__:
                     return False
 
         signature = inspect.signature(cls.run)

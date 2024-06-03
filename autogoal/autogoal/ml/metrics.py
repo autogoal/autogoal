@@ -42,16 +42,17 @@ def find_metric(*types):
     raise ValueError("No metric found for types: %r" % types)
 
 
-def supervised_fitness_fn_moo(objectives):
+def supervised_fitness_fn_moo(objectives, target_observations=None):
     """
     Returns a fitness function for multi-objective optimization problems.
 
     Args:
     - objectives: a list of objective functions to optimize
+    - observations: a list of metrics for additional observations on the model.
 
     Returns:
     - fitness_fn: a function that takes a pipeline, a dataset (X, y), and optional arguments,
-                  and returns a tuple of scores for each objective function
+                  and returns a tuple of scores for each objective function and observations
     """
 
     def fitness_fn(
@@ -64,6 +65,7 @@ def supervised_fitness_fn_moo(objectives):
         cross_validation="median",
         stratified=True,
         pipeline_generator=None,
+        target_observations=target_observations,
         **kwargs
     ):
         """
@@ -81,10 +83,21 @@ def supervised_fitness_fn_moo(objectives):
 
         Returns:
         - r_scores: a tuple of scores for each objective function, aggregated over the cross-validation steps
+        - observations: a tuple of scores for each observation function, aggregated over the cross-validation steps
         """
         original_pipeline = pipeline
         eval_pipeline = pipeline
         scores = []
+        
+        if target_observations is None:
+            target_observations = []
+            
+        observations = {
+            'time': {
+                "train": [],
+                "valid": []
+            }
+        }
         for _ in range(cross_validation_steps):
             
             X_instances = [X]
@@ -129,25 +142,36 @@ def supervised_fitness_fn_moo(objectives):
             y_train = y[train_indices]
             y_test = y[val_indices]
 
-            start = time.time()
-            
             # if able, recreate the pipeline so it wont store much memory
+            # This is additional security against memory leaks
             if (pipeline_generator is not None):
                 original_pipeline.sampler_.replay()
                 eval_pipeline = pipeline_generator(original_pipeline.sampler_)
             
             # Train the pipeline on the training set
+            train_start_time = time.time()
             eval_pipeline.send("train")
             eval_pipeline.run(*X_train_instances, y_train, **kwargs)
+            train_end_time = time.time()
 
             # Evaluate the pipeline on the validation set
+            valid_start_time = time.time()
             eval_pipeline.send("eval")
             y_pred = eval_pipeline.run(*X_val_instances, None, **kwargs)
+            valid_end_time = time.time()
             
-            end = time.time()
+            observations['time']['train'].append(train_end_time - train_start_time)
+            observations['time']['valid'].append(valid_end_time - valid_start_time)
 
-            # Calculate the scores for each objective function
-            scores.append([objective(y_test, y_pred, evaluation_time=end-start) for objective in objectives])
+            # Calculate the scores for each objective function. We additionally pass 
+            # evaluation_time always as users might want to select it for optimization
+            # TODO: If we change how the pipeline training works this should be also targetted for improvement.
+            scores.append([objective(y_test, y_pred, evaluation_time=valid_end_time - train_start_time) for objective in objectives])
+            
+            for (label, obs_func) in target_observations:
+                if not label in observations:
+                    observations[label] = []
+                observations[label].append(obs_func(y_test, y_pred))
         
         # Aggregate the scores over the cross-validation steps
         scores_per_objective = list(zip(*scores))
@@ -157,7 +181,14 @@ def supervised_fitness_fn_moo(objectives):
                 for score in scores_per_objective
             ]
         )
-        return r_scores
+        
+        # Aggregate all observations
+        for label, obs in observations.items():
+            if label == 'time':
+                continue
+            observations[label] = getattr(statistics, cross_validation)(obs)
+        
+        return r_scores, observations
 
     return fitness_fn
 
@@ -279,7 +310,8 @@ def unsupervised_fitness_fn(score_metric_fn):
 
 
 def accuracy(y, predictions, *args, **kwargs) -> float:
-    return np.mean([1 if yt == yp else 0 for yt, yp in zip(y, predictions)])
+    zipped = zip(y, predictions)
+    return np.mean([1 if yt == yp else 0 for yt, yp in zipped])
 
 def peak_ram_usage(*args, **kwargs) -> float:
     if not RESOURCE_CONTROL_AVAILABLE:
@@ -290,7 +322,6 @@ def peak_ram_usage(*args, **kwargs) -> float:
 
 def evaluation_time(*args, evaluation_time=None, **kwargs) -> float:
     return evaluation_time
-
 
 def calinski_harabasz_score(X, labels):
     """Compute the Calinski and Harabasz score.

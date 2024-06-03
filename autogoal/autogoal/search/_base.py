@@ -163,10 +163,10 @@ class SearchAlgorithm:
 
                     try:
                         logger.sample_solution(solution_keepsake)
-                        fn = self._fitness_fn(solution)
+                        fn, observations = self._fitness_fn(solution)
                     except Exception as e:
-                        fn = self._worst_fns
-                        clean_temporary_datasets()
+                        fn, observations = self._worst_fns, None
+                        clean_temporary_datasets()                        
                         logger.error(e, solution_keepsake)
 
                         if self._errors == "raise":
@@ -176,7 +176,7 @@ class SearchAlgorithm:
                     if not self._allow_duplicates:
                         seen.add(repr(solution_keepsake))
 
-                    logger.eval_solution(solution_keepsake, fn)
+                    logger.eval_solution(solution_keepsake, fn, observations)
                     solutions.append(solution_keepsake)
                     fns.append(fn)
 
@@ -353,7 +353,7 @@ class Logger:
     def sample_solution(self, solution):
         pass
 
-    def eval_solution(self, solution, fitness):
+    def eval_solution(self, solution, fitness, observations):
         pass
 
     def error(self, e: Exception, solution):
@@ -443,11 +443,19 @@ class ConsoleLogger(Logger):
         print(self.emph("Evaluating pipeline:"))
         print(solution)
 
-    def eval_solution(self, solution, fitness):
+    def eval_solution(self, solution, fitness, observations):
+        if not observations is None:
+            train_m_time = statistics.mean(observations["time"]["train"])
+            valid_m_time = statistics.mean(observations["time"]["valid"])
+            train_m_time_value = (train_m_time, "seconds") if train_m_time < 12000 else (train_m_time/60, "minutes")
+            valid_m_time_value = (valid_m_time, "seconds") if valid_m_time < 12000 else (valid_m_time/60, "minutes")
+        time_obs_message = f"(train mean time: {train_m_time_value[0]} {train_m_time_value[1]}, valid mean time: {valid_m_time_value[0]} {valid_m_time_value[1]})" if not observations is None else ""
+        other_obs_message = [f"other observations:\nMean {label}={value}" for label,value in observations.items() if label != 'time'] if not observations is None else ""
+            
         if len(fitness) > 1:
-            print(self.primary(f"Fitness={fitness}"))
+            print(self.primary(f"Fitness={fitness} {time_obs_message}\n{other_obs_message}"))
         else:
-            print(self.primary("Fitness=%.3f" % fitness))
+            print(self.primary(("Fitness=%.3f " % fitness) + time_obs_message + f"\n{other_obs_message}"))
 
     def update_best(
         self,
@@ -530,9 +538,19 @@ class RichLogger(Logger):
         self.console.rule(f"Evaluating pipeline at {timestamp}")
         self.console.print(repr(solution))
 
-    def eval_solution(self, solution, fitness):
+    def eval_solution(self, solution, fitness, observations):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.console.print(Panel(f"📈 Fitness=[blue]{fitness} at {timestamp}"))
+        if not observations is None:
+            train_m_time = statistics.mean(observations["time"]["train"])
+            valid_m_time = statistics.mean(observations["time"]["valid"])
+            train_m_time_value = (train_m_time, "seconds") if train_m_time < 12000 else (train_m_time/60, "minutes")
+            valid_m_time_value = (valid_m_time, "seconds") if valid_m_time < 12000 else (valid_m_time/60, "minutes")
+            
+        time_obs_message = f"(train mean time: {train_m_time_value[0]} {train_m_time_value[1]}, valid mean time: {valid_m_time_value[0]} {valid_m_time_value[1]})"\
+            if not observations is None else ""
+        other_obs_message = [f"other observations:\nMean {label}={value}" for label,value in observations if label != 'time'] if not observations is None else ""
+            
+        self.console.print(Panel(f"📈 Fitness=[blue]{fitness} {time_obs_message}\n{other_obs_message}\n at {timestamp}"))
 
     def error(self, e: Exception, solution):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -627,7 +645,7 @@ class JsonLogger(Logger):
         }
         self.update_log(error_log)
 
-    def eval_solution(self, solution, fitness):
+    def eval_solution(self, solution, fitness, observations):
         eval_log = {
             "pipeline": repr(solution)
             .replace("\n", "")
@@ -635,6 +653,7 @@ class JsonLogger(Logger):
             .replace(",", ", "),
             "multiline-pipeline": repr(solution),
             "fitness": fitness,
+            "observations": observations
         }
         self.update_log(eval_log)
 

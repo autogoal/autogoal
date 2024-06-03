@@ -507,7 +507,7 @@ class Tensor(SemanticType):
             def _conforms(cls, other: type) -> bool:
                 if other == Tensor:
                     return True
-
+                
                 if not hasattr(other, "_TensorImp__flags"):
                     return False
                 

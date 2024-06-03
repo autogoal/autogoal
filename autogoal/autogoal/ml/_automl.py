@@ -48,6 +48,7 @@ class AutoML:
         stratified_cross_validation=True,
         registry=None,
         objectives=None,
+        observations=None,
         remote_sources: List[Tuple[str, int] or str] = None, # type: ignore
         max_list_depth=1,
         **search_kwargs,
@@ -66,6 +67,7 @@ class AutoML:
         self.registry = registry
         self.random_state = random_state
         self.objectives = objectives or accuracy
+        self.observations = observations or []
         self.remote_sources = remote_sources
         self.search_kwargs = search_kwargs
         self._unpickled = False
@@ -316,7 +318,7 @@ class AutoML:
         inner_fitness_fn = (
             unsupervised_fitness_fn_moo(self.objectives)
             if y is None
-            else supervised_fitness_fn_moo(self.objectives)
+            else supervised_fitness_fn_moo(self.objectives, self.observations)
         )
 
         def fitness_fn(pipeline):
