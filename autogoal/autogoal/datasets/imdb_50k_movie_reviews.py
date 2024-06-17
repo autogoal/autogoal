@@ -3,7 +3,7 @@ import csv
 
 from autogoal.datasets import download, datapath
 
-def load():
+def load(onehot = False):
     try:
         download("imdb_50k_movie_reviews")
     except:
@@ -40,6 +40,9 @@ def load():
             X_test.append(row[0])
             y_test.append(row[1])
             
+    if (onehot):
+        X_train, y_train = _load_onehot(X_train, y_train)
+        X_test, y_test = _load_onehot(X_test, y_test)
     return X_train, y_train, X_test, y_test
 
 def make_fn(test_size=0.5, examples=None):
@@ -56,6 +59,9 @@ def make_fn(test_size=0.5, examples=None):
         return accuracy_score(y_test, y_pred)
 
     return fitness_fn
+
+def _load_onehot(X, Y):
+    return X, [0 if y == "negative" else 1 for y in Y]
 
 if __name__ == "__main__":
     load()

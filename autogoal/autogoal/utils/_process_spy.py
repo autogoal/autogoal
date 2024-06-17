@@ -10,7 +10,7 @@ def dummy_child_process():
     time.sleep(10)
     print("Child process ended")
 
-def monitor_resources(process, interval=2):
+def monitor_resources(process, interval=0.5):
     """Monitor CPU, RAM, and GPU usage at specified intervals."""
     pynvml.nvmlInit()
     stats = []

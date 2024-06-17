@@ -19,6 +19,7 @@ from pathlib import Path
 import sys
 import gc
 from collections.abc import Mapping, Container
+from autogoal.utils._process_spy import monitor_resources
 
 try:
     import torch.multiprocessing as multiprocessing
@@ -217,6 +218,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         print("CUDA Initialized:", is_initialized())
 
         rprocess.start()
+        stats = monitor_resources(rprocess)
         rprocess.join(self.timeout)
 
         if rprocess.exitcode == 0:
@@ -230,8 +232,15 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         if isinstance(result, Exception):  # Exception ocurred
             raise result
 
-        print("after")
-        return result
+        try:
+            print("trying to extend observations with resource_stats")
+            outcome, observations = result
+            observations["resource_stats"] = stats
+            print("success")
+        except Exception as e:
+            print(f"failed to extend observations with execution stats. Reason: {e}")
+            
+        return outcome, observations
 
 
 class RestrictedWorkerDiskSerializableByJoin(RestrictedWorkerByJoin):
