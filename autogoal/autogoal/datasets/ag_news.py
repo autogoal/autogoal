@@ -3,7 +3,7 @@ import csv
 
 from autogoal.datasets import download, datapath
 
-def load():
+def load(onehot = False):
     try:
         download("ag_news")
     except Exception as e:
@@ -29,7 +29,7 @@ def load():
                 continue
             
             X_train.append(row[0])
-            y_train.append(classes[int(row[1])])
+            y_train.append(classes[int(row[1])] if not onehot else int(row[1]))
             
     with open(path / "test.csv", "r") as fd:
         reader = csv.reader(fd)
@@ -40,7 +40,7 @@ def load():
                 continue
             
             X_test.append(row[0])
-            y_test.append(classes[int(row[1])])
+            y_test.append(classes[int(row[1])] if not onehot else int(row[1]))
             
     return X_train, y_train, X_test, y_test
 

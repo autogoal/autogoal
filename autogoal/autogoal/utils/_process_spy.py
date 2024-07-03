@@ -1,4 +1,5 @@
 import multiprocessing
+from statistics import mean
 import psutil
 import pynvml
 import time
@@ -10,7 +11,7 @@ def dummy_child_process():
     time.sleep(10)
     print("Child process ended")
 
-def monitor_resources(process, interval=0.5):
+def monitor_resources(process, interval=5):
     """Monitor CPU, RAM, and GPU usage at specified intervals."""
     pynvml.nvmlInit()
     stats = []
@@ -61,7 +62,18 @@ def monitor_resources(process, interval=0.5):
             time.sleep(interval - monitoring_duration)
 
     pynvml.nvmlShutdown()
-    return stats
+    
+    # agg_stats = {
+    #     "mean_cpu_usage": [stat["cpu_usage"] for stat in stats],
+    #     "mean_ram_usage": [stat["ram_usage"] for stat in stats],
+    #     "gpu_stats": {
+    #         "mean_gpu_usage": [stat["gpu_stats"]["gpu_utilization"] for stat in stats],
+    #         "mean_vram_util": [stat["gpu_stats"]["memory_utilization"] for stat in stats],
+    #         "mean_vram_used": [stat["gpu_stats"]["memory_used"] for stat in stats],
+    #     }
+    # }
+    
+    return stats#, agg_stats
 
 def main():
     # Start child process
@@ -69,7 +81,7 @@ def main():
     process.start()
 
     # Monitor resources
-    stats = monitor_resources(process)
+    stats, aggregated_stats = monitor_resources(process)
 
     # Save stats to JSON
     with open("resource_usage.json", "w") as f:

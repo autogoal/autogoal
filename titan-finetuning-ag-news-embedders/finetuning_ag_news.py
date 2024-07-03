@@ -1,4 +1,4 @@
-from autogoal.datasets import imdb_50k_movie_reviews as movie_reviews
+from autogoal.datasets import ag_news as ag_news
 from autogoal.utils import Gb, Hour, Sec
 from autogoal.ml import AutoML, evaluation_time, accuracy
 from autogoal.datasets.semeval_2023_task_8_1 import macro_f1_plain
@@ -10,7 +10,7 @@ from autogoal_telegram import TelegramLogger
 from autogoal_transformers import WORD_EMB_Distilbert_Base_Uncased, FullFineTunerEmbedderTransformerClassifier,PartialFineTunerEmbedderTransformerClassifier, LORAFineTunerEmbedderTransformerClassifier, TEXT_GEN_Google_T5_T5_Large, GenerativeClassifier
 
 def test_pipeline():
-    X_train, y_train, X_test, y_test = movie_reviews.load(True)
+    X_train, y_train, X_test, y_test = ag_news.load(True)
 
     model = AutoML(
         input=(Seq[Sentence], Supervised[VectorDiscrete]),
@@ -32,10 +32,10 @@ def test_pipeline():
         TelegramLogger(
             token="6759026182:AAEpd8vczWkLLaAoyPeCHezYAqH5vq9D9jg",
             channel="570734906",
-            name="Titan imdb Movie Reviews Finetuning Embedders",
+            name="Titan AG News Finetuning Embedders",
             objectives=["Macro F1", ("Eval Time", "Seconds")],
         ),
-        JsonLogger("titan-imdb-finetuning-embedders.json"),
+        JsonLogger("titan-AG-News-finetuning-embedders.json"),
     ]
     
     model.fit(X_train, y_train, logger=loggers)

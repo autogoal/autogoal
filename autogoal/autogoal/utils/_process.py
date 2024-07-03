@@ -235,7 +235,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         try:
             print("trying to extend observations with resource_stats")
             outcome, observations = result
-            observations["resource_stats"] = stats
+            # observations["resource_aggregated_statistics"] = stats
             print("success")
         except Exception as e:
             print(f"failed to extend observations with execution stats. Reason: {e}")
