@@ -1,0 +1,1 @@
+from autogoal.meta_learning.normalization.min_max_log_normalizer import MinMaxLogNormalizer

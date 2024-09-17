@@ -3,7 +3,7 @@ import csv
 
 from autogoal.datasets import download, datapath
 
-def load():
+def load(onehot = False):
     try:
         download("rotten_tomatoes")
     except:
@@ -26,8 +26,8 @@ def load():
                 title_line = False
                 continue
             
-            X_train.append(row[1])
-            y_train.append(row[2])
+            X_train.append(row[0])
+            y_train.append(int(row[1]))
             
     with open(path / "test.csv", "r") as fd:
         reader = csv.reader(fd)
@@ -37,8 +37,8 @@ def load():
                 title_line = False
                 continue
             
-            X_test.append(row[1])
-            y_test.append(row[2])
+            X_test.append(row[0])
+            y_test.append(int(row[1]))
             
     return X_train, y_train, X_test, y_test
 

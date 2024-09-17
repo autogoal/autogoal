@@ -3,7 +3,7 @@ import csv
 
 from autogoal.datasets import download, datapath
 
-def load():
+def load(onehot = False):
     try:
         download("yelp_reviews")
     except Exception as e:
