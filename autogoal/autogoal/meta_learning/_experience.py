@@ -3,8 +3,8 @@ import json
 import uuid
 from pathlib import Path
 import numpy as np
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+from typing import List, Dict, Any, Optional, Union
+from datetime import date, datetime
 
 # Path to store experiences
 DATA_PATH = Path.home() / ".autogoal" / "experience_store"
@@ -115,9 +115,13 @@ class ExperienceStore:
             json.dump(exp_dict, f, indent=4)
 
     @staticmethod
-    def load_all_experiences() -> List[Experience]:
+    def load_all_experiences(from_date: Optional[Union[str, date]] = None, to_date: Optional[Union[str, date]] = None) -> List[Experience]:
         """
-        Loads all experiences from disk, traversing all date folders.
+        Loads all experiences from disk, traversing all date folders, with optional date filtering.
+
+        Args:
+            from_date (Optional[Union[str, date]]): The start date in "YYYY-MM-DD" format or a date object.
+            to_date (Optional[Union[str, date]]): The end date in "YYYY-MM-DD" format or a date object.
 
         Returns:
             A list of Experience instances.
@@ -127,9 +131,37 @@ class ExperienceStore:
             # No experiences saved yet
             return experiences
 
+        # Parse the date filters if provided
+        if isinstance(from_date, str):
+            from_date_obj = datetime.strptime(from_date, "%Y-%m-%d").date()
+        elif isinstance(from_date, date):
+            from_date_obj = from_date
+        else:
+            from_date_obj = None
+
+        if isinstance(to_date, str):
+            to_date_obj = datetime.strptime(to_date, "%Y-%m-%d").date()
+        elif isinstance(to_date, date):
+            to_date_obj = to_date
+        else:
+            to_date_obj = None
+
         # Traverse all date directories
         for date_dir in ExperienceStore.DATA_PATH.iterdir():
             if date_dir.is_dir():
+                # Parse the directory name as a date
+                try:
+                    dir_date_obj = datetime.strptime(date_dir.name, "%Y-%m-%d").date()
+                except ValueError:
+                    # Skip directories that do not match the date format
+                    continue
+
+                # Apply date filtering
+                if from_date_obj and dir_date_obj < from_date_obj:
+                    continue
+                if to_date_obj and dir_date_obj > to_date_obj:
+                    continue
+
                 # Iterate over all JSON files in the date directory
                 for file_path in date_dir.glob('*.json'):
                     with open(file_path, 'r') as f:
