@@ -27,7 +27,7 @@ def load():
                 continue
             
             X_train.append(row[1])
-            y_train.append(row[2])
+            y_train.append(int(row[2]))
             
     with open(path / "test.csv", "r") as fd:
         reader = csv.reader(fd)
@@ -38,7 +38,7 @@ def load():
                 continue
             
             X_test.append(row[1])
-            y_test.append(row[2])
+            y_test.append(int(row[2]))
             
     return X_train, y_train, X_test, y_test
 

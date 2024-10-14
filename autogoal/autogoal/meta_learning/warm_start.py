@@ -70,8 +70,8 @@ class WarmStart:
         positive_min_threshold=0.2,
         k_pos=20,
         k_neg=20,
-        max_alpha=0.03,
-        min_alpha=-0.01,
+        max_alpha=0.05,
+        min_alpha=-0.02,
         normalizers: Optional[List[Normalizer]] = None,
         distance: DistanceMetric = EuclideanDistance,
         dataset_feature_extractor: Optional[
@@ -304,8 +304,8 @@ class WarmStart:
         sorted_negative_experiences = sorted(negative_experiences, key=lambda x: x[1])
 
         # Select top-k positive and negative experiences
-        selected_positive = sorted_positive_experiences[: self.k_pos]
-        selected_negative = sorted_negative_experiences[: self.k_neg]
+        selected_positive = sorted_positive_experiences[: self.k_pos] if self.k_pos is not None else sorted_positive_experiences
+        selected_negative = sorted_negative_experiences[: self.k_neg] if self.k_neg is not None else sorted_negative_experiences
 
         # Separate experiences and distances
         selected_positive_experiences = [exp for exp, dist in selected_positive]
