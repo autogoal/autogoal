@@ -1,2 +1,3 @@
 from autogoal.meta_learning.feature_extraction.text_classification import TextClassificationFeatureExtractor
 from autogoal.meta_learning.feature_extraction.system_feature_extractor import SystemFeatureExtractor
+from autogoal.meta_learning.feature_extraction._base import FeatureExtractor

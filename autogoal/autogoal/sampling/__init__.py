@@ -205,7 +205,7 @@ class ModelSampler(Sampler):
         )
         idx = self.rand.choices(range(len(options)), weights=params.weights, k=1)[0]
         return options[self._register_update(handle, idx)]
-
+    
 
 class ReplaySampler:
     """
@@ -410,7 +410,16 @@ class UnormalizedWeightParam(ModelParam):
         self.value = value
 
     def update(self, alpha: float, updates: list) -> "UnormalizedWeightParam":
-        return UnormalizedWeightParam(self.value + alpha * sum(updates))
+        total_update = sum(updates)
+        if alpha >= 0:
+            new_value = self.value + alpha * total_update
+        else:
+            # For negative alpha, decrease the weight
+            new_value = self.value - (-alpha) * total_update
+
+        # Ensure the value remains non-negative
+        new_value = max(0, new_value)
+        return UnormalizedWeightParam(new_value)
 
     def weighted(self, solutions):
         result = 0
@@ -428,11 +437,34 @@ class DistributionParam(ModelParam):
 
     def update(self, alpha: float, updates: list) -> "DistributionParam":
         weights = list(self.weights)
+        n_options = len(weights)
 
-        for i in updates:
-            weights[i] += alpha
+        if alpha >= 0:
+            # Increase weights for the specified indices
+            for i in updates:
+                weights[i] += alpha
+        else:
+            # Decrease weights for the specified indices
+            total_decrease = 0
+            for i in updates:
+                decrease = min(-alpha, weights[i])
+                weights[i] -= decrease
+                total_decrease += decrease
 
-        return DistributionParam(weights)
+            # Redistribute the decreased weight to other options
+            redistribute_indices = [i for i in range(n_options) if i not in updates]
+            redistribute_amount = total_decrease / len(redistribute_indices) if redistribute_indices else 0
+            for i in redistribute_indices:
+                weights[i] += redistribute_amount
+
+        # Ensure weights are non-negative
+        weights = [max(0, w) for w in weights]
+
+        # Re-normalize weights to sum to 1
+        total = sum(weights) or 1
+        normalized_weights = [w / total for w in weights]
+
+        return DistributionParam(normalized_weights)
 
     def weighted(self, solutions):
         weights = [1] * len(self.weights)
@@ -458,9 +490,22 @@ class MeanDevParam(ModelParam):
         new_mean = statistics.mean(updates)
         new_dev = statistics.stdev(updates, new_mean) if len(updates) > 1 else 0
 
+        if alpha >= 0:
+            updated_mean = self.mean * (1 - alpha) + new_mean * alpha
+            updated_dev = self.dev * (1 - alpha) + new_dev * alpha
+        else:
+            # Move the mean away from the negative experience
+            delta_mean = self.mean - new_mean
+            updated_mean = self.mean + (-alpha) * delta_mean
+            # Optionally increase deviation to reflect increased uncertainty
+            updated_dev = self.dev * (1 + (-alpha))
+
+        # Ensure the deviation is non-negative
+        updated_dev = max(0, updated_dev)
+
         return MeanDevParam(
-            mean=self.mean * (1 - alpha) + new_mean * alpha,
-            dev=self.dev * (1 - alpha) + new_dev * alpha,
+            mean=updated_mean,
+            dev=updated_dev,
             initial_params=self.initial_params,
         )
 
@@ -489,7 +534,18 @@ class WeightParam(ModelParam):
 
     def update(self, alpha: float, updates) -> "WeightParam":
         new_value = statistics.mean(updates)
-        return WeightParam(value=self.value * (1 - alpha) + new_value * alpha)
+
+        if alpha >= 0:
+            updated_value = self.value * (1 - alpha) + new_value * alpha
+        else:
+            # Move the value away from the negative experience
+            delta_value = self.value - new_value
+            updated_value = self.value + (-alpha) * delta_value
+
+        # Ensure the updated value remains within [0, 1]
+        updated_value = min(max(0, updated_value), 1)
+
+        return WeightParam(value=updated_value)
 
     def weighted(self, solutions):
         values = np.asarray([s for s, w in solutions] + [0, 1])

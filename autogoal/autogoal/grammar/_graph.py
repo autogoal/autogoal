@@ -1,3 +1,4 @@
+from autogoal.sampling import ModelSampler
 import networkx as nx
 import random
 import types
@@ -345,7 +346,7 @@ class GraphSpace(Grammar):
     def _start(self):
         return [GraphSpace.Start]
 
-    def _sample(self, symbol, max_iterations, sampler):
+    def _sample(self, symbol, max_iterations, sampler: ModelSampler):
         path = symbol
         visited = set()
 
