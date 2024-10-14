@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional
+from datetime import date
+from typing import Dict, List, Optional, Union
 from autogoal.meta_learning._experience import Experience, ExperienceStore
 from autogoal.meta_learning.feature_extraction.text_classification import (
     TextClassificationFeatureExtractor,
@@ -77,6 +78,8 @@ class WarmStart:
             FeatureExtractor
         ] = TextClassificationFeatureExtractor,
         system_feature_extractor: Optional[FeatureExtractor] = SystemFeatureExtractor,
+        from_date: Optional[Union[str, date]] = None, 
+        to_date: Optional[Union[str, date]] = None
     ):
         self._model: Dict = {}
         self.generator_fn = None
@@ -89,6 +92,8 @@ class WarmStart:
         self.distance = distance() if distance else EuclideanDistance()
         self.dataset_feature_extractor_class = dataset_feature_extractor
         self.system_feature_extractor_class = system_feature_extractor
+        self.from_date = from_date
+        self.to_date = to_date
 
     def pre_warm_up(self, X_train, y_train):
         """
@@ -131,7 +136,7 @@ class WarmStart:
         self.generator_fn = generator_fn
 
         # Step 2: Load experiences
-        experiences = ExperienceStore.load_all_experiences()
+        experiences = ExperienceStore.load_all_experiences(self.from_date, self.to_date)
 
         # Step 2.1: Filter experiences based on feature extractors
         experiences = self.filter_experiences_by_feature_extractors(experiences)
