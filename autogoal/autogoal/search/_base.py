@@ -72,16 +72,8 @@ class SearchAlgorithm:
         )
 
         if self._evaluation_timeout > 0 or self._memory_limit > 0:
-            # Only use Joblib Serialization we need GPU multiprocessing support.
-            # and multiprocessing cuda is initialized
-            self._fitness_fn = (
-                RestrictedWorkerByJoin(
+            self._fitness_fn = RestrictedWorkerByJoin(
                     self._fitness_fn, self._evaluation_timeout, self._memory_limit
-                )
-                if is_cuda_multiprocessing_enabled()
-                else RestrictedWorkerByJoin(
-                    self._fitness_fn, self._evaluation_timeout, self._memory_limit
-                )
             )
 
         self._ranking_fn = ranking_fn or (
@@ -444,18 +436,23 @@ class ConsoleLogger(Logger):
         print(solution)
 
     def eval_solution(self, solution, fitness, observations):
-        if not observations is None:
-            train_m_time = statistics.mean(observations["time"]["train"])
-            valid_m_time = statistics.mean(observations["time"]["valid"])
-            train_m_time_value = (train_m_time, "seconds") if train_m_time < 12000 else (train_m_time/60, "minutes")
-            valid_m_time_value = (valid_m_time, "seconds") if valid_m_time < 12000 else (valid_m_time/60, "minutes")
-        time_obs_message = f"(train mean time: {train_m_time_value[0]} {train_m_time_value[1]}, valid mean time: {valid_m_time_value[0]} {valid_m_time_value[1]})" if not observations is None else ""
-        other_obs_message = [f"other observations:\nMean {label}={value}" for label,value in observations.items() if label != 'time' and label != 'resource_stats'] if not observations is None else ""
-            
-        if len(fitness) > 1:
-            print(self.primary(f"Fitness={fitness} {time_obs_message}\n{other_obs_message}"))
-        else:
-            print(self.primary(("Fitness=%.3f " % fitness) + time_obs_message + f"\n{other_obs_message}"))
+        try:
+            if not observations is None:
+                train_m_time = statistics.mean(observations["time"]["train"])
+                valid_m_time = statistics.mean(observations["time"]["valid"])
+                train_m_time_value = (train_m_time, "seconds") if train_m_time < 12000 else (train_m_time/60, "minutes")
+                valid_m_time_value = (valid_m_time, "seconds") if valid_m_time < 12000 else (valid_m_time/60, "minutes")
+                
+            print(f"observations: {observations}")
+            time_obs_message = f"(train mean time: {train_m_time_value[0]} {train_m_time_value[1]}, valid mean time: {valid_m_time_value[0]} {valid_m_time_value[1]})" if not observations is None else ""
+            other_obs_message = [f"other observations:\nMean {label}={value}" for label,value in observations.items() if label != 'time' and label != 'resource_stats'] if not observations is None else ""
+                
+            if len(fitness) > 1:
+                print(self.primary(f"Fitness={fitness} {time_obs_message}\n{other_obs_message}"))
+            else:
+                print(self.primary(("Fitness=%.3f " % fitness) + time_obs_message + f"\n{other_obs_message}"))
+        except Exception as e:
+            print(self.error(f"Error while logging pipeline: {e}"))
 
     def update_best(
         self,
