@@ -59,10 +59,10 @@ def extract_experience_from_pipeline(pipeline: Pipeline) -> Dict[str, Any]:
 class ExperienceLogger(Logger):
     def __init__(
         self,
-        dataset_features,
-        system_features,
-        dataset_feature_extractor_name,
-        system_feature_extractor_name,
+        dataset_features=None,
+        system_features=None,
+        dataset_feature_extractor_name=None,
+        system_feature_extractor_name=None,
     ) -> None:
         self.dataset_features = dataset_features
         self.system_features = system_features
