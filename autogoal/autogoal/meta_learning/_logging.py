@@ -22,6 +22,9 @@ def extract_experience_from_pipeline(pipeline: Pipeline) -> Dict[str, Any]:
         ValueError: If no fine-tuning algorithm is found in the pipeline.
     """
     # Search for the fine-tuning algorithm in the pipeline
+    if pipeline is None:
+        return
+    
     finetune_algorithm = None
     for alg in pipeline.algorithms:
         class_name = alg.__class__.__name__.lower()
@@ -36,10 +39,7 @@ def extract_experience_from_pipeline(pipeline: Pipeline) -> Dict[str, Any]:
     model_class_name = finetune_algorithm.__class__.__name__
 
     # Extract the fine-tuning method name from the inner model, if it exists
-    if hasattr(finetune_algorithm, 'inner_model'):
-        finetuning_method = finetune_algorithm.inner_model.__class__.__name__
-    else:
-        finetuning_method = 'Unknown'
+    finetuning_method = finetune_algorithm.__class__.__name__
 
     # Extract fine-tuning parameters
     finetuning_parameters = {}
@@ -93,6 +93,7 @@ class ExperienceLogger(Logger):
             solution=solution,
             f1_score=None,
             evaluation_time=None,
+            accuracy=None,
             error=e,
         )
 
@@ -109,6 +110,7 @@ class ExperienceLogger(Logger):
             solution=solution,
             f1_score=f1_score,
             evaluation_time=evaluation_time,
+            accuracy=accuracy,
             error=None,
         )
 
@@ -126,6 +128,9 @@ class ExperienceLogger(Logger):
         evaluation_time: Optional[float],
         error: Optional[Exception] = None,
     ):
+        if solution is None:
+            return
+        
         # Extract information from the solution (pipeline)
         experience_info = extract_experience_from_pipeline(solution)
         if experience_info is None:

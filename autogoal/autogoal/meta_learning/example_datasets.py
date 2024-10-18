@@ -48,7 +48,7 @@ def main():
     
     # Compute distances
     distance_metric = EuclideanDistance()
-    distance_matrix = distance_metric.compute_distances(normalized_vectors)
+    distance_matrix = distance_metric.compute(normalized_vectors)
     
     # Display the results
     print('\n===== Normalized Feature Vectors =====')

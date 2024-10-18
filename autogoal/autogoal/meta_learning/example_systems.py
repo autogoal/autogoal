@@ -36,7 +36,7 @@ def main():
     
     # Compute distances between systems
     distance_metric = EuclideanDistance()
-    system_distance_matrix = distance_metric.compute_distances(normalized_system_vectors)
+    system_distance_matrix = distance_metric.compute(normalized_system_vectors)
     
     # Display the results
     print('\n===== Normalized System Feature Vectors =====')

@@ -25,6 +25,7 @@ try:
     import torch.multiprocessing as multiprocessing
 except:
     import multiprocessing
+    
 if platform.system() == "Linux":
     import resource
 
@@ -50,8 +51,9 @@ IS_MP_CUDA_INITIALIZED = False
 
 def initialize_cuda_multiprocessing():
     global IS_MP_CUDA_INITIALIZED
-    multiprocessing.set_start_method("spawn")
-    IS_MP_CUDA_INITIALIZED = True
+    if not IS_MP_CUDA_INITIALIZED:
+        multiprocessing.set_start_method("spawn", force=True)
+        IS_MP_CUDA_INITIALIZED = True
 
 
 def is_cuda_multiprocessing_enabled():
@@ -218,27 +220,30 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         print("CUDA Initialized:", is_initialized())
 
         rprocess.start()
-        stats = monitor_resources(rprocess)
+        # stats = monitor_resources(rprocess)
         rprocess.join(self.timeout)
+        
+        if rprocess.is_alive():
+            rprocess.kill()  # More forceful termination
+            rprocess.join()
+            raise TimeoutError(
+                f"Exceeded allowed time for execution. The process was terminated after {self.timeout} seconds."
+            )
 
         if rprocess.exitcode == 0:
-            result = result_bucket["result"]
+            result = result_bucket.get("result")
         else:
-            rprocess.terminate()
-            raise TimeoutError(
-                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-            )
+            if isinstance(result, Exception):
+                raise result
+            raise RuntimeError(f"Process terminated with an unknown error.")
 
         if isinstance(result, Exception):  # Exception ocurred
             raise result
 
         try:
-            print("trying to extend observations with resource_stats")
             outcome, observations = result
-            # observations["resource_aggregated_statistics"] = stats
-            print("success")
         except Exception as e:
-            print(f"failed to extend observations with execution stats. Reason: {e}")
+            print(f"failed to extract fitness and observations. Reason: {e}")
             
         return outcome, observations
 

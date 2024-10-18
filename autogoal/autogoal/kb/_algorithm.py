@@ -11,6 +11,7 @@ import types
 import os
 import shutil
 import re
+import tqdm
 
 import networkx as nx
 from autogoal.utils import nice_repr
@@ -305,24 +306,22 @@ class Pipeline:
 
     def run(self, *inputs):
         data = {}
-        print(f"Starting pipeline eval. [MEM]: {get_used_memory()} MB" )
 
         for i, t in zip(inputs, self.input_types):
             data[t] = i
         
         alg_count = 0
-        for algorithm in self.algorithms:
+        print("Executing pipeline")
+        for algorithm in tqdm.tqdm(self.algorithms):
             args = build_input_args(algorithm, data)
             output = algorithm.run(**args)
             output_type = algorithm.output_type()
-            data[output_type] = output#SimpleDataset(output_type, output)
-            print(f"After Algorithm {alg_count}. [MEM]: {get_used_memory()} MB" )
+            data[output_type] = output
             alg_count += 1
             
         results = data[self.algorithms[-1].output_type()]
         del data
         
-        print(f"After pipeline eval. [MEM]: {get_used_memory()} MB" )
         return results
 
     def send(self, msg: str, *args, **kwargs):
