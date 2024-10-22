@@ -93,9 +93,13 @@ def algorithm(*annotations, include: List[str] = None, exceptions: List[str] = N
 
         return Union(symbol.name, *compatible).generate_cfg(grammar, symbol)
 
+    def __repr__(self):
+        return f"Algorithm[{inputs},{output}]"
+    
     def build(ns):
         ns["generate_cfg"] = generate_cfg
         ns["is_compatible"] = is_compatible
+        ns["__repr__"] = __repr__
 
     return types.new_class(f"Algorithm[{inputs},{output}]", bases=(), exec_body=build)
 

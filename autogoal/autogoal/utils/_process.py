@@ -9,9 +9,7 @@ import signal
 import os
 import logging
 import platform
-from numpy.core._exceptions import _ArrayMemoryError
 import dill
-from joblib import Parallel, delayed
 import tracemalloc
 import cloudpickle
 
@@ -25,7 +23,7 @@ try:
     import torch.multiprocessing as multiprocessing
 except:
     import multiprocessing
-    
+
 if platform.system() == "Linux":
     import resource
 
@@ -92,8 +90,8 @@ class RestrictedWorker:
             self._restrict()
             result = self.function(pipeline, *args, **kwargs)
             result_bucket["result"] = result
-        except _ArrayMemoryError as e:
-            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
+        except MemoryError as e:
+            result_bucket["result"] = MemoryError(e.shape, e.dtype)
         except Exception as e:
             result_bucket["result"] = e
 
@@ -161,10 +159,10 @@ class RestrictedWorkerByJoin(RestrictedWorker):
 
             result = function(pipeline, *args, **kwargs)
             result_bucket["result"] = result
-        except _ArrayMemoryError as e:
-            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
         except MemoryError as e:
-            result_bucket["result"] = MemoryError(f"Process exceeded memory limit of {self.memory/1024**2} MBs")
+            result_bucket["result"] = MemoryError(
+                f"Process exceeded memory limit of {self.memory/1024**2} MBs"
+            )
         except Exception as e:
             result_bucket["result"] = e
 
@@ -222,7 +220,7 @@ class RestrictedWorkerByJoin(RestrictedWorker):
         rprocess.start()
         # stats = monitor_resources(rprocess)
         rprocess.join(self.timeout)
-        
+
         if rprocess.is_alive():
             rprocess.kill()  # More forceful termination
             rprocess.join()
@@ -244,131 +242,8 @@ class RestrictedWorkerByJoin(RestrictedWorker):
             outcome, observations = result
         except Exception as e:
             print(f"failed to extract fitness and observations. Reason: {e}")
-            
+
         return outcome, observations
-
-
-class RestrictedWorkerDiskSerializableByJoin(RestrictedWorkerByJoin):
-    def __init__(self, function, timeout: int, memory: int):
-        self.function = dill.dumps(function)
-        self.timeout = timeout
-        self.memory = memory
-
-    def _restricted_function(self, result_bucket, *args, **kwargs):
-        try:
-            self._restrict()
-
-            from autogoal.kb import Pipeline
-
-            algorithms, types = Pipeline.load_algorithms(TEMPORARY_DATA_PATH)
-            pipeline = Pipeline(algorithms, types)
-
-            function = dill.loads(self.function)
-            result = function(pipeline)
-            result_bucket["result"] = result
-        except _ArrayMemoryError as e:
-            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
-        except Exception as e:
-            result_bucket["result"] = e
-
-    def run_restricted(self, pipeline, *args, **kwargs):
-        """
-        Executes a given function with restricted amount of
-        CPU time and RAM memory usage
-        """
-        manager = multiprocessing.Manager()
-        result_bucket = manager.dict()
-
-        # ensure the directory to where the pipeline is going
-        # to be exported exists
-        ensure_temporary_data_path()
-
-        global TEMPORARY_DATA_PATH
-        pipeline.save_algorithms(TEMPORARY_DATA_PATH)
-
-        rprocess = multiprocessing.Process(
-            target=self._restricted_function,
-            args=[result_bucket, TEMPORARY_DATA_PATH, *args],
-            kwargs=kwargs,
-        )
-
-        rprocess.start()
-        rprocess.join(self.timeout)
-
-        if rprocess.exitcode == 0:
-            result = result_bucket["result"]
-        else:
-            rprocess.terminate()
-            raise TimeoutError(
-                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-            )
-
-        if isinstance(result, Exception):  # Exception ocurred
-            raise result
-
-        # load trained pipeline
-        from autogoal.kb import Pipeline
-
-        algorithms, _ = Pipeline.load_algorithms(TEMPORARY_DATA_PATH)
-        pipeline.algorithms = algorithms
-
-        # delete all generated temp files
-        delete_temporary_data_path()
-        return result
-
-
-class RestrictedWorkerWithState(RestrictedWorkerByJoin):
-    def __init__(self, function, timeout: int, memory: int):
-        self.function = function
-        self.timeout = timeout
-        self.memory = memory
-
-    def _restricted_function(self, result_bucket, arguments_bucket, *args, **kwargs):
-        try:
-            instance = arguments_bucket["instance"]
-            self._restrict()
-            result = self.function(instance, *args, **kwargs)
-            result_bucket["result"] = result
-            result_bucket["instance"] = instance
-        except _ArrayMemoryError as e:
-            result_bucket["result"] = _ArrayMemoryError(e.shape, e.dtype)
-        except Exception as e:
-            result_bucket["result"] = e
-
-    def run_restricted(self, instance, *args, **kwargs):
-        """
-        Executes a given function with restricted amount of
-        CPU time and RAM memory usage
-        """
-        manager = multiprocessing.Manager()
-        result_bucket = manager.dict()
-        arguments_bucket = manager.dict(
-            {
-                "instance": instance,
-            }
-        )
-
-        rprocess = multiprocessing.Process(
-            target=self._restricted_function,
-            args=[result_bucket, arguments_bucket, *args],
-            kwargs=kwargs,
-        )
-
-        rprocess.start()
-        rprocess.join(self.timeout)
-
-        if rprocess.exitcode == 0:
-            result = result_bucket.get("result"), result_bucket.get("instance")
-        else:
-            rprocess.kill()
-            raise TimeoutError(
-                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-            )
-
-        if isinstance(result, Exception):  # Exception ocurred
-            raise result
-
-        return result
 
 
 def get_used_memory():
@@ -479,9 +354,6 @@ def restrict(memory, timeout):
                 "Cannot restrict memory to %s < %i" % (memory, used_memory + 200 * Mb)
             )
 
-        # signal.signal(signal.SIGALRM, handler)
-        # signal.alarm(timeout)  # Number of seconds before alarm is raised
-
 
 def get_current_memory_limit():
     if platform.system() == "Linux":
@@ -498,134 +370,3 @@ def clear_cuda_memory():
         torch.cuda.ipc_collect()
     except:
         pass
-
-
-def mock_function(*args, **kwargs):
-    """
-    A mock function that does minimal work.
-    Its primary purpose is to allow the usage of multiple jobs in joblib
-    to enable setting a timeout for the primary task.
-    """
-    pass
-
-
-def restricted_function(memory, timeout, serialized_input_types, *args, **kwargs):
-    try:
-        restrict(int(memory), int(timeout))
-        print("Limit in thread", resource.getrlimit(resource.RLIMIT_AS))
-
-        deserialized_input_types = [
-            cloudpickle.loads(i) for i in serialized_input_types
-        ]
-        # pipeline.input_types = deserialized_input_types
-        # return function(pipeline, *args, **kwargs)
-    except _ArrayMemoryError as e:
-        clear_cuda_memory()
-        print(
-            f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-        )
-        raise _ArrayMemoryError(e.shape, e.dtype)
-    except TimeoutError as e:
-        clear_cuda_memory()
-        print(
-            f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-        )
-        raise TimeoutError(
-            f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-        )
-    except Exception as e:
-        clear_cuda_memory()
-        print(
-            f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-        )
-        if e.__class__.__name__ == "TimeoutError":
-            raise TimeoutError(
-                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-            )
-        if e.__class__.__name__ == "MemoryError":
-            raise MemoryError(
-                f"Exceded allowed memory for execution. Any restricted function should at must use {self.memory} bytes."
-            )
-        raise e
-
-@deprecated(reason="Use RestrictedWorkerByJoin instead. JobLibRestrictedWorkerByJoin does not support CUDA multiprocessing.")
-class JobLibRestrictedWorkerByJoin:
-    def __init__(self, function, timeout: int, memory: int):
-        self.function = function
-        self.timeout = timeout
-        self.memory = memory
-        self.overall_memory_limit = get_current_memory_limit()
-
-    def reset_memory_limit(self):
-        gc.collect()
-        if self.overall_memory_limit is not None:
-            resource.setrlimit(
-                resource.RLIMIT_AS,
-                (self.overall_memory_limit, self.overall_memory_limit),
-            )
-
-    def run_restricted(self, pipeline, *args, **kwargs):
-        """
-        Executes a given function with restricted amount of
-        CPU time and RAM memory usage, alongside a mock function
-        to enable joblib's timeout feature.
-        """
-        try:
-
-            from autogoal.kb import Pipeline
-
-            input_types = pipeline.input_types
-            serialized_input_types = [cloudpickle.dumps(i) for i in input_types]
-
-            with Parallel(n_jobs=2, timeout=self.timeout, backend="loky") as parallel:
-                result = parallel(
-                    [
-                        delayed(restricted_function)(
-                            self.memory,
-                            self.timeout,
-                            # self.function,
-                            # pipeline,
-                            serialized_input_types,
-                            *args,
-                            **kwargs,
-                        ),
-                    ]
-                )
-            return result[0]
-        except _ArrayMemoryError as e:
-            clear_cuda_memory()
-            self.reset_memory_limit()
-            print(
-                f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-            )
-            raise _ArrayMemoryError(e.shape, e.dtype)
-        except TimeoutError as e:
-            clear_cuda_memory()
-            self.reset_memory_limit()
-            print(
-                f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-            )
-            raise TimeoutError(
-                f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-            )
-        except Exception as e:
-            clear_cuda_memory()
-            self.reset_memory_limit()
-            print(f"Error {e}")
-            print(
-                f"Limit at the end {resource.getrlimit(resource.RLIMIT_AS)}\ncurrent memory usage {get_used_memory()} MB"
-            )
-
-            if e.__class__.__name__ == "TimeoutError":
-                raise TimeoutError(
-                    f"Exceded allowed time for execution. Any restricted function should end its excution in a timespan of {self.timeout} seconds."
-                )
-
-            if e.__class__.__name__ == "MemoryError":
-                raise MemoryError(
-                    f"Exceded allowed memory for execution. Any restricted function should at must use {self.memory} bytes."
-                )
-            raise e
-
-    def __call__(self, *args, **kwargs):
-        return self.run_restricted(*args, **kwargs)

@@ -55,28 +55,88 @@ class ExperienceReplayModelSampler(ModelSampler):
     def set_regular_sample_mode(self):
         self.current_experience = None
         self.mode = ExperienceSamplerMode.RegularSample
+        
+    def _resolve_handle(self, handle, algorithm_experience: Dict[str, Dict]):
+        splitted_handle = handle.split("_")
+        if len(splitted_handle) > 1: # handle is a parameter of an algorithm that might be nested
+            algorithm = splitted_handle[0]
+            parameter_name = "_".join(splitted_handle[1:])
+            for algorithm_name, params in algorithm_experience.items():
+                if algorithm_name == algorithm: # We found the algorithm, now we look for the parameter
+                    next_iteration = []
+                    for param in params.keys():
+                        if parameter_name.startswith(param): # Possible match
+                            if param == parameter_name: # We found the parameter
+                                if 'annotation' in params[param]:
+                                    return list(params[param]['value'].keys())[0]
+                                else:
+                                    return params[param]['value']
+                                
+                            else: # No full match might mean that the parameter is nested
+                                if 'annotation' in params[param]:
+                                    next_iteration.append(params[param]['value'])
+                                
+                    # If we didn't find the parameter, we go to the nested iteration
+                    for next_iter in next_iteration:
+                        result = self._resolve_handle(parameter_name, next_iter)
+                        if result is not None:
+                            return result
+        else:
+            for algorithm_name, params in algorithm_experience.items():
+                if handle == algorithm_name:
+                    return algorithm_name
+                
+                for param in params.keys():
+                    if 'annotation' in params[param]:
+                        if handle == params[param]["annotation"]:
+                            return list(params[param]['value'].keys())[0]
+                    
+        return None
 
     def _get_value_from_experience(self, handle, experience: Experience, options: List=None):
-        if not handle is None: # If handle is not None, we are looking for a specific parameter
-            parameter_value = None
-            for parameter in experience.finetuning_parameters:
-                if handle.endswith(parameter):
-                    parameter_value = experience.finetuning_parameters[parameter]
-                    break
-            
-            if parameter_value is not None:
-                return experience.finetuning_parameters[parameter]
-            else:
-                if hasattr(options[0], "name"): # If options are Symbol objects
-                    option_names = [option.name for option in options]
-                    if experience.finetuning_parameters["inner_model"] in option_names:
-                        return options[option_names.index(experience.finetuning_parameters["inner_model"])]
-            
-        else: # If handle is None, we are looking for a specific finetuning method
-            if experience.finetuning_method in options:
-                return experience.finetuning_method
+        if handle is None: # If handle is None, we are looking for an algorithm in the experience
+            for algorithm in experience.algorithms: # priority to initial algorithms
+                algorithm_name = list(algorithm.keys())[0] # Should be only one key
+                if algorithm_name in options:
+                    return algorithm_name
         
-        return None
+        else: # If handle is not None, we are looking for a specific parameter of some algorithm
+            for algorithm in experience.algorithms:
+                resolved_handle = self._resolve_handle(handle, algorithm)
+                
+                if resolved_handle is not None:
+                    if options is not None:
+                        if hasattr(options[0], "name"): # If options are Symbol objects
+                            option_names = [option.name for option in options]
+                            if (resolved_handle in option_names):
+                                return options[option_names.index(resolved_handle)]
+                        else:
+                            # Options are not Symbol objects
+                            if resolved_handle in options:
+                                return resolved_handle
+                    else:
+                        return resolved_handle
+            
+            # if not handle is None: # If handle is not None, we are looking for a specific parameter
+            #     parameter_value = None
+            #     for parameter in experience.finetuning_parameters:
+            #         if handle.endswith(parameter):
+            #             parameter_value = experience.finetuning_parameters[parameter]
+            #             break
+                
+            #     if parameter_value is not None:
+            #         return experience.finetuning_parameters[parameter]
+            #     else:
+            #         if hasattr(options[0], "name"): # If options are Symbol objects
+            #             option_names = [option.name for option in options]
+            #             if experience.finetuning_parameters["inner_model"] in option_names:
+            #                 return options[option_names.index(experience.finetuning_parameters["inner_model"])]
+                
+            # else: # If handle is None, we are looking for a specific finetuning method
+            #     if experience.finetuning_method in options:
+            #         return experience.finetuning_method
+            
+            return None
 
     def choice(self, options, handle=None):
         if handle is not None:

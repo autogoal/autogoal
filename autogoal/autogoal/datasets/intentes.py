@@ -2,6 +2,7 @@ import enum
 import random
 import csv
 from typing import Tuple, List, Optional, Callable
+import re
 
 from autogoal.datasets import download, datapath
 from sklearn.preprocessing import LabelEncoder
@@ -15,10 +16,37 @@ TASK_DATAPATH = {
     TaskType.TextClassification: "intentes/intentes_text_classification",
 }
 
+def de_emojify(text):
+    regrex_pattern = re.compile(pattern="["
+                                        u"\U0001F600-\U0001F92F"  # emoticons
+                                        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                                        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                                        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                                        u"\U00002702-\U000027B0"
+                                        u"\U000024C2-\U0001F251"
+                                        u"\U0001F190-\U0001F1FF"
+                                        u"\U0001F926-\U0001FA9F"
+                                        u"\u2640-\u2642"
+                                        u"\u2600-\u2B55"
+                                        u"\u200d"
+                                        u"\u23cf"
+                                        u"\u23e9"
+                                        u"\u231a"
+                                        u"\ufe0f"
+                                        "]+", flags=re.UNICODE)
+    return regrex_pattern.sub(r'', text)
+
+
+def preprocess(value):
+    new_value = de_emojify(value)
+    new_value = re.sub(r'http\S+', '', new_value)
+    return new_value
+
+
 def load(
     *args,
     task: TaskType = TaskType.TextClassification,
-    encoding: Optional[str] = None,
+    encoding: Optional[str] = "ordinal",
     **kwargs
 ) -> Tuple[List[str], List, List[str], List]:
     """
@@ -75,7 +103,7 @@ def load_text_classification_dataset(encoding: Optional[str] = None) -> Tuple[Li
             for row in reader:
                 if len(row) < 3:
                     continue  # Skip malformed rows
-                texts.append(row[1])
+                texts.append(preprocess(row[1]))
                 labels.append(row[2])
         return texts, labels
     
@@ -87,10 +115,14 @@ def load_text_classification_dataset(encoding: Optional[str] = None) -> Tuple[Li
     if encoding:
         if encoding.lower() == 'ordinal':
             label_encoder = LabelEncoder()
-            y_train = label_encoder.fit_transform(y_train).tolist()
+            all_labels = y_train + y_test
+            label_encoder.fit(all_labels)
+            y_train = label_encoder.transform(y_train).tolist()
             y_test = label_encoder.transform(y_test).tolist()
             
-            print("Classes:", label_encoder.classes_)
+            print("Encoded Classes and Mappings:")
+            for class_label, class_index in zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)):
+                print(f"{class_label}: {class_index}")
         else:
             raise ValueError(f"Unsupported encoding type: {encoding}")
     

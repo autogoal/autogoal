@@ -1,7 +1,6 @@
 import inspect
 from textwrap import wrap
 import time
-from joblib import wrap_non_picklable_objects
 import numpy as np
 import statistics
 from autogoal.ml.utils import LabelEncoder, check_number_of_labels, stratified_split_indices
@@ -151,7 +150,7 @@ def supervised_fitness_fn_moo(objectives, target_observations=None):
             # Train the pipeline on the training set
             train_start_time = time.time()
             eval_pipeline.send("train")
-            eval_pipeline.run(*X_train_instances, y_train, **kwargs)
+            y_train_pred = eval_pipeline.run(*X_train_instances, y_train, **kwargs)
             train_end_time = time.time()
 
             # Evaluate the pipeline on the validation set
