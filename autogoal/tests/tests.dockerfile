@@ -27,12 +27,11 @@ WORKDIR /autogoal
 
 COPY pyproject.toml poetry.lock makefile /autogoal/
 
-RUN conda create -y --name autogoal python=3.7
+RUN conda create -y --name autogoal python=3.9.16
 SHELL ["conda", "run", "-n", "autogoal", "/bin/bash", "-c"]
 
 # Use system's Python for installing dev tools
 RUN make env
-RUN conda install -y tensorflow-gpu==2.1.0 && pip install tensorflow-addons==0.9.1 torch==1.10.1 torchvision==0.11.2
 RUN poetry install
 RUN poetry install -E contrib -E dev
 

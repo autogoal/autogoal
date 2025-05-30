@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x  # Enable printing of commands
 
 # Split the first argument into an array of words
 contribs=("$@")

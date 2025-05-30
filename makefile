@@ -84,26 +84,26 @@ shell:
 streamlit-demo:
 	docker run -p 8500:8501 autogoal/autogoal:streamlit-demo
 
-# dev          Run the base development image.
+# container          Creates the base development container.
 SERVICE=autogoal-core
-.PHONY: dev
-dev:
+.PHONY: container
+container:
 	docker-compose run --service-ports --name=$(SERVICE) $(SERVICE)
 
-# dev-sklearn  Run the development image with sklearn.
-.PHONY: dev-sklearn
-dev-sklearn:
-	make dev SERVICE=autogoal-sklearn
+# container-sklearn  Run the development image with sklearn.
+.PHONY: container-sklearn
+container-sklearn:
+	make container SERVICE=autogoal-sklearn
 
 # dev-nltk     Run the development image with nltk.
-.PHONY: dev-nltk
-dev-nltk:
-	make dev SERVICE=autogoal-nltk
+.PHONY: container-nltk
+container-nltk:
+	make container SERVICE=autogoal-nltk
 
-# dev-full     Run the development image with all contribs installed.
-.PHONY: dev-full
-dev-full:
-	make dev SERVICE=autogoal-full
+# container-full     Run the development image with all contribs installed.
+.PHONY: container-full
+container-full:
+	make container SERVICE=autogoal-full
 
 # mkdocs       Run the docs server in the development image.
 .PHONY: mkdocs
@@ -130,11 +130,11 @@ ensure-dev:
 
 .PHONY: docs-dev
 docs-dev:
-	python3 -m illiterate --inline autogoal docs/api
-	python3 -m illiterate --inline tests/examples docs/examples
-	python3 -m illiterate --inline tests/guide docs/guide
-	cp Readme.md docs/index.md
-	# python3 -m typer_cli autogoal/__main__.py utils docs > docs/cli-api.md
+	python3 -m illiterate autogoal/autogoal autogoal/docs/api
+	python3 -m illiterate autogoal/tests/examples autogoal/docs/examples
+	python3 -m illiterate autogoal/tests/guide autogoal/docs/guide
+	cp Readme.md autogoal/docs/index.md
+	# python3 -m typer_cli autogoal/autogoal/__main__.py utils autogoal/docs > autogoal/docs/cli-api.md
 
 # docs         Compile and publish the documentation to Github.
 .PHONY: docs

@@ -8,10 +8,6 @@
 [<img alt="Docker Image Size (CPU)" src="https://img.shields.io/docker/image-size/autogoal/autogoal/latest">](https://hub.docker.com/r/autogoal/autogoal)
 [<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/autogoal/autogoal">](https://hub.docker.com/r/autogoal/autogoal)
 
-[![Build and Push to Docker (main branch)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/docker.yml)
-[![Test Core (main branch)](https://github.com/autogoal/autogoal/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/autogoal/autogoal/actions/workflows/test.yml)
-[![Release to PyPI](https://github.com/autogoal/autogoal/actions/workflows/release.yml/badge.svg)](https://github.com/autogoal/autogoal/actions/workflows/release.yml)
-
 ---
 
 AutoGOAL is a Python library for automatically finding the best way to solve a given task.
