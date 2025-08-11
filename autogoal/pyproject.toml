@@ -5,8 +5,8 @@ authors = ["Suilan Estevez-Velarde <suilanestevez@gmail.com>", "Alejandro Piad-M
 description = "Automatic Generation Optimization And Learning"
 license = "MIT"
 readme = "Readme.md"
-homepage = "https://autogoal.github.io"
-documentation = "https://autogoal.github.io"
+homepage = "https://autogoal.uhgia.org"
+documentation = "https://autogoal.uhgia.org"
 repository = "https://github.com/autogoal/autogoal"
 packages = [{include = "autogoal"}]
 

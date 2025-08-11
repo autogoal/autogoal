@@ -1,6 +1,6 @@
-![AutoGOAL Logo](https://autogoal.github.io/autogoal-banner.png)
+![AutoGOAL Logo](https://autogoal.uhgia.org/autogoal-banner.png)
 
-[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.github.io/contributing) [<img alt="GitHub stars" src="https://img.shields.io/github/stars/autogoal/autogoal?style=social">](https://github.com/autogoal/autogoal/stargazers) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Followers&style=social">](https://twitter.com/auto_goal)
+[<img alt="PyPI" src="https://img.shields.io/pypi/v/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/autogoal">](https://pypi.org/project/autogoal/) [<img alt="PyPI - License" src="https://img.shields.io/pypi/l/autogoal">](https://autogoal.uhgia.org/contributing) [<img alt="GitHub stars" src="https://img.shields.io/github/stars/autogoal/autogoal?style=social">](https://github.com/autogoal/autogoal/stargazers) [<img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/auto_goal?label=Followers&style=social">](https://twitter.com/auto_goal)
 
 [<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/autogoal/autogoal/CI/main?label=unit tests&logo=github">](https://github.com/autogoal/autogoal/actions)
 [<img src="https://codecov.io/gh/autogoal/autogoal/branch/main/graph/badge.svg" />](https://codecov.io/gh/autogoal/autogoal/)
@@ -26,7 +26,7 @@ AutoGOAL is first and foremost a framework for Automated Machine Learning.
 As such, it comes pre-packaged with hundreds of low-level machine learning
 algorithms that can be automatically assembled into pipelines for different problems.
 
-The core of this functionality lies in the [`AutoML`](https://autogoal.github.io/api/autogoal.ml#automl) class.
+The core of this functionality lies in the [`AutoML`](https://autogoal.uhgia.org/api/autogoal.ml#automl) class.
 
 To illustrate the simplicity of its use we will load a dataset and run an automatic classifier in it.
 The following code will run for approximately 5 minutes on a classic dataset.
@@ -57,7 +57,7 @@ print(automl.best_score_)
 ```
 
 Sensible defaults are defined for each of the many parameters of `AutoML`.
-Make sure to [read the documentation](https://autogoal.github.io/guide/) for more information.
+Make sure to [read the documentation](https://autogoal.uhgia.org/guide/) for more information.
 
 ## ⚙️ Installation
 
@@ -69,7 +69,7 @@ Instructions for setting up Docker are available [here](https://www.docker.com/g
 
 Once you have the development image downloaded, you can fire up a console and use AutoGOAL interactively.
 
-![](https://autogoal.github.io/shell.svg)
+![](https://autogoal.uhgia.org/shell.svg)
 
 If you prefer to not use Docker, or you don't want all the dependencies, you can also install AutoGOAL directly with pip:
 
@@ -79,7 +79,7 @@ This will install the core library but you won't be able to use any of the under
 
     pip install autogoal[contrib]
 
-To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.github.io/dependencies/).
+To fine-pick which dependencies you want, read the [dependencies section](https://autogoal.uhgia.org/dependencies/).
 
 > ⚠️ **NOTE**: By installing through `pip` you will get the latest release version of AutoGOAL, while by installing through Docker, you will get the latest development version. 
 >
@@ -93,13 +93,13 @@ You can use AutoGOAL directly from the CLI. To see options just type:
 
 Using the CLI you can train and use AutoML models, download datasets and inspect the contrib libraries without writing a single line of code.
 
-![](https://autogoal.github.io/shell/autogoal_cli.svg)
+![](https://autogoal.uhgia.org/shell/autogoal_cli.svg)
 
-Read more in the [CLI documentation](https://autogoal.github.io/cli).
+Read more in the [CLI documentation](https://autogoal.uhgia.org/cli).
 
 ## 🤩 Demo
 
-An online demo app is available at [autogoal.github.io/demo](https://autogoal.github.io/demo).
+An online demo app is available at [autogoal.uhgia.org/demo](https://autogoal.uhgia.org/demo).
 This app showcases the main features of AutoGOAL in interactive case studies.
 
 To run the demo locally, simply type:
@@ -148,11 +148,11 @@ These are our consistency rules:
 
 ## 📚 Documentation
 
-This documentation is available online at [autogoal.github.io](https://autogoal.github.io). Check the following sections:
+This documentation is available online at [autogoal.uhgia.org](https://autogoal.uhgia.org). Check the following sections:
 
-- [**User Guide**](https://autogoal.github.io/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
-- [**Examples**](https://autogoal.github.io/examples/): The best way to learn how to use AutoGOAL by practice.
-- [**API**](https://autogoal.github.io/api/autogoal): Details about the public API for AutoGOAL.
+- [**User Guide**](https://autogoal.uhgia.org/guide/): Step-by-step showcase of everything you need to know to use AuoGOAL.
+- [**Examples**](https://autogoal.uhgia.org/examples/): The best way to learn how to use AutoGOAL by practice.
+- [**API**](https://autogoal.uhgia.org/api/autogoal): Details about the public API for AutoGOAL.
 
 The HTML version can be deployed offline by downloading the [AutoGOAL Docker image](https://hub.docker.com/autogoal/autogoal) and running:
 
@@ -187,7 +187,7 @@ The technologies and theoretical results leading up to AutoGOAL have been presen
 
 ## 🤝 Contribution
 
-Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.github.io/contributing).
+Code is licensed under MIT. Read the details in the [collaboration section](https://autogoal.uhgia.org/contributing).
 
 This project follows the [all-contributors](https://allcontributors.org) specification. Any contribution will be given credit, from fixing typos, to reporting bugs, to implementing new core functionalities. 
 
