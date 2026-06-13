@@ -160,3 +160,8 @@ models--*/
 autogoal-export/*
 autogoal-export/dockerfile
 autogoal-export/makefile
+
+# macOS junk
+.DS_Store
+# release build artifacts (dist/ is already ignored above)
+dist_release/
