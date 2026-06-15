@@ -16,10 +16,6 @@ jobs:
           python-version: 3.9.13
           architecture: x64
 
-      - name: Setup vendor libs
-        run: |
-          pip install https://github.com/apiad/illiterate/archive/refs/heads/master.zip
-
       - name: Setup dependencies and build
         run: |
           pip install poetry==1.2

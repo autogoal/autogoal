@@ -22,7 +22,17 @@ os.makedirs(DATA_PATH, exist_ok=True)
 @lru_cache()
 def get_datasets_list() -> Dict[str, str]:
     try:
-        data = requests.get(DATASETS_METADATA).json()
+        response = requests.get(DATASETS_METADATA)
+        try:
+            data = response.json()
+        except ValueError:
+            # The remote metadata occasionally ships with a trailing comma,
+            # which is invalid JSON. Strip trailing commas before a closing
+            # brace/bracket so dataset loading stays robust to minor upstream
+            # formatting slips.
+            import re
+
+            data = json.loads(re.sub(r",(\s*[}\]])", r"\1", response.text))
 
         with open(DATA_PATH / "datasets.json", "w") as fp:
             json.dump(data, fp, indent=2)
